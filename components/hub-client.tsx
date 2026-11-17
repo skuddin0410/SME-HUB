@@ -96,39 +96,6 @@ export function PostBody({ text }: { text: string }) {
   );
 }
 
-/** CanadianSME logo, with a text wordmark if the image cannot load. */
-export function BrandLogo({ tone = "light" }: { tone?: "light" | "dark" }) {
-  const [broken, setBroken] = useState(false);
-  const img = useRef<HTMLImageElement>(null);
-  // the image can fail before the page becomes interactive, so check once on mount too
-  useEffect(() => {
-    if (img.current?.complete && img.current.naturalWidth === 0) setBroken(true);
-  }, []);
-  const src =
-    tone === "light"
-      ? "https://canadiansme.ca/assets/canadiansme-logo-light.webp"
-      : "https://canadiansme.ca/assets/canadiansme-logo-520.webp";
-  return (
-    <Link href="/feed" className="flex items-center gap-2.5" aria-label="CanadianSME Hub home">
-      {broken ? (
-        <span className={cx("font-display text-lg font-bold", tone === "light" ? "text-white" : "text-foreground")}>
-          Canadian<span className="text-rose-600">SME</span>
-        </span>
-      ) : (
-        <img ref={img} src={src} alt="CanadianSME" className="h-7 w-auto" onError={() => setBroken(true)} />
-      )}
-      <span
-        className={cx(
-          "rounded-md px-1.5 py-0.5 text-xs font-semibold",
-          tone === "light" ? "bg-white/15 text-white" : "bg-primary text-white",
-        )}
-      >
-        Hub
-      </span>
-    </Link>
-  );
-}
-
 export function NavLink({
   href,
   label,

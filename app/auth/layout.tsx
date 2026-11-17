@@ -1,17 +1,17 @@
-import { BrandLogo } from "@/components/hub-client";
+import { Logo } from "@/components/site-nav";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <aside className="cover flex flex-col justify-between gap-8 p-8 text-white lg:p-12">
-        <BrandLogo />
+        <Logo onDark />
         <div className="hidden lg:block">
           <p className="font-display text-4xl font-bold leading-tight">Where Canadian small business owners meet.</p>
           <p className="mt-4 max-w-md text-white/85">
             Ask questions, share what is working and find the people who can help you grow.
           </p>
         </div>
-        <p className="hidden text-xs text-white/40 lg:block">CanadianSME Hub, by Cmarketing Inc.</p>
+        <p className="hidden text-xs text-white/40 lg:block">SMB Hub, by Cmarketing Inc.</p>
       </aside>
       <div className="bg-white">{children}</div>
     </div>

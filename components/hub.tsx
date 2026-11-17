@@ -31,12 +31,13 @@ export function PersonLine({ person, extra, size = 44 }: { person: Author; extra
           </Link>
           <TierBadge type={person.member_type} />
         </div>
-        <p className="truncate text-[13px] text-muted-foreground">{extra ?? (person.headline || "CanadianSME Hub member")}</p>
+        <p className="truncate text-[13px] text-muted-foreground">{extra ?? (person.headline || "SMB Hub member")}</p>
       </div>
     </div>
   );
 }
 
+const VERB = { update: "posted an update", question: "asked a question", win: "shared a win", offer: "posted an offer", hiring: "is hiring" };
 const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Connections", private: "Only you" };
 
 export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
@@ -45,35 +46,46 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
     <article className="panel overflow-hidden transition-shadow duration-200 hover:shadow-xl">
       {post.pinned_at && (
         <p className="flex items-center gap-1.5 border-b bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900">
-          <Pin className="h-3.5 w-3.5" /> Pinned by CanadianSME
+          <Pin className="h-3.5 w-3.5" /> Pinned by SMB Hub
         </p>
       )}
       <div className="flex items-start justify-between gap-2 px-4 pt-4">
-        <PersonLine
-          person={post.author}
-          extra={
-            <>
-              {post.author.headline && <span className="hidden sm:inline">{post.author.headline}, </span>}
-              <Link href={`/posts/${post.id}`} className="hover:underline">
-                {timeAgo(post.created_at)}
-              </Link>
+        <div className="flex min-w-0 items-center gap-3">
+          <Link href={`/members/${post.author.id}`} className="shrink-0">
+            <AvatarImg person={post.author} size={46} />
+          </Link>
+          <div className="min-w-0">
+            <p className="leading-snug">
+              <Link href={`/members/${post.author.id}`} className="font-semibold hover:underline">
+                {post.author.full_name || "Member"}
+              </Link>{" "}
+              <span className="text-muted-foreground">{VERB[post.kind]}</span>
               {post.group && (
                 <>
-                  {" in "}
-                  <Link href={`/groups/${post.group.slug}`} className="font-medium text-foreground hover:underline">
+                  <span className="text-muted-foreground"> in </span>
+                  <Link href={`/groups/${post.group.slug}`} className="font-semibold hover:underline">
                     {post.group.name}
                   </Link>
                 </>
               )}
+            </p>
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted-foreground">
+              <Link href={`/posts/${post.id}`} className="hover:underline">
+                {timeAgo(post.created_at)}
+              </Link>
+              <TierBadge type={post.author.member_type} />
+              {post.kind !== "update" && (
+                <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${KINDS[post.kind].chip}`}>{KINDS[post.kind].label}</span>
+              )}
               {VISIBILITY_LABEL[post.visibility] && (
-                <span className="ml-1.5 inline-flex items-center gap-1 rounded-full bg-muted px-1.5 text-[11px]">
+                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 text-[11px]">
                   <Lock className="h-2.5 w-2.5" />
                   {VISIBILITY_LABEL[post.visibility]}
                 </span>
               )}
-            </>
-          }
-        />
+            </p>
+          </div>
+        </div>
         {(own || viewer.isStaff) && (
           <form action={deletePost.bind(null, post.id)}>
             <button
@@ -87,11 +99,6 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
           </form>
         )}
       </div>
-      {post.kind !== "update" && (
-        <p className="px-4 pt-3">
-          <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${KINDS[post.kind].chip}`}>{KINDS[post.kind].label}</span>
-        </p>
-      )}
       <PostBody text={post.body} />
       {post.image_url && <img src={post.image_url} alt="" loading="lazy" className="max-h-[520px] w-full object-cover" />}
       <PostActions

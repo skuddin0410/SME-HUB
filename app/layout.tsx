@@ -7,7 +7,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "CanadianSME Hub",
+  title: "SMB Hub",
   description: "Connect, learn and grow with Canadian small businesses",
 };
 

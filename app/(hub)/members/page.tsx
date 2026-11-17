@@ -65,7 +65,7 @@ export default async function MembersPage({
                 {m.full_name || "Member"}
               </Link>
               <TierBadge type={m.member_type} />
-              <p className="line-clamp-2 text-[13px] text-muted-foreground">{m.headline || "CanadianSME Hub member"}</p>
+              <p className="line-clamp-2 text-[13px] text-muted-foreground">{m.headline || "SMB Hub member"}</p>
               {m.location && <p className="text-xs text-muted-foreground">{m.location}</p>}
               <div className="mt-auto pt-3">
                 <ConnectControl viewer={viewer} otherId={m.id} link={links.get(m.id)} />
