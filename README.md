@@ -46,3 +46,13 @@ update profiles set role = 'admin' where id = (select id from auth.users where e
 - `lib/hub.ts`: types and the feed query
 - `app/(hub)/actions.ts`: every write (post, like, connect, join, report...)
 - `app/(hub)/*`: pages; `components/hub.tsx`: shared UI (post card, composer, avatar)
+
+## Demo content (remove before launch)
+
+- The live database holds 8 demo members, 4 groups and 9 posts so the hub can be judged with content in it. Every demo account has an `@demo.invalid` email and cannot sign in. Remove all of it, with its posts, groups, likes and comments, in the Supabase SQL Editor:
+
+```sql
+delete from auth.users where email like '%@demo.invalid';
+```
+
+- Placeholder photos and cover images come from `lib/demo.ts`. Set `DEMO_IMAGES` to `false` there to switch them off.
