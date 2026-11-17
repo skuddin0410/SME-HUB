@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, Bell, ChevronDown, ExternalLink, Home, IdCard, LifeBuoy, Menu, Search, SquareArrowOutUpRight, UserPlus, X } from "lucide-react";
+import { ArrowRight, Bell, MessageSquareText, ChevronDown, ExternalLink, Home, IdCard, LifeBuoy, Menu, Search, SquareArrowOutUpRight, UserPlus, X } from "lucide-react";
 import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, PROVINCES, RESOURCES_MENU, type NavItem } from "@/lib/site";
 import { AvatarImg, SignOutButton } from "@/components/hub-client";
 
@@ -13,7 +13,7 @@ const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boo
 export function Logo({ onDark = false, href = "/feed" }: { onDark?: boolean; href?: string }) {
   return (
     <Link href={href} aria-label="SMB Hub home" className={cx("inline-flex shrink-0", onDark && "rounded-xl bg-white px-3 py-1.5")}>
-      <img src="/smb-hub-logo.png" alt="SMB Hub" className="h-10 w-auto sm:h-12" />
+      <img src="/smb-hub-logo.png" alt="SMB Hub" className="h-9 w-auto sm:h-10" />
     </Link>
   );
 }
@@ -59,7 +59,7 @@ const MENUS = {
 
 type Me = { id: string; full_name: string; avatar_url: string | null } | null;
 
-export function SiteNav({ me, isStaff, requests, unread }: { me: Me; isStaff: boolean; requests: number; unread: number }) {
+export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; isStaff: boolean; requests: number; unread: number; messages: number }) {
   const pathname = usePathname();
   const [open, setOpen] = useState<null | "About" | "Explore">(null);
   const [mobile, setMobile] = useState(false);
@@ -76,7 +76,7 @@ export function SiteNav({ me, isStaff, requests, unread }: { me: Me; isStaff: bo
 
   const item = (active: boolean) =>
     cx(
-      "relative flex h-[72px] items-center gap-2 px-3.5 text-[15px] font-medium transition-colors",
+      "relative flex h-[60px] items-center gap-2 px-3 text-sm font-semibold transition-colors",
       "after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:rounded-full after:transition-transform after:duration-200",
       active ? "text-foreground after:scale-x-100 after:bg-primary" : "text-foreground/75 after:scale-x-0 after:bg-primary hover:text-foreground hover:after:scale-x-100",
     );
@@ -106,7 +106,7 @@ export function SiteNav({ me, isStaff, requests, unread }: { me: Me; isStaff: bo
 
   return (
     <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-xl">
-      <div className="mx-auto flex h-[72px] max-w-[1240px] items-center gap-2 px-4">
+      <div className="mx-auto flex h-[60px] max-w-[1128px] items-center gap-2 px-4">
         <Logo />
         <nav className="ml-6 hidden items-center lg:flex" aria-label="Main">
           <Link href="/feed" className={item(pathname === "/feed")} aria-current={pathname === "/feed" ? "page" : undefined}>
@@ -135,13 +135,17 @@ export function SiteNav({ me, isStaff, requests, unread }: { me: Me; isStaff: bo
                 <UserPlus className="h-5 w-5" />
                 {requests > 0 && <span className={dot}>{requests > 9 ? "9+" : requests}</span>}
               </Link>
+              <Link href="/messages" className={iconBtn} aria-label={`Messages, ${messages} unread`}>
+                <MessageSquareText className="h-5 w-5" />
+                {messages > 0 && <span className={dot}>{messages > 9 ? "9+" : messages}</span>}
+              </Link>
               <Link href="/notifications" className={iconBtn} aria-label={`Alerts, ${unread} unread`}>
                 <Bell className="h-5 w-5" />
                 {unread > 0 && <span className={dot}>{unread > 9 ? "9+" : unread}</span>}
               </Link>
               <details className="relative ml-1">
                 <summary className="flex cursor-pointer list-none items-center rounded-full ring-2 ring-primary/20 transition hover:ring-primary/60 [&::-webkit-details-marker]:hidden">
-                  <AvatarImg person={me} size={38} />
+                  <AvatarImg person={me} size={32} />
                 </summary>
                 <div className="panel absolute right-0 mt-2 w-56 animate-rise p-1.5 text-sm shadow-2xl">
                   <p className="truncate px-3 py-2 font-semibold">{me.full_name}</p>
@@ -161,12 +165,12 @@ export function SiteNav({ me, isStaff, requests, unread }: { me: Me; isStaff: bo
           ) : (
             <>
               <span className="mx-2 hidden h-6 w-px bg-border sm:block" />
-              <Link href="/auth/login" className="press hidden rounded-lg px-3 py-2 text-[15px] font-semibold hover:bg-muted sm:block">
+              <Link href="/auth/login" className="press hidden rounded-full px-4 py-2 text-base font-semibold text-foreground/70 hover:bg-muted hover:text-foreground sm:block">
                 Sign in
               </Link>
               <Link
                 href="/auth/sign-up"
-                className="press rounded-lg bg-primary px-5 py-2.5 text-[15px] font-semibold text-white shadow-md shadow-primary/30 transition-colors hover:bg-primary/90"
+                className="press rounded-full bg-primary px-5 py-2 text-base font-semibold text-white transition-colors hover:bg-primary/90"
               >
                 Sign up
               </Link>
@@ -179,7 +183,7 @@ export function SiteNav({ me, isStaff, requests, unread }: { me: Me; isStaff: bo
       </div>
 
       {mobile && (
-        <div className="max-h-[calc(100vh-72px)] animate-rise space-y-4 overflow-y-auto border-t bg-white p-4 lg:hidden">
+        <div className="max-h-[calc(100vh-60px)] animate-rise space-y-4 overflow-y-auto border-t bg-white p-4 lg:hidden">
           {!me && (
             <Link href="/auth/login" className="block rounded-lg border px-3 py-2 text-center text-sm font-semibold sm:hidden">
               Sign in

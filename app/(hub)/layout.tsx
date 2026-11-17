@@ -33,7 +33,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
   const { supabase, userId, profile, isStaff } = await getViewer();
 
   const none = Promise.resolve({ count: 0 });
-  const [unread, requests, connections, posts, people, groups, companies] = await Promise.all([
+  const [unread, requests, connections, posts, people, groups, companies, inbox] = await Promise.all([
     userId
       ? supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null)
       : none,
@@ -51,6 +51,9 @@ export default async function HubLayout({ children }: { children: React.ReactNod
     supabase.from("profiles").select(AUTHOR_FIELDS).order("created_at", { ascending: false }).limit(11),
     supabase.from("groups").select("slug, name, is_private, group_members(count)").order("created_at", { ascending: false }).limit(4),
     supabase.from("companies").select("id, slug, name, category, logo_url").order("created_at", { ascending: false }).limit(5),
+    userId
+      ? supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", userId).is("read_at", null)
+      : none,
   ]);
   const members = ((people.data ?? []) as Author[]).filter((p) => p.id !== userId).slice(0, 10);
   const newGroups = (groups.data ?? []) as unknown as GroupRow[];
@@ -61,8 +64,8 @@ export default async function HubLayout({ children }: { children: React.ReactNod
     : 0;
   const done = Math.round((filled / 6) * 100);
 
-  const card = "panel p-5";
-  const railTitle = "mb-4 font-display text-xl font-semibold";
+  const card = "panel p-3";
+  const railTitle = "mb-3 text-base font-semibold";
   const seeAll = "mt-4 inline-block rounded-lg bg-muted px-3 py-1.5 text-xs font-bold tracking-wide transition-colors hover:bg-primary/10 hover:text-primary";
   const tabs = [
     { href: "/feed", label: "Home", icon: Home },
@@ -78,6 +81,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
         me={profile ? { id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url } : null}
         isStaff={isStaff}
         requests={requests.count ?? 0}
+        messages={inbox.count ?? 0}
         unread={unread.count ?? 0}
       />
 
@@ -87,19 +91,20 @@ export default async function HubLayout({ children }: { children: React.ReactNod
         </p>
       )}
 
-      <div className="mx-auto grid max-w-[1240px] gap-6 px-4 py-7 lg:grid-cols-[260px_minmax(0,1fr)_300px]">
-        <aside className="hidden space-y-6 lg:block">
+      <div className="mx-auto grid max-w-[1128px] items-start gap-6 px-4 py-6 lg:grid-cols-[225px_minmax(0,1fr)_300px]">
+        <aside className="rail hidden space-y-2 lg:block">
           {profile && (
             <div className="panel overflow-hidden">
-              <Cover seed={profile.id} className="h-16" />
-              <div className="-mt-8 px-5 pb-5">
+              <Cover seed={profile.id} className="h-14" />
+              <div className="-mt-9 px-3 pb-3">
                 <Link href={`/members/${userId}`} className="relative inline-block rounded-full ring-4 ring-white">
-                  <AvatarImg person={profile} size={64} />
+                  <AvatarImg person={profile} size={72} />
                 </Link>
-                <Link href={`/members/${userId}`} className="mt-2 block font-display text-lg font-semibold leading-tight hover:underline">
+                <Link href={`/members/${userId}`} className="mt-2 block text-base font-semibold leading-tight hover:underline">
                   {profile.full_name}
                 </Link>
-                <p className="text-sm text-muted-foreground">{profile.headline || "Add a headline to your profile"}</p>
+                <p className="text-xs text-muted-foreground">{profile.headline || "Add a headline to your profile"}</p>
+                {profile.location && <p className="text-xs text-muted-foreground">{profile.location}</p>}
                 <div className="mt-2">
                   <TierBadge type={profile.member_type} />
                 </div>
@@ -113,23 +118,30 @@ export default async function HubLayout({ children }: { children: React.ReactNod
                     </span>
                   </Link>
                 )}
-                <dl className="mt-4 grid grid-cols-2 gap-2 border-t pt-3 text-center">
-                  <Link href="/network" className="rounded-lg py-1 hover:bg-muted">
-                    <dd className="font-display text-xl font-bold">{connections.count ?? 0}</dd>
-                    <dt className="text-xs text-muted-foreground">Connections</dt>
+                <div className="mt-3 border-t pt-2 text-xs font-semibold">
+                  <Link href="/network" className="flex justify-between rounded px-1 py-1 hover:bg-muted">
+                    <span className="text-muted-foreground">Connections</span>
+                    <span className="text-primary">{connections.count ?? 0}</span>
                   </Link>
-                  <Link href={`/members/${userId}`} className="rounded-lg py-1 hover:bg-muted">
-                    <dd className="font-display text-xl font-bold">{posts.count ?? 0}</dd>
-                    <dt className="text-xs text-muted-foreground">Posts</dt>
+                  <Link href={`/members/${userId}`} className="flex justify-between rounded px-1 py-1 hover:bg-muted">
+                    <span className="text-muted-foreground">Your posts</span>
+                    <span className="text-primary">{posts.count ?? 0}</span>
                   </Link>
-                </dl>
+                </div>
+                <div className="mt-2 space-y-0.5 border-t pt-2 text-xs font-semibold">
+                  {[["My network", "/network"], ["Messages", "/messages"], ["Groups", "/groups"], ["My business listings", "/businesses/mine"]].map(([label, href]) => (
+                    <Link key={href} href={href} className="block rounded px-1 py-1 hover:bg-muted">
+                      {label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           )}
 
           <section className={card}>
             <h2 className={railTitle}>Recent Articles</h2>
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               {ARTICLES.map((a) => (
                 <li key={a.href}>
                   <a href={a.href} target="_blank" rel="noreferrer" className="group flex items-center gap-3">
@@ -139,7 +151,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
                       loading="lazy"
                       className="cover h-11 w-11 shrink-0 rounded-lg object-cover transition-transform duration-200 group-hover:scale-105"
                     />
-                    <span className="line-clamp-2 text-sm leading-snug transition-colors group-hover:text-primary">{a.title}</span>
+                    <span className="line-clamp-2 text-xs font-semibold leading-snug transition-colors group-hover:text-primary">{a.title}</span>
                   </a>
                 </li>
               ))}
@@ -149,7 +161,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
           {businesses.length > 0 && (
             <section className={card}>
               <h2 className={railTitle}>Business List</h2>
-              <ul className="space-y-4">
+              <ul className="space-y-3">
                 {businesses.map((b) => (
                   <li key={b.id}>
                     <Link href={`/businesses?q=${encodeURIComponent(b.name)}`} className="group flex items-center gap-3">
@@ -175,9 +187,9 @@ export default async function HubLayout({ children }: { children: React.ReactNod
           )}
         </aside>
 
-        <main className="flex min-w-0 flex-col gap-4">{children}</main>
+        <main className="flex min-w-0 flex-col gap-2">{children}</main>
 
-        <aside className="hidden space-y-6 lg:block">
+        <aside className="rail hidden space-y-2 lg:block">
           <section className={card}>
             <h2 className={railTitle}>Follow Us on Social Media</h2>
             <div className="flex gap-2">
@@ -229,7 +241,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
       </div>
 
       <footer className="mt-8 border-t bg-white">
-        <div className="mx-auto grid max-w-[1240px] gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+        <div className="mx-auto grid max-w-[1128px] gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
             <Logo />
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">

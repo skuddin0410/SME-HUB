@@ -15,7 +15,7 @@
     --secondary: 220 30% 94%;
     --secondary-foreground: 222 47% 14%;
     --muted: 220 30% 94%;
-    --muted-foreground: 220 14% 42%;
+    --muted-foreground: 0 0% 40%;
     --accent: 220 30% 94%;
     --accent-foreground: 222 47% 14%;
     --destructive: 350 80% 50%;
@@ -28,7 +28,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     --ink: 224 64% 24%;
   }
   .dark {
@@ -69,13 +69,22 @@
 }
 
 @layer base {
-  body { font-family: "Figtree", ui-sans-serif, system-ui, sans-serif; }
-  h1, h2, h3, .font-display { font-family: "Bricolage Grotesque", "Figtree", ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.015em; }
+  /* Same family and scale LinkedIn uses: the device's own UI font, 14px body, 12px meta, 600 for emphasis. */
+  body {
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen,
+      "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857;
+    color: rgb(0 0 0 / 0.9);
+  }
+  h1, h2, h3, .font-display { font-family: inherit; font-weight: 600; letter-spacing: 0; }
   :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
 }
 
 @layer components {
-  .panel { @apply rounded-2xl border bg-card; box-shadow: 0 1px 2px rgb(22 48 122 / 0.05), 0 12px 32px -18px rgb(22 48 122 / 0.22); }
+  .panel { @apply rounded-lg border bg-card; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.02), 0 1px 2px rgb(22 48 122 / 0.06); }
+  .rail { @apply sticky self-start overflow-y-auto; top: 84px; max-height: calc(100vh - 96px); scrollbar-width: none; }
+  .rail::-webkit-scrollbar { display: none; }
   .field { @apply w-full rounded-xl border border-input bg-white px-3.5 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-4 focus:ring-primary/10; }
   .press { @apply transition active:scale-[0.97]; }
   .lift { @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-xl; }

@@ -26,12 +26,12 @@ export function PersonLine({ person, extra, size = 44 }: { person: Author; extra
       </Link>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <Link href={`/members/${person.id}`} className="truncate font-semibold leading-tight hover:underline">
+          <Link href={`/members/${person.id}`} className="truncate text-sm font-semibold leading-tight hover:underline">
             {person.full_name || "Member"}
           </Link>
           <TierBadge type={person.member_type} />
         </div>
-        <p className="truncate text-[13px] text-muted-foreground">{extra ?? (person.headline || "SMB Hub member")}</p>
+        <p className="truncate text-xs text-muted-foreground">{extra ?? (person.headline || "SMB Hub member")}</p>
       </div>
     </div>
   );
@@ -43,19 +43,19 @@ const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Co
 export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
   const own = post.author.id === viewer.userId;
   return (
-    <article className="panel overflow-hidden transition-shadow duration-200 hover:shadow-xl">
+    <article className="panel overflow-hidden">
       {post.pinned_at && (
         <p className="flex items-center gap-1.5 border-b bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900">
           <Pin className="h-3.5 w-3.5" /> Pinned by SMB Hub
         </p>
       )}
-      <div className="flex items-start justify-between gap-2 px-4 pt-4">
+      <div className="flex items-start justify-between gap-2 px-4 pt-3">
         <div className="flex min-w-0 items-center gap-3">
           <Link href={`/members/${post.author.id}`} className="shrink-0">
-            <AvatarImg person={post.author} size={46} />
+            <AvatarImg person={post.author} size={48} />
           </Link>
           <div className="min-w-0">
-            <p className="leading-snug">
+            <p className="text-sm leading-snug">
               <Link href={`/members/${post.author.id}`} className="font-semibold hover:underline">
                 {post.author.full_name || "Member"}
               </Link>{" "}
@@ -69,7 +69,8 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
                 </>
               )}
             </p>
-            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-muted-foreground">
+            {post.author.headline && <p className="truncate text-xs text-muted-foreground">{post.author.headline}</p>}
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
               <Link href={`/posts/${post.id}`} className="hover:underline">
                 {timeAgo(post.created_at)}
               </Link>
@@ -195,7 +196,7 @@ export function Pager({ page, hasMore, base }: { page: number; hasMore: boolean;
 export function Empty({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
     <div className="panel px-6 py-12 text-center">
-      <p className="font-display text-lg font-semibold">{title}</p>
+      <p className="text-base font-semibold">{title}</p>
       {children && <div className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">{children}</div>}
     </div>
   );
@@ -204,7 +205,7 @@ export function Empty({ title, children }: { title: string; children?: React.Rea
 export function PageTitle({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
-      <h1 className="text-2xl font-bold">{title}</h1>
+      <h1 className="text-xl font-semibold">{title}</h1>
       {children}
     </div>
   );

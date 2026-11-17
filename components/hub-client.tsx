@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { Flag, Heart, ImagePlus, Loader2, MessageCircle, Send, Share2, Trash2, X } from "lucide-react";
+import { CircleHelp, Flag, Heart, ImagePlus, Loader2, MessageCircle, Megaphone, Send, Share2, Trash2, Trophy, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
   addComment,
@@ -85,8 +85,8 @@ export function PostBody({ text }: { text: string }) {
   const long = text.length > 420 || text.split("\n").length > 7;
   const [open, setOpen] = useState(false);
   return (
-    <div className="px-4 py-3">
-      <p className={cx("whitespace-pre-wrap break-words text-[15px] leading-relaxed", long && !open && "line-clamp-5")}>{text}</p>
+    <div className="px-4 py-2">
+      <p className={cx("whitespace-pre-wrap break-words text-sm leading-5", long && !open && "line-clamp-5")}>{text}</p>
       {long && (
         <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-sm font-semibold text-primary hover:underline">
           {open ? "Show less" : "See more"}
@@ -239,10 +239,10 @@ export function Composer({
   }
 
   return (
-    <form ref={formRef} action={action} className="panel p-4">
+    <form ref={formRef} action={action} className="panel px-4 pb-1 pt-3">
       {groupId && <input type="hidden" name="group_id" value={groupId} />}
       <div className="flex gap-3">
-        <AvatarImg person={me} size={44} />
+        <AvatarImg person={me} size={48} />
         <textarea
           name="body"
           required
@@ -250,10 +250,36 @@ export function Composer({
           rows={open ? 4 : 1}
           onFocus={() => setOpen(true)}
           onChange={(e) => setCount(e.target.value.length)}
-          placeholder={kind === "update" ? (placeholder ?? KINDS.update.prompt) : KINDS[kind].prompt}
-          className="field resize-none !rounded-2xl transition-all duration-200"
+          placeholder={!open ? (placeholder ?? "Start a post") : kind === "update" ? (placeholder ?? KINDS.update.prompt) : KINDS[kind].prompt}
+          className={cx(
+            "field resize-none transition-all duration-200",
+            open ? "!rounded-xl" : "!rounded-full !py-3 font-semibold placeholder:text-foreground/60 hover:bg-muted",
+          )}
         />
       </div>
+      {!open && (
+        <div className="mt-2 flex justify-around">
+          {[
+            { label: "Photo", icon: ImagePlus, tone: "text-sky-600", run: () => fileRef.current?.click() },
+            { label: "Ask a question", icon: CircleHelp, tone: "text-blue-700", run: () => setKind("question") },
+            { label: "Share a win", icon: Trophy, tone: "text-amber-600", run: () => setKind("win") },
+            { label: "Post an offer", icon: Megaphone, tone: "text-emerald-600", run: () => setKind("offer") },
+          ].map(({ label, icon: Icon, tone, run }) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => {
+                setOpen(true);
+                run();
+              }}
+              className="press inline-flex items-center gap-2 rounded-md px-2 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-muted"
+            >
+              <Icon className={cx("h-5 w-5", tone)} />
+              <span className="hidden sm:inline">{label}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <input type="hidden" name="kind" value={kind} />
       {open && (
@@ -293,7 +319,7 @@ export function Composer({
       )}
       {state.error && <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.error}</p>}
 
-      <div className={cx("mt-3 flex flex-wrap items-center justify-between gap-2", !open && "hidden")}>
+      <div className={cx("mb-2 mt-3 flex flex-wrap items-center justify-between gap-2", !open && "hidden")}>
         <div className="flex items-center gap-2">
           <input
             ref={fileRef}
@@ -430,37 +456,63 @@ export function PostActions({
   };
 
   const actionClass =
-    "press inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground";
+    "press inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
 
   return (
-    <div className="border-t px-2 pb-2 pt-1">
-      <div className="flex items-center gap-1">
-        <button type="button" onClick={like} aria-pressed={liked} className={cx(actionClass, liked && "!text-rose-600")}>
-          <Heart key={popKey} className={cx("h-[18px] w-[18px]", liked && "fill-rose-600", popKey > 0 && liked && "animate-pop")} />
-          {likeCount > 0 ? likeCount : "Like"}
-        </button>
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={actionClass}>
-          <MessageCircle className="h-[18px] w-[18px]" />
-          {commentCount > 0 ? commentCount : "Comment"}
-        </button>
-        <button type="button" onClick={share} className={actionClass}>
-          <Share2 className="h-[18px] w-[18px]" />
-          Share
-        </button>
-        {!ownPost && me && (
-          <button type="button" onClick={() => setReporting((r) => !r)} className={cx(actionClass, "ml-auto")} aria-label="Report post">
-            <Flag className="h-4 w-4" />
+    <div>
+      <div className="flex min-h-[28px] items-center gap-3 px-4 pb-1.5 text-xs text-muted-foreground">
+        {likeCount > 0 && (
+          <span className="inline-flex items-center gap-1">
+            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-rose-600">
+              <Heart className="h-2.5 w-2.5 fill-white text-white" />
+            </span>
+            {likeCount}
+          </span>
+        )}
+        {commentCount > 0 && (
+          <button type="button" onClick={() => setOpen(true)} className="ml-auto hover:text-primary hover:underline">
+            {commentCount} {commentCount === 1 ? "comment" : "comments"}
           </button>
         )}
         {note && (
-          <span role="status" className="ml-auto animate-rise rounded-full bg-foreground px-3 py-1 text-xs font-medium text-white">
+          <span role="status" className={cx("animate-rise rounded-full bg-[hsl(var(--ink))] px-3 py-1 font-medium text-white", commentCount === 0 && "ml-auto")}>
             {note}
           </span>
         )}
       </div>
+      <div className="mx-3 flex items-center border-t py-1">
+        <button type="button" onClick={like} aria-pressed={liked} className={cx(actionClass, liked && "!text-rose-600")}>
+          <Heart key={popKey} className={cx("h-5 w-5", liked && "fill-rose-600", popKey > 0 && liked && "animate-pop")} />
+          Like
+        </button>
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={actionClass}>
+          <MessageCircle className="h-5 w-5" />
+          Comment
+        </button>
+        <button type="button" onClick={share} className={actionClass}>
+          <Share2 className="h-5 w-5" />
+          Share
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (needAccount()) return;
+            router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`);
+          }}
+          className={actionClass}
+        >
+          <Send className="h-5 w-5" />
+          Send
+        </button>
+        {!ownPost && me && (
+          <button type="button" onClick={() => setReporting((r) => !r)} className={cx(actionClass, "!flex-none px-3")} aria-label="Report post">
+            <Flag className="h-4 w-4" />
+          </button>
+        )}
+      </div>
 
       {reporting && (
-        <div className="mx-2 mb-2 flex animate-rise flex-wrap items-center gap-2 rounded-xl bg-muted p-3 text-sm">
+        <div className="mx-4 mb-2 flex animate-rise flex-wrap items-center gap-2 rounded-lg bg-muted p-3 text-sm">
           <span className="font-medium">What is wrong with this post?</span>
           {["Spam", "Harassment", "Inappropriate", "Misinformation"].map((r) => (
             <button
@@ -476,7 +528,7 @@ export function PostActions({
       )}
 
       {open && (
-        <div className="animate-rise space-y-3 px-2 pb-2 pt-2">
+        <div className="animate-rise space-y-3 px-4 pb-3 pt-2">
           {list === null && (
             <div className="space-y-2">
               <div className="skeleton h-10 w-3/4" />

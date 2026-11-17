@@ -57,7 +57,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           {kind ? "Be the first to post one." : "Be the first to share a win, a question or a lesson from your business."}
         </Empty>
       )}
-      <div className="stagger flex flex-col gap-4">
+      <div className="stagger flex flex-col gap-2">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} viewer={viewer} />
         ))}

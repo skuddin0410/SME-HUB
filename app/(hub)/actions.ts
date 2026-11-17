@@ -250,3 +250,64 @@ export async function adminDeleteGroup(groupId: string) {
   fail((await supabase.from("groups").delete().eq("id", groupId)).error);
   revalidatePath("/", "layout");
 }
+
+// ---------- messages ----------
+export async function sendMessage(recipientId: string, body: string) {
+  const { supabase, userId } = await requireUser();
+  const clean = body.trim().slice(0, 4000);
+  if (!clean) throw new Error("Empty message");
+  const { error } = await supabase.from("messages").insert({ sender_id: userId, recipient_id: recipientId, body: clean });
+  if (error) throw new Error("You can only message members you are connected with.");
+  revalidatePath("/messages");
+}
+
+// ---------- businesses ----------
+const LISTING_LIMIT: Record<Profile["member_type"], number> = { owner: 0, plus: 1, elite: 2, advisor: 3 };
+
+export async function saveBusiness(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase, userId, profile, isStaff } = await requireUser();
+  if (!profile) return { error: "Finish your profile first." };
+  const id = text(form, "id");
+  const name = text(form, "name");
+  if (!name) return { error: "Add the business name." };
+  const fields: Record<string, string> = {
+    name,
+    category: text(form, "category"),
+    description: text(form, "description"),
+    website: text(form, "website"),
+  };
+
+  const logo = form.get("logo");
+  if (logo instanceof File && logo.size > 0) {
+    if (!logo.type.startsWith("image/")) return { error: "The logo must be an image." };
+    if (logo.size > 2 * 1024 * 1024) return { error: "Logos can be up to 2 MB." };
+    const path = `${userId}/logo-${crypto.randomUUID()}`;
+    const { error } = await supabase.storage.from("media").upload(path, logo, { contentType: logo.type });
+    if (error) return { error: `Logo upload failed: ${error.message}` };
+    fields.logo_url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+  }
+
+  if (id) {
+    const { error } = await supabase.from("companies").update(fields).eq("id", id);
+    if (error) return { error: error.message };
+  } else {
+    const { count } = await supabase.from("companies").select("id", { count: "exact", head: true }).eq("owner_id", userId);
+    const limit = isStaff ? 99 : LISTING_LIMIT[profile.member_type];
+    if ((count ?? 0) >= limit) {
+      return {
+        error: limit === 0 ? "Business listings are part of the paid plans. See Upgrade to add yours." : `Your plan includes ${limit} business ${limit === 1 ? "listing" : "listings"}. Upgrade to add more.`,
+      };
+    }
+    const slug = `${slugify(name)}-${crypto.randomUUID().slice(0, 4)}`;
+    const { error } = await supabase.from("companies").insert({ ...fields, slug, owner_id: userId });
+    if (error) return { error: error.message };
+  }
+  revalidatePath("/", "layout");
+  redirect("/businesses/mine");
+}
+
+export async function deleteBusiness(companyId: string) {
+  const { supabase } = await requireUser();
+  fail((await supabase.from("companies").delete().eq("id", companyId)).error);
+  revalidatePath("/", "layout");
+}

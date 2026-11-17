@@ -22,6 +22,14 @@ Schema is ready but there are no screens yet for: company pages (`companies` tab
 - Search across people, groups and posts.
 - Admin panel at `/admin` (own login at `/admin/login`, staff accounts only): overview numbers and 14-day activity, member plans/status/roles, pin or delete posts, report queue, delete groups.
 
+## Round 5
+
+- LinkedIn's type system: the device's own UI font, 14px body, 12px meta, 600 for emphasis. No web fonts are downloaded.
+- LinkedIn's feed geometry: 1128px page, 225 / fluid / 300 columns, side rails fixed while the centre scrolls.
+- Post box with shortcuts, and a Like / Comment / Share / Send bar on every post.
+- Direct messages between connections (`/messages`), delivered live.
+- Members add and edit their own business listings (`/businesses/mine`); the number allowed follows the plan (Free 0, Plus 1, Elite 2, Advisor 3).
+
 ## Setup
 
 1. Create a Supabase project, open SQL Editor, paste and run `supabase/migrations/0001_hub_core.sql`.

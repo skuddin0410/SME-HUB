@@ -33,7 +33,11 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
 
   return (
     <>
-      <PageTitle title="Explore businesses" />
+      <PageTitle title="Explore businesses">
+        <Link href="/businesses/mine" className="press rounded-full border border-primary px-4 py-1.5 text-sm font-semibold text-primary hover:bg-primary/5">
+          List your business
+        </Link>
+      </PageTitle>
       <form className="panel flex flex-wrap gap-2 p-3">
         <input name="q" defaultValue={q} placeholder="Search for a business" aria-label="Search businesses" className="field min-w-[180px] flex-1" />
         <select name="category" defaultValue={category} aria-label="Category" className="rounded-xl border border-input bg-white px-3 text-sm">

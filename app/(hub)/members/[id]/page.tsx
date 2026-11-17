@@ -54,6 +54,11 @@ export default async function MemberPage({
                 </Link>
               ) : (
                 <>
+                  {link?.status === "accepted" && (
+                    <Link href={`/messages?with=${id}`} className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90">
+                      Message
+                    </Link>
+                  )}
                   <ConnectControl viewer={viewer} otherId={id} link={link} />
                   {userId && (
                     <form action={blockMember.bind(null, id)}>
@@ -65,7 +70,7 @@ export default async function MemberPage({
             </div>
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold">{member.full_name || "Member"}</h1>
+            <h1 className="text-2xl font-semibold">{member.full_name || "Member"}</h1>
             <TierBadge type={member.member_type} />
             {member.status === "suspended" && (
               <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[11px] font-semibold text-white">Suspended</span>
