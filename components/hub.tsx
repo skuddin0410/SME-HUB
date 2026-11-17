@@ -1,154 +1,198 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Lock, Pin, Trash2, UsersRound } from "lucide-react";
 import { MEMBER_TYPES, timeAgo, type Author, type Post, type Profile } from "@/lib/hub";
-import { createPost, deletePost, toggleLike } from "@/app/(hub)/actions";
-import { Heart, MessageCircle, Trash2, Flag } from "lucide-react";
+import { acceptConnection, deletePost, removeConnection, requestConnection } from "@/app/(hub)/actions";
+import { AvatarImg, PostActions, SubmitButton } from "@/components/hub-client";
 
-export const fieldClass =
-  "w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+export type Viewer = { userId: string | null; profile: Profile | null; isStaff: boolean };
 
-export function Avatar({ person, size = 40 }: { person: Pick<Profile, "full_name" | "avatar_url">; size?: number }) {
-  const style = { width: size, height: size };
-  return person.avatar_url ? (
-    <img src={person.avatar_url} alt="" style={style} className="shrink-0 rounded-full object-cover" />
-  ) : (
-    <div
-      style={{ ...style, fontSize: size * 0.4 }}
-      className="flex shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary"
-    >
-      {(person.full_name || "?").charAt(0).toUpperCase()}
-    </div>
-  );
+export function TierBadge({ type }: { type: Profile["member_type"] }) {
+  if (type === "owner") return null;
+  const tone = {
+    plus: "border border-foreground/20 text-foreground",
+    elite: "bg-foreground text-white",
+    advisor: "bg-amber-100 text-amber-900",
+  }[type];
+  return <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${tone}`}>{MEMBER_TYPES[type]}</span>;
 }
 
-export function PersonLine({ person, extra }: { person: Author; extra?: React.ReactNode }) {
+export function PersonLine({ person, extra, size = 44 }: { person: Author; extra?: React.ReactNode; size?: number }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <Link href={`/members/${person.id}`}>
-        <Avatar person={person} />
+      <Link href={`/members/${person.id}`} className="shrink-0">
+        <AvatarImg person={person} size={size} />
       </Link>
       <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href={`/members/${person.id}`} className="truncate font-semibold hover:underline">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <Link href={`/members/${person.id}`} className="truncate font-semibold leading-tight hover:underline">
             {person.full_name || "Member"}
           </Link>
-          {person.member_type !== "owner" && <Badge variant="secondary">{MEMBER_TYPES[person.member_type]}</Badge>}
+          <TierBadge type={person.member_type} />
         </div>
-        <p className="truncate text-xs text-muted-foreground">{extra ?? person.headline}</p>
+        <p className="truncate text-[13px] text-muted-foreground">{extra ?? (person.headline || "CanadianSME Hub member")}</p>
       </div>
     </div>
   );
 }
 
-export function Composer({ groupId, placeholder }: { groupId?: string; placeholder?: string }) {
-  return (
-    <Card className="p-4">
-      <form action={createPost} className="flex flex-col gap-3">
-        {groupId && <input type="hidden" name="group_id" value={groupId} />}
-        <textarea
-          name="body"
-          required
-          maxLength={5000}
-          rows={3}
-          placeholder={placeholder ?? "Share an update, a question or a win with the community"}
-          className={fieldClass}
-        />
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-3 text-sm">
-            <input type="file" name="image" accept="image/*" className="max-w-[220px] text-xs" />
-            {!groupId && (
-              <select name="visibility" defaultValue="public" className="rounded-md border bg-background px-2 py-1">
-                <option value="public">Public</option>
-                <option value="members">All members</option>
-                <option value="connections">My connections</option>
-                <option value="private">Only me</option>
-              </select>
-            )}
-          </div>
-          <Button type="submit" size="sm">
-            Post
-          </Button>
-        </div>
-      </form>
-    </Card>
-  );
-}
+const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Connections", private: "Only you" };
 
-export function PostCard({ post, meId, isStaff }: { post: Post; meId: string; isStaff?: boolean }) {
-  const where = post.group ? (
-    <>
-      {timeAgo(post.created_at)} in{" "}
-      <Link href={`/groups/${post.group.slug}`} className="hover:underline">
-        {post.group.name}
-      </Link>
-    </>
-  ) : (
-    `${timeAgo(post.created_at)}${post.visibility === "public" ? "" : ` · ${post.visibility}`}`
-  );
+export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
+  const own = post.author.id === viewer.userId;
   return (
-    <Card className="flex flex-col gap-3 p-4">
-      <div className="flex items-start justify-between gap-2">
-        <PersonLine person={post.author} extra={where} />
-        {(post.author.id === meId || isStaff) && (
+    <article className="panel overflow-hidden">
+      {post.pinned_at && (
+        <p className="flex items-center gap-1.5 border-b bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900">
+          <Pin className="h-3.5 w-3.5" /> Pinned by CanadianSME
+        </p>
+      )}
+      <div className="flex items-start justify-between gap-2 px-4 pt-4">
+        <PersonLine
+          person={post.author}
+          extra={
+            <>
+              {post.author.headline && <span className="hidden sm:inline">{post.author.headline}, </span>}
+              <Link href={`/posts/${post.id}`} className="hover:underline">
+                {timeAgo(post.created_at)}
+              </Link>
+              {post.group && (
+                <>
+                  {" in "}
+                  <Link href={`/groups/${post.group.slug}`} className="font-medium text-foreground hover:underline">
+                    {post.group.name}
+                  </Link>
+                </>
+              )}
+              {VISIBILITY_LABEL[post.visibility] && (
+                <span className="ml-1.5 inline-flex items-center gap-1 rounded-full bg-muted px-1.5 text-[11px]">
+                  <Lock className="h-2.5 w-2.5" />
+                  {VISIBILITY_LABEL[post.visibility]}
+                </span>
+              )}
+            </>
+          }
+        />
+        {(own || viewer.isStaff) && (
           <form action={deletePost.bind(null, post.id)}>
-            <Button type="submit" variant="ghost" size="icon" title="Delete post">
+            <button
+              type="submit"
+              title="Delete post"
+              aria-label="Delete post"
+              className="press rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-primary"
+            >
               <Trash2 className="h-4 w-4" />
-            </Button>
+            </button>
           </form>
         )}
       </div>
-      <p className="whitespace-pre-wrap break-words text-sm">{post.body}</p>
-      {post.image_url && <img src={post.image_url} alt="" className="max-h-[480px] w-full rounded-md object-cover" />}
-      <div className="flex items-center gap-1 border-t pt-2 text-sm">
-        <form action={toggleLike.bind(null, post.id, post.likedByMe)}>
-          <Button type="submit" variant="ghost" size="sm" className="gap-1.5">
-            <Heart className={`h-4 w-4 ${post.likedByMe ? "fill-red-500 text-red-500" : ""}`} />
-            {post.likes}
-          </Button>
+      <p className="whitespace-pre-wrap break-words px-4 py-3 text-[15px] leading-relaxed">{post.body}</p>
+      {post.image_url && <img src={post.image_url} alt="" loading="lazy" className="max-h-[520px] w-full object-cover" />}
+      <PostActions
+        postId={post.id}
+        likes={post.likes}
+        comments={post.comments}
+        likedByMe={post.likedByMe}
+        me={viewer.profile ? { id: viewer.profile.id, full_name: viewer.profile.full_name, avatar_url: viewer.profile.avatar_url } : null}
+        isStaff={viewer.isStaff}
+        ownPost={own}
+        startOpen={startOpen}
+      />
+    </article>
+  );
+}
+
+export type Link_ = { requester_id: string; status: "pending" | "accepted" } | null | undefined;
+
+/** Connect / Accept / Pending / Connected, depending on where two members stand. */
+export function ConnectControl({ viewer, otherId, link }: { viewer: Viewer; otherId: string; link: Link_ }) {
+  if (viewer.userId === otherId) return null;
+  if (!viewer.userId) {
+    return (
+      <Link href="/auth/login" className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white">
+        Connect
+      </Link>
+    );
+  }
+  if (!link) {
+    return (
+      <form action={requestConnection.bind(null, otherId)}>
+        <SubmitButton>Connect</SubmitButton>
+      </form>
+    );
+  }
+  if (link.status === "pending" && link.requester_id === otherId) {
+    return (
+      <div className="flex flex-wrap justify-center gap-2">
+        <form action={acceptConnection.bind(null, otherId)}>
+          <SubmitButton>Accept</SubmitButton>
         </form>
-        <Button asChild variant="ghost" size="sm" className="gap-1.5">
-          <Link href={`/posts/${post.id}`}>
-            <MessageCircle className="h-4 w-4" />
-            {post.comments}
-          </Link>
-        </Button>
-        {post.author.id !== meId && (
-          <Button asChild variant="ghost" size="sm" className="ml-auto gap-1.5 text-muted-foreground">
-            <Link href={`/posts/${post.id}?report=1`}>
-              <Flag className="h-4 w-4" />
-              Report
-            </Link>
-          </Button>
-        )}
+        <form action={removeConnection.bind(null, otherId)}>
+          <SubmitButton tone="outline">Decline</SubmitButton>
+        </form>
       </div>
-    </Card>
+    );
+  }
+  return (
+    <form action={removeConnection.bind(null, otherId)}>
+      <SubmitButton tone="outline">{link.status === "accepted" ? "Connected" : "Request sent"}</SubmitButton>
+    </form>
+  );
+}
+
+export function GroupLine({ group }: { group: { slug: string; name: string; is_private: boolean; members: number } }) {
+  return (
+    <Link href={`/groups/${group.slug}`} className="group flex items-center gap-3">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-white">
+        <UsersRound className="h-5 w-5" />
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-semibold group-hover:underline">{group.name}</span>
+        <span className="block text-xs text-muted-foreground">
+          {group.members} {group.members === 1 ? "member" : "members"}
+          {group.is_private ? ", private" : ""}
+        </span>
+      </span>
+    </Link>
   );
 }
 
 export function Pager({ page, hasMore, base }: { page: number; hasMore: boolean; base: string }) {
   if (page === 1 && !hasMore) return null;
   const sep = base.includes("?") ? "&" : "?";
+  const cls = "press rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold hover:bg-muted";
   return (
     <div className="flex justify-between">
       {page > 1 ? (
-        <Button asChild variant="outline" size="sm">
-          <Link href={`${base}${sep}page=${page - 1}`}>Newer</Link>
-        </Button>
+        <Link href={`${base}${sep}page=${page - 1}`} className={cls}>
+          Newer
+        </Link>
       ) : (
         <span />
       )}
       {hasMore && (
-        <Button asChild variant="outline" size="sm">
-          <Link href={`${base}${sep}page=${page + 1}`}>Older</Link>
-        </Button>
+        <Link href={`${base}${sep}page=${page + 1}`} className={cls}>
+          Show older
+        </Link>
       )}
     </div>
   );
 }
 
-export function Empty({ children }: { children: React.ReactNode }) {
-  return <Card className="p-8 text-center text-sm text-muted-foreground">{children}</Card>;
+export function Empty({ title, children }: { title: string; children?: React.ReactNode }) {
+  return (
+    <div className="panel px-6 py-12 text-center">
+      <p className="font-display text-lg font-semibold">{title}</p>
+      {children && <div className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">{children}</div>}
+    </div>
+  );
+}
+
+export function PageTitle({ title, children }: { title: string; children?: React.ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-3">
+      <h1 className="text-2xl font-bold">{title}</h1>
+      {children}
+    </div>
+  );
 }

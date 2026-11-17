@@ -14,6 +14,14 @@ A LinkedIn-style networking hub for small business owners. Next.js (App Router) 
 
 Schema is ready but there are no screens yet for: company pages (`companies` table), paid plans (`profiles.member_type`).
 
+## Round 2
+
+- The hub is open: anyone can browse the feed, members, groups and profiles. Sign in and Join free sit at the top right; posting, liking, commenting and connecting ask for an account.
+- CanadianSME look: navy and red, three-column layout on desktop, bottom tab bar on mobile.
+- Likes, comments, sharing and reporting happen in place on each post, with no page reload.
+- Search across people, groups and posts.
+- Admin panel at `/admin` (own login at `/admin/login`, staff accounts only): overview numbers and 14-day activity, member plans/status/roles, pin or delete posts, report queue, delete groups.
+
 ## Setup
 
 1. Create a Supabase project, open SQL Editor, paste and run `supabase/migrations/0001_hub_core.sql`.

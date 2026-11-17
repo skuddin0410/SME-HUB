@@ -1,6 +1,7 @@
 "use server";
 
-import { getMe, slugify } from "@/lib/hub";
+import { AUTHOR_FIELDS, requireStaff, requireUser, slugify, type CommentRow, type Profile } from "@/lib/hub";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -10,79 +11,93 @@ function fail(error: { message: string } | null) {
   if (error) throw new Error(error.message);
 }
 
+export type FormState = { error?: string; ok?: number };
+
 // ---------- posts ----------
-export async function createPost(form: FormData) {
-  const { supabase, userId } = await getMe();
+export async function createPost(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase, userId } = await requireUser();
   const body = text(form, "body");
-  if (!body) return;
+  if (!body) return { error: "Write something before posting." };
   const visibility = text(form, "visibility") || "public";
   const groupId = text(form, "group_id") || null;
   let image_url: string | null = null;
 
   const image = form.get("image");
   if (image instanceof File && image.size > 0) {
-    if (!image.type.startsWith("image/") || image.size > 5 * 1024 * 1024) {
-      throw new Error("Images only, up to 5 MB.");
-    }
+    if (!image.type.startsWith("image/")) return { error: "That file is not an image." };
+    if (image.size > 5 * 1024 * 1024) return { error: "Images can be up to 5 MB." };
     const ext = image.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
     const path = `${userId}/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from("media").upload(path, image, { contentType: image.type });
-    fail(error);
+    if (error) return { error: `Image upload failed: ${error.message}` };
     image_url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
   }
 
   const { error } = await supabase
     .from("posts")
     .insert({ author_id: userId, body, visibility, group_id: groupId, image_url });
-  fail(error);
+  if (error) return { error: error.message };
   revalidatePath("/", "layout");
+  return { ok: Date.now() };
 }
 
 export async function deletePost(postId: string) {
-  const { supabase } = await getMe();
+  const { supabase } = await requireUser();
   fail((await supabase.from("posts").delete().eq("id", postId)).error);
   revalidatePath("/", "layout");
 }
 
+/** Called from the like button, which already shows the new state. */
 export async function toggleLike(postId: string, liked: boolean) {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   const { error } = liked
     ? await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", userId)
     : await supabase.from("reactions").upsert({ post_id: postId, user_id: userId }, { ignoreDuplicates: true });
   fail(error);
-  revalidatePath("/", "layout");
 }
 
-export async function addComment(postId: string, form: FormData) {
-  const { supabase, userId } = await getMe();
-  const body = text(form, "body");
-  if (!body) return;
-  fail((await supabase.from("comments").insert({ post_id: postId, author_id: userId, body })).error);
-  revalidatePath(`/posts/${postId}`);
+export async function loadComments(postId: string): Promise<CommentRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("comments")
+    .select(`id, body, created_at, author:profiles!comments_author_id_fkey(${AUTHOR_FIELDS})`)
+    .eq("post_id", postId)
+    .order("created_at");
+  return (data ?? []) as unknown as CommentRow[];
 }
 
-export async function deleteComment(commentId: string, postId: string) {
-  const { supabase } = await getMe();
+export async function addComment(postId: string, body: string): Promise<CommentRow> {
+  const { supabase, userId } = await requireUser();
+  const clean = body.trim().slice(0, 2000);
+  if (!clean) throw new Error("Empty comment");
+  const { data, error } = await supabase
+    .from("comments")
+    .insert({ post_id: postId, author_id: userId, body: clean })
+    .select(`id, body, created_at, author:profiles!comments_author_id_fkey(${AUTHOR_FIELDS})`)
+    .single();
+  fail(error);
+  return data as unknown as CommentRow;
+}
+
+export async function deleteComment(commentId: string) {
+  const { supabase } = await requireUser();
   fail((await supabase.from("comments").delete().eq("id", commentId)).error);
-  revalidatePath(`/posts/${postId}`);
 }
 
-export async function reportPost(postId: string, form: FormData) {
-  const { supabase, userId } = await getMe();
-  const reason = text(form, "reason") || "other";
+export async function reportPost(postId: string, reason: string) {
+  const { supabase, userId } = await requireUser();
   fail((await supabase.from("reports").insert({ reporter_id: userId, post_id: postId, reason })).error);
-  redirect(`/posts/${postId}?reported=1`);
 }
 
 // ---------- connections ----------
 export async function requestConnection(otherId: string) {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   fail((await supabase.from("connections").insert({ requester_id: userId, addressee_id: otherId })).error);
   revalidatePath("/", "layout");
 }
 
 export async function acceptConnection(requesterId: string) {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   const { error } = await supabase
     .from("connections")
     .update({ status: "accepted" })
@@ -94,7 +109,7 @@ export async function acceptConnection(requesterId: string) {
 
 /** Declines a request, cancels one you sent, or removes an existing connection. */
 export async function removeConnection(otherId: string) {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   const { error } = await supabase
     .from("connections")
     .delete()
@@ -106,7 +121,7 @@ export async function removeConnection(otherId: string) {
 }
 
 export async function blockMember(otherId: string) {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   fail(
     (await supabase.from("blocks").upsert({ blocker_id: userId, blocked_id: otherId }, { ignoreDuplicates: true }))
       .error,
@@ -117,7 +132,7 @@ export async function blockMember(otherId: string) {
 
 // ---------- groups ----------
 export async function createGroup(form: FormData) {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   const name = text(form, "name");
   if (!name) return;
   const slug = `${slugify(name)}-${crypto.randomUUID().slice(0, 4)}`;
@@ -133,23 +148,23 @@ export async function createGroup(form: FormData) {
 }
 
 export async function joinGroup(groupId: string) {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   fail(
     (await supabase.from("group_members").upsert({ group_id: groupId, user_id: userId }, { ignoreDuplicates: true }))
       .error,
   );
-  revalidatePath("/groups", "layout");
+  revalidatePath("/", "layout");
 }
 
 export async function leaveGroup(groupId: string) {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   fail((await supabase.from("group_members").delete().eq("group_id", groupId).eq("user_id", userId)).error);
-  revalidatePath("/groups", "layout");
+  revalidatePath("/", "layout");
 }
 
 // ---------- profile ----------
-export async function updateProfile(form: FormData) {
-  const { supabase, userId } = await getMe();
+export async function updateProfile(_prev: FormState, form: FormData): Promise<FormState> {
+  const { supabase, userId } = await requireUser();
   const update: Record<string, string> = {
     full_name: text(form, "full_name"),
     headline: text(form, "headline"),
@@ -157,26 +172,26 @@ export async function updateProfile(form: FormData) {
     location: text(form, "location"),
     website: text(form, "website"),
   };
-  if (!update.full_name) throw new Error("Name is required.");
+  if (!update.full_name) return { error: "Add your name so people can find you." };
 
   const avatar = form.get("avatar");
   if (avatar instanceof File && avatar.size > 0) {
-    if (!avatar.type.startsWith("image/") || avatar.size > 2 * 1024 * 1024) {
-      throw new Error("Profile photo must be an image up to 2 MB.");
-    }
+    if (!avatar.type.startsWith("image/")) return { error: "The profile photo must be an image." };
+    if (avatar.size > 2 * 1024 * 1024) return { error: "Profile photos can be up to 2 MB." };
     const path = `${userId}/avatar-${crypto.randomUUID()}`;
     const { error } = await supabase.storage.from("media").upload(path, avatar, { contentType: avatar.type });
-    fail(error);
+    if (error) return { error: `Photo upload failed: ${error.message}` };
     update.avatar_url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
   }
 
-  fail((await supabase.from("profiles").update(update).eq("id", userId)).error);
+  const { error } = await supabase.from("profiles").update(update).eq("id", userId);
+  if (error) return { error: error.message };
+  revalidatePath("/", "layout");
   redirect(`/members/${userId}`);
 }
 
-// ---------- notifications & moderation ----------
 export async function markNotificationsRead() {
-  const { supabase, userId } = await getMe();
+  const { supabase, userId } = await requireUser();
   const { error } = await supabase
     .from("notifications")
     .update({ read_at: new Date().toISOString() })
@@ -186,18 +201,50 @@ export async function markNotificationsRead() {
   revalidatePath("/", "layout");
 }
 
-export async function resolveReport(reportId: string, removePostId: string | null) {
-  const { supabase, profile } = await getMe();
-  if (profile?.role === "member") throw new Error("Not allowed.");
+// ---------- admin ----------
+export async function adminResolveReport(reportId: string, removePostId: string | null) {
+  const { supabase } = await requireStaff();
   if (removePostId) fail((await supabase.from("posts").delete().eq("id", removePostId)).error);
-  // if the post was removed the report row is deleted with it, so this update is a no-op then
+  // when the post is removed its reports go with it, so this update then touches nothing
   fail((await supabase.from("reports").update({ status: "resolved" }).eq("id", reportId)).error);
-  revalidatePath("/admin/reports");
+  revalidatePath("/", "layout");
 }
 
-export async function setMemberStatus(memberId: string, status: "active" | "suspended") {
-  const { supabase, profile } = await getMe();
-  if (profile?.role === "member") throw new Error("Not allowed.");
-  fail((await supabase.from("profiles").update({ status }).eq("id", memberId)).error);
+export async function adminUpdateMember(memberId: string, form: FormData) {
+  const { supabase, profile } = await requireStaff();
+  const update: Partial<Pick<Profile, "member_type" | "status" | "role">> = {};
+  const memberType = text(form, "member_type");
+  const status = text(form, "status");
+  const role = text(form, "role");
+  if (["owner", "plus", "elite", "advisor"].includes(memberType)) update.member_type = memberType as Profile["member_type"];
+  if (["active", "suspended"].includes(status)) update.status = status as Profile["status"];
+  // only admins change roles, and nobody changes their own
+  if (profile.role === "admin" && memberId !== profile.id && ["member", "moderator", "admin"].includes(role)) {
+    update.role = role as Profile["role"];
+  }
+  if (Object.keys(update).length === 0) return;
+  fail((await supabase.from("profiles").update(update).eq("id", memberId)).error);
+  revalidatePath("/", "layout");
+}
+
+export async function adminDeletePost(postId: string) {
+  const { supabase } = await requireStaff();
+  fail((await supabase.from("posts").delete().eq("id", postId)).error);
+  revalidatePath("/", "layout");
+}
+
+export async function adminPinPost(postId: string, pin: boolean) {
+  const { supabase } = await requireStaff();
+  const { error } = await supabase
+    .from("posts")
+    .update({ pinned_at: pin ? new Date().toISOString() : null })
+    .eq("id", postId);
+  fail(error);
+  revalidatePath("/", "layout");
+}
+
+export async function adminDeleteGroup(groupId: string) {
+  const { supabase } = await requireStaff();
+  fail((await supabase.from("groups").delete().eq("id", groupId)).error);
   revalidatePath("/", "layout");
 }

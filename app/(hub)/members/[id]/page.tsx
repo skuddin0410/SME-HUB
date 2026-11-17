@@ -1,17 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchPosts, getMe, MEMBER_TYPES, PAGE_SIZE, type Profile } from "@/lib/hub";
-import { Avatar, Empty, Pager, PostCard } from "@/components/hub";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import {
-  acceptConnection,
-  blockMember,
-  removeConnection,
-  requestConnection,
-  setMemberStatus,
-} from "@/app/(hub)/actions";
+import { CalendarDays, Globe, MapPin } from "lucide-react";
+import { fetchPosts, getViewer, PAGE_SIZE, type Profile } from "@/lib/hub";
+import { ConnectControl, Empty, Pager, PostCard, TierBadge, type Link_ } from "@/components/hub";
+import { AvatarImg, SubmitButton } from "@/components/hub-client";
+import { blockMember } from "@/app/(hub)/actions";
 
 export default async function MemberPage({
   params,
@@ -21,113 +14,99 @@ export default async function MemberPage({
   searchParams: Promise<{ page?: string }>;
 }) {
   const { id } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const page = Number((await searchParams).page) || 1;
-  const { supabase, userId, profile: me } = await getMe();
-  const isStaff = me?.role !== "member";
+  const viewer = await getViewer();
+  const { supabase, userId } = viewer;
 
   const { data } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle();
   const member = data as Profile | null;
   if (!member) notFound();
   const isMe = id === userId;
 
-  const [{ data: link }, { count: connectionCount }, posts] = await Promise.all([
-    supabase
-      .from("connections")
-      .select("requester_id, status")
-      .or(`and(requester_id.eq.${userId},addressee_id.eq.${id}),and(requester_id.eq.${id},addressee_id.eq.${userId})`)
-      .maybeSingle(),
-    isMe
+  const [linkRes, posts] = await Promise.all([
+    userId && !isMe
       ? supabase
           .from("connections")
-          .select("requester_id", { count: "exact", head: true })
-          .eq("status", "accepted")
-      : Promise.resolve({ count: null }),
+          .select("requester_id, status")
+          .or(`and(requester_id.eq.${userId},addressee_id.eq.${id}),and(requester_id.eq.${id},addressee_id.eq.${userId})`)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
     fetchPosts(supabase, userId, { authorId: id, page }),
   ]);
+  const link = linkRes.data as Link_;
+  const site = member.website && (member.website.startsWith("http") ? member.website : `https://${member.website}`);
+  const fact = "inline-flex items-center gap-1.5";
 
   return (
     <>
-      <Card className="flex flex-col gap-4 p-6">
-        <div className="flex items-start gap-4">
-          <Avatar person={member} size={80} />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-xl font-bold">{member.full_name || "Member"}</h1>
-              <Badge variant="secondary">{MEMBER_TYPES[member.member_type]}</Badge>
-              {member.status === "suspended" && <Badge variant="destructive">Suspended</Badge>}
+      <section className="panel overflow-hidden">
+        <div className="h-28" style={{ background: "linear-gradient(120deg, hsl(var(--ink)) 55%, hsl(var(--primary)) 160%)" }} />
+        <div className="px-5 pb-5">
+          <div className="-mt-12 flex items-end justify-between gap-3">
+            <span className="rounded-full ring-4 ring-white">
+              <AvatarImg person={member} size={104} />
+            </span>
+            <div className="flex flex-wrap justify-end gap-2 pb-1">
+              {isMe ? (
+                <Link href="/profile/edit" className="press rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold hover:bg-muted">
+                  Edit profile
+                </Link>
+              ) : (
+                <>
+                  <ConnectControl viewer={viewer} otherId={id} link={link} />
+                  {userId && (
+                    <form action={blockMember.bind(null, id)}>
+                      <SubmitButton tone="ghost">Block</SubmitButton>
+                    </form>
+                  )}
+                </>
+              )}
             </div>
-            {member.headline && <p className="text-sm">{member.headline}</p>}
-            <p className="text-xs text-muted-foreground">
-              {[member.location, `Joined ${new Date(member.created_at).toLocaleDateString("en-CA", { year: "numeric", month: "short" })}`]
-                .filter(Boolean)
-                .join(" · ")}
-              {isMe && connectionCount !== null ? ` · ${connectionCount} connections` : ""}
-            </p>
-            {member.website && (
-              <a
-                href={member.website.startsWith("http") ? member.website : `https://${member.website}`}
-                target="_blank"
-                rel="noreferrer nofollow"
-                className="text-xs text-primary underline"
-              >
-                {member.website}
-              </a>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-bold">{member.full_name || "Member"}</h1>
+            <TierBadge type={member.member_type} />
+            {member.status === "suspended" && (
+              <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-white">Suspended</span>
             )}
           </div>
-        </div>
-        {member.bio && <p className="whitespace-pre-wrap text-sm">{member.bio}</p>}
-
-        <div className="flex flex-wrap gap-2">
-          {isMe && (
-            <Button asChild size="sm" variant="outline">
-              <Link href="/profile/edit">Edit profile</Link>
-            </Button>
-          )}
-          {!isMe && !link && (
-            <form action={requestConnection.bind(null, id)}>
-              <Button type="submit" size="sm">
-                Connect
-              </Button>
-            </form>
-          )}
-          {!isMe && link?.status === "pending" && link.requester_id === id && (
-            <form action={acceptConnection.bind(null, id)}>
-              <Button type="submit" size="sm">
-                Accept request
-              </Button>
-            </form>
-          )}
-          {!isMe && link && (
-            <form action={removeConnection.bind(null, id)}>
-              <Button type="submit" size="sm" variant="outline">
-                {link.status === "accepted"
-                  ? "Remove connection"
-                  : link.requester_id === userId
-                    ? "Cancel request"
-                    : "Decline"}
-              </Button>
-            </form>
-          )}
-          {!isMe && (
-            <form action={blockMember.bind(null, id)}>
-              <Button type="submit" size="sm" variant="ghost" className="text-muted-foreground">
-                Block
-              </Button>
-            </form>
-          )}
-          {!isMe && isStaff && (
-            <form action={setMemberStatus.bind(null, id, member.status === "active" ? "suspended" : "active")}>
-              <Button type="submit" size="sm" variant="destructive">
-                {member.status === "active" ? "Suspend member" : "Reinstate member"}
-              </Button>
-            </form>
+          {member.headline && <p className="mt-0.5 text-[15px]">{member.headline}</p>}
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-muted-foreground">
+            {member.location && (
+              <span className={fact}>
+                <MapPin className="h-3.5 w-3.5" />
+                {member.location}
+              </span>
+            )}
+            {site && (
+              <a href={site} target="_blank" rel="noreferrer nofollow" className={`${fact} text-primary hover:underline`}>
+                <Globe className="h-3.5 w-3.5" />
+                {member.website.replace(/^https?:\/\//, "")}
+              </a>
+            )}
+            <span className={fact}>
+              <CalendarDays className="h-3.5 w-3.5" />
+              Joined {new Date(member.created_at).toLocaleDateString("en-CA", { year: "numeric", month: "long" })}
+            </span>
+          </div>
+          {member.bio && (
+            <div className="mt-4 border-t pt-4">
+              <h2 className="mb-1 text-[15px] font-semibold">About</h2>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">{member.bio}</p>
+            </div>
           )}
         </div>
-      </Card>
+      </section>
 
-      {posts.length === 0 && <Empty>No posts to show.</Empty>}
+      <h2 className="mt-2 text-lg font-semibold">Posts</h2>
+      {posts.length === 0 && (
+        <Empty title={isMe ? "You have not posted yet" : "Nothing posted yet"}>
+          {isMe ? "Head to the feed and share your first update." : "When this member posts, it will show up here."}
+        </Empty>
+      )}
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} meId={userId} isStaff={isStaff} />
+        <PostCard key={post.id} post={post} viewer={viewer} />
       ))}
       <Pager page={page} hasMore={posts.length === PAGE_SIZE} base={`/members/${id}`} />
     </>

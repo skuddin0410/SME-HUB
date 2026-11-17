@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { getMe } from "@/lib/hub";
-import { Empty, fieldClass } from "@/components/hub";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Lock, UsersRound } from "lucide-react";
+import { getViewer } from "@/lib/hub";
+import { Empty, PageTitle } from "@/components/hub";
+import { SubmitButton } from "@/components/hub-client";
 import { createGroup } from "@/app/(hub)/actions";
 
 type Group = {
@@ -16,7 +15,7 @@ type Group = {
 };
 
 export default async function GroupsPage() {
-  const { supabase } = await getMe();
+  const { supabase, userId } = await getViewer();
   const { data } = await supabase
     .from("groups")
     .select("id, slug, name, description, is_private, group_members(count)")
@@ -25,34 +24,53 @@ export default async function GroupsPage() {
 
   return (
     <>
-      <h1 className="text-xl font-bold">Groups</h1>
-      {groups.length === 0 && <Empty>No groups yet. Start the first one below.</Empty>}
-      {groups.map((g) => (
-        <Card key={g.id} className="p-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <Link href={`/groups/${g.slug}`} className="font-semibold hover:underline">
-              {g.name}
+      <PageTitle title="Groups" />
+      {groups.length === 0 && (
+        <Empty title="No groups yet">Start the first one for your industry, your city or a topic you care about.</Empty>
+      )}
+      <div className="grid gap-4 sm:grid-cols-2">
+        {groups.map((g) => {
+          const count = g.group_members[0]?.count ?? 0;
+          return (
+            <Link key={g.id} href={`/groups/${g.slug}`} className="panel group flex flex-col p-4 transition-shadow hover:shadow-lg">
+              <div className="flex items-start gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-foreground text-white">
+                  <UsersRound className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="truncate text-base font-semibold group-hover:underline">{g.name}</h2>
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    {g.is_private && <Lock className="h-3 w-3" />}
+                    {g.is_private ? "Private group" : "Public group"}, {count} {count === 1 ? "member" : "members"}
+                  </p>
+                </div>
+              </div>
+              {g.description && <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{g.description}</p>}
             </Link>
-            <Badge variant="secondary">{g.is_private ? "Private" : "Public"}</Badge>
-            <span className="text-xs text-muted-foreground">{g.group_members[0]?.count ?? 0} members</span>
-          </div>
-          {g.description && <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{g.description}</p>}
-        </Card>
-      ))}
+          );
+        })}
+      </div>
 
-      <Card className="p-4">
-        <h2 className="mb-3 font-semibold">Start a group</h2>
-        <form action={createGroup} className="flex flex-col gap-3">
-          <input name="name" required maxLength={80} placeholder="Group name" className={fieldClass} />
-          <textarea name="description" rows={2} maxLength={500} placeholder="What is this group about?" className={fieldClass} />
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" name="is_private" /> Private (only members see posts)
-          </label>
-          <Button type="submit" size="sm" className="self-start">
-            Create group
-          </Button>
-        </form>
-      </Card>
+      {userId ? (
+        <details className="panel p-4">
+          <summary className="cursor-pointer text-[15px] font-semibold">Start a new group</summary>
+          <form action={createGroup} className="mt-4 flex animate-rise flex-col gap-3">
+            <input name="name" required maxLength={80} placeholder="Group name" aria-label="Group name" className="field" />
+            <textarea name="description" rows={2} maxLength={500} placeholder="What is this group about?" aria-label="Description" className="field" />
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" name="is_private" className="h-4 w-4 accent-[hsl(var(--primary))]" /> Private: only members see the posts
+            </label>
+            <SubmitButton className="self-start">Create group</SubmitButton>
+          </form>
+        </details>
+      ) : (
+        <p className="text-center text-sm text-muted-foreground">
+          <Link href="/auth/sign-up" className="font-semibold text-primary hover:underline">
+            Join free
+          </Link>{" "}
+          to start your own group.
+        </p>
+      )}
     </>
   );
 }
