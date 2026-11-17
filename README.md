@@ -37,6 +37,11 @@ Schema is ready but there are no screens yet for: company pages (`companies` tab
 - Posts: icon-and-count action row, a Connect shortcut and a "..." menu (copy link, report, delete) in the header.
 - Header: Network, Messaging, Notifications and Me as icon-over-label items with counts.
 
+## Round 7
+
+- Sign in and Join share one landing page (`/auth/login`, `/auth/sign-up`): header with browse links, large headline, a form that switches between the two modes in place, a live showcase of hub cards, topic links and a closing band with member counts.
+- Join collects the full name and shows password strength; the confirmation email lands on `/auth/callback`, which signs the member in.
+
 ## Setup
 
 1. Create a Supabase project, open SQL Editor, paste and run `supabase/migrations/0001_hub_core.sql`.

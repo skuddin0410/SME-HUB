@@ -1,11 +1,9 @@
-import { LoginForm } from "@/components/login-form";
+import { AuthLanding } from "@/components/auth-landing";
+import { landingData } from "@/lib/landing";
 
-export default function Page() {
-  return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <LoginForm />
-      </div>
-    </div>
-  );
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
+  const { stats, people } = await landingData();
+  return <AuthLanding initialMode="signin" stats={stats} people={people} />;
 }
