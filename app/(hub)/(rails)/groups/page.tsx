@@ -21,10 +21,24 @@ export default async function GroupsPage() {
     .select("id, slug, name, description, is_private, group_members(count)")
     .order("name");
   const groups = (data ?? []) as unknown as Group[];
+  const { data: invites } = userId ? await supabase.from("group_invites").select("group_id").eq("user_id", userId) : { data: [] };
+  const invitedTo = new Set((invites ?? []).map((i) => i.group_id as string));
+  const waiting = groups.filter((g) => invitedTo.has(g.id));
 
   return (
     <>
       <PageTitle title="Groups" />
+      {waiting.length > 0 && (
+        <section className="panel border-primary/40 bg-primary/5">
+          <h2 className="px-4 py-3 text-base font-semibold">You have been invited ({waiting.length})</h2>
+          {waiting.map((g) => (
+            <Link key={g.id} href={`/groups/${g.slug}`} className="flex items-center justify-between gap-3 border-t px-4 py-3 text-sm transition-colors hover:bg-primary/10">
+              <span className="font-semibold">{g.name}</span>
+              <span className="rounded-full bg-primary px-4 py-1.5 font-semibold text-white">View invitation</span>
+            </Link>
+          ))}
+        </section>
+      )}
       {groups.length === 0 && (
         <Empty title="No groups yet">Start the first one for your industry, your city or a topic you care about.</Empty>
       )}

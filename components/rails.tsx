@@ -7,7 +7,7 @@ import { AvatarImg, Cover } from "@/components/hub-client";
 import { GroupLine, TierBadge } from "@/components/hub";
 
 type GroupRow = { slug: string; name: string; is_private: boolean; group_members: { count: number }[] };
-type Company = { id: string; name: string; category: string; logo_url: string | null };
+type Company = { id: string; slug: string; name: string; category: string; logo_url: string | null };
 
 const SOCIALS = [
   { label: "Facebook", href: SOCIAL.facebook, icon: Facebook },
@@ -126,7 +126,7 @@ export function ArticlesCard() {
 
 export async function BusinessCard() {
   const { supabase } = await getViewer();
-  const { data } = await supabase.from("companies").select("id, name, category, logo_url").order("created_at", { ascending: false }).limit(5);
+  const { data } = await supabase.from("companies").select("id, slug, name, category, logo_url").order("created_at", { ascending: false }).limit(5);
   const businesses = (data ?? []) as Company[];
   if (businesses.length === 0) return null;
   return (
@@ -135,7 +135,7 @@ export async function BusinessCard() {
       <ul className="space-y-3">
         {businesses.map((b) => (
           <li key={b.id}>
-            <Link href={`/businesses?q=${encodeURIComponent(b.name)}`} className="group flex items-center gap-3">
+            <Link href={`/businesses/${b.slug}`} className="group flex items-center gap-3">
               {b.logo_url ? (
                 <img src={b.logo_url} alt="" loading="lazy" className="h-11 w-11 shrink-0 rounded bg-muted object-cover" />
               ) : (

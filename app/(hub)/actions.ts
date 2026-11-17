@@ -7,6 +7,12 @@ import { redirect } from "next/navigation";
 
 const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
 
+/** Ids arrive from the browser, so they are checked before being used in a query or a filter string. */
+function uuid(value: string) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)) throw new Error("Invalid id");
+  return value;
+}
+
 function fail(error: { message: string } | null) {
   if (error) throw new Error(error.message);
 }
@@ -18,8 +24,9 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const { supabase, userId } = await requireUser();
   const body = text(form, "body");
   if (!body) return { error: "Write something before posting." };
-  const visibility = text(form, "visibility") || "public";
-  const groupId = text(form, "group_id") || null;
+  const rawVisibility = text(form, "visibility");
+  const visibility = ["public", "members", "connections", "private"].includes(rawVisibility) ? rawVisibility : "public";
+  const groupId = text(form, "group_id") ? uuid(text(form, "group_id")) : null;
   const rawKind = text(form, "kind");
   const kind = ["question", "win", "offer", "hiring"].includes(rawKind) ? rawKind : "update";
   let image_url: string | null = null;
@@ -44,6 +51,7 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
 }
 
 export async function deletePost(postId: string) {
+  uuid(postId);
   const { supabase } = await requireUser();
   fail((await supabase.from("posts").delete().eq("id", postId)).error);
   revalidatePath("/", "layout");
@@ -51,6 +59,7 @@ export async function deletePost(postId: string) {
 
 /** Called from the like button, which already shows the new state. */
 export async function toggleLike(postId: string, liked: boolean) {
+  uuid(postId);
   const { supabase, userId } = await requireUser();
   const { error } = liked
     ? await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", userId)
@@ -59,6 +68,7 @@ export async function toggleLike(postId: string, liked: boolean) {
 }
 
 export async function loadComments(postId: string): Promise<CommentRow[]> {
+  uuid(postId);
   const supabase = await createClient();
   const { data } = await supabase
     .from("comments")
@@ -69,6 +79,7 @@ export async function loadComments(postId: string): Promise<CommentRow[]> {
 }
 
 export async function addComment(postId: string, body: string): Promise<CommentRow> {
+  uuid(postId);
   const { supabase, userId } = await requireUser();
   const clean = body.trim().slice(0, 2000);
   if (!clean) throw new Error("Empty comment");
@@ -82,23 +93,28 @@ export async function addComment(postId: string, body: string): Promise<CommentR
 }
 
 export async function deleteComment(commentId: string) {
+  uuid(commentId);
   const { supabase } = await requireUser();
   fail((await supabase.from("comments").delete().eq("id", commentId)).error);
 }
 
 export async function reportPost(postId: string, reason: string) {
+  uuid(postId);
   const { supabase, userId } = await requireUser();
-  fail((await supabase.from("reports").insert({ reporter_id: userId, post_id: postId, reason })).error);
+  const allowed = ["spam", "harassment", "inappropriate", "misinformation", "other"];
+  fail((await supabase.from("reports").insert({ reporter_id: userId, post_id: postId, reason: allowed.includes(reason) ? reason : "other" })).error);
 }
 
 // ---------- connections ----------
 export async function requestConnection(otherId: string) {
+  uuid(otherId);
   const { supabase, userId } = await requireUser();
   fail((await supabase.from("connections").insert({ requester_id: userId, addressee_id: otherId })).error);
   revalidatePath("/", "layout");
 }
 
 export async function acceptConnection(requesterId: string) {
+  uuid(requesterId);
   const { supabase, userId } = await requireUser();
   const { error } = await supabase
     .from("connections")
@@ -111,6 +127,7 @@ export async function acceptConnection(requesterId: string) {
 
 /** Declines a request, cancels one you sent, or removes an existing connection. */
 export async function removeConnection(otherId: string) {
+  uuid(otherId);
   const { supabase, userId } = await requireUser();
   const { error } = await supabase
     .from("connections")
@@ -123,6 +140,7 @@ export async function removeConnection(otherId: string) {
 }
 
 export async function blockMember(otherId: string) {
+  uuid(otherId);
   const { supabase, userId } = await requireUser();
   fail(
     (await supabase.from("blocks").upsert({ blocker_id: userId, blocked_id: otherId }, { ignoreDuplicates: true }))
@@ -150,6 +168,7 @@ export async function createGroup(form: FormData) {
 }
 
 export async function joinGroup(groupId: string) {
+  uuid(groupId);
   const { supabase, userId } = await requireUser();
   fail(
     (await supabase.from("group_members").upsert({ group_id: groupId, user_id: userId }, { ignoreDuplicates: true }))
@@ -159,6 +178,7 @@ export async function joinGroup(groupId: string) {
 }
 
 export async function leaveGroup(groupId: string) {
+  uuid(groupId);
   const { supabase, userId } = await requireUser();
   fail((await supabase.from("group_members").delete().eq("group_id", groupId).eq("user_id", userId)).error);
   revalidatePath("/", "layout");
@@ -205,6 +225,8 @@ export async function markNotificationsRead() {
 
 // ---------- admin ----------
 export async function adminResolveReport(reportId: string, removePostId: string | null) {
+  uuid(reportId);
+  if (removePostId) uuid(removePostId);
   const { supabase } = await requireStaff();
   if (removePostId) fail((await supabase.from("posts").delete().eq("id", removePostId)).error);
   // when the post is removed its reports go with it, so this update then touches nothing
@@ -213,6 +235,7 @@ export async function adminResolveReport(reportId: string, removePostId: string 
 }
 
 export async function adminUpdateMember(memberId: string, form: FormData) {
+  uuid(memberId);
   const { supabase, profile } = await requireStaff();
   const update: Partial<Pick<Profile, "member_type" | "status" | "role">> = {};
   const memberType = text(form, "member_type");
@@ -230,12 +253,14 @@ export async function adminUpdateMember(memberId: string, form: FormData) {
 }
 
 export async function adminDeletePost(postId: string) {
+  uuid(postId);
   const { supabase } = await requireStaff();
   fail((await supabase.from("posts").delete().eq("id", postId)).error);
   revalidatePath("/", "layout");
 }
 
 export async function adminPinPost(postId: string, pin: boolean) {
+  uuid(postId);
   const { supabase } = await requireStaff();
   const { error } = await supabase
     .from("posts")
@@ -246,6 +271,7 @@ export async function adminPinPost(postId: string, pin: boolean) {
 }
 
 export async function adminDeleteGroup(groupId: string) {
+  uuid(groupId);
   const { supabase } = await requireStaff();
   fail((await supabase.from("groups").delete().eq("id", groupId)).error);
   revalidatePath("/", "layout");
@@ -253,6 +279,7 @@ export async function adminDeleteGroup(groupId: string) {
 
 // ---------- messages ----------
 export async function sendMessage(recipientId: string, body: string) {
+  uuid(recipientId);
   const { supabase, userId } = await requireUser();
   const clean = body.trim().slice(0, 4000);
   if (!clean) throw new Error("Empty message");
@@ -266,6 +293,7 @@ export async function sendMessage(recipientId: string, body: string) {
 }
 
 export async function markThreadRead(otherId: string) {
+  uuid(otherId);
   const { supabase, userId } = await requireUser();
   await supabase
     .from("messages")
@@ -276,6 +304,7 @@ export async function markThreadRead(otherId: string) {
 }
 
 export async function markNotificationRead(id: string) {
+  uuid(id);
   const { supabase, userId } = await requireUser();
   await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id).eq("user_id", userId);
 }
@@ -286,7 +315,7 @@ const LISTING_LIMIT: Record<Profile["member_type"], number> = { owner: 0, plus: 
 export async function saveBusiness(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase, userId, profile, isStaff } = await requireUser();
   if (!profile) return { error: "Finish your profile first." };
-  const id = text(form, "id");
+  const id = text(form, "id") ? uuid(text(form, "id")) : "";
   const name = text(form, "name");
   if (!name) return { error: "Add the business name." };
   const fields: Record<string, string> = {
@@ -326,7 +355,46 @@ export async function saveBusiness(_prev: FormState, form: FormData): Promise<Fo
 }
 
 export async function deleteBusiness(companyId: string) {
+  uuid(companyId);
   const { supabase } = await requireUser();
   fail((await supabase.from("companies").delete().eq("id", companyId)).error);
   revalidatePath("/", "layout");
+}
+
+// ---------- business reviews ----------
+export async function saveReview(companyId: string, rating: number, body: string) {
+  uuid(companyId);
+  const { supabase, userId } = await requireUser();
+  const stars = Math.min(5, Math.max(1, Math.round(Number(rating) || 0)));
+  const { error } = await supabase
+    .from("company_reviews")
+    .upsert({ company_id: companyId, author_id: userId, rating: stars, body: body.trim().slice(0, 1000) });
+  if (error) throw new Error("Could not save your review.");
+  revalidatePath("/businesses", "layout");
+}
+
+export async function deleteReview(companyId: string, authorId: string) {
+  uuid(companyId);
+  uuid(authorId);
+  const { supabase } = await requireUser();
+  fail((await supabase.from("company_reviews").delete().eq("company_id", companyId).eq("author_id", authorId)).error);
+  revalidatePath("/businesses", "layout");
+}
+
+// ---------- private-group invitations ----------
+export async function inviteToGroup(groupId: string, memberId: string) {
+  uuid(groupId);
+  uuid(memberId);
+  const { supabase, userId } = await requireUser();
+  const { error } = await supabase.from("group_invites").upsert({ group_id: groupId, user_id: memberId, invited_by: userId }, { ignoreDuplicates: true });
+  if (error) throw new Error("Only group admins can invite, and only their own connections.");
+}
+
+/** Withdraws an invitation you sent, or declines one you received. */
+export async function removeGroupInvite(groupId: string, memberId: string) {
+  uuid(groupId);
+  uuid(memberId);
+  const { supabase } = await requireUser();
+  fail((await supabase.from("group_invites").delete().eq("group_id", groupId).eq("user_id", memberId)).error);
+  revalidatePath("/groups", "layout");
 }

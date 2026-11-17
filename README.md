@@ -42,6 +42,28 @@ Schema is ready but there are no screens yet for: company pages (`companies` tab
 - Sign in and Join share one landing page (`/auth/login`, `/auth/sign-up`): header with browse links, large headline, a form that switches between the two modes in place, a live showcase of hub cards, topic links and a closing band with member counts.
 - Join collects the full name and shows password strength; the confirmation email lands on `/auth/callback`, which signs the member in.
 
+## Round 8: security layer and remaining pieces
+
+- Business pages (`/businesses/<slug>`) with star reviews, average ratings on the directory and a rating filter.
+- Private groups: admins invite their connections; the invited member accepts on the group page.
+- Database hardening (`0005_security_and_reviews.sql`): rate limits on comments, messages, connection requests, reports, groups, invitations and reviews; plan limits for listings enforced in the database; length limits; images must come from this project's storage; uploads limited to images up to 5 MB.
+- Every server action validates the ids it receives.
+- Security headers on every page (`next.config.ts`).
+
+### Security tests
+
+`supabase/tests/run.sh` builds a throwaway local Postgres, applies every migration and runs 43 checks as a member, a stranger, a visitor, a suspended member and an admin. It never touches the live database. Run it after any change to the migrations:
+
+```
+./supabase/tests/run.sh
+```
+
+### Before launch
+
+- Supabase > Authentication: set the Site URL, turn on leaked-password protection, add a CAPTCHA to sign-up, set up a real email sender.
+- Remove demo content (see below) and drop the `picsum.photos` line from the `posts_image_is_ours` rule.
+- Decide whether the GitHub repository should be private.
+
 ## Setup
 
 1. Create a Supabase project, open SQL Editor, paste and run `supabase/migrations/0001_hub_core.sql`.
