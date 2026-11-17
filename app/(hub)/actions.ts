@@ -256,9 +256,28 @@ export async function sendMessage(recipientId: string, body: string) {
   const { supabase, userId } = await requireUser();
   const clean = body.trim().slice(0, 4000);
   if (!clean) throw new Error("Empty message");
-  const { error } = await supabase.from("messages").insert({ sender_id: userId, recipient_id: recipientId, body: clean });
+  const { data, error } = await supabase
+    .from("messages")
+    .insert({ sender_id: userId, recipient_id: recipientId, body: clean })
+    .select("id, created_at")
+    .single();
   if (error) throw new Error("You can only message members you are connected with.");
-  revalidatePath("/messages");
+  return data as { id: string; created_at: string };
+}
+
+export async function markThreadRead(otherId: string) {
+  const { supabase, userId } = await requireUser();
+  await supabase
+    .from("messages")
+    .update({ read_at: new Date().toISOString() })
+    .eq("recipient_id", userId)
+    .eq("sender_id", otherId)
+    .is("read_at", null);
+}
+
+export async function markNotificationRead(id: string) {
+  const { supabase, userId } = await requireUser();
+  await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id).eq("user_id", userId);
 }
 
 // ---------- businesses ----------

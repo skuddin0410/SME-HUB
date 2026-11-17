@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { Lock, Pin, Trash2, UsersRound } from "lucide-react";
+import { Lock, Pin, UsersRound } from "lucide-react";
 import { MEMBER_TYPES, timeAgo, type Author, type Post, type Profile } from "@/lib/hub";
-import { acceptConnection, deletePost, removeConnection, requestConnection } from "@/app/(hub)/actions";
-import { AvatarImg, PostActions, PostBody, SubmitButton } from "@/components/hub-client";
+import { AvatarImg, PostActions, PostBody, PostMenu } from "@/components/hub-client";
+import { ConnectButton } from "@/components/network-client";
 import { KINDS } from "@/lib/demo";
 
 export type Viewer = { userId: string | null; profile: Profile | null; isStaff: boolean };
@@ -43,9 +43,9 @@ const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Co
 export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
   const own = post.author.id === viewer.userId;
   return (
-    <article className="panel overflow-hidden">
+    <article id={`post-${post.id}`} className="panel">
       {post.pinned_at && (
-        <p className="flex items-center gap-1.5 border-b bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900">
+        <p className="flex items-center gap-1.5 rounded-t-lg border-b bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900">
           <Pin className="h-3.5 w-3.5" /> Pinned by SMB Hub
         </p>
       )}
@@ -87,18 +87,10 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
             </p>
           </div>
         </div>
-        {(own || viewer.isStaff) && (
-          <form action={deletePost.bind(null, post.id)}>
-            <button
-              type="submit"
-              title="Delete post"
-              aria-label="Delete post"
-              className="press rounded-full p-2 text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </form>
-        )}
+        <div className="flex shrink-0 items-center">
+          {!own && <ConnectButton otherId={post.author.id} initial={post.link} signedIn={!!viewer.userId} variant="text" />}
+          <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} />
+        </div>
       </div>
       <PostBody text={post.body} />
       {post.image_url && <img src={post.image_url} alt="" loading="lazy" className="max-h-[520px] w-full object-cover" />}
@@ -109,48 +101,9 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
         likedByMe={post.likedByMe}
         me={viewer.profile ? { id: viewer.profile.id, full_name: viewer.profile.full_name, avatar_url: viewer.profile.avatar_url } : null}
         isStaff={viewer.isStaff}
-        ownPost={own}
         startOpen={startOpen}
       />
     </article>
-  );
-}
-
-export type Link_ = { requester_id: string; status: "pending" | "accepted" } | null | undefined;
-
-/** Connect / Accept / Pending / Connected, depending on where two members stand. */
-export function ConnectControl({ viewer, otherId, link }: { viewer: Viewer; otherId: string; link: Link_ }) {
-  if (viewer.userId === otherId) return null;
-  if (!viewer.userId) {
-    return (
-      <Link href="/auth/login" className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white">
-        Connect
-      </Link>
-    );
-  }
-  if (!link) {
-    return (
-      <form action={requestConnection.bind(null, otherId)}>
-        <SubmitButton>Connect</SubmitButton>
-      </form>
-    );
-  }
-  if (link.status === "pending" && link.requester_id === otherId) {
-    return (
-      <div className="flex flex-wrap justify-center gap-2">
-        <form action={acceptConnection.bind(null, otherId)}>
-          <SubmitButton>Accept</SubmitButton>
-        </form>
-        <form action={removeConnection.bind(null, otherId)}>
-          <SubmitButton tone="outline">Decline</SubmitButton>
-        </form>
-      </div>
-    );
-  }
-  return (
-    <form action={removeConnection.bind(null, otherId)}>
-      <SubmitButton tone="outline">{link.status === "accepted" ? "Connected" : "Request sent"}</SubmitButton>
-    </form>
   );
 }
 

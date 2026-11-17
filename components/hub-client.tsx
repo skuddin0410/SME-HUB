@@ -5,12 +5,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { CircleHelp, Flag, Heart, ImagePlus, Loader2, MessageCircle, Megaphone, Send, Share2, Trash2, Trophy, X } from "lucide-react";
+import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageCircle, Megaphone, Repeat2, Send, ThumbsUp, Trash2, Trophy, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
   addComment,
   createPost,
   deleteComment,
+  deletePost,
   loadComments,
   reportPost,
   toggleLike,
@@ -363,7 +364,94 @@ export function Composer({
   );
 }
 
-// ---------- post actions: like, comment, share, report ----------
+// ---------- post menu: copy link, report, delete ----------
+export function PostMenu({ postId, canDelete, canReport }: { postId: string; canDelete: boolean; canReport: boolean }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<"menu" | "report" | "done" | "copied">("menu");
+  const [gone, setGone] = useState(false);
+  const row = "flex w-full items-center gap-3 rounded px-3 py-2 text-left text-sm font-semibold text-foreground/80 transition-colors hover:bg-muted";
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => {
+      setOpen(false);
+      setStep("menu");
+    };
+    window.addEventListener("click", close);
+    return () => window.removeEventListener("click", close);
+  }, [open]);
+
+  if (gone) return null;
+  return (
+    <div className="relative" onClick={(e) => e.stopPropagation()} role="presentation">
+      <button type="button" aria-label="Post options" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="press rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+        <Ellipsis className="h-5 w-5" />
+      </button>
+      {open && (
+        <div className="panel absolute right-0 z-20 mt-1 w-60 animate-rise p-1.5 shadow-xl">
+          {step === "menu" && (
+            <>
+              <button
+                type="button"
+                className={row}
+                onClick={async () => {
+                  await navigator.clipboard.writeText(`${window.location.origin}/posts/${postId}`).catch(() => {});
+                  setStep("copied");
+                }}
+              >
+                <Link2 className="h-4 w-4" /> Copy link to post
+              </button>
+              {canReport && (
+                <button type="button" className={row} onClick={() => setStep("report")}>
+                  <Flag className="h-4 w-4" /> Report post
+                </button>
+              )}
+              {canDelete && (
+                <button
+                  type="button"
+                  className={cx(row, "!text-rose-600")}
+                  onClick={() => {
+                    setGone(true);
+                    document.getElementById(`post-${postId}`)?.classList.add("hidden");
+                    deletePost(postId).then(() => router.refresh()).catch(() => {
+                      setGone(false);
+                      document.getElementById(`post-${postId}`)?.classList.remove("hidden");
+                    });
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" /> Delete post
+                </button>
+              )}
+            </>
+          )}
+          {step === "report" && (
+            <>
+              <p className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">What is wrong with it?</p>
+              {["Spam", "Harassment", "Inappropriate", "Misinformation"].map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  className={row}
+                  onClick={() => {
+                    setStep("done");
+                    reportPost(postId, r.toLowerCase()).catch(() => {});
+                  }}
+                >
+                  {r}
+                </button>
+              ))}
+            </>
+          )}
+          {step === "done" && <p className="px-3 py-3 text-sm">Reported. Our moderators will take a look.</p>}
+          {step === "copied" && <p className="px-3 py-3 text-sm">Link copied.</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------- post actions: like, comment, share, send ----------
 export function PostActions({
   postId,
   likes,
@@ -371,7 +459,6 @@ export function PostActions({
   likedByMe,
   me,
   isStaff,
-  ownPost,
   startOpen = false,
 }: {
   postId: string;
@@ -380,7 +467,6 @@ export function PostActions({
   likedByMe: boolean;
   me: (Pick<Profile, "id" | "full_name" | "avatar_url">) | null;
   isStaff: boolean;
-  ownPost: boolean;
   startOpen?: boolean;
 }) {
   const router = useRouter();
@@ -392,7 +478,6 @@ export function PostActions({
   const [commentCount, setCommentCount] = useState(comments);
   const [draft, setDraft] = useState("");
   const [note, setNote] = useState<string | null>(null);
-  const [reporting, setReporting] = useState(false);
   const [busy, startTransition] = useTransition();
 
   useEffect(() => {
@@ -448,53 +533,27 @@ export function PostActions({
     }
   };
 
-  const report = (reason: string) => {
-    setReporting(false);
-    reportPost(postId, reason)
-      .then(() => setNote("Reported. Our moderators will take a look."))
-      .catch(() => setNote("Could not send the report. Try again."));
-  };
-
   const actionClass =
-    "press inline-flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
+    "press inline-flex min-w-[40px] items-center justify-center gap-1.5 rounded px-2.5 py-2 text-sm text-foreground/75 transition-colors duration-100 hover:bg-muted hover:text-foreground";
 
   return (
     <div>
-      <div className="flex min-h-[28px] items-center gap-3 px-4 pb-1.5 text-xs text-muted-foreground">
-        {likeCount > 0 && (
-          <span className="inline-flex items-center gap-1">
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-rose-600">
-              <Heart className="h-2.5 w-2.5 fill-white text-white" />
-            </span>
-            {likeCount}
-          </span>
-        )}
-        {commentCount > 0 && (
-          <button type="button" onClick={() => setOpen(true)} className="ml-auto hover:text-primary hover:underline">
-            {commentCount} {commentCount === 1 ? "comment" : "comments"}
-          </button>
-        )}
-        {note && (
-          <span role="status" className={cx("animate-rise rounded-full bg-[hsl(var(--ink))] px-3 py-1 font-medium text-white", commentCount === 0 && "ml-auto")}>
-            {note}
-          </span>
-        )}
-      </div>
-      <div className="mx-3 flex items-center border-t py-1">
-        <button type="button" onClick={like} aria-pressed={liked} className={cx(actionClass, liked && "!text-rose-600")}>
-          <Heart key={popKey} className={cx("h-5 w-5", liked && "fill-rose-600", popKey > 0 && liked && "animate-pop")} />
-          Like
+      <div className="flex items-center gap-1 px-2 py-1">
+        <button type="button" onClick={like} aria-pressed={liked} aria-label="Like" className={cx(actionClass, liked && "!text-primary")}>
+          <ThumbsUp key={popKey} className={cx("h-5 w-5", liked && "fill-primary/20", popKey > 0 && liked && "animate-pop")} />
+          {likeCount > 0 && likeCount}
         </button>
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={actionClass}>
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label="Comment" className={actionClass}>
           <MessageCircle className="h-5 w-5" />
-          Comment
+          {commentCount > 0 && commentCount}
         </button>
-        <button type="button" onClick={share} className={actionClass}>
-          <Share2 className="h-5 w-5" />
-          Share
+        <button type="button" onClick={share} aria-label="Copy link to share" title="Copy link" className={actionClass}>
+          <Repeat2 className="h-5 w-5" />
         </button>
         <button
           type="button"
+          aria-label="Send in a message"
+          title="Send in a message"
           onClick={() => {
             if (needAccount()) return;
             router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`);
@@ -502,30 +561,18 @@ export function PostActions({
           className={actionClass}
         >
           <Send className="h-5 w-5" />
-          Send
         </button>
-        {!ownPost && me && (
-          <button type="button" onClick={() => setReporting((r) => !r)} className={cx(actionClass, "!flex-none px-3")} aria-label="Report post">
-            <Flag className="h-4 w-4" />
-          </button>
+        {note && (
+          <span role="status" className="ml-2 animate-rise rounded-full bg-[hsl(var(--ink))] px-3 py-1 text-xs font-medium text-white">
+            {note}
+          </span>
+        )}
+        {likeCount > 0 && (
+          <span className="ml-auto mr-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary ring-2 ring-white" title={`${likeCount} likes`}>
+            <ThumbsUp className="h-3 w-3 fill-white text-white" />
+          </span>
         )}
       </div>
-
-      {reporting && (
-        <div className="mx-4 mb-2 flex animate-rise flex-wrap items-center gap-2 rounded-lg bg-muted p-3 text-sm">
-          <span className="font-medium">What is wrong with this post?</span>
-          {["Spam", "Harassment", "Inappropriate", "Misinformation"].map((r) => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => report(r.toLowerCase())}
-              className="press rounded-full border bg-white px-3 py-1 text-xs font-medium hover:border-primary hover:text-primary"
-            >
-              {r}
-            </button>
-          ))}
-        </div>
-      )}
 
       {open && (
         <div className="animate-rise space-y-3 px-4 pb-3 pt-2">

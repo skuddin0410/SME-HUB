@@ -30,6 +30,13 @@ Schema is ready but there are no screens yet for: company pages (`companies` tab
 - Direct messages between connections (`/messages`), delivered live.
 - Members add and edit their own business listings (`/businesses/mine`); the number allowed follows the plan (Free 0, Plus 1, Elite 2, Advisor 3).
 
+## Round 6
+
+- Network, Messaging and Notifications rebuilt to LinkedIn's structure, with their own page layouts.
+- Instant reactions: Connect, Accept, Ignore, dismiss, filters, mark as read, switching conversations and sending messages all update on screen first and save in the background.
+- Posts: icon-and-count action row, a Connect shortcut and a "..." menu (copy link, report, delete) in the header.
+- Header: Network, Messaging, Notifications and Me as icon-over-label items with counts.
+
 ## Setup
 
 1. Create a Supabase project, open SQL Editor, paste and run `supabase/migrations/0001_hub_core.sql`.

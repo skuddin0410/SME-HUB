@@ -1,24 +1,11 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { Building2, Facebook, Home, Instagram, Linkedin, Search, Twitter, Users, UsersRound, Youtube } from "lucide-react";
-import { AUTHOR_FIELDS, getViewer, type Author } from "@/lib/hub";
-import { ARTICLES, CONTACT, EVENTS, SOCIAL } from "@/lib/site";
-import { AvatarImg, Cover, NavLink } from "@/components/hub-client";
+import { Building2, Home, Search, Users, UsersRound } from "lucide-react";
+import { getViewer } from "@/lib/hub";
+import { CONTACT, EVENTS } from "@/lib/site";
+import { NavLink } from "@/components/hub-client";
 import { Logo, SiteNav } from "@/components/site-nav";
-import { GroupLine, TierBadge } from "@/components/hub";
 
 export const dynamic = "force-dynamic";
-
-type GroupRow = { slug: string; name: string; is_private: boolean; group_members: { count: number }[] };
-type Company = { id: string; slug: string; name: string; category: string; logo_url: string | null };
-
-const SOCIALS = [
-  { label: "Facebook", href: SOCIAL.facebook, icon: Facebook },
-  { label: "X", href: SOCIAL.x, icon: Twitter },
-  { label: "YouTube", href: SOCIAL.youtube, icon: Youtube },
-  { label: "Instagram", href: SOCIAL.instagram, icon: Instagram },
-  { label: "LinkedIn", href: SOCIAL.linkedin, icon: Linkedin },
-];
 
 const FOOTER_LINKS = [
   ["Home", "/feed"],
@@ -29,11 +16,12 @@ const FOOTER_LINKS = [
   ["Help", "/help"],
 ];
 
-export default async function HubLayout({ children }: { children: React.ReactNode }) {
+/** Shell shared by every hub page: top navigation, footer, mobile tab bar. */
+export default async function HubShell({ children }: { children: React.ReactNode }) {
   const { supabase, userId, profile, isStaff } = await getViewer();
 
   const none = Promise.resolve({ count: 0 });
-  const [unread, requests, connections, posts, people, groups, companies, inbox] = await Promise.all([
+  const [unread, requests, inbox] = await Promise.all([
     userId
       ? supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null)
       : none,
@@ -45,28 +33,10 @@ export default async function HubLayout({ children }: { children: React.ReactNod
           .eq("status", "pending")
       : none,
     userId
-      ? supabase.from("connections").select("requester_id", { count: "exact", head: true }).eq("status", "accepted")
-      : none,
-    userId ? supabase.from("posts").select("id", { count: "exact", head: true }).eq("author_id", userId) : none,
-    supabase.from("profiles").select(AUTHOR_FIELDS).order("created_at", { ascending: false }).limit(11),
-    supabase.from("groups").select("slug, name, is_private, group_members(count)").order("created_at", { ascending: false }).limit(4),
-    supabase.from("companies").select("id, slug, name, category, logo_url").order("created_at", { ascending: false }).limit(5),
-    userId
       ? supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", userId).is("read_at", null)
       : none,
   ]);
-  const members = ((people.data ?? []) as Author[]).filter((p) => p.id !== userId).slice(0, 10);
-  const newGroups = (groups.data ?? []) as unknown as GroupRow[];
-  const businesses = (companies.data ?? []) as Company[];
 
-  const filled = profile
-    ? [profile.full_name, profile.headline, profile.bio, profile.location, profile.website, profile.avatar_url].filter(Boolean).length
-    : 0;
-  const done = Math.round((filled / 6) * 100);
-
-  const card = "panel p-3";
-  const railTitle = "mb-3 text-base font-semibold";
-  const seeAll = "mt-4 inline-block rounded-lg bg-muted px-3 py-1.5 text-xs font-bold tracking-wide transition-colors hover:bg-primary/10 hover:text-primary";
   const tabs = [
     { href: "/feed", label: "Home", icon: Home },
     { href: "/members", label: "Members", icon: Users },
@@ -91,154 +61,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
         </p>
       )}
 
-      <div className="mx-auto grid max-w-[1128px] items-start gap-6 px-4 py-6 lg:grid-cols-[225px_minmax(0,1fr)_300px]">
-        <aside className="rail hidden space-y-2 lg:block">
-          {profile && (
-            <div className="panel overflow-hidden">
-              <Cover seed={profile.id} className="h-14" />
-              <div className="-mt-9 px-3 pb-3">
-                <Link href={`/members/${userId}`} className="relative inline-block rounded-full ring-4 ring-white">
-                  <AvatarImg person={profile} size={72} />
-                </Link>
-                <Link href={`/members/${userId}`} className="mt-2 block text-base font-semibold leading-tight hover:underline">
-                  {profile.full_name}
-                </Link>
-                <p className="text-xs text-muted-foreground">{profile.headline || "Add a headline to your profile"}</p>
-                {profile.location && <p className="text-xs text-muted-foreground">{profile.location}</p>}
-                <div className="mt-2">
-                  <TierBadge type={profile.member_type} />
-                </div>
-                {done < 100 && (
-                  <Link href="/profile/edit" className="mt-4 block rounded-xl bg-muted p-3 transition-colors hover:bg-primary/10">
-                    <span className="flex items-center justify-between text-xs font-semibold">
-                      Profile strength <span className="text-primary">{done}%</span>
-                    </span>
-                    <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-white">
-                      <span className="block h-full rounded-full bg-primary" style={{ width: `${done}%` }} />
-                    </span>
-                  </Link>
-                )}
-                <div className="mt-3 border-t pt-2 text-xs font-semibold">
-                  <Link href="/network" className="flex justify-between rounded px-1 py-1 hover:bg-muted">
-                    <span className="text-muted-foreground">Connections</span>
-                    <span className="text-primary">{connections.count ?? 0}</span>
-                  </Link>
-                  <Link href={`/members/${userId}`} className="flex justify-between rounded px-1 py-1 hover:bg-muted">
-                    <span className="text-muted-foreground">Your posts</span>
-                    <span className="text-primary">{posts.count ?? 0}</span>
-                  </Link>
-                </div>
-                <div className="mt-2 space-y-0.5 border-t pt-2 text-xs font-semibold">
-                  {[["My network", "/network"], ["Messages", "/messages"], ["Groups", "/groups"], ["My business listings", "/businesses/mine"]].map(([label, href]) => (
-                    <Link key={href} href={href} className="block rounded px-1 py-1 hover:bg-muted">
-                      {label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <section className={card}>
-            <h2 className={railTitle}>Recent Articles</h2>
-            <ul className="space-y-3">
-              {ARTICLES.map((a) => (
-                <li key={a.href}>
-                  <a href={a.href} target="_blank" rel="noreferrer" className="group flex items-center gap-3">
-                    <img
-                      src={a.image}
-                      alt=""
-                      loading="lazy"
-                      className="cover h-11 w-11 shrink-0 rounded-lg object-cover transition-transform duration-200 group-hover:scale-105"
-                    />
-                    <span className="line-clamp-2 text-xs font-semibold leading-snug transition-colors group-hover:text-primary">{a.title}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          {businesses.length > 0 && (
-            <section className={card}>
-              <h2 className={railTitle}>Business List</h2>
-              <ul className="space-y-3">
-                {businesses.map((b) => (
-                  <li key={b.id}>
-                    <Link href={`/businesses?q=${encodeURIComponent(b.name)}`} className="group flex items-center gap-3">
-                      {b.logo_url ? (
-                        <img src={b.logo_url} alt="" loading="lazy" className="h-11 w-11 shrink-0 rounded-lg bg-muted object-cover" />
-                      ) : (
-                        <span className="cover flex h-11 w-11 shrink-0 items-center justify-center rounded-lg font-semibold text-white">
-                          {b.name.charAt(0)}
-                        </span>
-                      )}
-                      <span className="min-w-0">
-                        <span className="block truncate text-sm font-semibold transition-colors group-hover:text-primary">{b.name}</span>
-                        <span className="block truncate text-xs text-muted-foreground">{b.category}</span>
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <Link href="/businesses" className={seeAll}>
-                See all
-              </Link>
-            </section>
-          )}
-        </aside>
-
-        <main className="flex min-w-0 flex-col gap-2">{children}</main>
-
-        <aside className="rail hidden space-y-2 lg:block">
-          <section className={card}>
-            <h2 className={railTitle}>Follow Us on Social Media</h2>
-            <div className="flex gap-2">
-              {SOCIALS.map(({ label, href, icon: Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={label}
-                  className="press flex h-10 w-10 items-center justify-center rounded-full border text-foreground/70 transition-colors hover:border-primary hover:bg-primary hover:text-white"
-                >
-                  <Icon className="h-[18px] w-[18px]" />
-                </a>
-              ))}
-            </div>
-          </section>
-
-          {members.length > 0 && (
-            <section className={card}>
-              <h2 className={railTitle}>Recently Active Members</h2>
-              <div className="grid grid-cols-5 gap-2.5">
-                {members.map((m) => (
-                  <Link key={m.id} href={`/members/${m.id}`} title={m.full_name} className="transition-transform duration-200 hover:scale-110">
-                    <AvatarImg person={m} size={44} />
-                  </Link>
-                ))}
-              </div>
-              <Link href="/members" className={seeAll}>
-                See all
-              </Link>
-            </section>
-          )}
-
-          {newGroups.length > 0 && (
-            <section className={card}>
-              <h2 className={railTitle}>Groups to Explore</h2>
-              <div className="space-y-3">
-                {newGroups.map((g) => (
-                  <GroupLine key={g.slug} group={{ ...g, members: g.group_members[0]?.count ?? 0 }} />
-                ))}
-              </div>
-              <Link href="/groups" className={seeAll}>
-                See all
-              </Link>
-            </section>
-          )}
-        </aside>
-      </div>
+      {children}
 
       <footer className="mt-8 border-t bg-white">
         <div className="mx-auto grid max-w-[1128px] gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
@@ -254,7 +77,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
             <ul className="space-y-2 text-sm text-muted-foreground">
               {FOOTER_LINKS.map(([label, href]) => (
                 <li key={href}>
-                  <Link href={href} className="hover:text-primary">
+                  <Link href={href} className="hover:text-primary hover:underline">
                     {label}
                   </Link>
                 </li>
@@ -266,7 +89,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
             <ul className="space-y-2 text-sm text-muted-foreground">
               {EVENTS.map((e) => (
                 <li key={e.href}>
-                  <a href={e.href} target="_blank" rel="noreferrer" className="hover:text-primary">
+                  <a href={e.href} target="_blank" rel="noreferrer" className="hover:text-primary hover:underline">
                     {e.label}
                   </a>
                 </li>
@@ -279,14 +102,14 @@ export default async function HubLayout({ children }: { children: React.ReactNod
               <li>{CONTACT.address}</li>
               {CONTACT.phones.map((p) => (
                 <li key={p}>
-                  <a href={`tel:${p.replace(/\s/g, "")}`} className="hover:text-primary">
+                  <a href={`tel:${p.replace(/\s/g, "")}`} className="hover:text-primary hover:underline">
                     {p}
                   </a>
                 </li>
               ))}
               {CONTACT.emails.map((e) => (
                 <li key={e}>
-                  <a href={`mailto:${e}`} className="hover:text-primary">
+                  <a href={`mailto:${e}`} className="hover:text-primary hover:underline">
                     {e}
                   </a>
                 </li>

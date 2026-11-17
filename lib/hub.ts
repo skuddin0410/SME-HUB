@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 export type Profile = {
   id: string;
@@ -31,6 +32,7 @@ export type Post = {
   likes: number;
   comments: number;
   likedByMe: boolean;
+  link: LinkState;
 };
 
 export type CommentRow = { id: string; body: string; created_at: string; author: Author };
@@ -47,8 +49,11 @@ export const PAGE_SIZE = 12;
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
-/** Whoever is looking at the page. Visitors get userId null. */
-export async function getViewer() {
+/** Where the viewer stands with another member. */
+export type LinkState = "none" | "sent" | "received" | "connected";
+
+/** Whoever is looking at the page. Visitors get userId null. Asked once per request, however many layouts and pages call it. */
+export const getViewer = cache(async () => {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const userId = (data?.claims?.sub as string | undefined) ?? null;
@@ -58,7 +63,20 @@ export async function getViewer() {
     profile = res.data as Profile | null;
   }
   return { supabase, userId, profile, isStaff: !!profile && profile.role !== "member" };
-}
+});
+
+/** The viewer's connection state with every member they have a link to. */
+export const getLinks = cache(async (): Promise<Map<string, LinkState>> => {
+  const { supabase, userId } = await getViewer();
+  const map = new Map<string, LinkState>();
+  if (!userId) return map;
+  const { data } = await supabase.from("connections").select("requester_id, addressee_id, status");
+  for (const r of data ?? []) {
+    const mine = r.requester_id === userId;
+    map.set(mine ? r.addressee_id : r.requester_id, r.status === "accepted" ? "connected" : mine ? "sent" : "received");
+  }
+  return map;
+});
 
 /** For pages and actions that need an account. Sends visitors to sign in. */
 export async function requireUser() {
@@ -77,7 +95,7 @@ export async function requireStaff() {
 
 const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
 
-type Row = Omit<Post, "likes" | "comments" | "likedByMe"> & {
+type Row = Omit<Post, "likes" | "comments" | "likedByMe" | "link"> & {
   reactions: { count: number }[];
   comments: { count: number }[];
 };
@@ -118,8 +136,10 @@ export async function fetchPosts(
     liked = new Set((mine ?? []).map((r) => r.post_id as string));
   }
 
+  const links = await getLinks();
   return rows.map((r) => ({
     ...r,
+    link: links.get(r.author.id) ?? "none",
     likes: r.reactions[0]?.count ?? 0,
     comments: r.comments[0]?.count ?? 0,
     likedByMe: liked.has(r.id),

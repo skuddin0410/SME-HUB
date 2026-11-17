@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, Bell, MessageSquareText, ChevronDown, ExternalLink, Home, IdCard, LifeBuoy, Menu, Search, SquareArrowOutUpRight, UserPlus, X } from "lucide-react";
+import { ArrowRight, Bell, MessageSquareText, UsersRound, ChevronDown, ExternalLink, Home, IdCard, LifeBuoy, Menu, Search, SquareArrowOutUpRight, X } from "lucide-react";
 import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, PROVINCES, RESOURCES_MENU, type NavItem } from "@/lib/site";
 import { AvatarImg, SignOutButton } from "@/components/hub-client";
 
@@ -81,7 +81,13 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
       active ? "text-foreground after:scale-x-100 after:bg-primary" : "text-foreground/75 after:scale-x-0 after:bg-primary hover:text-foreground hover:after:scale-x-100",
     );
   const iconBtn = "press relative rounded-full p-2.5 text-foreground/70 transition-colors hover:bg-muted hover:text-foreground";
-  const dot = "absolute right-1 top-1 min-w-[16px] rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-4 text-white";
+  const stack = (active: boolean) =>
+    cx(
+      "press relative flex h-[60px] min-w-[48px] flex-col items-center justify-center gap-0.5 px-2 text-xs transition-colors md:min-w-[80px]",
+      "after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:transition-transform after:duration-200",
+      active ? "text-foreground after:scale-x-100 after:bg-foreground" : "text-foreground/60 after:scale-x-0 after:bg-foreground hover:text-foreground",
+    );
+  const dot = "absolute -right-2 -top-1.5 min-w-[18px] border-2 border-white rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-[14px] text-white";
 
   const dropdown = (name: "About" | "Explore", Icon: typeof IdCard) => (
     <div className="relative" onMouseEnter={() => setOpen(name)} onMouseLeave={() => setOpen(null)}>
@@ -131,34 +137,50 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
           </Link>
           {me ? (
             <>
-              <Link href="/network" className={iconBtn} aria-label={`Network, ${requests} requests`}>
-                <UserPlus className="h-5 w-5" />
-                {requests > 0 && <span className={dot}>{requests > 9 ? "9+" : requests}</span>}
-              </Link>
-              <Link href="/messages" className={iconBtn} aria-label={`Messages, ${messages} unread`}>
-                <MessageSquareText className="h-5 w-5" />
-                {messages > 0 && <span className={dot}>{messages > 9 ? "9+" : messages}</span>}
-              </Link>
-              <Link href="/notifications" className={iconBtn} aria-label={`Alerts, ${unread} unread`}>
-                <Bell className="h-5 w-5" />
-                {unread > 0 && <span className={dot}>{unread > 9 ? "9+" : unread}</span>}
-              </Link>
-              <details className="relative ml-1">
-                <summary className="flex cursor-pointer list-none items-center rounded-full ring-2 ring-primary/20 transition hover:ring-primary/60 [&::-webkit-details-marker]:hidden">
-                  <AvatarImg person={me} size={32} />
+              {[
+                { href: "/network", label: "Network", icon: UsersRound, count: requests },
+                { href: "/messages", label: "Messaging", icon: MessageSquareText, count: messages },
+                { href: "/notifications", label: "Notifications", icon: Bell, count: unread },
+              ].map(({ href, label, icon: Icon, count }) => {
+                const active = pathname.startsWith(href);
+                return (
+                  <Link key={href} href={href} aria-current={active ? "page" : undefined} aria-label={count ? `${label}, ${count} new` : label} className={stack(active)}>
+                    <span className="relative">
+                      <Icon className={cx("h-6 w-6", active && "fill-foreground/10")} />
+                      {count > 0 && <span className={dot}>{count > 9 ? "9+" : count}</span>}
+                    </span>
+                    <span className="hidden md:block">{label}</span>
+                  </Link>
+                );
+              })}
+              <details className="relative">
+                <summary className={cx(stack(false), "cursor-pointer list-none [&::-webkit-details-marker]:hidden")}>
+                  <AvatarImg person={me} size={24} />
+                  <span className="hidden items-center md:flex">
+                    Me <ChevronDown className="h-3.5 w-3.5" />
+                  </span>
                 </summary>
-                <div className="panel absolute right-0 mt-2 w-56 animate-rise p-1.5 text-sm shadow-2xl">
-                  <p className="truncate px-3 py-2 font-semibold">{me.full_name}</p>
+                <div className="panel absolute right-0 mt-1 w-64 animate-rise p-1.5 text-sm shadow-2xl">
+                  <Link href={`/members/${me.id}`} className="flex items-center gap-3 rounded px-3 py-2 hover:bg-muted">
+                    <AvatarImg person={me} size={48} />
+                    <span className="min-w-0">
+                      <span className="block truncate text-base font-semibold">{me.full_name}</span>
+                      <span className="block text-xs text-primary">View profile</span>
+                    </span>
+                  </Link>
+                  <div className="my-1 border-t" />
                   {[
-                    { href: `/members/${me.id}`, label: "View profile" },
                     { href: "/profile/edit", label: "Edit profile" },
+                    { href: "/businesses/mine", label: "My business listings" },
+                    { href: "/membership-plans", label: "Membership plans" },
                     ...(isStaff ? [{ href: "/admin", label: "Admin panel" }] : []),
                   ].map((l) => (
-                    <Link key={l.href} href={l.href} className="block rounded-lg px-3 py-2 hover:bg-muted">
+                    <Link key={l.href} href={l.href} className="block rounded px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground">
                       {l.label}
                     </Link>
                   ))}
-                  <SignOutButton className="block w-full rounded-lg px-3 py-2 text-left text-rose-600 hover:bg-muted" />
+                  <div className="my-1 border-t" />
+                  <SignOutButton className="block w-full rounded px-3 py-2 text-left text-muted-foreground hover:bg-muted hover:text-foreground" />
                 </div>
               </details>
             </>

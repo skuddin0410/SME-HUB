@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarDays, Globe, MapPin } from "lucide-react";
-import { fetchPosts, getViewer, PAGE_SIZE, type Profile } from "@/lib/hub";
-import { ConnectControl, Empty, Pager, PostCard, TierBadge, type Link_ } from "@/components/hub";
+import { fetchPosts, getLinks, getViewer, PAGE_SIZE, type Profile } from "@/lib/hub";
+import { Empty, Pager, PostCard, TierBadge } from "@/components/hub";
+import { ConnectButton } from "@/components/network-client";
 import { AvatarImg, Cover, SubmitButton } from "@/components/hub-client";
 import { blockMember } from "@/app/(hub)/actions";
 
@@ -24,17 +25,8 @@ export default async function MemberPage({
   if (!member) notFound();
   const isMe = id === userId;
 
-  const [linkRes, posts] = await Promise.all([
-    userId && !isMe
-      ? supabase
-          .from("connections")
-          .select("requester_id, status")
-          .or(`and(requester_id.eq.${userId},addressee_id.eq.${id}),and(requester_id.eq.${id},addressee_id.eq.${userId})`)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
-    fetchPosts(supabase, userId, { authorId: id, page }),
-  ]);
-  const link = linkRes.data as Link_;
+  const [links, posts] = await Promise.all([getLinks(), fetchPosts(supabase, userId, { authorId: id, page })]);
+  const link = links.get(id) ?? "none";
   const site = member.website && (member.website.startsWith("http") ? member.website : `https://${member.website}`);
   const fact = "inline-flex items-center gap-1.5";
 
@@ -54,12 +46,7 @@ export default async function MemberPage({
                 </Link>
               ) : (
                 <>
-                  {link?.status === "accepted" && (
-                    <Link href={`/messages?with=${id}`} className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90">
-                      Message
-                    </Link>
-                  )}
-                  <ConnectControl viewer={viewer} otherId={id} link={link} />
+                  <ConnectButton otherId={id} initial={link} signedIn={!!userId} />
                   {userId && (
                     <form action={blockMember.bind(null, id)}>
                       <SubmitButton tone="ghost">Block</SubmitButton>

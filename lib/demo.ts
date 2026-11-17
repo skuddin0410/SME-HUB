@@ -14,3 +14,5 @@ export const KINDS = {
   hiring: { label: "Hiring", prompt: "Who are you looking for?", chip: "bg-violet-50 text-violet-700" },
 } as const;
 export type Kind = keyof typeof KINDS;
+
+export const MEMBER_LABEL = { owner: "Business Owner", plus: "SMB Plus", elite: "SMB Elite", advisor: "SMB Advisor" } as const;
