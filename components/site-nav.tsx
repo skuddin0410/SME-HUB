@@ -10,10 +10,10 @@ import { AvatarImg, SignOutButton } from "@/components/hub-client";
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
 
-export function Logo({ onDark = false, href = "/feed" }: { onDark?: boolean; href?: string }) {
+export function Logo({ onDark = false, href = "/feed", large = false }: { onDark?: boolean; href?: string; large?: boolean }) {
   return (
     <Link href={href} aria-label="SMB Hub home" className={cx("inline-flex shrink-0", onDark && "rounded-xl bg-white px-3 py-1.5")}>
-      <img src="/smb-hub-logo.png" alt="SMB Hub" className="h-9 w-auto sm:h-10" />
+      <img src="/smb-hub-logo.png" alt="SMB Hub" className={large ? "h-10 w-auto sm:h-[50px]" : "h-9 w-auto sm:h-10"} />
     </Link>
   );
 }

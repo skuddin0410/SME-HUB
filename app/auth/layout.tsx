@@ -1,54 +1,31 @@
 import Link from "next/link";
-import { Building2, CreditCard, Newspaper, Users, UsersRound } from "lucide-react";
 import { Logo } from "@/components/site-nav";
-
-const LINKS = [
-  { href: "/feed", label: "Top posts", icon: Newspaper },
-  { href: "/members", label: "People", icon: Users },
-  { href: "/groups", label: "Groups", icon: UsersRound },
-  { href: "/businesses", label: "Businesses", icon: Building2 },
-  { href: "/membership-plans", label: "Plans", icon: CreditCard },
-];
+import { AuthNav } from "@/components/auth-nav";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <header className="mx-auto flex h-[76px] w-full max-w-[1128px] items-center gap-2 px-4">
-        <Logo />
-        <nav className="ml-auto hidden items-center md:flex" aria-label="Browse">
-          {LINKS.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className="press flex h-[52px] min-w-[80px] flex-col items-center justify-center gap-0.5 rounded px-2 text-xs text-foreground/60 transition-colors hover:text-foreground"
-            >
-              <Icon className="h-6 w-6" />
-              {label}
-            </Link>
-          ))}
-          <span className="mx-3 h-9 w-px bg-border" />
-        </nav>
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
-          <Link
-            href="/auth/sign-up"
-            className="press rounded-full border border-primary px-5 py-2.5 text-base font-semibold text-primary transition-all hover:bg-primary/10 hover:shadow-[inset_0_0_0_1px_hsl(var(--primary))]"
-          >
-            Join now
-          </Link>
-          <Link href="/auth/login" className="press rounded-full bg-primary px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-[hsl(224_76%_44%)]">
-            Sign in
-          </Link>
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-[#f3f7fe]">
+      {/* supplied artwork: blue waves with the Toronto skyline on the right */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[780px] bg-[url('/auth-bg.jpg')] bg-cover bg-[position:25%_center] lg:bg-[position:right_center]"
+        style={{ maskImage: "linear-gradient(to bottom, black 78%, transparent)", WebkitMaskImage: "linear-gradient(to bottom, black 78%, transparent)" }}
+      />
+      <header className="relative z-10 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-[66px] w-full max-w-[1270px] items-center gap-4 px-5 xl:px-0">
+          <Logo href="/auth/login" large />
+          <AuthNav />
         </div>
       </header>
-      <main className="flex-1">{children}</main>
-      <footer className="border-t px-4 py-5 text-center text-xs text-muted-foreground">
+      <main className="relative z-10 flex-1">{children}</main>
+      <footer className="relative z-10 px-4 py-5 text-center text-xs text-slate-500">
         SMB Hub, by Cmarketing Inc. © {new Date().getFullYear()}
         <span className="mx-2">|</span>
-        <Link href="/about" className="hover:text-primary hover:underline">
+        <Link href="/about" className="hover:text-[#0b2bcf] hover:underline">
           About
         </Link>
         <span className="mx-2">|</span>
-        <Link href="/help" className="hover:text-primary hover:underline">
+        <Link href="/help" className="hover:text-[#0b2bcf] hover:underline">
           Help
         </Link>
       </footer>
