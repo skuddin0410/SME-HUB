@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { CalendarDays, Globe, MapPin } from "lucide-react";
 import { fetchPosts, getViewer, PAGE_SIZE, type Profile } from "@/lib/hub";
 import { ConnectControl, Empty, Pager, PostCard, TierBadge, type Link_ } from "@/components/hub";
-import { AvatarImg, SubmitButton } from "@/components/hub-client";
+import { AvatarImg, Cover, SubmitButton } from "@/components/hub-client";
 import { blockMember } from "@/app/(hub)/actions";
 
 export default async function MemberPage({
@@ -41,11 +41,11 @@ export default async function MemberPage({
   return (
     <>
       <section className="panel overflow-hidden">
-        <div className="h-28" style={{ background: "linear-gradient(120deg, hsl(var(--ink)) 55%, hsl(var(--primary)) 160%)" }} />
+        <Cover seed={member.id} className="h-36" />
         <div className="px-5 pb-5">
           <div className="-mt-12 flex items-end justify-between gap-3">
-            <span className="rounded-full ring-4 ring-white">
-              <AvatarImg person={member} size={104} />
+            <span className="relative rounded-full ring-4 ring-white">
+              <AvatarImg person={member} size={112} />
             </span>
             <div className="flex flex-wrap justify-end gap-2 pb-1">
               {isMe ? (
@@ -68,7 +68,7 @@ export default async function MemberPage({
             <h1 className="text-2xl font-bold">{member.full_name || "Member"}</h1>
             <TierBadge type={member.member_type} />
             {member.status === "suspended" && (
-              <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold text-white">Suspended</span>
+              <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[11px] font-semibold text-white">Suspended</span>
             )}
           </div>
           {member.headline && <p className="mt-0.5 text-[15px]">{member.headline}</p>}

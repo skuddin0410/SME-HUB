@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Bell, Home, Search, UserPlus, Users, UsersRound } from "lucide-react";
 import { AUTHOR_FIELDS, getViewer, type Author } from "@/lib/hub";
-import { AvatarImg, BrandLogo, NavLink, SignOutButton } from "@/components/hub-client";
+import { AvatarImg, BrandLogo, Cover, NavLink, SignOutButton } from "@/components/hub-client";
 import { GroupLine, PersonLine, TierBadge } from "@/components/hub";
 
 export const dynamic = "force-dynamic";
@@ -49,21 +49,26 @@ export default async function HubLayout({ children }: { children: React.ReactNod
     { href: "/notifications", label: "Alerts", icon: Bell, badge: unread.count ?? 0, guest: false },
   ].filter((n) => n.guest || userId);
 
+  const filled = profile
+    ? [profile.full_name, profile.headline, profile.bio, profile.location, profile.website, profile.avatar_url].filter(Boolean).length
+    : 0;
+  const done = Math.round((filled / 6) * 100);
+
   const card = "panel p-4";
   const railTitle = "mb-3 font-display text-[15px] font-semibold";
 
   return (
     <div className="min-h-screen pb-16 lg:pb-0">
-      <header className="sticky top-0 z-30" style={{ background: "hsl(var(--ink))" }}>
+      <header className="sticky top-0 z-30 border-b bg-white/85 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
-          <BrandLogo />
+          <BrandLogo tone="dark" />
           <form action="/search" className="relative hidden max-w-xs flex-1 md:block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               name="q"
               placeholder="Search people, groups and posts"
               aria-label="Search"
-              className="w-full rounded-full bg-white/10 py-2 pl-9 pr-4 text-sm text-white outline-none transition placeholder:text-white/50 focus:bg-white/15 focus:ring-2 focus:ring-white/30"
+              className="w-full rounded-full bg-muted py-2 pl-9 pr-4 text-sm outline-none transition placeholder:text-muted-foreground focus:bg-white focus:ring-2 focus:ring-primary/30"
             />
           </form>
           <nav className="ml-auto hidden items-center lg:flex" aria-label="Main">
@@ -74,12 +79,12 @@ export default async function HubLayout({ children }: { children: React.ReactNod
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2 lg:ml-2">
-            <Link href="/search" className="rounded-full p-2 text-white/70 md:hidden" aria-label="Search">
+            <Link href="/search" className="rounded-full p-2 text-muted-foreground md:hidden" aria-label="Search">
               <Search className="h-5 w-5" />
             </Link>
             {profile ? (
               <details className="group relative">
-                <summary className="flex cursor-pointer list-none items-center rounded-full ring-2 ring-white/20 transition hover:ring-white/50 [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center rounded-full ring-2 ring-primary/20 transition hover:ring-primary/60 [&::-webkit-details-marker]:hidden">
                   <AvatarImg person={profile} size={34} />
                 </summary>
                 <div className="panel absolute right-0 mt-2 w-56 animate-rise p-1.5 text-sm">
@@ -93,15 +98,15 @@ export default async function HubLayout({ children }: { children: React.ReactNod
                       {l.label}
                     </Link>
                   ))}
-                  <SignOutButton className="block w-full rounded-lg px-3 py-2 text-left text-primary hover:bg-muted" />
+                  <SignOutButton className="block w-full rounded-lg px-3 py-2 text-left text-rose-600 hover:bg-muted" />
                 </div>
               </details>
             ) : (
               <>
-                <Link href="/auth/login" className="press rounded-full px-3.5 py-2 text-sm font-semibold text-white hover:bg-white/10">
+                <Link href="/auth/login" className="press rounded-full px-3.5 py-2 text-sm font-semibold text-primary hover:bg-primary/5">
                   Sign in
                 </Link>
-                <Link href="/auth/sign-up" className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90">
+                <Link href="/auth/sign-up" className="press rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-rose-600/30 hover:bg-rose-700">
                   Join free
                 </Link>
               </>
@@ -111,7 +116,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
       </header>
 
       {profile?.status === "suspended" && (
-        <p className="bg-primary px-3 py-2 text-center text-sm text-white">
+        <p className="bg-rose-600 px-3 py-2 text-center text-sm text-white">
           Your account is suspended. You can browse, but you cannot post or comment.
         </p>
       )}
@@ -121,9 +126,9 @@ export default async function HubLayout({ children }: { children: React.ReactNod
           <div className="sticky top-20 space-y-4">
             {profile ? (
               <div className="panel overflow-hidden">
-                <div className="h-14" style={{ background: "hsl(var(--ink))" }} />
+                <Cover seed={profile.id} className="h-16" />
                 <div className="-mt-8 px-4 pb-4">
-                  <Link href={`/members/${userId}`} className="inline-block rounded-full ring-4 ring-white">
+                  <Link href={`/members/${userId}`} className="relative inline-block rounded-full ring-4 ring-white">
                     <AvatarImg person={profile} size={64} />
                   </Link>
                   <Link href={`/members/${userId}`} className="mt-2 block font-display text-lg font-semibold leading-tight hover:underline">
@@ -133,6 +138,17 @@ export default async function HubLayout({ children }: { children: React.ReactNod
                   <div className="mt-2">
                     <TierBadge type={profile.member_type} />
                   </div>
+                  {done < 100 && (
+                    <Link href="/profile/edit" className="mt-4 block rounded-xl bg-muted p-3 transition-colors hover:bg-primary/10">
+                      <span className="flex items-center justify-between text-xs font-semibold">
+                        Profile strength <span className="text-primary">{done}%</span>
+                      </span>
+                      <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-white">
+                        <span className="block h-full rounded-full bg-primary transition-all" style={{ width: `${done}%` }} />
+                      </span>
+                      <span className="mt-1.5 block text-xs text-muted-foreground">Complete it to get found by more owners.</span>
+                    </Link>
+                  )}
                   <dl className="mt-4 grid grid-cols-2 gap-2 border-t pt-3 text-center">
                     <Link href="/network" className="rounded-lg py-1 hover:bg-muted">
                       <dd className="font-display text-xl font-bold">{connections.count ?? 0}</dd>
@@ -146,15 +162,15 @@ export default async function HubLayout({ children }: { children: React.ReactNod
                 </div>
               </div>
             ) : (
-              <div className="rounded-2xl p-5 text-white" style={{ background: "hsl(var(--ink))" }}>
+              <div className="cover rounded-2xl p-5 text-white shadow-xl shadow-blue-900/20">
                 <p className="font-display text-xl font-bold leading-snug">Where Canadian small business owners meet.</p>
-                <p className="mt-2 text-sm text-white/70">
+                <p className="mt-2 text-sm text-white/80">
                   Ask questions, share what is working and find the people who can help you grow.
                 </p>
-                <Link href="/auth/sign-up" className="press mt-4 block rounded-full bg-primary py-2.5 text-center text-sm font-semibold">
+                <Link href="/auth/sign-up" className="press mt-4 block rounded-full bg-white py-2.5 text-center text-sm font-semibold text-primary">
                   Join free
                 </Link>
-                <Link href="/auth/login" className="mt-2 block text-center text-sm text-white/70 hover:text-white">
+                <Link href="/auth/login" className="mt-2 block text-center text-sm text-white/80 hover:text-white">
                   I already have an account
                 </Link>
               </div>
@@ -209,7 +225,7 @@ export default async function HubLayout({ children }: { children: React.ReactNod
         </aside>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t bg-white lg:hidden" aria-label="Main">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t bg-white/90 backdrop-blur-xl lg:hidden" aria-label="Main">
         {nav.map(({ href, label, icon: Icon, badge }) => (
           <NavLink key={href} href={href} label={label} badge={badge} variant="bottom">
             <Icon className="h-5 w-5" />

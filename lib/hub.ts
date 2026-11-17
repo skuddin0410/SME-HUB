@@ -24,6 +24,7 @@ export type Post = {
   visibility: "public" | "members" | "connections" | "private";
   created_at: string;
   pinned_at: string | null;
+  kind: "update" | "question" | "win" | "offer" | "hiring";
   group_id: string | null;
   author: Author;
   group: { name: string; slug: string } | null;
@@ -74,8 +75,7 @@ export async function requireStaff() {
   return { ...viewer, userId: viewer.userId, profile: viewer.profile as Profile };
 }
 
-const postSelect = (withPin: boolean) =>
-  `id, body, image_url, visibility, created_at, ${withPin ? "pinned_at, " : ""}group_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
+const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
 
 type Row = Omit<Post, "likes" | "comments" | "likedByMe"> & {
   reactions: { count: number }[];
@@ -86,27 +86,24 @@ type Row = Omit<Post, "likes" | "comments" | "likedByMe"> & {
 export async function fetchPosts(
   supabase: Supabase,
   userId: string | null,
-  opts: { page?: number; groupId?: string; authorId?: string; postId?: string; search?: string; limit?: number } = {},
+  opts: { page?: number; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number } = {},
 ): Promise<Post[]> {
   const page = Math.max(1, opts.page ?? 1);
   const size = opts.limit ?? PAGE_SIZE;
 
-  const run = (withPin: boolean) => {
-    let query = supabase.from("posts").select(postSelect(withPin));
-    if (withPin && !opts.authorId && !opts.postId && !opts.search) {
-      query = query.order("pinned_at", { ascending: false, nullsFirst: false });
-    }
-    query = query.order("created_at", { ascending: false }).range((page - 1) * size, page * size - 1);
-    if (opts.groupId) query = query.eq("group_id", opts.groupId);
-    if (opts.authorId) query = query.eq("author_id", opts.authorId);
-    if (opts.postId) query = query.eq("id", opts.postId);
-    if (opts.search) query = query.ilike("body", `%${opts.search}%`);
-    return query;
-  };
+  let query = supabase.from("posts").select(POST_SELECT);
+  // pinned posts lead the main feed only
+  if (!opts.authorId && !opts.postId && !opts.search && !opts.kind) {
+    query = query.order("pinned_at", { ascending: false, nullsFirst: false });
+  }
+  query = query.order("created_at", { ascending: false }).range((page - 1) * size, page * size - 1);
+  if (opts.groupId) query = query.eq("group_id", opts.groupId);
+  if (opts.authorId) query = query.eq("author_id", opts.authorId);
+  if (opts.postId) query = query.eq("id", opts.postId);
+  if (opts.kind) query = query.eq("kind", opts.kind);
+  if (opts.search) query = query.ilike("body", `%${opts.search}%`);
 
-  let { data, error } = await run(true);
-  // 42703 = the pinned_at column is not there yet (migration 0003 not applied)
-  if (error?.code === "42703") ({ data, error } = await run(false));
+  const { data, error } = await query;
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as unknown as Row[];
   if (rows.length === 0) return [];
@@ -123,7 +120,6 @@ export async function fetchPosts(
 
   return rows.map((r) => ({
     ...r,
-    pinned_at: r.pinned_at ?? null,
     likes: r.reactions[0]?.count ?? 0,
     comments: r.comments[0]?.count ?? 0,
     likedByMe: liked.has(r.id),

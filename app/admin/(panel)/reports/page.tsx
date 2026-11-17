@@ -35,7 +35,7 @@ export default async function AdminReports() {
       {reports.map((r) => (
         <section key={r.id} className="panel space-y-3 p-4 text-sm">
           <p>
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold capitalize text-primary">{r.reason}</span>{" "}
+            <span className="rounded-full bg-rose-50 px-2 py-0.5 text-xs font-semibold capitalize text-rose-700">{r.reason}</span>{" "}
             <span className="text-muted-foreground">
               reported by{" "}
               <Link href={`/members/${r.reporter.id}`} className="font-medium text-foreground hover:underline">

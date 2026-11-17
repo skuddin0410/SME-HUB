@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Lock, UsersRound } from "lucide-react";
 import { fetchPosts, getViewer, PAGE_SIZE } from "@/lib/hub";
 import { Empty, Pager, PostCard } from "@/components/hub";
-import { Composer, SubmitButton } from "@/components/hub-client";
+import { Composer, Cover, SubmitButton } from "@/components/hub-client";
 import { joinGroup, leaveGroup } from "@/app/(hub)/actions";
 
 export default async function GroupPage({
@@ -42,10 +42,10 @@ export default async function GroupPage({
   return (
     <>
       <section className="panel overflow-hidden">
-        <div className="h-20" style={{ background: "linear-gradient(120deg, hsl(var(--ink)) 55%, hsl(var(--primary)) 160%)" }} />
+        <Cover seed={group.id} className="h-28" />
         <div className="flex flex-wrap items-end justify-between gap-3 px-5 pb-5">
           <div className="min-w-0">
-            <span className="-mt-7 flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground text-white ring-4 ring-white">
+            <span className="cover relative -mt-7 flex h-14 w-14 items-center justify-center rounded-2xl text-white ring-4 ring-white">
               <UsersRound className="h-6 w-6" />
             </span>
             <h1 className="mt-2 text-2xl font-bold">{group.name}</h1>

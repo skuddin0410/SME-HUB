@@ -20,6 +20,8 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   if (!body) return { error: "Write something before posting." };
   const visibility = text(form, "visibility") || "public";
   const groupId = text(form, "group_id") || null;
+  const rawKind = text(form, "kind");
+  const kind = ["question", "win", "offer", "hiring"].includes(rawKind) ? rawKind : "update";
   let image_url: string | null = null;
 
   const image = form.get("image");
@@ -35,7 +37,7 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
 
   const { error } = await supabase
     .from("posts")
-    .insert({ author_id: userId, body, visibility, group_id: groupId, image_url });
+    .insert({ author_id: userId, body, visibility, kind, group_id: groupId, image_url });
   if (error) return { error: error.message };
   revalidatePath("/", "layout");
   return { ok: Date.now() };

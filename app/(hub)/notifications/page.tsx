@@ -60,7 +60,7 @@ export default async function NotificationsPage() {
                   <span className="font-semibold">{n.actor.full_name || "A member"}</span> {KIND[n.type].text}
                   <span className="block text-xs text-muted-foreground">{timeAgo(n.created_at)}</span>
                 </p>
-                {!n.read_at && <span className="h-2 w-2 rounded-full bg-primary" aria-label="Unread" />}
+                {!n.read_at && <span className="h-2 w-2 rounded-full bg-rose-600" aria-label="Unread" />}
               </Link>
             );
           })}

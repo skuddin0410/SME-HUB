@@ -18,6 +18,7 @@ import {
   type FormState,
 } from "@/app/(hub)/actions";
 import type { CommentRow, Profile } from "@/lib/hub";
+import { DEMO_IMAGES, demoAvatar, demoCover, KINDS, type Kind } from "@/lib/demo";
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
 
@@ -25,19 +26,73 @@ export function AvatarImg({
   person,
   size = 40,
 }: {
-  person: { full_name: string; avatar_url: string | null };
+  person: { id?: string; full_name: string; avatar_url: string | null };
   size?: number;
 }) {
+  const [failed, setFailed] = useState(false);
+  const img = useRef<HTMLImageElement>(null);
+  const src = person.avatar_url ?? (DEMO_IMAGES && person.id ? demoAvatar(person.id) : null);
+  useEffect(() => {
+    if (img.current?.complete && img.current.naturalWidth === 0) setFailed(true);
+  }, [src]);
   const style = { width: size, height: size };
-  return person.avatar_url ? (
-    <img src={person.avatar_url} alt="" style={style} className="shrink-0 rounded-full object-cover ring-1 ring-black/5" />
+  return src && !failed ? (
+    <img
+      ref={img}
+      src={src}
+      alt=""
+      loading="lazy"
+      style={style}
+      onError={() => setFailed(true)}
+      className="shrink-0 rounded-full bg-muted object-cover ring-1 ring-black/5"
+    />
   ) : (
     <span
-      style={{ ...style, fontSize: size * 0.4, background: "hsl(var(--ink))" }}
-      className="flex shrink-0 items-center justify-center rounded-full font-semibold text-white"
+      style={{ ...style, fontSize: size * 0.4 }}
+      className="cover flex shrink-0 items-center justify-center rounded-full font-semibold text-white"
     >
       {(person.full_name || "?").charAt(0).toUpperCase()}
     </span>
+  );
+}
+
+/** Banner strip: a photo when one is available, otherwise the blue brand gradient. */
+export function Cover({ seed, className }: { seed: string; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  const img = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    if (img.current?.complete && img.current.naturalWidth === 0) setFailed(true);
+  }, []);
+  return (
+    <div className={cx("cover relative w-full overflow-hidden", className)}>
+      {DEMO_IMAGES && !failed && (
+        <img
+          ref={img}
+          src={demoCover(seed)}
+          alt=""
+          loading="lazy"
+          onError={() => setFailed(true)}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--ink)/0.45)] to-transparent" />
+    </div>
+  );
+}
+
+/** Long posts start folded so the feed stays scannable. */
+export function PostBody({ text }: { text: string }) {
+  const long = text.length > 420 || text.split("\n").length > 7;
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="px-4 py-3">
+      <p className={cx("whitespace-pre-wrap break-words text-[15px] leading-relaxed", long && !open && "line-clamp-5")}>{text}</p>
+      {long && (
+        <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-sm font-semibold text-primary hover:underline">
+          {open ? "Show less" : "See more"}
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -57,7 +112,7 @@ export function BrandLogo({ tone = "light" }: { tone?: "light" | "dark" }) {
     <Link href="/feed" className="flex items-center gap-2.5" aria-label="CanadianSME Hub home">
       {broken ? (
         <span className={cx("font-display text-lg font-bold", tone === "light" ? "text-white" : "text-foreground")}>
-          Canadian<span className="text-primary">SME</span>
+          Canadian<span className="text-rose-600">SME</span>
         </span>
       ) : (
         <img ref={img} src={src} alt="CanadianSME" className="h-7 w-auto" onError={() => setBroken(true)} />
@@ -65,7 +120,7 @@ export function BrandLogo({ tone = "light" }: { tone?: "light" | "dark" }) {
       <span
         className={cx(
           "rounded-md px-1.5 py-0.5 text-xs font-semibold",
-          tone === "light" ? "bg-white/15 text-white" : "bg-foreground text-white",
+          tone === "light" ? "bg-white/15 text-white" : "bg-primary text-white",
         )}
       >
         Hub
@@ -92,7 +147,7 @@ export function NavLink({
   const styles = {
     top: cx(
       "relative flex h-14 min-w-[68px] flex-col items-center justify-center gap-0.5 border-b-2 px-2 text-[11px] font-medium transition-colors",
-      active ? "border-primary text-white" : "border-transparent text-white/60 hover:text-white",
+      active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground",
     ),
     bottom: cx(
       "relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium",
@@ -108,7 +163,7 @@ export function NavLink({
       <span className="relative">
         {children}
         {badge > 0 && (
-          <span className="absolute -right-2.5 -top-1.5 min-w-[16px] rounded-full bg-primary px-1 text-center text-[10px] font-semibold leading-4 text-white">
+          <span className="absolute -right-2.5 -top-1.5 min-w-[16px] rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-4 text-white">
             {badge > 9 ? "9+" : badge}
           </span>
         )}
@@ -148,10 +203,10 @@ export function SubmitButton({
   const { pending } = useFormStatus();
   const tones = {
     primary: "bg-primary text-white hover:bg-primary/90",
-    dark: "bg-foreground text-white hover:bg-foreground/90",
+    dark: "bg-[hsl(var(--ink))] text-white hover:opacity-90",
     outline: "border border-input bg-white hover:bg-muted",
     ghost: "text-muted-foreground hover:bg-muted hover:text-foreground",
-    danger: "border border-primary/30 text-primary hover:bg-primary/5",
+    danger: "border border-rose-200 text-rose-600 hover:bg-rose-50",
   }[tone];
   return (
     <button
@@ -175,7 +230,7 @@ export function Composer({
   groupId,
   placeholder,
 }: {
-  me: Pick<Profile, "full_name" | "avatar_url"> | null;
+  me: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
   groupId?: string;
   placeholder?: string;
 }) {
@@ -183,6 +238,7 @@ export function Composer({
   const [open, setOpen] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [count, setCount] = useState(0);
+  const [kind, setKind] = useState<Kind>("update");
   const formRef = useRef<HTMLFormElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -191,6 +247,7 @@ export function Composer({
       formRef.current?.reset();
       setPreview(null);
       setCount(0);
+      setKind("update");
       setOpen(false);
     }
   }, [state.ok]);
@@ -203,7 +260,7 @@ export function Composer({
           <p className="text-sm text-muted-foreground">Join to post, comment and connect with other owners.</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/auth/sign-up" className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white">
+          <Link href="/auth/sign-up" className="press rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700">
             Join free
           </Link>
           <Link href="/auth/login" className="press rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold">
@@ -226,11 +283,31 @@ export function Composer({
           rows={open ? 4 : 1}
           onFocus={() => setOpen(true)}
           onChange={(e) => setCount(e.target.value.length)}
-          placeholder={placeholder ?? "Share an update with other owners"}
+          placeholder={kind === "update" ? (placeholder ?? KINDS.update.prompt) : KINDS[kind].prompt}
           className="field resize-none !rounded-2xl transition-all duration-200"
         />
       </div>
 
+      <input type="hidden" name="kind" value={kind} />
+      {open && (
+        <div className="mt-3 flex animate-rise flex-wrap gap-1.5" role="radiogroup" aria-label="What are you sharing?">
+          {(Object.keys(KINDS) as Kind[]).map((k) => (
+            <button
+              key={k}
+              type="button"
+              role="radio"
+              aria-checked={kind === k}
+              onClick={() => setKind(k)}
+              className={cx(
+                "press rounded-full px-3 py-1 text-xs font-semibold transition-colors",
+                kind === k ? "bg-primary text-white" : "bg-muted text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {KINDS[k].label}
+            </button>
+          ))}
+        </div>
+      )}
       {preview && (
         <div className="relative mt-3 animate-rise">
           <img src={preview} alt="Selected image" className="max-h-72 w-full rounded-xl object-cover" />
@@ -247,7 +324,7 @@ export function Composer({
           </button>
         </div>
       )}
-      {state.error && <p className="mt-3 rounded-lg bg-primary/5 px-3 py-2 text-sm text-primary">{state.error}</p>}
+      {state.error && <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.error}</p>}
 
       <div className={cx("mt-3 flex flex-wrap items-center justify-between gap-2", !open && "hidden")}>
         <div className="flex items-center gap-2">
@@ -285,7 +362,7 @@ export function Composer({
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className={cx("text-xs", count > 4800 ? "text-primary" : "text-muted-foreground")}>{count}/5000</span>
+          <span className={cx("text-xs", count > 4800 ? "text-rose-600" : "text-muted-foreground")}>{count}/5000</span>
           <SubmitButton>Post</SubmitButton>
         </div>
       </div>
@@ -391,8 +468,8 @@ export function PostActions({
   return (
     <div className="border-t px-2 pb-2 pt-1">
       <div className="flex items-center gap-1">
-        <button type="button" onClick={like} aria-pressed={liked} className={cx(actionClass, liked && "!text-primary")}>
-          <Heart key={popKey} className={cx("h-[18px] w-[18px]", liked && "fill-primary", popKey > 0 && liked && "animate-pop")} />
+        <button type="button" onClick={like} aria-pressed={liked} className={cx(actionClass, liked && "!text-rose-600")}>
+          <Heart key={popKey} className={cx("h-[18px] w-[18px]", liked && "fill-rose-600", popKey > 0 && liked && "animate-pop")} />
           {likeCount > 0 ? likeCount : "Like"}
         </button>
         <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={actionClass}>
@@ -458,7 +535,7 @@ export function PostActions({
                         setCommentCount((n) => Math.max(0, n - 1));
                         deleteComment(c.id).catch(() => setNote("Could not delete the comment."));
                       }}
-                      className="text-muted-foreground opacity-0 transition-opacity hover:text-primary focus:opacity-100 group-hover:opacity-100"
+                      className="text-muted-foreground opacity-0 transition-opacity hover:text-rose-600 focus:opacity-100 group-hover:opacity-100"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -525,7 +602,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   return (
     <form action={action} className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
-        <AvatarImg person={{ full_name: profile.full_name, avatar_url: preview }} size={72} />
+        <AvatarImg person={{ id: profile.id, full_name: profile.full_name, avatar_url: preview }} size={72} />
         <label className="press cursor-pointer rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold hover:bg-muted">
           Change photo
           <input
@@ -564,7 +641,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           className="field font-normal"
         />
       </label>
-      {state.error && <p className="rounded-lg bg-primary/5 px-3 py-2 text-sm text-primary">{state.error}</p>}
+      {state.error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.error}</p>}
       <SubmitButton className="self-start">Save profile</SubmitButton>
     </form>
   );

@@ -60,7 +60,7 @@ export default async function AdminMembers({
                 </option>
               ))}
             </select>
-            <select name="status" defaultValue={m.status} aria-label="Status" className={`${select} ${m.status === "suspended" ? "border-primary text-primary" : ""}`}>
+            <select name="status" defaultValue={m.status} aria-label="Status" className={`${select} ${m.status === "suspended" ? "border-rose-400 text-rose-600" : ""}`}>
               <option value="active">Active</option>
               <option value="suspended">Suspended</option>
             </select>

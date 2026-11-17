@@ -1,11 +1,15 @@
 -- Open browsing: visitors can see group member counts.
-drop policy "memberships readable" on group_members;
-create policy "memberships readable" on group_members for select using (true);
+alter policy "memberships readable" on group_members to public;
 
--- Admin tools: pin a post to the top of the feed, staff can edit any post row for that.
-alter table posts add column pinned_at timestamptz;
-create index on posts (pinned_at desc nulls last, created_at desc);
+-- Admin tools: pin a post to the top of the feed.
+alter table posts add column if not exists pinned_at timestamptz;
+create index if not exists posts_pinned_idx on posts (pinned_at desc nulls last, created_at desc);
 create policy "posts staff update" on posts for update to authenticated using (is_staff()) with check (is_staff());
+
+-- Post kinds: what the author wants from the community.
+alter table posts add column if not exists kind text not null default 'update'
+  check (kind in ('update', 'question', 'win', 'offer', 'hiring'));
+create index if not exists posts_kind_idx on posts (kind, created_at desc);
 
 create function is_admin() returns boolean
 language sql stable security definer set search_path = public as $$

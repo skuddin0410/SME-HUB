@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Lock, UsersRound } from "lucide-react";
 import { getViewer } from "@/lib/hub";
 import { Empty, PageTitle } from "@/components/hub";
-import { SubmitButton } from "@/components/hub-client";
+import { Cover, SubmitButton } from "@/components/hub-client";
 import { createGroup } from "@/app/(hub)/actions";
 
 type Group = {
@@ -32,9 +32,10 @@ export default async function GroupsPage() {
         {groups.map((g) => {
           const count = g.group_members[0]?.count ?? 0;
           return (
-            <Link key={g.id} href={`/groups/${g.slug}`} className="panel group flex flex-col p-4 transition-shadow hover:shadow-lg">
-              <div className="flex items-start gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-foreground text-white">
+            <Link key={g.id} href={`/groups/${g.slug}`} className="panel lift group flex flex-col overflow-hidden">
+              <Cover seed={g.id} className="h-20" />
+              <div className="flex items-start gap-3 px-4 pt-4">
+                <span className="cover flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white">
                   <UsersRound className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
@@ -45,7 +46,7 @@ export default async function GroupsPage() {
                   </p>
                 </div>
               </div>
-              {g.description && <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{g.description}</p>}
+              <p className="line-clamp-2 px-4 pb-4 pt-3 text-sm text-muted-foreground">{g.description || "Open the group to see what members are talking about."}</p>
             </Link>
           );
         })}

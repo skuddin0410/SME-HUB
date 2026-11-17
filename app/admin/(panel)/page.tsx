@@ -46,9 +46,9 @@ export default async function AdminOverview() {
       <h1 className="text-2xl font-bold">Overview</h1>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
         {stats.map((s) => (
-          <Link key={s.label} href={s.href} className={`panel p-5 transition-shadow hover:shadow-lg ${s.alert ? "border-primary/40" : ""}`}>
+          <Link key={s.label} href={s.href} className={`panel lift p-5 ${s.alert ? "border-rose-300" : ""}`}>
             <p className="text-sm text-muted-foreground">{s.label}</p>
-            <p className={`font-display text-4xl font-bold ${s.alert ? "text-primary" : ""}`}>{s.value.toLocaleString("en-CA")}</p>
+            <p className={`font-display text-4xl font-bold ${s.alert ? "text-rose-600" : ""}`}>{s.value.toLocaleString("en-CA")}</p>
           </Link>
         ))}
       </div>
@@ -57,15 +57,15 @@ export default async function AdminOverview() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-[15px] font-semibold">Last {DAYS} days</h2>
           <p className="flex gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-foreground" /> New members</span>
-            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> Posts</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> New members</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-sky-400" /> Posts</span>
           </p>
         </div>
         <div className="mt-4 flex h-40 items-end gap-1.5" role="img" aria-label={`New members and posts per day for the last ${DAYS} days`}>
           {days.map((d) => (
             <div key={d.key} className="flex h-full flex-1 items-end justify-center gap-0.5" title={`${d.label}: ${d.signups} new members, ${d.posts} posts`}>
-              <div className="w-1/2 rounded-t bg-foreground" style={{ height: `${Math.max(2, (d.signups / peak) * 100)}%` }} />
-              <div className="w-1/2 rounded-t bg-primary" style={{ height: `${Math.max(2, (d.posts / peak) * 100)}%` }} />
+              <div className="w-1/2 rounded-t bg-primary" style={{ height: `${Math.max(2, (d.signups / peak) * 100)}%` }} />
+              <div className="w-1/2 rounded-t bg-sky-400" style={{ height: `${Math.max(2, (d.posts / peak) * 100)}%` }} />
             </div>
           ))}
         </div>

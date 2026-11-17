@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Lock, Pin, Trash2, UsersRound } from "lucide-react";
 import { MEMBER_TYPES, timeAgo, type Author, type Post, type Profile } from "@/lib/hub";
 import { acceptConnection, deletePost, removeConnection, requestConnection } from "@/app/(hub)/actions";
-import { AvatarImg, PostActions, SubmitButton } from "@/components/hub-client";
+import { AvatarImg, PostActions, PostBody, SubmitButton } from "@/components/hub-client";
+import { KINDS } from "@/lib/demo";
 
 export type Viewer = { userId: string | null; profile: Profile | null; isStaff: boolean };
 
@@ -11,7 +12,7 @@ export function TierBadge({ type }: { type: Profile["member_type"] }) {
   if (type === "owner") return null;
   const tone = {
     plus: "border border-foreground/20 text-foreground",
-    elite: "bg-foreground text-white",
+    elite: "bg-[hsl(var(--ink))] text-white",
     advisor: "bg-amber-100 text-amber-900",
   }[type];
   return <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${tone}`}>{MEMBER_TYPES[type]}</span>;
@@ -41,7 +42,7 @@ const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Co
 export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
   const own = post.author.id === viewer.userId;
   return (
-    <article className="panel overflow-hidden">
+    <article className="panel overflow-hidden transition-shadow duration-200 hover:shadow-xl">
       {post.pinned_at && (
         <p className="flex items-center gap-1.5 border-b bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900">
           <Pin className="h-3.5 w-3.5" /> Pinned by CanadianSME
@@ -79,14 +80,19 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
               type="submit"
               title="Delete post"
               aria-label="Delete post"
-              className="press rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-primary"
+              className="press rounded-full p-2 text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
             >
               <Trash2 className="h-4 w-4" />
             </button>
           </form>
         )}
       </div>
-      <p className="whitespace-pre-wrap break-words px-4 py-3 text-[15px] leading-relaxed">{post.body}</p>
+      {post.kind !== "update" && (
+        <p className="px-4 pt-3">
+          <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${KINDS[post.kind].chip}`}>{KINDS[post.kind].label}</span>
+        </p>
+      )}
+      <PostBody text={post.body} />
       {post.image_url && <img src={post.image_url} alt="" loading="lazy" className="max-h-[520px] w-full object-cover" />}
       <PostActions
         postId={post.id}
@@ -143,7 +149,7 @@ export function ConnectControl({ viewer, otherId, link }: { viewer: Viewer; othe
 export function GroupLine({ group }: { group: { slug: string; name: string; is_private: boolean; members: number } }) {
   return (
     <Link href={`/groups/${group.slug}`} className="group flex items-center gap-3">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-white">
+      <span className="cover flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white">
         <UsersRound className="h-5 w-5" />
       </span>
       <span className="min-w-0">

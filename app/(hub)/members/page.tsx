@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { cleanTerm, getViewer, MEMBER_TYPES, type Profile } from "@/lib/hub";
 import { ConnectControl, Empty, PageTitle, Pager, TierBadge, type Link_ } from "@/components/hub";
-import { AvatarImg, SubmitButton } from "@/components/hub-client";
+import { AvatarImg, Cover, SubmitButton } from "@/components/hub-client";
 
 const SIZE = 18;
 
@@ -55,10 +55,10 @@ export default async function MembersPage({
       {members.length === 0 && <Empty title="No members match that search">Try a different name or clear the filters.</Empty>}
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2">
         {members.map((m) => (
-          <div key={m.id} className="panel flex flex-col items-center overflow-hidden text-center transition-shadow hover:shadow-lg">
-            <div className="h-12 w-full" style={{ background: "hsl(var(--ink))" }} />
-            <Link href={`/members/${m.id}`} className="-mt-8 rounded-full ring-4 ring-white">
-              <AvatarImg person={m} size={64} />
+          <div key={m.id} className="panel flex flex-col items-center lift overflow-hidden text-center">
+            <Cover seed={m.id} className="h-16" />
+            <Link href={`/members/${m.id}`} className="relative -mt-10 rounded-full ring-4 ring-white">
+              <AvatarImg person={m} size={80} />
             </Link>
             <div className="flex flex-1 flex-col items-center gap-1 px-4 pb-4 pt-2">
               <Link href={`/members/${m.id}`} className="font-semibold leading-tight hover:underline">

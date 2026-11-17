@@ -46,11 +46,11 @@ function AdminLoginForm() {
         Password
         <input name="password" type="password" required autoComplete="current-password" className="field font-normal" />
       </label>
-      {error && <p className="mt-3 rounded-lg bg-primary/5 px-3 py-2 text-sm text-primary">{error}</p>}
+      {error && <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
       <button
         type="submit"
         disabled={busy}
-        className="press mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+        className="press mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-2.5 text-sm font-semibold text-white disabled:opacity-60"
       >
         {busy && <Loader2 className="h-4 w-4 animate-spin" />}
         Sign in to admin
@@ -61,7 +61,7 @@ function AdminLoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center p-6" style={{ background: "hsl(var(--ink))" }}>
+    <main className="cover flex min-h-screen items-center justify-center p-6">
       <Suspense>
         <AdminLoginForm />
       </Suspense>

@@ -4,32 +4,32 @@
 
 @layer base {
   :root {
-    --background: 220 16% 96%;
-    --foreground: 220 43% 11%;
+    --background: 220 33% 97%;
+    --foreground: 222 47% 14%;
     --card: 0 0% 100%;
-    --card-foreground: 220 43% 11%;
+    --card-foreground: 222 47% 14%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 43% 11%;
-    --primary: 356 74% 48%;
+    --popover-foreground: 222 47% 14%;
+    --primary: 224 76% 51%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 20% 94%;
-    --secondary-foreground: 220 43% 11%;
-    --muted: 220 20% 94%;
-    --muted-foreground: 219 13% 41%;
-    --accent: 220 20% 94%;
-    --accent-foreground: 220 43% 11%;
-    --destructive: 356 74% 48%;
+    --secondary: 220 30% 94%;
+    --secondary-foreground: 222 47% 14%;
+    --muted: 220 30% 94%;
+    --muted-foreground: 220 14% 42%;
+    --accent: 220 30% 94%;
+    --accent-foreground: 222 47% 14%;
+    --destructive: 350 80% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 218 17% 90%;
-    --input: 218 17% 86%;
-    --ring: 356 74% 48%;
+    --border: 220 24% 90%;
+    --input: 220 22% 85%;
+    --ring: 224 76% 51%;
     --chart-1: 356 74% 48%;
     --chart-2: 220 43% 11%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.75rem;
-    --ink: 220 43% 11%;
+    --ink: 224 64% 24%;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -75,9 +75,11 @@
 }
 
 @layer components {
-  .panel { @apply rounded-2xl border bg-card; box-shadow: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 24px -16px rgb(16 24 40 / 0.12); }
+  .panel { @apply rounded-2xl border bg-card; box-shadow: 0 1px 2px rgb(22 48 122 / 0.05), 0 12px 32px -18px rgb(22 48 122 / 0.22); }
   .field { @apply w-full rounded-xl border border-input bg-white px-3.5 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-4 focus:ring-primary/10; }
   .press { @apply transition active:scale-[0.97]; }
+  .lift { @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-xl; }
+  .cover { background: linear-gradient(120deg, hsl(var(--ink)), hsl(var(--primary)) 85%, hsl(205 90% 60%)); }
   .skeleton { @apply animate-pulse rounded-lg bg-muted; }
 }
 
@@ -85,7 +87,14 @@
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .animate-pop { animation: pop 0.32s ease-out; }
 .animate-rise { animation: rise 0.22s ease-out both; }
+.stagger > * { animation: rise 0.35s ease-out both; }
+.stagger > *:nth-child(2) { animation-delay: 50ms; }
+.stagger > *:nth-child(3) { animation-delay: 100ms; }
+.stagger > *:nth-child(4) { animation-delay: 150ms; }
+.stagger > *:nth-child(n + 5) { animation-delay: 200ms; }
 @media (prefers-reduced-motion: reduce) {
+  .stagger > * { animation: none; }
+  .lift { transition: none; transform: none; }
   .animate-pop, .animate-rise, .animate-pulse { animation: none; }
   .press { transition: none; }
 }
