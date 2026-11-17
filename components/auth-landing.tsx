@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
-  BarChart3,
   Briefcase,
   Building2,
   Check,
-  Ellipsis,
   Eye,
   EyeOff,
   Layers,
@@ -131,7 +129,7 @@ function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void })
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
           <MailCheck className="h-7 w-7" />
         </span>
-        <h2 className={cx("mt-4 text-2xl font-bold", NAVY)}>Check your inbox</h2>
+        <h2 className={cx("mt-4 text-2xl font-semibold", NAVY)}>Check your inbox</h2>
         <p className="mt-2 text-sm text-slate-500">
           We sent a confirmation link to <span className="font-semibold text-slate-800">{sentTo}</span>. Open it to finish joining.
         </p>
@@ -171,7 +169,7 @@ function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void })
             role="tab"
             aria-selected={mode === m}
             onClick={() => setMode(m)}
-            className={cx("relative z-10 rounded-full transition-colors", mode === m ? cx("font-bold", NAVY) : "font-medium text-slate-500 hover:text-slate-800")}
+            className={cx("relative z-10 rounded-full transition-colors", mode === m ? cx("font-semibold", NAVY) : "font-medium text-slate-500 hover:text-slate-800")}
           >
             {m === "signin" ? "Sign in" : "Join now"}
           </button>
@@ -257,7 +255,7 @@ function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void })
       </p>
       <p className={cx("mt-[16px] text-center text-[17px]", NAVY)}>
         {join ? "Already on SMB Hub? " : "New to SMB Hub? "}
-        <button type="button" onClick={() => setMode(join ? "signin" : "join")} className="ml-2 rounded px-1 font-bold text-[#0b2bcf] hover:underline">
+        <button type="button" onClick={() => setMode(join ? "signin" : "join")} className="ml-2 rounded px-1 font-semibold text-[#0b2bcf] hover:underline">
           {join ? "Sign in" : "Join now"}
         </button>
       </p>
@@ -265,89 +263,33 @@ function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void })
   );
 }
 
-// ---------- the live cards on the right ----------
-function Showcase({ people, members }: { people: Author[]; members: number }) {
-  const stage = useRef<HTMLDivElement>(null);
+// ---------- two sample cards on the right ----------
+function Showcase({ people }: { people: Author[] }) {
   const [likes, setLikes] = useState(24);
   const [liked, setLiked] = useState(false);
   const [invite, setInvite] = useState<"open" | "accepted" | "ignored">("open");
-  const names = ["Priya Raman", "Daniel Okafor", "Mei Tanaka"];
   const person = (name: string, i: number): Author =>
     people.find((p) => p.full_name === name) ?? people[i] ?? { id: `showcase-${i}`, full_name: name, headline: "", avatar_url: null, member_type: "owner" };
-  const [priya, daniel, mei] = names.map(person);
-  const faces = people.filter((p) => !names.includes(p.full_name)).slice(0, 3);
-
-  // cards drift slightly with the pointer, each at its own depth
-  useEffect(() => {
-    const el = stage.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const move = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty("--mx", String(Math.max(-0.6, Math.min(0.6, (e.clientX - r.left) / r.width - 0.5))));
-      el.style.setProperty("--my", String(Math.max(-0.6, Math.min(0.6, (e.clientY - r.top) / r.height - 0.5))));
-    };
-    window.addEventListener("pointermove", move);
-    return () => window.removeEventListener("pointermove", move);
-  }, []);
-
-  const layer = (depth: number) => ({ transform: `translate3d(calc(var(--mx, 0) * ${depth}px), calc(var(--my, 0) * ${depth}px), 0)`, transition: "transform 0.25s ease-out" });
-  const card = "absolute rounded-2xl bg-white shadow-[0_18px_48px_-16px_rgb(22_48_122/0.45)]";
-  const tile = "absolute flex items-center justify-center rounded-2xl border-2 border-white/70 bg-gradient-to-br from-[#6fa0f4] to-[#2f5fe0] text-white shadow-[0_12px_28px_-10px_rgb(30_70_200/0.7)]";
+  const priya = person("Priya Raman", 0);
+  const daniel = person("Daniel Okafor", 1);
+  const card = "rounded-xl border border-white/80 bg-white shadow-[0_24px_60px_-24px_rgb(15_35_95/0.45)]";
 
   return (
-    <div ref={stage} className="relative mx-auto hidden h-[590px] w-full max-w-[760px] lg:block">
-      {/* dot grid */}
-      <div className="absolute left-[2px] top-[128px] grid grid-cols-4 gap-x-[11px] gap-y-[11px]" style={layer(-14)} aria-hidden="true">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <span key={i} className="h-[3px] w-[3px] rounded-full bg-[#7fa2e6]" />
-        ))}
-      </div>
-
-      {/* floating tiles */}
-      <span className={cx(tile, "float-b right-[56px] top-[22px] h-[74px] w-[74px]")} style={layer(52)} aria-hidden="true">
-        <Briefcase className="h-8 w-8" />
-      </span>
-      <span className={cx(tile, "float-c left-[8px] top-[412px] h-[68px] w-[68px]")} style={layer(40)} aria-hidden="true">
-        <BarChart3 className="h-8 w-8" />
-      </span>
-      <span className={cx(tile, "float-a right-[88px] top-[504px] h-[68px] w-[68px]")} style={layer(58)} aria-hidden="true">
-        <Users className="h-8 w-8 fill-white" />
-      </span>
-
-      {/* group chip */}
-      <div className={cx(card, "float-b left-[108px] top-[70px] flex items-center gap-3 !rounded-[18px] py-2.5 pl-4 pr-5")} style={layer(30)}>
-        <span className="flex -space-x-2.5">
-          {(faces.length ? faces : [priya, daniel, mei]).map((p) => (
-            <span key={p.id} className="rounded-full ring-2 ring-white">
-              <AvatarImg person={p} size={34} />
-            </span>
-          ))}
-        </span>
-        <span className="text-left leading-tight">
-          <span className={cx("block text-[14px] font-bold", NAVY)}>AI for Small Business</span>
-          <span className="block text-[13px] text-slate-600">{members > 0 ? `${members.toLocaleString("en-CA")} members on SMB Hub` : "Open group"}</span>
-        </span>
-      </div>
-
-      {/* a post you can like */}
-      <div className={cx(card, "float-a left-[82px] top-[126px] w-[378px] px-5 pb-4 pt-5")} style={layer(18)}>
-        <div className="flex items-start gap-3">
-          <AvatarImg person={priya} size={52} />
-          <p className="min-w-0 flex-1 pt-2.5 text-left text-[15px]">
-            <span className={cx("font-bold", NAVY)}>{priya.full_name}</span>
-            <span className="text-slate-500"> · 35m ago</span>
-          </p>
-          <Ellipsis className="mt-1 h-5 w-5 text-slate-700" aria-hidden="true" />
+    <div className="relative mx-auto hidden w-full max-w-[470px] self-center lg:block">
+      {/* a post from the feed */}
+      <div className={cx(card, "p-5")}>
+        <div className="flex items-center gap-3">
+          <AvatarImg person={priya} size={48} />
+          <div className="min-w-0 flex-1 text-left">
+            <p className={cx("truncate text-[15px] font-semibold", NAVY)}>{priya.full_name}</p>
+            <p className="truncate text-[13px] text-slate-500">{priya.headline || "Founder, Maple Bakery"}, 35m ago</p>
+          </div>
+          <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[12px] font-semibold text-amber-800">Win</span>
         </div>
-        <p className="mt-3 text-left text-[16px] leading-[23px] text-slate-800">We just closed our first wholesale account with a national grocer. Took 14 months and three rejected samples.</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {["#Growth", "#Wholesale", "#SmallBusiness"].map((t) => (
-            <span key={t} className="rounded-full bg-[#e8effc] px-3 py-1 text-[13px] font-medium text-[#0b2bcf]">
-              {t}
-            </span>
-          ))}
-        </div>
-        <div className="mt-3.5 flex items-center gap-7 border-t border-slate-200 pt-3 text-[15px] font-medium text-slate-800">
+        <p className="mt-4 text-left text-[15px] leading-[23px] text-slate-800">
+          We just closed our first wholesale account with a national grocer. It took 14 months and three rejected samples.
+        </p>
+        <div className="mt-4 flex items-center gap-6 border-t border-slate-200 pt-3 text-[14px] text-slate-700">
           <button
             type="button"
             aria-label="Like this sample post"
@@ -357,30 +299,40 @@ function Showcase({ people, members }: { people: Author[]; members: number }) {
             }}
             className={cx("press inline-flex items-center gap-2 rounded px-1 transition-colors", liked && "text-[#0b2bcf]")}
           >
-            <ThumbsUp key={String(liked)} className={cx("h-5 w-5", liked && "animate-pop fill-[#0b2bcf]/15")} />
+            <ThumbsUp className={cx("h-[18px] w-[18px]", liked && "fill-[#0b2bcf]/15")} />
             {likes}
           </button>
           <span className="inline-flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" /> 6
+            <MessageSquare className="h-[18px] w-[18px]" /> 6
           </span>
         </div>
       </div>
 
-      {/* an invitation you can answer */}
-      <div className={cx(card, "float-b right-[8px] top-[316px] w-[308px] p-4", invite === "ignored" && "opacity-60")} style={layer(34)}>
-        <div className="flex items-center gap-3.5">
-          <AvatarImg person={daniel} size={58} />
+      {/* an invitation to connect */}
+      <div className={cx(card, "ml-auto mt-5 w-[340px] p-4")}>
+        <div className="flex items-center gap-3">
+          <AvatarImg person={daniel} size={48} />
           <div className="min-w-0 flex-1 text-left">
-            <p className={cx("truncate text-[16px] font-bold", NAVY)}>{daniel.full_name}</p>
-            <p className="text-[13px] text-slate-600">{invite === "accepted" ? "You are now connected" : invite === "ignored" ? "Invitation ignored" : "invited you to connect"}</p>
+            <p className={cx("truncate text-[15px] font-semibold", NAVY)}>{daniel.full_name}</p>
+            <p className="text-[13px] text-slate-500">
+              {invite === "accepted" ? "You are now connected" : invite === "ignored" ? "Invitation ignored" : "invited you to connect"}
+            </p>
           </div>
         </div>
         {invite === "open" ? (
-          <div className="mt-3.5 grid grid-cols-[120px_1fr] gap-3">
-            <button type="button" onClick={() => setInvite("ignored")} className="press flex h-9 items-center justify-center gap-1.5 rounded-full border border-slate-300 text-[14px] font-medium text-slate-800 transition-colors hover:bg-slate-50">
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setInvite("ignored")}
+              className="press flex h-9 items-center justify-center gap-1.5 rounded-full border border-slate-300 text-[14px] font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+            >
               <X className="h-4 w-4" /> Ignore
             </button>
-            <button type="button" onClick={() => setInvite("accepted")} className="press flex h-9 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#2f7de8] to-[#1657cf] text-[14px] font-semibold text-white transition hover:brightness-110">
+            <button
+              type="button"
+              onClick={() => setInvite("accepted")}
+              className="press flex h-9 items-center justify-center gap-1.5 rounded-full bg-[#1657cf] text-[14px] font-semibold text-white transition-colors hover:bg-[#0f47b5]"
+            >
               <Check className="h-4 w-4" /> Accept
             </button>
           </div>
@@ -388,32 +340,19 @@ function Showcase({ people, members }: { people: Author[]; members: number }) {
           <button
             type="button"
             onClick={() => setInvite("open")}
-            className={cx("press mt-3.5 flex h-9 w-full animate-rise items-center justify-center gap-1.5 rounded-full text-[14px] font-semibold", invite === "accepted" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600")}
+            className={cx("press mt-4 flex h-9 w-full items-center justify-center gap-1.5 rounded-full text-[14px] font-semibold", invite === "accepted" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600")}
           >
-            {invite === "accepted" && <UserCheck className="h-4 w-4 animate-pop" />}
+            {invite === "accepted" && <UserCheck className="h-4 w-4" />}
             {invite === "accepted" ? "Connected" : "Undo"}
           </button>
         )}
-      </div>
-
-      {/* a message */}
-      <div className={cx(card, "float-c left-[132px] top-[450px] flex w-[336px] items-start gap-3.5 p-4")} style={layer(46)}>
-        <AvatarImg person={mei} size={56} />
-        <div className="min-w-0 flex-1 text-left">
-          <p className="text-[15px]">
-            <span className={cx("font-bold", NAVY)}>{mei.full_name}</span>
-            <span className="text-slate-500"> · 10:54 pm</span>
-          </p>
-          <p className="mt-0.5 text-[16px] leading-[22px] text-slate-800">Sure, sending the sell sheet template tonight.</p>
-        </div>
-        <span className="mt-1.5 h-3 w-3 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
       </div>
     </div>
   );
 }
 
 // ---------- the page ----------
-export function AuthLanding({ initialMode, stats, people }: { initialMode: Mode; stats: LandingStats; people: Author[] }) {
+export function AuthLanding({ initialMode, people }: { initialMode: Mode; stats: LandingStats; people: Author[] }) {
   const [mode, setModeState] = useState<Mode>(initialMode);
   const setMode = (m: Mode) => {
     setModeState(m);
@@ -427,7 +366,7 @@ export function AuthLanding({ initialMode, stats, people }: { initialMode: Mode;
           <p className={cx("inline-flex items-center gap-2.5 rounded-full bg-[#e2ecfb] px-5 py-1.5 text-[15px] font-semibold", NAVY)}>
             <span aria-hidden="true">🇨🇦</span> Canada&apos;s Small Business Network
           </p>
-          <h1 className={cx("mt-[18px] text-[40px] font-extrabold leading-[1] tracking-[-0.02em] sm:text-[54px]", NAVY)}>
+          <h1 className={cx("mt-[18px] text-[38px] font-semibold leading-[1.08] tracking-[-0.015em] sm:text-[50px]", NAVY)}>
             {mode === "join" ? "Join Canada's small business community" : "Welcome to your small business community"}
           </h1>
           <p className="mt-[18px] text-[18px] leading-[27px] text-slate-600">Connect, learn, and grow with entrepreneurs, professionals, and business leaders across Canada.</p>
@@ -435,14 +374,14 @@ export function AuthLanding({ initialMode, stats, people }: { initialMode: Mode;
             <AuthForm mode={mode} setMode={setMode} />
           </div>
         </div>
-        <Showcase people={people} members={stats.members} />
+        <Showcase people={people} />
       </section>
 
       <section className="mx-auto max-w-[1527px] px-4 pb-10">
         <div className="grid items-center gap-8 rounded-[28px] border border-white bg-white/70 px-6 py-9 shadow-[0_10px_50px_-24px_rgb(22_48_122/0.35)] backdrop-blur-md lg:grid-cols-[minmax(0,416px)_1px_minmax(0,1fr)] lg:gap-x-10 lg:py-[34px] lg:pl-[88px] lg:pr-[40px]">
           <div>
             <h2 className={cx("text-[32px] font-normal leading-[1.08] tracking-[-0.01em] sm:text-[38px]", NAVY)}>
-              Explore what owners are <span className="font-extrabold text-[#0b2bcf]">talking about</span>
+              Explore what owners are <span className="font-semibold text-[#0b2bcf]">talking about</span>
             </h2>
             <p className="mt-3 text-[15px] text-slate-600 xl:whitespace-nowrap">Browse without an account. Join when you want to take part.</p>
           </div>

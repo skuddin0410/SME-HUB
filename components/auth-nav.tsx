@@ -27,7 +27,7 @@ export function AuthNav() {
             aria-current={i === 0 && home ? "page" : undefined}
             className={
               i === 0 && home
-                ? "rounded-full bg-[#e3ecfb] px-5 py-2 text-[15px] font-bold text-[#0b1437]"
+                ? "rounded-full bg-[#e3ecfb] px-5 py-2 text-[15px] font-semibold text-[#0b1437]"
                 : "rounded-full px-[22px] py-2 text-[15px] font-medium text-[#0b1437] transition-colors hover:bg-[#e3ecfb]/70"
             }
           >
