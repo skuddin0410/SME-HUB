@@ -23,7 +23,7 @@ export default async function PostPage({
 
   const { data } = await supabase
     .from("comments")
-    .select("id, body, created_at, author:profiles(id, full_name, headline, avatar_url, member_type)")
+    .select("id, body, created_at, author:profiles!comments_author_id_fkey(id, full_name, headline, avatar_url, member_type)")
     .eq("post_id", id)
     .order("created_at");
   const comments = (data ?? []) as unknown as Comment[];

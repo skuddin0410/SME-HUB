@@ -53,7 +53,7 @@ export async function getMe() {
 }
 
 const POST_SELECT =
-  "id, body, image_url, visibility, created_at, group_id, author:profiles(id, full_name, headline, avatar_url, member_type), group:groups(name, slug), reactions(count), comments(count)";
+  "id, body, image_url, visibility, created_at, group_id, author:profiles!posts_author_id_fkey(id, full_name, headline, avatar_url, member_type), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)";
 
 type Row = Omit<Post, "likes" | "comments" | "likedByMe"> & {
   reactions: { count: number }[];

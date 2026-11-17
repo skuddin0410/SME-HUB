@@ -22,7 +22,7 @@ export default async function ReportsPage() {
   const { data } = await supabase
     .from("reports")
     .select(
-      "id, reason, created_at, post_id, reporter:profiles!reports_reporter_id_fkey(id, full_name), post:posts(body, author_id)",
+      "id, reason, created_at, post_id, reporter:profiles!reports_reporter_id_fkey(id, full_name), post:posts!reports_post_id_fkey(body, author_id)",
     )
     .eq("status", "open")
     .order("created_at");
