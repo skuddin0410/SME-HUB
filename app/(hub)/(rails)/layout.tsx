@@ -1,4 +1,4 @@
-import { ActiveMembersCard, ArticlesCard, BusinessCard, GroupsCard, ProfileCard, SocialCard } from "@/components/rails";
+import { ActiveMembersCard, ArticlesCard, GroupsCard, ProfileCard, SocialCard } from "@/components/rails";
 
 /** Feed-style pages: fixed left and right rails, the centre column scrolls. */
 export default function RailsLayout({ children }: { children: React.ReactNode }) {
@@ -7,7 +7,6 @@ export default function RailsLayout({ children }: { children: React.ReactNode })
       <aside className="rail hidden space-y-2 lg:block">
         <ProfileCard />
         <ArticlesCard />
-        <BusinessCard />
       </aside>
       <main className="flex min-w-0 flex-col gap-2">{children}</main>
       <aside className="rail hidden space-y-2 lg:block">

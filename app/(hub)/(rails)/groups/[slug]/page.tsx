@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Lock, UsersRound } from "lucide-react";
+import { Lock } from "lucide-react";
 import { AUTHOR_FIELDS, fetchPosts, getViewer, PAGE_SIZE, type Author } from "@/lib/hub";
 import { InvitePanel } from "@/components/business-client";
 import { Empty, Pager, PostCard } from "@/components/hub";
-import { Composer, Cover, SubmitButton } from "@/components/hub-client";
+import { Composer, Cover, GroupLogo, SubmitButton } from "@/components/hub-client";
 import { joinGroup, leaveGroup, removeGroupInvite } from "@/app/(hub)/actions";
 
 export default async function GroupPage({
@@ -64,9 +64,7 @@ export default async function GroupPage({
         <Cover seed={group.id} className="h-28" />
         <div className="flex flex-wrap items-end justify-between gap-3 px-5 pb-5">
           <div className="min-w-0">
-            <span className="cover relative -mt-7 flex h-14 w-14 items-center justify-center rounded-2xl text-white ring-4 ring-white">
-              <UsersRound className="h-6 w-6" />
-            </span>
+            <GroupLogo seed={slug} name={group.name} size={64} className="relative -mt-8 !rounded-xl ring-4 !ring-white" />
             <h1 className="mt-2 text-2xl font-bold">{group.name}</h1>
             <p className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
               {group.is_private && <Lock className="h-3 w-3" />}

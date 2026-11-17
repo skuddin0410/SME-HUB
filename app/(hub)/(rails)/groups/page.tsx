@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Lock, UsersRound } from "lucide-react";
+import { Lock } from "lucide-react";
 import { getViewer } from "@/lib/hub";
 import { Empty, PageTitle } from "@/components/hub";
-import { Cover, SubmitButton } from "@/components/hub-client";
+import { Cover, GroupLogo, SubmitButton } from "@/components/hub-client";
 import { createGroup } from "@/app/(hub)/actions";
 
 type Group = {
@@ -49,9 +49,7 @@ export default async function GroupsPage() {
             <Link key={g.id} href={`/groups/${g.slug}`} className="panel lift group flex flex-col overflow-hidden">
               <Cover seed={g.id} className="h-20" />
               <div className="flex items-start gap-3 px-4 pt-4">
-                <span className="cover flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white">
-                  <UsersRound className="h-5 w-5" />
-                </span>
+                <GroupLogo seed={g.slug} name={g.name} size={48} />
                 <div className="min-w-0">
                   <h2 className="truncate text-base font-semibold group-hover:underline">{g.name}</h2>
                   <p className="flex items-center gap-1.5 text-xs text-muted-foreground">

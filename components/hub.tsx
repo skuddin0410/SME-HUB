@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { Lock, Pin, UsersRound } from "lucide-react";
+import { Lock, Pin } from "lucide-react";
 import { MEMBER_TYPES, timeAgo, type Author, type Post, type Profile } from "@/lib/hub";
-import { AvatarImg, PostActions, PostBody, PostMenu } from "@/components/hub-client";
+import { AvatarImg, GroupLogo, PostActions, PostBody, PostMenu } from "@/components/hub-client";
 import { ConnectButton } from "@/components/network-client";
 import { KINDS } from "@/lib/demo";
 
@@ -110,9 +110,7 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
 export function GroupLine({ group }: { group: { slug: string; name: string; is_private: boolean; members: number } }) {
   return (
     <Link href={`/groups/${group.slug}`} className="group flex items-center gap-3">
-      <span className="cover flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white">
-        <UsersRound className="h-5 w-5" />
-      </span>
+      <GroupLogo seed={group.slug} name={group.name} size={44} />
       <span className="min-w-0">
         <span className="block truncate text-sm font-semibold group-hover:underline">{group.name}</span>
         <span className="block text-xs text-muted-foreground">

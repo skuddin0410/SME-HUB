@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageCircle, Megaphone, Repeat2, Send, ThumbsUp, Trash2, Trophy, X } from "lucide-react";
+import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageCircle, Megaphone, Repeat2, Send, ThumbsUp, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
   addComment,
@@ -78,6 +78,48 @@ export function Cover({ seed, className }: { seed: string; className?: string })
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--ink)/0.45)] to-transparent" />
     </div>
+  );
+}
+
+const GROUP_ICONS: { match: RegExp; icon: typeof Bot; tone: string }[] = [
+  { match: /\bai\b|artificial|automation|tech/i, icon: Bot, tone: "bg-violet-100 text-violet-700" },
+  { match: /import|export|logistic|freight|shipping|trade/i, icon: Ship, tone: "bg-sky-100 text-sky-700" },
+  { match: /retail|shop|store|boutique|ecommerce/i, icon: Store, tone: "bg-amber-100 text-amber-700" },
+  { match: /fund|grant|financ|invest|loan|money/i, icon: Banknote, tone: "bg-emerald-100 text-emerald-700" },
+  { match: /market|social media|brand|sales/i, icon: Megaphone, tone: "bg-rose-100 text-rose-700" },
+  { match: /manufactur|industr|factory/i, icon: Factory, tone: "bg-slate-200 text-slate-700" },
+  { match: /security|cyber|legal|law|compliance/i, icon: ShieldCheck, tone: "bg-teal-100 text-teal-700" },
+  { match: /home-based|home based/i, icon: House, tone: "bg-orange-100 text-orange-700" },
+  { match: /toronto|vancouver|montreal|calgary|ottawa|halifax|city|local/i, icon: MapPin, tone: "bg-indigo-100 text-indigo-700" },
+];
+
+/** A group's picture. Without one, an icon chosen from the group's topic, each topic in its own colour. */
+export function GroupLogo({ seed, name, size = 40, className }: { seed: string; name: string; size?: number; className?: string }) {
+  const [failed, setFailed] = useState(false);
+  const img = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    if (img.current?.complete && img.current.naturalWidth === 0) setFailed(true);
+  }, []);
+  const style = { width: size, height: size };
+  if (DEMO_IMAGES && !failed) {
+    return (
+      <img
+        ref={img}
+        src={`https://picsum.photos/seed/group-${encodeURIComponent(seed)}/160/160`}
+        alt=""
+        loading="lazy"
+        style={style}
+        onError={() => setFailed(true)}
+        className={cx("shrink-0 rounded-lg bg-muted object-cover ring-1 ring-black/5", className)}
+      />
+    );
+  }
+  const pick = GROUP_ICONS.find((g) => g.match.test(name)) ?? { icon: UsersRound, tone: "bg-blue-100 text-blue-700" };
+  const Icon = pick.icon;
+  return (
+    <span style={style} className={cx("flex shrink-0 items-center justify-center rounded-lg", pick.tone, className)}>
+      <Icon style={{ width: size * 0.5, height: size * 0.5 }} />
+    </span>
   );
 }
 

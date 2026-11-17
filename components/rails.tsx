@@ -7,7 +7,6 @@ import { AvatarImg, Cover } from "@/components/hub-client";
 import { GroupLine, TierBadge } from "@/components/hub";
 
 type GroupRow = { slug: string; name: string; is_private: boolean; group_members: { count: number }[] };
-type Company = { id: string; slug: string; name: string; category: string; logo_url: string | null };
 
 const SOCIALS = [
   { label: "Facebook", href: SOCIAL.facebook, icon: Facebook },
@@ -120,38 +119,6 @@ export function ArticlesCard() {
           </li>
         ))}
       </ul>
-    </section>
-  );
-}
-
-export async function BusinessCard() {
-  const { supabase } = await getViewer();
-  const { data } = await supabase.from("companies").select("id, slug, name, category, logo_url").order("created_at", { ascending: false }).limit(5);
-  const businesses = (data ?? []) as Company[];
-  if (businesses.length === 0) return null;
-  return (
-    <section className={card}>
-      <h2 className={railTitle}>Business List</h2>
-      <ul className="space-y-3">
-        {businesses.map((b) => (
-          <li key={b.id}>
-            <Link href={`/businesses/${b.slug}`} className="group flex items-center gap-3">
-              {b.logo_url ? (
-                <img src={b.logo_url} alt="" loading="lazy" className="h-11 w-11 shrink-0 rounded bg-muted object-cover" />
-              ) : (
-                <span className="cover flex h-11 w-11 shrink-0 items-center justify-center rounded font-semibold text-white">{b.name.charAt(0)}</span>
-              )}
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-semibold group-hover:text-primary group-hover:underline">{b.name}</span>
-                <span className="block truncate text-xs text-muted-foreground">{b.category}</span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <Link href="/businesses" className={seeAll}>
-        Show all <ChevronRight className="h-4 w-4" />
-      </Link>
     </section>
   );
 }
