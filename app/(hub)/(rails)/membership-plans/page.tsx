@@ -48,7 +48,7 @@ export default async function PlansPage() {
                   </Link>
                 )
               ) : (
-                <Link href="/help#contact" className="press mt-6 block rounded-lg border border-primary py-2.5 text-center text-sm font-semibold text-primary hover:bg-primary/5">
+                <Link href="/contact" className="press mt-6 block rounded-lg border border-primary py-2.5 text-center text-sm font-semibold text-primary hover:bg-primary/5">
                   Contact us to upgrade
                 </Link>
               )}

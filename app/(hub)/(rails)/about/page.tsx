@@ -35,7 +35,7 @@ export default function AboutPage() {
           SMB Hub is operated by Cmarketing Inc., the company behind CanadianSME Small Business Magazine, the Small
           Business Expo, the Small Business Summit and the Small Business Awards.
         </p>
-        <Link href="/help#contact" className="mt-3 inline-block font-semibold text-primary hover:underline">
+        <Link href="/contact" className="mt-3 inline-block font-semibold text-primary hover:underline">
           Contact the team
         </Link>
       </section>

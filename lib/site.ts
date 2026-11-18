@@ -1,21 +1,20 @@
-// Site-wide navigation and reference content. Links that start with http point at pages
-// that still live on the current smehub.ca site and have not been rebuilt here yet.
-const OLD = "https://smehub.ca";
+// Site-wide navigation and reference content. Every menu link stays on this site;
+// the pages behind them are built from lib/content.ts.
 
 export type NavItem = { label: string; href: string };
 
 export const ABOUT_MENU: NavItem[] = [
   { label: "About us", href: "/about" },
-  { label: "CanadianSME Magazine", href: "https://canadiansme.ca/" },
-  { label: "Contact", href: "/help#contact" },
+  { label: "CanadianSME Magazine", href: "/magazine" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export const RESOURCES_MENU: NavItem[] = [
-  { label: "Indigenous entrepreneurs", href: `${OLD}/indigenous-entrepreneurs/` },
-  { label: "Women entrepreneurs", href: `${OLD}/women-entrepreneurs/` },
-  { label: "Black entrepreneurs", href: `${OLD}/black-entrepreneurs/` },
-  { label: "Immigrant entrepreneurs", href: `${OLD}/immigrant-entrepreneurs/` },
-  { label: "Resources for LGBTQ+", href: `${OLD}/resources-for-lgbtq/` },
+  { label: "Indigenous entrepreneurs", href: "/resources/indigenous-entrepreneurs" },
+  { label: "Women entrepreneurs", href: "/resources/women-entrepreneurs" },
+  { label: "Black entrepreneurs", href: "/resources/black-entrepreneurs" },
+  { label: "Immigrant entrepreneurs", href: "/resources/immigrant-entrepreneurs" },
+  { label: "Resources for LGBTQ+", href: "/resources/lgbtq" },
 ];
 
 export const PROVINCES: NavItem[] = [
@@ -24,7 +23,7 @@ export const PROVINCES: NavItem[] = [
   ["Northwest Territories", "northwest-territories"], ["Nova Scotia", "nova-scotia"], ["Nunavut", "nunavut"],
   ["Ontario", "ontario"], ["Prince Edward Island", "prince-edward-island"], ["Quebec", "quebec"],
   ["Saskatchewan", "saskatchewan"], ["Yukon", "yukon"],
-].map(([label, slug]) => ({ label, href: `${OLD}/business-guide-${slug}/` }));
+].map(([label, slug]) => ({ label, href: `/guides/${slug}` }));
 
 export const EXPLORE_MENU: NavItem[] = [
   { label: "Groups", href: "/groups" },
@@ -32,17 +31,17 @@ export const EXPLORE_MENU: NavItem[] = [
   { label: "Explore businesses", href: "/businesses" },
   { label: "SMB Advisors", href: "/members?type=advisor" },
   { label: "Membership plans", href: "/membership-plans" },
-  { label: "Blog", href: `${OLD}/blog/` },
-  { label: "News", href: `${OLD}/news/` },
-  { label: "Courses", href: `${OLD}/courses/` },
-  { label: "Small Business Podcast", href: "https://smbpodcast.ca/" },
+  { label: "Blog", href: "/blog" },
+  { label: "News", href: "/news" },
+  { label: "Courses", href: "/courses" },
+  { label: "Small Business Podcast", href: "/podcast" },
 ];
 
 export const POLICY_MENU: NavItem[] = [
   { label: "Frequently asked questions", href: "/help" },
-  { label: "Community guidelines", href: `${OLD}/small-business-hub-community-guidelines/` },
-  { label: "Discrimination policy", href: `${OLD}/smb-hub-discrimination-policy/` },
-  { label: "Terms and conditions", href: `${OLD}/general-terms-conditions/` },
+  { label: "Community guidelines", href: "/policies/community-guidelines" },
+  { label: "Discrimination policy", href: "/policies/discrimination-policy" },
+  { label: "Terms and conditions", href: "/policies/terms" },
 ];
 
 export const SOCIAL = {
@@ -66,18 +65,6 @@ export const CONTACT = {
   phones: ["+1 437 778 4446", "+1 416 655 0205"],
   emails: ["support@smehub.ca", "info@canadiansme.ca"],
 };
-
-// Recent articles shown in the left rail. Taken from the current smehub.ca home page;
-// replace with a live feed once articles are published from this platform.
-const UP = `${OLD}/wp-content/uploads/2026/09`;
-export const ARTICLES: { title: string; href: string; image: string }[] = [
-  { title: "Be Seen. Be Found. Be Chosen: How SocialEyes Communications Is Evolving the Digital Agency Model", href: `${OLD}/be-seen-be-found-be-chosen-how-socialeyes-communications-is-evolving-the-digital-agency-model/`, image: `${UP}/Be-Seen.-Be-Found.-Be-Chosen-How-SocialEyes-Communications-Is-Evolving-the-Digital-Agency-Model.jpg-150x150.webp` },
-  { title: "What BVX 2026 Revealed About Canada's Next Generation of Tech", href: `${OLD}/what-bvx-2026-revealed-about-canadas-next-generation-of-tech/`, image: `${UP}/5-150x150.webp` },
-  { title: "The Toronto Company Flying Drones Inside Warehouses and Over Irish Farms", href: `${OLD}/the-toronto-company-flying-drones-inside-warehouses-and-over-irish-farms/`, image: `${UP}/The-Toronto-Company-Flying-Drones-Inside-Warehouses-and-Over-Irish-Farms-150x150.webp` },
-  { title: "The Table That Costs Nothing", href: `${OLD}/the-table-that-costs-nothing/`, image: `${UP}/Business-Strategy-150x150.webp` },
-  { title: "Teclara Brings Big-Company Security to the Firms That Can Least Afford a Breach", href: `${OLD}/teclara-brings-big-company-security-to-the-firms-that-can-least-afford-a-breach/`, image: `${UP}/Cybersecurity-for-Small-Businesses-150x150.webp` },
-  { title: "Why More Ontario Businesses Are Treating Compliance as Part of Their Security Stack", href: `${OLD}/why-more-ontario-businesses-are-treating-compliance-as-part-of-their-security-stack-not-an-afterthought/`, image: `${UP}/Cybersecurity-for-Small-Businesses-1-150x150.webp` },
-];
 
 export const PLANS = [
   { key: "free", name: "Free", monthly: 0, yearly: 0, blurb: "Join the conversation and start building your network.",

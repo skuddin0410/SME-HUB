@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, Bell, MessageSquareText, UsersRound, ChevronDown, ExternalLink, Home, IdCard, LifeBuoy, Menu, Search, SquareArrowOutUpRight, X } from "lucide-react";
+import { ArrowRight, Bell, MessageSquareText, UsersRound, ChevronDown, Home, IdCard, LifeBuoy, Menu, Search, SquareArrowOutUpRight, X } from "lucide-react";
 import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, PROVINCES, RESOURCES_MENU, type NavItem } from "@/lib/site";
 import { AvatarImg, SignOutButton } from "@/components/hub-client";
 
@@ -19,15 +19,8 @@ export function Logo({ onDark = false, href = "/feed", large = false }: { onDark
 }
 
 function MenuLink({ item }: { item: NavItem }) {
-  const external = item.href.startsWith("http");
-  const cls = "flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-primary/5 hover:text-primary";
-  return external ? (
-    <a href={item.href} target="_blank" rel="noreferrer" className={cls}>
-      {item.label}
-      <ExternalLink className="h-3.5 w-3.5 opacity-40" />
-    </a>
-  ) : (
-    <Link href={item.href} className={cls}>
+  return (
+    <Link href={item.href} className="block rounded-lg px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-primary/5 hover:text-primary">
       {item.label}
     </Link>
   );
@@ -90,17 +83,17 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
   const dot = "absolute -right-2 -top-1.5 min-w-[18px] border-2 border-white rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-[14px] text-white";
 
   const dropdown = (name: "About" | "Explore", Icon: typeof IdCard) => (
-    <div className="relative" onMouseEnter={() => setOpen(name)} onMouseLeave={() => setOpen(null)}>
+    <div onMouseEnter={() => setOpen(name)} onMouseLeave={() => setOpen(null)}>
       <button type="button" aria-expanded={open === name} onClick={() => setOpen(open === name ? null : name)} className={item(false)}>
-        <Icon className="h-5 w-5" />
+        <Icon className="hidden h-5 w-5 xl:block" />
         {name}
         <ChevronDown className={cx("h-4 w-4 transition-transform duration-200", open === name && "rotate-180")} />
       </button>
       {open === name && (
-        <div className="absolute left-0 top-full z-40 w-[720px] max-w-[92vw] animate-rise pt-1">
-          <div className="panel grid grid-cols-3 gap-2 p-4 shadow-2xl">
+        <div className="fixed left-1/2 top-[60px] z-40 w-[720px] max-w-[92vw] -translate-x-1/2 pt-1">
+          <div className="panel grid animate-rise grid-cols-3 gap-2 p-4 shadow-2xl">
             {MENUS[name].map((col) => (
-              <div key={col.title} className={col.items.length > 8 ? "max-h-80 overflow-y-auto" : ""}>
+              <div key={col.title}>
                 <Column title={col.title} items={[...col.items]} />
               </div>
             ))}
@@ -112,26 +105,27 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
 
   return (
     <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-xl">
-      <div className="mx-auto flex h-[60px] max-w-[1128px] items-center gap-2 px-4">
+      {/* three columns from lg up: logo, tabs centred on the page, account controls */}
+      <div className="mx-auto flex h-[60px] max-w-[1128px] items-center gap-2 px-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Logo />
-        <nav className="ml-6 hidden items-center lg:flex" aria-label="Main">
+        <nav className="hidden items-center lg:flex" aria-label="Main">
           <Link href="/feed" className={item(pathname === "/feed")} aria-current={pathname === "/feed" ? "page" : undefined}>
-            <Home className="h-5 w-5" />
+            <Home className="hidden h-5 w-5 xl:block" />
             Home
           </Link>
           {dropdown("About", IdCard)}
           {dropdown("Explore", SquareArrowOutUpRight)}
           <Link href="/membership-plans" className={item(pathname === "/membership-plans")}>
-            <ArrowRight className="h-5 w-5" />
+            <ArrowRight className="hidden h-5 w-5 xl:block" />
             Upgrade
           </Link>
           <Link href="/help" className={item(pathname === "/help")}>
-            <LifeBuoy className="h-5 w-5" />
+            <LifeBuoy className="hidden h-5 w-5 xl:block" />
             Help
           </Link>
         </nav>
 
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1 lg:ml-0 lg:justify-self-end">
           <Link href="/search" className={iconBtn} aria-label="Search">
             <Search className="h-5 w-5" />
           </Link>

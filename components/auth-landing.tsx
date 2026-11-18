@@ -244,13 +244,13 @@ function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void })
 
       <p className="mt-[13px] text-center text-[12.5px] text-slate-600 sm:whitespace-nowrap">
         By continuing, you agree to the SMB Hub{" "}
-        <a href="https://smehub.ca/general-terms-conditions/" target="_blank" rel="noreferrer" className="font-semibold text-[#0b2bcf] hover:underline">
+        <Link href="/policies/terms" className="font-semibold text-[#0b2bcf] hover:underline">
           Terms
-        </a>{" "}
+        </Link>{" "}
         and{" "}
-        <a href="https://smehub.ca/small-business-hub-community-guidelines/" target="_blank" rel="noreferrer" className="font-semibold text-[#0b2bcf] hover:underline">
+        <Link href="/policies/community-guidelines" className="font-semibold text-[#0b2bcf] hover:underline">
           Community Guidelines
-        </a>
+        </Link>
         .
       </p>
       <p className={cx("mt-[16px] text-center text-[17px]", NAVY)}>

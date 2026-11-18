@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       />
       <header className="relative z-10 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-[66px] w-full max-w-[1270px] items-center gap-4 px-5 xl:px-0">
-          <Logo href="/auth/login" large />
+          <Logo large />
           <AuthNav />
         </div>
       </header>

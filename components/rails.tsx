@@ -1,9 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ChevronRight, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import { AUTHOR_FIELDS, getViewer, type Author } from "@/lib/hub";
-import { ARTICLES, SOCIAL } from "@/lib/site";
-import { AvatarImg, Cover } from "@/components/hub-client";
+import { SOCIAL } from "@/lib/site";
+import { BLOG } from "@/lib/content";
+import { AvatarImg, Cover, Thumb } from "@/components/hub-client";
 import { GroupLine, TierBadge } from "@/components/hub";
 
 type GroupRow = { slug: string; name: string; is_private: boolean; group_members: { count: number }[] };
@@ -110,15 +110,18 @@ export function ArticlesCard() {
     <section className={card}>
       <h2 className={railTitle}>Recent Articles</h2>
       <ul className="space-y-3">
-        {ARTICLES.map((a) => (
-          <li key={a.href}>
-            <a href={a.href} target="_blank" rel="noreferrer" className="group flex items-center gap-3">
-              <img src={a.image} alt="" loading="lazy" className="cover h-11 w-11 shrink-0 rounded object-cover" />
+        {BLOG.slice(0, 6).map((a) => (
+          <li key={a.slug}>
+            <Link href={`/blog/${a.slug}`} className="group flex items-center gap-3">
+              <Thumb src={a.image} className="h-11 w-11 shrink-0 rounded" />
               <span className="line-clamp-2 text-xs font-semibold leading-snug transition-colors group-hover:text-primary group-hover:underline">{a.title}</span>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
+      <Link href="/blog" className={seeAll}>
+        See all articles <ChevronRight className="h-4 w-4" />
+      </Link>
     </section>
   );
 }

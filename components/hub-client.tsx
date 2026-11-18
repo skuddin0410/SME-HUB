@@ -754,3 +754,13 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     </form>
   );
 }
+
+/** Story picture that falls back to the blue cover when there is no picture or it fails to load. */
+export function Thumb({ src, className }: { src?: string; className: string }) {
+  const [failed, setFailed] = useState(false);
+  return src && !failed ? (
+    <img src={src} alt="" loading="lazy" onError={() => setFailed(true)} className={`cover object-cover ${className}`} />
+  ) : (
+    <div aria-hidden="true" className={`cover ${className}`} />
+  );
+}
