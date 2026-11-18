@@ -14,6 +14,9 @@ const FOOTER_LINKS = [
   ["Groups", "/groups"],
   ["Membership plans", "/membership-plans"],
   ["Help", "/help"],
+  ["Community guidelines", "/policies/community-guidelines"],
+  ["Discrimination policy", "/policies/discrimination-policy"],
+  ["Terms and conditions", "/policies/terms"],
 ];
 
 /** Shell shared by every hub page: top navigation, footer, mobile tab bar. */
@@ -64,7 +67,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
       {children}
 
       <footer className="mt-8 border-t bg-white">
-        <div className="mx-auto grid max-w-[1128px] gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+        <div className="mx-auto grid max-w-[1260px] gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
             <Logo />
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">

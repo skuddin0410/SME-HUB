@@ -47,7 +47,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
   };
 
   return (
-    <div className="mx-auto grid max-w-[1128px] items-start gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+    <div className="mx-auto grid max-w-[1260px] items-start gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <main className="min-w-0">
         <MessagingApp me={me} people={[...people.values()]} initialMessages={messages} startWith={startWith} prefill={text} />
       </main>

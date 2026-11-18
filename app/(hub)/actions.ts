@@ -1,6 +1,7 @@
 "use server";
 
 import { AUTHOR_FIELDS, requireStaff, requireUser, slugify, type CommentRow, type Profile } from "@/lib/hub";
+import { REACTION_KINDS, type ReactionKind } from "@/lib/reactions";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -58,12 +59,23 @@ export async function deletePost(postId: string) {
 }
 
 /** Called from the like button, which already shows the new state. */
-export async function toggleLike(postId: string, liked: boolean) {
+/** Sets the viewer's reaction on a post, or clears it when kind is null. */
+export async function setReaction(postId: string, kind: ReactionKind | null) {
+  uuid(postId);
+  if (kind !== null && !REACTION_KINDS.includes(kind)) throw new Error("Unknown reaction");
+  const { supabase, userId } = await requireUser();
+  const { error } = kind
+    ? await supabase.from("reactions").upsert({ post_id: postId, user_id: userId, kind }, { onConflict: "post_id,user_id" })
+    : await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", userId);
+  fail(error);
+}
+
+export async function toggleRepost(postId: string, reposted: boolean) {
   uuid(postId);
   const { supabase, userId } = await requireUser();
-  const { error } = liked
-    ? await supabase.from("reactions").delete().eq("post_id", postId).eq("user_id", userId)
-    : await supabase.from("reactions").upsert({ post_id: postId, user_id: userId }, { ignoreDuplicates: true });
+  const { error } = reposted
+    ? await supabase.from("reposts").delete().eq("post_id", postId).eq("user_id", userId)
+    : await supabase.from("reposts").upsert({ post_id: postId, user_id: userId }, { ignoreDuplicates: true });
   fail(error);
 }
 

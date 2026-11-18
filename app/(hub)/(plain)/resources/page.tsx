@@ -8,7 +8,7 @@ export default function ResourcesPage() {
   return (
     <>
       <Hero title="Resources for founders" text="Funding, mentors and networks for the communities that build Canadian small business." />
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {RESOURCE_PAGES.map((p) => (
           <li key={p.slug}>
             <Link href={`/resources/${p.slug}`} className="panel group block h-full p-4 transition-colors hover:border-primary/40">

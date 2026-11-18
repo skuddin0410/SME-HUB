@@ -94,7 +94,7 @@ export function StoryIndex({ section }: { section: SectionKey }) {
           <h2 className="mt-1 text-lg font-semibold leading-snug group-hover:text-primary group-hover:underline">{lead.title}</h2>
         </div>
       </Link>
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {rest.map((item) => (
           <li key={item.slug}>
             <Link href={`${s.path}/${item.slug}`} className="panel group flex h-full flex-col overflow-hidden">

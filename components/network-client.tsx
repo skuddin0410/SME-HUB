@@ -25,7 +25,7 @@ export function ConnectButton({
   otherId: string;
   initial: LinkState;
   signedIn: boolean;
-  variant?: "pill" | "block" | "text";
+  variant?: "pill" | "block" | "text" | "solid" | "quiet";
   onChange?: (state: LinkState) => void;
 }) {
   const router = useRouter();
@@ -44,8 +44,15 @@ export function ConnectButton({
 
   const base = cx(
     "press inline-flex items-center justify-center gap-1.5 rounded-full text-sm font-semibold transition-colors duration-150",
-    variant === "block" ? "w-full px-4 py-1.5" : variant === "pill" ? "px-4 py-1.5" : "px-2 py-1",
+    variant === "block" ? "w-full px-4 py-1.5" : variant === "solid" ? "h-8 px-4 !text-base" : variant === "pill" || variant === "quiet" ? "px-4 py-1.5" : "px-2 py-1",
   );
+  // "solid" is the main button on a profile; "quiet" is the grey pill in "More profiles for you"
+  const connect =
+    variant === "solid"
+      ? "bg-primary text-white hover:bg-primary/90"
+      : variant === "quiet"
+        ? "border border-foreground/50 text-foreground/70 hover:bg-muted hover:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.5)]"
+        : null;
   const outline = variant === "text" ? "text-primary hover:bg-primary/10" : "border border-primary text-primary hover:bg-primary/10 hover:shadow-[inset_0_0_0_1px_hsl(var(--primary))]";
   const quiet = variant === "text" ? "text-muted-foreground hover:bg-muted" : "border border-foreground/40 text-muted-foreground hover:bg-muted hover:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.4)]";
 
@@ -80,7 +87,7 @@ export function ConnectButton({
         <button type="button" onClick={() => go("none", () => removeConnection(otherId))} className={cx(base, "text-muted-foreground hover:bg-muted", variant === "block" && "!w-auto flex-1")}>
           Ignore
         </button>
-        <button type="button" onClick={() => go("connected", () => acceptConnection(otherId))} className={cx(base, outline, variant === "block" && "!w-auto flex-1")}>
+        <button type="button" onClick={() => go("connected", () => acceptConnection(otherId))} className={cx(base, variant === "solid" ? connect : outline, variant === "block" && "!w-auto flex-1")}>
           <Check className="h-4 w-4" />
           Accept
         </button>
@@ -88,7 +95,7 @@ export function ConnectButton({
     );
   }
   return (
-    <button type="button" onClick={() => go("sent", () => requestConnection(otherId))} className={cx(base, outline)}>
+    <button type="button" onClick={() => go("sent", () => requestConnection(otherId))} className={cx(base, connect ?? outline)}>
       {variant === "text" ? <Plus className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
       Connect
     </button>

@@ -98,7 +98,10 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
         postId={post.id}
         likes={post.likes}
         comments={post.comments}
-        likedByMe={post.likedByMe}
+        kinds={post.kinds}
+        myReaction={post.myReaction}
+        reposts={post.reposts}
+        reposted={post.reposted}
         me={viewer.profile ? { id: viewer.profile.id, full_name: viewer.profile.full_name, avatar_url: viewer.profile.avatar_url } : null}
         isStaff={viewer.isStaff}
         startOpen={startOpen}

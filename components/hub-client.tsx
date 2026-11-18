@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageCircle, Megaphone, Repeat2, Send, ThumbsUp, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
+import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageCircle, Megaphone, Heart, PartyPopper, Repeat2, Send, ThumbsUp, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
   addComment,
@@ -14,11 +14,13 @@ import {
   deletePost,
   loadComments,
   reportPost,
-  toggleLike,
+  setReaction,
+  toggleRepost,
   updateProfile,
   type FormState,
 } from "@/app/(hub)/actions";
 import type { CommentRow, Profile } from "@/lib/hub";
+import type { ReactionKind } from "@/lib/reactions";
 import { DEMO_IMAGES, demoAvatar, demoCover, KINDS, type Kind } from "@/lib/demo";
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
@@ -494,11 +496,21 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
 }
 
 // ---------- post actions: like, comment, share, send ----------
+const REACTIONS: Record<ReactionKind, { label: string; icon: typeof ThumbsUp; dot: string; text: string }> = {
+  like: { label: "Like", icon: ThumbsUp, dot: "bg-[#378fe9]", text: "!text-[#0a66c2]" },
+  celebrate: { label: "Celebrate", icon: PartyPopper, dot: "bg-[#6dae4f]", text: "!text-[#44712e]" },
+  love: { label: "Love", icon: Heart, dot: "bg-[#df704d]", text: "!text-[#b24020]" },
+};
+const REACTION_ORDER: ReactionKind[] = ["like", "celebrate", "love"];
+
 export function PostActions({
   postId,
   likes,
   comments,
-  likedByMe,
+  kinds,
+  myReaction,
+  reposts,
+  reposted,
   me,
   isStaff,
   startOpen = false,
@@ -506,15 +518,22 @@ export function PostActions({
   postId: string;
   likes: number;
   comments: number;
-  likedByMe: boolean;
+  kinds: ReactionKind[];
+  myReaction: ReactionKind | null;
+  reposts: number;
+  reposted: boolean;
   me: (Pick<Profile, "id" | "full_name" | "avatar_url">) | null;
   isStaff: boolean;
   startOpen?: boolean;
 }) {
   const router = useRouter();
-  const [liked, setLiked] = useState(likedByMe);
+  const [mine, setMine] = useState(myReaction);
   const [likeCount, setLikeCount] = useState(likes);
   const [popKey, setPopKey] = useState(0);
+  const [picker, setPicker] = useState(false);
+  const pickerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [didRepost, setDidRepost] = useState(reposted);
+  const [repostCount, setRepostCount] = useState(reposts);
   const [open, setOpen] = useState(startOpen);
   const [list, setList] = useState<CommentRow[] | null>(null);
   const [commentCount, setCommentCount] = useState(comments);
@@ -538,16 +557,35 @@ export function PostActions({
     return true;
   };
 
-  const like = () => {
+  // change the screen first, save after, step back if the save fails
+  const react = (kind: ReactionKind | null) => {
+    setPicker(false);
+    if (needAccount() || kind === mine) return;
+    const was = mine;
+    setMine(kind);
+    setLikeCount((n) => n + (kind ? 1 : 0) - (was ? 1 : 0));
+    if (kind) setPopKey((k) => k + 1);
+    setReaction(postId, kind).catch(() => {
+      setMine(was);
+      setLikeCount((n) => n - (kind ? 1 : 0) + (was ? 1 : 0));
+      setNote("Could not save your reaction. Try again.");
+    });
+  };
+  const hover = (show: boolean) => {
+    if (pickerTimer.current) clearTimeout(pickerTimer.current);
+    pickerTimer.current = setTimeout(() => setPicker(show), show ? 350 : 250);
+  };
+
+  const repost = () => {
     if (needAccount()) return;
-    const was = liked;
-    setLiked(!was);
-    setLikeCount((n) => n + (was ? -1 : 1));
-    if (!was) setPopKey((k) => k + 1);
-    toggleLike(postId, was).catch(() => {
-      setLiked(was);
-      setLikeCount((n) => n + (was ? 1 : -1));
-      setNote("Could not save your like. Try again.");
+    const was = didRepost;
+    setDidRepost(!was);
+    setRepostCount((n) => n + (was ? -1 : 1));
+    setNote(was ? "Repost removed" : "Reposted");
+    toggleRepost(postId, was).catch(() => {
+      setDidRepost(was);
+      setRepostCount((n) => n + (was ? 1 : -1));
+      setNote("Could not save your repost. Try again.");
     });
   };
 
@@ -566,31 +604,54 @@ export function PostActions({
     });
   };
 
-  const share = async () => {
-    try {
-      await navigator.clipboard.writeText(`${window.location.origin}/posts/${postId}`);
-      setNote("Link copied");
-    } catch {
-      setNote("Could not copy the link");
-    }
-  };
-
   const actionClass =
-    "press inline-flex min-w-[40px] items-center justify-center gap-1.5 rounded px-2.5 py-2 text-sm text-foreground/75 transition-colors duration-100 hover:bg-muted hover:text-foreground";
+    "press inline-flex h-10 min-w-[40px] items-center justify-center gap-1.5 rounded-md px-2.5 text-sm font-semibold text-foreground/70 transition-colors duration-100 hover:bg-muted hover:text-foreground";
+  const Mine = mine ? REACTIONS[mine].icon : ThumbsUp;
+  // the viewer's own reaction joins the cluster the moment they react
+  const shown = REACTION_ORDER.filter((k) => (likeCount === 1 && mine ? k === mine : kinds.includes(k) || k === mine));
 
   return (
     <div>
       <div className="flex items-center gap-1 px-2 py-1">
-        <button type="button" onClick={like} aria-pressed={liked} aria-label="Like" className={cx(actionClass, liked && "!text-primary")}>
-          <ThumbsUp key={popKey} className={cx("h-5 w-5", liked && "fill-primary/20", popKey > 0 && liked && "animate-pop")} />
-          {likeCount > 0 && likeCount}
-        </button>
+        <div className="relative" onMouseEnter={() => hover(true)} onMouseLeave={() => hover(false)}>
+          {picker && (
+            <div role="menu" aria-label="Reactions" className="absolute bottom-full left-0 z-20 mb-1 flex animate-rise gap-1 rounded-full border bg-white p-1 shadow-lg">
+              {REACTION_ORDER.map((k) => {
+                const Icon = REACTIONS[k].icon;
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    role="menuitem"
+                    title={REACTIONS[k].label}
+                    aria-label={REACTIONS[k].label}
+                    onClick={() => react(k)}
+                    className={cx("flex h-9 w-9 items-center justify-center rounded-full text-white transition-transform duration-150 hover:-translate-y-1 hover:scale-125", REACTIONS[k].dot)}
+                  >
+                    <Icon className="h-[18px] w-[18px] fill-white/25" />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => react(mine ? null : "like")}
+            aria-pressed={!!mine}
+            aria-label={mine ? `${REACTIONS[mine].label}, remove reaction` : "Like"}
+            className={cx(actionClass, mine && REACTIONS[mine].text)}
+          >
+            <Mine key={popKey} className={cx("h-5 w-5", mine && "fill-current [fill-opacity:0.15]", popKey > 0 && mine && "animate-pop")} />
+            {likeCount > 0 && likeCount}
+          </button>
+        </div>
         <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label="Comment" className={actionClass}>
           <MessageCircle className="h-5 w-5" />
           {commentCount > 0 && commentCount}
         </button>
-        <button type="button" onClick={share} aria-label="Copy link to share" title="Copy link" className={actionClass}>
+        <button type="button" onClick={repost} aria-pressed={didRepost} aria-label={didRepost ? "Remove repost" : "Repost"} title={didRepost ? "Remove repost" : "Repost"} className={cx(actionClass, didRepost && "!text-emerald-700")}>
           <Repeat2 className="h-5 w-5" />
+          {repostCount > 0 && repostCount}
         </button>
         <button
           type="button"
@@ -609,9 +670,16 @@ export function PostActions({
             {note}
           </span>
         )}
-        {likeCount > 0 && (
-          <span className="ml-auto mr-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary ring-2 ring-white" title={`${likeCount} likes`}>
-            <ThumbsUp className="h-3 w-3 fill-white text-white" />
+        {likeCount > 0 && shown.length > 0 && (
+          <span className="ml-auto mr-2 flex items-center" title={`${likeCount} ${likeCount === 1 ? "reaction" : "reactions"}`}>
+            {shown.map((k) => {
+              const Icon = REACTIONS[k].icon;
+              return (
+                <span key={k} className={cx("-ml-1 flex h-[18px] w-[18px] items-center justify-center rounded-full ring-2 ring-white first:ml-0", REACTIONS[k].dot)}>
+                  <Icon className="h-2.5 w-2.5 fill-white text-white" />
+                </span>
+              );
+            })}
           </span>
         )}
       </div>

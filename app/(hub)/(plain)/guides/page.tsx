@@ -8,7 +8,7 @@ export default function GuidesPage() {
   return (
     <>
       <Hero title="Business guides by province" text="What each province and territory is known for, and the organisations there that fund, advise and connect small businesses." />
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {GUIDES.map((g) => (
           <li key={g.slug}>
             <Link href={`/guides/${g.slug}`} className="panel group block h-full p-4 transition-colors hover:border-primary/40">

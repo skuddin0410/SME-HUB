@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, Bell, MessageSquareText, UsersRound, ChevronDown, Home, IdCard, LifeBuoy, Menu, Search, SquareArrowOutUpRight, X } from "lucide-react";
-import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, PROVINCES, RESOURCES_MENU, type NavItem } from "@/lib/site";
+import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, RESOURCES_MENU, type NavItem } from "@/lib/site";
 import { AvatarImg, SignOutButton } from "@/components/hub-client";
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
@@ -20,7 +20,7 @@ export function Logo({ onDark = false, href = "/feed", large = false }: { onDark
 
 function MenuLink({ item }: { item: NavItem }) {
   return (
-    <Link href={item.href} className="block rounded-lg px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-primary/5 hover:text-primary">
+    <Link href={item.href} className="block rounded-md px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-slate-100 hover:text-foreground">
       {item.label}
     </Link>
   );
@@ -29,7 +29,7 @@ function MenuLink({ item }: { item: NavItem }) {
 function Column({ title, items }: { title: string; items: NavItem[] }) {
   return (
     <div>
-      <p className="px-3 pb-1 text-xs font-semibold text-muted-foreground">{title}</p>
+      <p className="px-3 pb-1 pt-1.5 text-xs font-semibold text-muted-foreground">{title}</p>
       {items.map((i) => (
         <MenuLink key={i.label} item={i} />
       ))}
@@ -41,12 +41,10 @@ const MENUS = {
   About: [
     { title: "SMB Hub", items: ABOUT_MENU },
     { title: "Resources for founders", items: RESOURCES_MENU },
-    { title: "Business guides by province", items: PROVINCES },
   ],
   Explore: [
     { title: "Community", items: EXPLORE_MENU.slice(0, 5) },
     { title: "Learn", items: EXPLORE_MENU.slice(5) },
-    { title: "Good to know", items: POLICY_MENU },
   ],
 } as const;
 
@@ -67,60 +65,65 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // tabs are quiet pills: a soft grey on hover, a blue tint for the page you are on
   const item = (active: boolean) =>
     cx(
-      "relative flex h-[60px] items-center gap-2 px-3 text-sm font-semibold transition-colors",
-      "after:absolute after:inset-x-2 after:bottom-0 after:h-0.5 after:rounded-full after:transition-transform after:duration-200",
-      active ? "text-foreground after:scale-x-100 after:bg-primary" : "text-foreground/75 after:scale-x-0 after:bg-primary hover:text-foreground hover:after:scale-x-100",
+      "press flex h-9 items-center gap-2 rounded-full px-3.5 text-[15px] transition-colors duration-150",
+      active ? "bg-primary/10 font-semibold text-primary" : "font-medium text-foreground/70 hover:bg-slate-100 hover:text-foreground",
     );
-  const iconBtn = "press relative rounded-full p-2.5 text-foreground/70 transition-colors hover:bg-muted hover:text-foreground";
+  const iconBtn = "press relative rounded-full p-2.5 text-foreground/70 transition-colors hover:bg-slate-100 hover:text-foreground";
   const stack = (active: boolean) =>
     cx(
-      "press relative flex h-[60px] min-w-[48px] flex-col items-center justify-center gap-0.5 px-2 text-xs transition-colors md:min-w-[80px]",
-      "after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:transition-transform after:duration-200",
-      active ? "text-foreground after:scale-x-100 after:bg-foreground" : "text-foreground/60 after:scale-x-0 after:bg-foreground hover:text-foreground",
+      "press flex h-[52px] min-w-[48px] flex-col items-center justify-center gap-0.5 rounded-lg px-2 text-xs transition-colors md:min-w-[76px]",
+      active ? "font-semibold text-primary" : "text-foreground/60 hover:bg-slate-100 hover:text-foreground",
     );
   const dot = "absolute -right-2 -top-1.5 min-w-[18px] border-2 border-white rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-[14px] text-white";
 
-  const dropdown = (name: "About" | "Explore", Icon: typeof IdCard) => (
-    <div onMouseEnter={() => setOpen(name)} onMouseLeave={() => setOpen(null)}>
-      <button type="button" aria-expanded={open === name} onClick={() => setOpen(open === name ? null : name)} className={item(false)}>
-        <Icon className="hidden h-5 w-5 xl:block" />
-        {name}
-        <ChevronDown className={cx("h-4 w-4 transition-transform duration-200", open === name && "rotate-180")} />
-      </button>
-      {open === name && (
-        <div className="fixed left-1/2 top-[60px] z-40 w-[720px] max-w-[92vw] -translate-x-1/2 pt-1">
-          <div className="panel grid animate-rise grid-cols-3 gap-2 p-4 shadow-2xl">
-            {MENUS[name].map((col) => (
-              <div key={col.title}>
-                <Column title={col.title} items={[...col.items]} />
-              </div>
-            ))}
+  const dropdown = (name: "About" | "Explore", Icon: typeof IdCard) => {
+    const active = MENUS[name].some((col) => col.items.some((i) => pathname === i.href || (i.href !== "/members" && pathname.startsWith(`${i.href}/`))));
+    return (
+      <div className="relative flex h-[60px] items-center" onMouseEnter={() => setOpen(name)} onMouseLeave={() => setOpen(null)}>
+        <button
+          type="button"
+          aria-expanded={open === name}
+          onClick={() => setOpen(open === name ? null : name)}
+          className={cx(item(active), !active && open === name && "bg-slate-100 text-foreground")}
+        >
+          <Icon className="hidden h-[18px] w-[18px] xl:block" />
+          {name}
+          <ChevronDown className={cx("h-4 w-4 opacity-60 transition-transform duration-200", open === name && "rotate-180")} />
+        </button>
+        {open === name && (
+          <div className="absolute left-1/2 top-full z-40 w-[460px] -translate-x-1/2">
+            <div className="grid animate-rise grid-cols-2 gap-1 rounded-xl border bg-white p-2 shadow-[0_12px_32px_-8px_rgb(15_23_42/0.18)]">
+              {MENUS[name].map((col) => (
+                <Column key={col.title} title={col.title} items={[...col.items]} />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-white/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b bg-white">
       {/* three columns from lg up: logo, tabs centred on the page, account controls */}
-      <div className="mx-auto flex h-[60px] max-w-[1128px] items-center gap-2 px-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
+      <div className="mx-auto flex h-[60px] max-w-[1260px] items-center gap-2 px-4 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
         <Logo />
-        <nav className="hidden items-center lg:flex" aria-label="Main">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
           <Link href="/feed" className={item(pathname === "/feed")} aria-current={pathname === "/feed" ? "page" : undefined}>
-            <Home className="hidden h-5 w-5 xl:block" />
+            <Home className="hidden h-[18px] w-[18px] xl:block" />
             Home
           </Link>
           {dropdown("About", IdCard)}
           {dropdown("Explore", SquareArrowOutUpRight)}
           <Link href="/membership-plans" className={item(pathname === "/membership-plans")}>
-            <ArrowRight className="hidden h-5 w-5 xl:block" />
+            <ArrowRight className="hidden h-[18px] w-[18px] xl:block" />
             Upgrade
           </Link>
           <Link href="/help" className={item(pathname === "/help")}>
-            <LifeBuoy className="hidden h-5 w-5 xl:block" />
+            <LifeBuoy className="hidden h-[18px] w-[18px] xl:block" />
             Help
           </Link>
         </nav>
@@ -140,7 +143,7 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
                 return (
                   <Link key={href} href={href} aria-current={active ? "page" : undefined} aria-label={count ? `${label}, ${count} new` : label} className={stack(active)}>
                     <span className="relative">
-                      <Icon className={cx("h-6 w-6", active && "fill-foreground/10")} />
+                      <Icon className={cx("h-6 w-6", active && "fill-primary/15")} />
                       {count > 0 && <span className={dot}>{count > 9 ? "9+" : count}</span>}
                     </span>
                     <span className="hidden md:block">{label}</span>
@@ -206,7 +209,7 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
             </Link>
           )}
           <Column title="Start here" items={[{ label: "Home", href: "/feed" }, { label: "Upgrade", href: "/membership-plans" }, { label: "Help", href: "/help" }]} />
-          {[...MENUS.Explore, ...MENUS.About].map((col) => (
+          {[...MENUS.Explore, ...MENUS.About, { title: "Good to know", items: POLICY_MENU }].map((col) => (
             <Column key={col.title} title={col.title} items={[...col.items]} />
           ))}
         </div>

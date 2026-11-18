@@ -118,3 +118,21 @@ update profiles set status = 'active' where id = :b;
 select t.expect('admin can pin posts and reinstate members',
   (select pinned_at is not null from posts where body = 'pub') and (select status = 'active' from profiles where id = :b));
 select t.expect('admin sees every post for moderation', (select count(*) >= 5 from posts));
+
+-- ===== reactions, reposts, connection count (0006) =====
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+insert into reposts (post_id, user_id) select id, auth.uid() from posts where body = 'pub';
+insert into reactions (post_id, user_id, kind) select id, auth.uid(), 'love' from posts where body = 'pub'
+  on conflict (post_id, user_id) do update set kind = excluded.kind;
+select t.expect_denied('member cannot repost in someone else''s name', $$insert into reposts (post_id, user_id) select id, '00000000-0000-0000-0000-00000000000c' from posts where body = 'pub'$$);
+select t.expect_denied('unknown reaction kind is refused', $$update reactions set kind = 'angry' where user_id = auth.uid()$$);
+update reactions set kind = 'celebrate' where user_id <> auth.uid();
+select t.expect('member cannot change another member''s reaction', (select count(*) = 0 from reactions where user_id <> auth.uid() and kind = 'celebrate'));
+select t.expect('post_extras reports kinds, own reaction and reposts',
+  (select reposts = 1 and reposted and my_kind = 'love' and 'love' = any (kinds) from post_extras(array(select id from posts where body = 'pub'))));
+select t.expect('post_extras says nothing about posts the caller cannot see',
+  (select count(*) = 0 from post_extras(array(select id from posts where body = 'priv'))));
+reset role;
+select t.expect('private post exists for the check above', (select count(*) = 1 from posts where body = 'priv'));
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('visitor gets a connection count without reading connection rows', connection_count('00000000-0000-0000-0000-00000000000a') >= 0);

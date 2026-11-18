@@ -3,7 +3,7 @@ import { ActiveMembersCard, ArticlesCard, GroupsCard, ProfileCard, SocialCard } 
 /** Feed-style pages: fixed left and right rails, the centre column scrolls. */
 export default function RailsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto grid max-w-[1128px] items-start gap-6 px-4 py-6 lg:grid-cols-[225px_minmax(0,1fr)_300px]">
+    <div className="mx-auto grid max-w-[1260px] items-start gap-6 px-4 py-6 lg:grid-cols-[240px_minmax(0,1fr)_320px]">
       <aside className="rail hidden space-y-2 lg:block">
         <ProfileCard />
         <ArticlesCard />

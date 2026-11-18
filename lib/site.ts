@@ -6,6 +6,7 @@ export type NavItem = { label: string; href: string };
 export const ABOUT_MENU: NavItem[] = [
   { label: "About us", href: "/about" },
   { label: "CanadianSME Magazine", href: "/magazine" },
+  { label: "Business guides", href: "/guides" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -16,14 +17,6 @@ export const RESOURCES_MENU: NavItem[] = [
   { label: "Immigrant entrepreneurs", href: "/resources/immigrant-entrepreneurs" },
   { label: "Resources for LGBTQ+", href: "/resources/lgbtq" },
 ];
-
-export const PROVINCES: NavItem[] = [
-  ["Alberta", "alberta"], ["British Columbia", "british-columbia"], ["Manitoba", "manitoba"],
-  ["New Brunswick", "new-brunswick"], ["Newfoundland and Labrador", "newfoundland-and-labrador"],
-  ["Northwest Territories", "northwest-territories"], ["Nova Scotia", "nova-scotia"], ["Nunavut", "nunavut"],
-  ["Ontario", "ontario"], ["Prince Edward Island", "prince-edward-island"], ["Quebec", "quebec"],
-  ["Saskatchewan", "saskatchewan"], ["Yukon", "yukon"],
-].map(([label, slug]) => ({ label, href: `/guides/${slug}` }));
 
 export const EXPLORE_MENU: NavItem[] = [
   { label: "Groups", href: "/groups" },

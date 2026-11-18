@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 
+import type { ReactionKind } from "@/lib/reactions";
+
 export type Profile = {
   id: string;
   full_name: string;
@@ -31,9 +33,14 @@ export type Post = {
   group: { name: string; slug: string } | null;
   likes: number;
   comments: number;
-  likedByMe: boolean;
+  /** which reactions the post has, and the viewer's own */
+  kinds: ReactionKind[];
+  myReaction: ReactionKind | null;
+  reposts: number;
+  reposted: boolean;
   link: LinkState;
 };
+
 
 export type CommentRow = { id: string; body: string; created_at: string; author: Author };
 
@@ -95,7 +102,7 @@ export async function requireStaff() {
 
 const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
 
-type Row = Omit<Post, "likes" | "comments" | "likedByMe" | "link"> & {
+type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link"> & {
   reactions: { count: number }[];
   comments: { count: number }[];
 };
@@ -126,24 +133,26 @@ export async function fetchPosts(
   const rows = (data ?? []) as unknown as Row[];
   if (rows.length === 0) return [];
 
-  let liked = new Set<string>();
-  if (userId) {
-    const { data: mine } = await supabase
-      .from("reactions")
-      .select("post_id")
-      .eq("user_id", userId)
-      .in("post_id", rows.map((r) => r.id));
-    liked = new Set((mine ?? []).map((r) => r.post_id as string));
-  }
+  // reaction kinds, the viewer's own reaction and reposts; posts still render if this call fails
+  type Extra = { post_id: string; kinds: ReactionKind[]; my_kind: ReactionKind | null; reposts: number; reposted: boolean };
+  const { data: extraRows } = await supabase.rpc("post_extras", { ids: rows.map((r) => r.id) });
+  const extras = new Map(((extraRows ?? []) as Extra[]).map((e) => [e.post_id, e]));
 
   const links = await getLinks();
-  return rows.map((r) => ({
-    ...r,
-    link: links.get(r.author.id) ?? "none",
-    likes: r.reactions[0]?.count ?? 0,
-    comments: r.comments[0]?.count ?? 0,
-    likedByMe: liked.has(r.id),
-  }));
+  return rows.map((r) => {
+    const e = extras.get(r.id);
+    const likes = r.reactions[0]?.count ?? 0;
+    return {
+      ...r,
+      link: links.get(r.author.id) ?? "none",
+      likes,
+      comments: r.comments[0]?.count ?? 0,
+      kinds: e?.kinds?.length ? e.kinds : likes > 0 ? ["like"] : [],
+      myReaction: userId ? (e?.my_kind ?? null) : null,
+      reposts: e?.reposts ?? 0,
+      reposted: !!userId && !!e?.reposted,
+    };
+  });
 }
 
 export function timeAgo(iso: string) {

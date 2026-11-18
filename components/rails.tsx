@@ -189,3 +189,13 @@ export async function GroupsCard() {
     </section>
   );
 }
+
+/** Profile-style pages: a wide main column and one right column, as on a LinkedIn profile. */
+export function TwoCol({ children, aside }: { children: React.ReactNode; aside: React.ReactNode }) {
+  return (
+    <div className="mx-auto grid max-w-[1260px] items-start gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <main className="flex min-w-0 flex-col gap-2">{children}</main>
+      <aside className="rail hidden space-y-2 lg:block">{aside}</aside>
+    </div>
+  );
+}
