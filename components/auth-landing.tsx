@@ -5,25 +5,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
-  Briefcase,
-  Building2,
   Check,
   Eye,
   EyeOff,
-  Layers,
   Loader2,
   Lock,
   Mail,
   MailCheck,
-  MessageCircle,
   MessageSquare,
-  Tag,
   ThumbsUp,
-  Trophy,
   User,
   UserCheck,
-  Users,
-  UsersRound,
   X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -37,17 +29,6 @@ export type LandingStats = { members: number; groups: number; posts: number };
 
 const NAVY = "text-[#0b1437]";
 const CTA = "bg-gradient-to-r from-[#3f86ee] to-[#0a2fb8] text-white shadow-[0_8px_20px_-8px_rgb(10_47_184/0.7)]";
-
-const TOPICS = [
-  { label: "Questions from owners", href: "/feed?kind=question", icon: MessageCircle, tone: "text-[#0b2bcf]" },
-  { label: "Wins", href: "/feed?kind=win", icon: Trophy, tone: "text-amber-500" },
-  { label: "Offers", href: "/feed?kind=offer", icon: Tag, tone: "text-[#0b2bcf]" },
-  { label: "Hiring", href: "/feed?kind=hiring", icon: Briefcase, tone: "text-[#0b2bcf]" },
-  { label: "Groups", href: "/groups", icon: UsersRound, tone: "text-[#0b2bcf]" },
-  { label: "Business directory", href: "/businesses", icon: Building2, tone: "text-[#0b2bcf]" },
-  { label: "Members", href: "/members", icon: Users, tone: "text-[#0b2bcf]" },
-  { label: "Membership plans", href: "/membership-plans", icon: Layers, tone: "text-[#0b2bcf]" },
-];
 
 function strength(pw: string) {
   let score = 0;
@@ -361,7 +342,7 @@ export function AuthLanding({ initialMode, people }: { initialMode: Mode; stats:
 
   return (
     <>
-      <section className="mx-auto grid max-w-[1270px] items-start gap-6 px-5 pb-6 pt-9 xl:px-0 lg:grid-cols-[minmax(0,465px)_minmax(0,1fr)] lg:gap-[52px]">
+      <section className="mx-auto grid max-w-[1270px] items-start gap-6 px-5 pb-12 pt-9 xl:px-0 lg:grid-cols-[minmax(0,465px)_minmax(0,1fr)] lg:gap-[52px]">
         <div className="mx-auto w-full max-w-[465px] lg:mx-0">
           <p className={cx("inline-flex items-center gap-2.5 rounded-full bg-[#e2ecfb] px-5 py-1.5 text-[15px] font-semibold", NAVY)}>
             <span aria-hidden="true">🇨🇦</span> Canada&apos;s Small Business Network
@@ -375,33 +356,6 @@ export function AuthLanding({ initialMode, people }: { initialMode: Mode; stats:
           </div>
         </div>
         <Showcase people={people} />
-      </section>
-
-      <section className="mx-auto max-w-[1527px] px-4 pb-10">
-        <div className="grid items-center gap-8 rounded-[28px] border border-white bg-white/70 px-6 py-9 shadow-[0_10px_50px_-24px_rgb(22_48_122/0.35)] backdrop-blur-md lg:grid-cols-[minmax(0,416px)_1px_minmax(0,1fr)] lg:gap-x-10 lg:py-[34px] lg:pl-[88px] lg:pr-[40px]">
-          <div>
-            <h2 className={cx("text-[32px] font-normal leading-[1.08] tracking-[-0.01em] sm:text-[38px]", NAVY)}>
-              Explore what owners are <span className="font-semibold text-[#0b2bcf]">talking about</span>
-            </h2>
-            <p className="mt-3 text-[15px] text-slate-600 xl:whitespace-nowrap">Browse without an account. Join when you want to take part.</p>
-          </div>
-          <span className="hidden h-[116px] w-px bg-slate-200 lg:block" aria-hidden="true" />
-          <div className="flex flex-wrap content-start gap-x-[15px] gap-y-[14px]">
-            {TOPICS.map(({ label, href, icon: Icon, tone }) => (
-              <Link
-                key={href}
-                href={href}
-                className={cx(
-                  "press inline-flex h-[54px] items-center gap-[18px] rounded-2xl border border-slate-100 bg-white px-[22px] text-[16px] font-medium shadow-[0_4px_16px_-8px_rgb(22_48_122/0.3)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_-10px_rgb(22_48_122/0.45)]",
-                  NAVY,
-                )}
-              >
-                <Icon className={cx("h-6 w-6", tone)} />
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
       </section>
     </>
   );
