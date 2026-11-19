@@ -1,0 +1,421 @@
+{
+  "checked": "2026-11-19 22:49 UTC",
+  "rows": [
+    {
+      "area": "Accounts",
+      "feature": "Sign up, sign in, email confirmation",
+      "linkedin": "Account creation with email verification",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/auth/sign-up; ok: file app/auth/confirm"
+    },
+    {
+      "area": "Accounts",
+      "feature": "Password reset",
+      "linkedin": "Forgot / update password",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/auth/forgot-password; ok: file app/auth/update-password"
+    },
+    {
+      "area": "Accounts",
+      "feature": "Two roles only: member and admin",
+      "linkedin": "Members plus staff tools",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /profiles_role_check/"
+    },
+    {
+      "area": "Profiles",
+      "feature": "Profile page (cover, photo, headline, about)",
+      "linkedin": "Profile with banner, photo, headline",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/(hub)/(wide)/members/[id]"
+    },
+    {
+      "area": "Profiles",
+      "feature": "Edit profile and upload photo",
+      "linkedin": "Edit intro, upload photo",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/(hub)/(plain)/profile/edit; ok: file lib/upload.ts"
+    },
+    {
+      "area": "Profiles",
+      "feature": "Profile strength meter",
+      "linkedin": "Profile completeness prompts",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /Profile strength/"
+    },
+    {
+      "area": "Profiles",
+      "feature": "Experience, education and skills sections",
+      "linkedin": "Structured career history and skills",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: database /create table (experience|education|skills|member_skills)/"
+    },
+    {
+      "area": "Profiles",
+      "feature": "Public profile SEO (JSON-LD, sitemap)",
+      "linkedin": "Profiles are Google-indexed",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /\"@type\": \"Person\"|@type.*Person/; ok: file app/sitemap.ts"
+    },
+    {
+      "area": "Profiles",
+      "feature": "Business pages with reviews",
+      "linkedin": "Company pages",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table companies/; ok: database /create table company_reviews/; ok: file app/(hub)/(wide)/businesses"
+    },
+    {
+      "area": "Profiles",
+      "feature": "Membership tiers and badges",
+      "linkedin": "Premium and verified badges",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /TierBadge/"
+    },
+    {
+      "area": "Profiles",
+      "feature": "Who viewed your profile",
+      "linkedin": "Profile viewers list",
+      "status": "Not started",
+      "when": "Later",
+      "evidence": "missing: database /create table profile_views/"
+    },
+    {
+      "area": "Network",
+      "feature": "Connect, accept, remove",
+      "linkedin": "Connections with invitations",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /requestConnection/; ok: code /acceptConnection/"
+    },
+    {
+      "area": "Network",
+      "feature": "Invitations and network page",
+      "linkedin": "My Network tab",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/(hub)/(wide)/network"
+    },
+    {
+      "area": "Network",
+      "feature": "1st / 2nd / 3rd degree labels",
+      "linkedin": "Degrees of separation badges",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /function connection_degrees/"
+    },
+    {
+      "area": "Network",
+      "feature": "Mutual connections",
+      "linkedin": "Shared connections shown on profiles",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /function mutual_connections/"
+    },
+    {
+      "area": "Network",
+      "feature": "People You May Know suggestions",
+      "linkedin": "Friend-of-friend recommendations",
+      "status": "Not started",
+      "when": "Now",
+      "evidence": "missing: database /people_you_may_know|pymk/"
+    },
+    {
+      "area": "Network",
+      "feature": "Follow members, businesses, topics",
+      "linkedin": "One-way follow",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: database /create table follows/"
+    },
+    {
+      "area": "Network",
+      "feature": "Block a member",
+      "linkedin": "Block and report people",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table blocks/; ok: code /blockMember/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Posts with text and photos",
+      "linkedin": "Share an update with image",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /createPost/; ok: file lib/upload.ts"
+    },
+    {
+      "area": "Feed",
+      "feature": "Post types: win, question, offer, hiring",
+      "linkedin": "Post formats (poll, article, job)",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /KINDS/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Reactions (like, celebrate, love)",
+      "linkedin": "Six reaction types",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /setReaction/; ok: database /reactions.*kind|add column kind/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Comments",
+      "linkedin": "Comment on posts",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table comments/; ok: code /addComment/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Replies inside comments",
+      "linkedin": "Threaded replies",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: database /comments.*parent_id|parent_id.*comments/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Reposts",
+      "linkedin": "Repost with or without comment",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table reposts/; ok: code /toggleRepost/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Ranked feed (relevance, not just newest)",
+      "linkedin": "Two-pass ML ranking",
+      "status": "Not started",
+      "when": "Now",
+      "evidence": "missing: database /feed_score|rank_feed/  OR  code /feedScore|rankFeed|scorePost/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Hashtags and topics",
+      "linkedin": "Hashtag follow and discovery",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: database /create table (hashtags|topics)/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Save posts for later",
+      "linkedin": "Saved items",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: database /create table saved_posts/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Newsletters and long articles",
+      "linkedin": "Articles and newsletters",
+      "status": "Not started",
+      "when": "Later",
+      "evidence": "missing: database /create table (articles|newsletters)/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Polls",
+      "linkedin": "Poll posts",
+      "status": "Not started",
+      "when": "Later",
+      "evidence": "missing: database /create table (polls|poll_options)/"
+    },
+    {
+      "area": "Search",
+      "feature": "Full-text search (people, posts, businesses, groups)",
+      "linkedin": "Search across entities",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /fts tsvector/; ok: file app/(hub)/(rails)/search"
+    },
+    {
+      "area": "Search",
+      "feature": "Search as you type (suggestions)",
+      "linkedin": "Typeahead",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: code /typeahead|useSearchSuggest|search_suggest/"
+    },
+    {
+      "area": "Search",
+      "feature": "Meaning-based search (embeddings)",
+      "linkedin": "Semantic search",
+      "status": "Not started",
+      "when": "Later",
+      "evidence": "missing: database /create extension.*vector/"
+    },
+    {
+      "area": "Search",
+      "feature": "Dedicated search engine (Typesense / Meilisearch)",
+      "linkedin": "Galene / Lucene",
+      "status": "Not started",
+      "when": "Later",
+      "evidence": "missing: package typesense|meilisearch"
+    },
+    {
+      "area": "Messaging",
+      "feature": "Direct messages",
+      "linkedin": "Messaging",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table messages/; ok: file app/(hub)/(wide)/messages"
+    },
+    {
+      "area": "Messaging",
+      "feature": "Instant delivery (realtime)",
+      "linkedin": "Live message delivery",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /\\.channel\\(/"
+    },
+    {
+      "area": "Messaging",
+      "feature": "Unread counts and read marks",
+      "linkedin": "Unread badges",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /read_at/; ok: code /markThreadRead/"
+    },
+    {
+      "area": "Notifications",
+      "feature": "In-app notifications",
+      "linkedin": "Notifications tab",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table notifications/; ok: database /function notify_reaction/; ok: file app/(hub)/(rails)/notifications"
+    },
+    {
+      "area": "Notifications",
+      "feature": "Email notifications and digest",
+      "linkedin": "Email digests",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: package resend|sendgrid|postmark|nodemailer"
+    },
+    {
+      "area": "Notifications",
+      "feature": "Push notifications / installable app",
+      "linkedin": "Mobile app and push",
+      "status": "Not started",
+      "when": "Later",
+      "evidence": "missing: file app/manifest.ts  OR  file public/manifest.json"
+    },
+    {
+      "area": "Community",
+      "feature": "Groups (public and private)",
+      "linkedin": "Groups",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table groups/; ok: file app/(hub)/(rails)/groups"
+    },
+    {
+      "area": "Community",
+      "feature": "Group invites",
+      "linkedin": "Invite to group",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table group_invites/"
+    },
+    {
+      "area": "Community",
+      "feature": "Events",
+      "linkedin": "Events",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: database /create table events/"
+    },
+    {
+      "area": "Opportunities",
+      "feature": "Jobs and opportunities board",
+      "linkedin": "Jobs",
+      "status": "Not started",
+      "when": "Later",
+      "evidence": "missing: database /create table (jobs|opportunities)/"
+    },
+    {
+      "area": "Opportunities",
+      "feature": "Matching people to jobs or opportunities",
+      "linkedin": "Jobs You May Be Interested In",
+      "status": "Not started",
+      "when": "Later",
+      "evidence": "missing: database /job_match|match_jobs/  OR  code /matchJobs|jobMatch/"
+    },
+    {
+      "area": "Safety",
+      "feature": "Report content and review queue",
+      "linkedin": "Report and moderate",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table reports/; ok: file app/admin/(panel)/reports"
+    },
+    {
+      "area": "Safety",
+      "feature": "Admin dashboard",
+      "linkedin": "Internal staff tools",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/admin/(panel)/members; ok: file app/admin/(panel)/posts"
+    },
+    {
+      "area": "Safety",
+      "feature": "Row-level security tests",
+      "linkedin": "Access control",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file supabase/tests/security.sql"
+    },
+    {
+      "area": "Safety",
+      "feature": "Rate limits against spam",
+      "linkedin": "Abuse protection",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /function enforce_rate/"
+    },
+    {
+      "area": "Platform",
+      "feature": "Pre-launch SEO switch",
+      "linkedin": "Controlled indexing",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/robots.ts; ok: code /INDEXABLE/"
+    },
+    {
+      "area": "Platform",
+      "feature": "Deployed on AWS Amplify",
+      "linkedin": "Hosting",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file amplify.yml"
+    },
+    {
+      "area": "Platform",
+      "feature": "Caching layer (Redis)",
+      "linkedin": "Caching and rate counters",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: package redis|upstash|ioredis"
+    },
+    {
+      "area": "Platform",
+      "feature": "Background job queue",
+      "linkedin": "Kafka / Samza pipelines",
+      "status": "Not started",
+      "when": "Next",
+      "evidence": "missing: package bullmq|pg-boss|inngest"
+    }
+  ]
+}
