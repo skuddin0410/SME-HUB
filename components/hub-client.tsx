@@ -185,7 +185,7 @@ export function NavLink({
   );
 }
 
-export function SignOutButton({ className, to = "/feed" }: { className?: string; to?: string }) {
+export function SignOutButton({ className, to = "/auth/login" }: { className?: string; to?: string }) {
   const router = useRouter();
   return (
     <button

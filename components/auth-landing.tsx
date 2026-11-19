@@ -78,8 +78,12 @@ function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void })
       if (error) {
         setError(error.message);
         setBusy(false);
+      } else if (data.user && data.user.identities?.length === 0) {
+        // Supabase answers a sign-up for an existing address without saying so; this is how it shows
+        setError("That email already has an account. Sign in instead.");
+        setBusy(false);
       } else if (data.session) {
-        router.push("/profile/edit");
+        router.push("/feed");
         router.refresh();
       } else {
         setSentTo(email);
