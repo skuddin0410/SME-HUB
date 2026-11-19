@@ -13,7 +13,7 @@ export type Profile = {
   website: string;
   avatar_url: string | null;
   member_type: "owner" | "plus" | "elite" | "advisor";
-  role: "member" | "moderator" | "admin";
+  role: "member" | "admin";
   status: "active" | "suspended";
   created_at: string;
 };

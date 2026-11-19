@@ -9,7 +9,7 @@ const FAQ = [
   { q: "How do I post?", a: "Open Home, click the box at the top of the feed, choose what you are sharing (update, question, win, offer or hiring), write it and press Post. You can add one photo." },
   { q: "Who can see my post?", a: "You choose each time: anyone, members only, your connections, or only you. Posts inside a private group are visible to that group's members." },
   { q: "How do connections work?", a: "Press Connect on a member's card or profile. They get an alert and can accept or decline. Manage requests under the Network icon." },
-  { q: "How do I report something?", a: "Use the flag on any post that is not yours and pick a reason. Our moderators review every report." },
+  { q: "How do I report something?", a: "Use the flag on any post that is not yours and pick a reason. Our team reviews every report." },
   { q: "How do I upgrade my plan?", a: "See Upgrade in the menu for what each plan includes, then contact us and we will set it up." },
 ];
 

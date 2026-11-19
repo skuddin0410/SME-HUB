@@ -487,7 +487,7 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
               ))}
             </>
           )}
-          {step === "done" && <p className="px-3 py-3 text-sm">Reported. Our moderators will take a look.</p>}
+          {step === "done" && <p className="px-3 py-3 text-sm">Reported. Our team will take a look.</p>}
           {step === "copied" && <p className="px-3 py-3 text-sm">Link copied.</p>}
         </div>
       )}

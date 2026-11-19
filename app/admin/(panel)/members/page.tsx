@@ -72,7 +72,6 @@ export default async function AdminMembers({
               className={`${select} disabled:opacity-50`}
             >
               <option value="member">Member</option>
-              <option value="moderator">Moderator</option>
               <option value="admin">Admin</option>
             </select>
             <SubmitButton tone="outline" className="!px-3 !py-1.5">

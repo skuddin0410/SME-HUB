@@ -256,7 +256,7 @@ export async function adminUpdateMember(memberId: string, form: FormData) {
   if (["owner", "plus", "elite", "advisor"].includes(memberType)) update.member_type = memberType as Profile["member_type"];
   if (["active", "suspended"].includes(status)) update.status = status as Profile["status"];
   // only admins change roles, and nobody changes their own
-  if (profile.role === "admin" && memberId !== profile.id && ["member", "moderator", "admin"].includes(role)) {
+  if (profile.role === "admin" && memberId !== profile.id && ["member", "admin"].includes(role)) {
     update.role = role as Profile["role"];
   }
   if (Object.keys(update).length === 0) return;

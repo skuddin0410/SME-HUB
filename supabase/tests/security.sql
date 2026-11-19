@@ -157,3 +157,7 @@ select t.expect('post search column is filled', (select count(*) > 0 from posts 
 set role anon; set request.jwt.claim.sub = '';
 select t.expect_denied('visitor cannot ask for connection degrees', $$select * from connection_degrees(array['00000000-0000-0000-0000-00000000000b']::uuid[])$$);
 select t.expect_denied('visitor cannot ask for mutual connections', $$select mutual_connections('00000000-0000-0000-0000-00000000000b')$$);
+
+-- ===== two roles only (0008) =====
+reset role;
+select t.expect_denied('moderator is no longer a valid role', $$update profiles set role = 'moderator' where id = '00000000-0000-0000-0000-00000000000b'$$);
