@@ -108,7 +108,7 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
             }}
             className={cx(
               "flex cursor-pointer items-start gap-2 border-b px-3 py-3 transition-colors duration-200 last:border-b-0",
-              n.read_at ? "bg-white hover:bg-muted" : "bg-[hsl(214_82%_91%)] hover:bg-[hsl(214_82%_88%)]",
+              n.read_at ? "bg-white hover:bg-muted" : "bg-tint hover:bg-[hsl(207_44%_91%)]",
             )}
           >
             <span className={cx("mt-6 h-2 w-2 shrink-0 rounded-full", n.read_at ? "bg-transparent" : "bg-primary")} aria-label={n.read_at ? undefined : "Unread"} />

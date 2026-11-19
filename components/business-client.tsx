@@ -88,7 +88,7 @@ export function Reviews({
       </div>
 
       {canReview && (
-        <div className="border-t bg-[hsl(220_33%_98%)] px-4 py-3">
+        <div className="border-t bg-muted/50 px-4 py-3">
           <p className="text-sm font-semibold">{mine ? "Your review" : me ? "Worked with this business? Leave a review" : "Sign in to leave a review"}</p>
           <div className="mt-1 flex" onMouseLeave={() => setHover(0)}>
             {[1, 2, 3, 4, 5].map((i) => (

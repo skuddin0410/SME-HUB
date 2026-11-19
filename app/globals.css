@@ -4,32 +4,34 @@
 
 @layer base {
   :root {
-    --background: 220 33% 97%;
-    --foreground: 222 47% 14%;
+    --background: 40 21.4% 94.5%; /* LinkedIn page grey #f4f2ee */
+    --foreground: 0 0% 9.8%; /* #191919, LinkedIn's 90% black */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 14%;
+    --card-foreground: 0 0% 9.8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 14%;
-    --primary: 224 76% 51%;
+    --popover-foreground: 0 0% 9.8%;
+    --primary: 210 90.2% 40%; /* #0a66c2 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 30% 94%;
-    --secondary-foreground: 222 47% 14%;
-    --muted: 220 30% 94%;
+    --secondary: 0 0% 92.2%;
+    --secondary-foreground: 0 0% 9.8%;
+    --muted: 0 0% 92.2%; /* hover and chip grey */
     --muted-foreground: 0 0% 40%;
-    --accent: 220 30% 94%;
-    --accent-foreground: 222 47% 14%;
+    --accent: 0 0% 92.2%;
+    --accent-foreground: 0 0% 9.8%;
     --destructive: 350 80% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 24% 90%;
-    --input: 220 22% 85%;
-    --ring: 224 76% 51%;
+    --border: 0 0% 91%; /* #e8e8e8 dividers and nav line */
+    --input: 0 0% 60%; /* #999 field outline */
+    --ring: 210 90.2% 40%;
     --chart-1: 356 74% 48%;
     --chart-2: 220 43% 11%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --ink: 224 64% 24%;
+    --ink: 210 75% 20%;
+    --tint: 207.3 44% 95.1%; /* #edf3f8 search fields, selected rows */
+    --card-edge: 45 6.1% 87.1%; /* #e0dfdc ring around cards */
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -82,13 +84,14 @@
 }
 
 @layer components {
-  .panel { @apply rounded-lg border bg-card; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.02), 0 1px 2px rgb(22 48 122 / 0.06); }
-  .rail { @apply sticky self-start overflow-y-auto; top: 84px; max-height: calc(100vh - 96px); scrollbar-width: none; }
+  .panel { @apply rounded-lg border bg-card; border-color: hsl(var(--card-edge)); box-shadow: 0 1px 1px rgb(0 0 0 / 0.04); }
+  .rail { @apply sticky self-start overflow-y-auto; top: 74px; max-height: calc(100vh - 86px); scrollbar-width: none; }
   .rail::-webkit-scrollbar { display: none; }
-  .field { @apply w-full rounded-xl border border-input bg-white px-3.5 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-4 focus:ring-primary/10; }
+  .field { @apply w-full rounded-xl border border-input bg-white px-3.5 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus:border-foreground focus:ring-1 focus:ring-foreground; }
   .press { @apply transition active:scale-[0.97]; }
   .lift { @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-xl; }
   .cover { background: linear-gradient(120deg, hsl(var(--ink)), hsl(var(--primary)) 85%, hsl(205 90% 60%)); }
+  .banner { background: linear-gradient(120deg, #9db3c8, #b9c8d8); } /* LinkedIn's default cover */
   .skeleton { @apply animate-pulse rounded-lg bg-muted; }
 }
 

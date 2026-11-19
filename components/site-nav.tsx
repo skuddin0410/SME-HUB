@@ -20,7 +20,7 @@ export function Logo({ onDark = false, href = "/feed", large = false }: { onDark
 
 function MenuLink({ item }: { item: NavItem }) {
   return (
-    <Link href={item.href} className="block rounded-md px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-slate-100 hover:text-foreground">
+    <Link href={item.href} className="block rounded-md px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
       {item.label}
     </Link>
   );
@@ -69,25 +69,25 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
   const item = (active: boolean) =>
     cx(
       "press flex h-9 items-center gap-2 rounded-full px-3.5 text-[15px] transition-colors duration-150",
-      active ? "bg-primary/10 font-semibold text-primary" : "font-medium text-foreground/70 hover:bg-slate-100 hover:text-foreground",
+      active ? "bg-primary/10 font-semibold text-primary" : "font-medium text-foreground/70 hover:bg-muted hover:text-foreground",
     );
-  const iconBtn = "press relative rounded-full p-2.5 text-foreground/70 transition-colors hover:bg-slate-100 hover:text-foreground";
+  const iconBtn = "press relative rounded-full p-2.5 text-foreground/70 transition-colors hover:bg-muted hover:text-foreground";
   const stack = (active: boolean) =>
     cx(
       "press flex h-[52px] min-w-[48px] flex-col items-center justify-center gap-0.5 rounded-lg px-2 text-xs transition-colors md:min-w-[76px]",
-      active ? "font-semibold text-primary" : "text-foreground/60 hover:bg-slate-100 hover:text-foreground",
+      active ? "font-semibold text-primary" : "text-foreground/60 hover:bg-muted hover:text-foreground",
     );
   const dot = "absolute -right-2 -top-1.5 min-w-[18px] border-2 border-white rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-[14px] text-white";
 
   const dropdown = (name: "About" | "Explore", Icon: typeof IdCard) => {
     const active = MENUS[name].some((col) => col.items.some((i) => pathname === i.href || (i.href !== "/members" && pathname.startsWith(`${i.href}/`))));
     return (
-      <div className="relative flex h-[60px] items-center" onMouseEnter={() => setOpen(name)} onMouseLeave={() => setOpen(null)}>
+      <div className="relative flex h-[50px] items-center" onMouseEnter={() => setOpen(name)} onMouseLeave={() => setOpen(null)}>
         <button
           type="button"
           aria-expanded={open === name}
           onClick={() => setOpen(open === name ? null : name)}
-          className={cx(item(active), !active && open === name && "bg-slate-100 text-foreground")}
+          className={cx(item(active), !active && open === name && "bg-muted text-foreground")}
         >
           <Icon className="hidden h-[18px] w-[18px] xl:block" />
           {name}
@@ -109,7 +109,7 @@ export function SiteNav({ me, isStaff, requests, unread, messages }: { me: Me; i
   return (
     <header className="sticky top-0 z-30 border-b bg-white">
       {/* three columns from lg up: logo, tabs centred on the page, account controls */}
-      <div className="mx-auto flex h-[60px] max-w-[1260px] items-center gap-2 px-4 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
+      <div className="mx-auto flex h-[50px] max-w-[1260px] items-center gap-2 px-4 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-4">
         <Logo />
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
           <Link href="/feed" className={item(pathname === "/feed")} aria-current={pathname === "/feed" ? "page" : undefined}>

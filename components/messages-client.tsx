@@ -159,7 +159,7 @@ export function MessagingApp({
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search messages"
             aria-label="Search messages"
-            className="w-full rounded bg-[hsl(214_45%_94%)] py-1.5 pl-8 pr-2 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
+            className="w-full rounded bg-tint py-1.5 pl-8 pr-2 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
           />
         </label>
         <button type="button" onClick={() => setFilter("connections")} title="New message" aria-label="New message" className="press ml-auto rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
@@ -183,7 +183,7 @@ export function MessagingApp({
                 onClick={() => open(t.id)}
                 className={cx(
                   "flex w-full items-center gap-3 border-b border-l-4 px-3 py-3 text-left transition-colors duration-100",
-                  t.id === active ? "border-l-emerald-700 bg-[hsl(214_60%_95%)]" : "border-l-transparent hover:bg-muted",
+                  t.id === active ? "border-l-emerald-700 bg-tint" : "border-l-transparent hover:bg-muted",
                 )}
               >
                 <AvatarImg person={t.person!} size={56} />
@@ -283,7 +283,7 @@ export function MessagingApp({
               </div>
 
               {error && <p className="mx-3 mb-2 rounded bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
-              <div className="border-t bg-[hsl(220_33%_98%)] p-3">
+              <div className="border-t bg-muted/50 p-3">
                 <textarea
                   ref={box}
                   value={drafts[other.id] ?? ""}
@@ -298,7 +298,7 @@ export function MessagingApp({
                   maxLength={4000}
                   placeholder="Write a message..."
                   aria-label="Write a message"
-                  className="w-full resize-none rounded bg-[hsl(214_45%_94%)] px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
+                  className="w-full resize-none rounded bg-tint px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
                 />
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">Press Enter to send, Shift + Enter for a new line</span>

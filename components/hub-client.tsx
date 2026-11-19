@@ -68,7 +68,7 @@ export function Cover({ seed, className }: { seed: string; className?: string })
     if (img.current?.complete && img.current.naturalWidth === 0) setFailed(true);
   }, []);
   return (
-    <div className={cx("cover relative w-full overflow-hidden", className)}>
+    <div className={cx("banner relative w-full overflow-hidden", className)}>
       {DEMO_IMAGES && !failed && (
         <img
           ref={img}
