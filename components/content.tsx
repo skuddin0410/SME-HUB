@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, ChevronRight, Headphones } from "lucide-react";
-import { SECTIONS, type Org, type SectionKey } from "@/lib/content";
+import { ArrowLeft, ChevronRight, Headphones } from "lucide-react";
+import { SECTIONS, type SectionKey } from "@/lib/content";
 import { Thumb } from "@/components/hub-client";
 
 /** Blue banner that opens a reference page. */
@@ -18,47 +18,6 @@ export function Hero({ title, text, back, children }: { title: string; text: str
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/85">{text}</p>
       {children}
     </div>
-  );
-}
-
-export function Chips({ items, onDark = false }: { items: string[]; onDark?: boolean }) {
-  return (
-    <ul className="flex flex-wrap gap-1.5">
-      {items.map((i) => (
-        <li key={i} className={onDark ? "rounded-full bg-white/15 px-2.5 py-1 text-xs font-semibold" : "rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary"}>
-          {i}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-const host = (url: string) => new URL(url).hostname.replace(/^www\./, "");
-
-/** Outside organisations. Each row opens that organisation's own website in a new tab. */
-export function OrgList({ title, orgs }: { title: string; orgs: Org[] }) {
-  return (
-    <section className="panel">
-      <h2 className="px-4 pt-4 text-base font-semibold">{title}</h2>
-      <p className="px-4 text-xs text-muted-foreground">Each one opens the organisation&apos;s own website in a new tab.</p>
-      <ul className="mt-2 divide-y">
-        {orgs.map((o) => (
-          <li key={o.name}>
-            <a href={o.url} target="_blank" rel="noreferrer" className="group flex items-start gap-3 px-4 py-3 transition-colors hover:bg-muted/60">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">
-                {o.name.replace(/[^A-Za-zÀ-ÿ ]/g, "").split(" ").filter((w) => w.length > 2).slice(0, 2).map((w) => w[0]).join("").toUpperCase()}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold group-hover:text-primary group-hover:underline">{o.name}</span>
-                <span className="mt-0.5 block text-sm text-muted-foreground">{o.about}</span>
-                <span className="mt-1 block text-xs text-muted-foreground">{host(o.url)}</span>
-              </span>
-              <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
-            </a>
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }
 
