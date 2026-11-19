@@ -38,7 +38,7 @@ function ResendLink({ email }: { email: string }) {
   const [state, setState] = useState<"idle" | "busy" | "sent" | "wait">("idle");
   const resend = async () => {
     setState("busy");
-    const { error } = await createClient().auth.resend({ type: "signup", email, options: { emailRedirectTo: `${window.location.origin}/feed` } });
+    const { error } = await createClient().auth.resend({ type: "signup", email, options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/feed` } });
     setState(error ? "wait" : "sent");
   };
   return (
@@ -98,7 +98,7 @@ function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void })
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}/feed` },
+        options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}/auth/callback?next=/feed` },
       });
       if (error) {
         setError(error.message);

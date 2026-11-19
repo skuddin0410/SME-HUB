@@ -18,6 +18,8 @@ describe("nextFromRedirect", () => {
   it("takes the path from a same-site address", () => expect(nextFromRedirect("https://smbhub.ca/groups?x=1", site)).toBe("/groups?x=1"));
   it("ignores other sites", () => expect(nextFromRedirect("https://evil.com/feed", site)).toBe("/feed"));
   it("survives junk", () => expect(nextFromRedirect("http://[::1", site)).toBe("/feed"));
+  it("unwraps the code-exchange route", () => expect(nextFromRedirect("https://smbhub.ca/auth/callback?next=/groups", site)).toBe("/groups"));
+  it("unwraps safely", () => expect(nextFromRedirect("https://smbhub.ca/auth/callback?next=//evil.com", site)).toBe("/feed"));
   it("falls back when empty", () => expect(nextFromRedirect("", site)).toBe("/feed"));
 });
 
