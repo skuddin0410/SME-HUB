@@ -7,6 +7,7 @@ import { useActionState, useEffect, useRef, useState, useTransition } from "reac
 import { useFormStatus } from "react-dom";
 import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageCircle, Megaphone, Heart, PartyPopper, Repeat2, Send, ThumbsUp, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useImageUpload } from "@/lib/upload";
 import {
   addComment,
   createPost,
@@ -207,10 +208,13 @@ export function SubmitButton({
   children,
   className,
   tone = "primary",
+  disabled = false,
 }: {
   children: React.ReactNode;
   className?: string;
   tone?: "primary" | "outline" | "ghost" | "danger" | "dark";
+  /** for example while a picture is still uploading */
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
   const tones = {
@@ -223,7 +227,7 @@ export function SubmitButton({
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || disabled}
       className={cx(
         "press inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold disabled:opacity-60",
         tones,
@@ -248,7 +252,8 @@ export function Composer({
 }) {
   const [state, action] = useActionState<FormState, FormData>(createPost, {});
   const [open, setOpen] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
+  const photo = useImageUpload("post");
+  const clearPhoto = photo.clear;
   const [count, setCount] = useState(0);
   const [kind, setKind] = useState<Kind>("update");
   const formRef = useRef<HTMLFormElement>(null);
@@ -257,12 +262,12 @@ export function Composer({
   useEffect(() => {
     if (state.ok) {
       formRef.current?.reset();
-      setPreview(null);
+      clearPhoto();
       setCount(0);
       setKind("update");
       setOpen(false);
     }
-  }, [state.ok]);
+  }, [state.ok, clearPhoto]);
 
   if (!me) {
     return (
@@ -346,14 +351,16 @@ export function Composer({
           ))}
         </div>
       )}
-      {preview && (
+      <input type="hidden" name="image_url" value={photo.url} />
+      {photo.error && <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{photo.error}</p>}
+      {photo.preview && (
         <div className="relative mt-3 animate-rise">
-          <img src={preview} alt="Selected image" className="max-h-72 w-full rounded-xl object-cover" />
+          <img src={photo.preview} alt="Selected image" className={cx("max-h-72 w-full rounded-xl object-cover", photo.busy && "opacity-60")} />
           <button
             type="button"
             aria-label="Remove image"
             onClick={() => {
-              setPreview(null);
+              photo.clear();
               if (fileRef.current) fileRef.current.value = "";
             }}
             className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white"
@@ -369,13 +376,9 @@ export function Composer({
           <input
             ref={fileRef}
             type="file"
-            name="image"
             accept="image/*"
             className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              setPreview(file ? URL.createObjectURL(file) : null);
-            }}
+            onChange={(e) => photo.pick(e.target.files?.[0])}
           />
           <button
             type="button"
@@ -383,7 +386,7 @@ export function Composer({
             className="press inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
           >
             <ImagePlus className="h-4 w-4" />
-            Photo
+            {photo.busy ? "Uploading…" : "Photo"}
           </button>
           {!groupId && (
             <select
@@ -401,7 +404,7 @@ export function Composer({
         </div>
         <div className="flex items-center gap-3">
           <span className={cx("text-xs", count > 4800 ? "text-rose-600" : "text-muted-foreground")}>{count}/5000</span>
-          <SubmitButton>Post</SubmitButton>
+          <SubmitButton disabled={photo.busy}>Post</SubmitButton>
         </div>
       </div>
     </form>
@@ -767,7 +770,7 @@ export function PostActions({
 // ---------- profile form ----------
 export function ProfileForm({ profile }: { profile: Profile }) {
   const [state, action] = useActionState<FormState, FormData>(updateProfile, {});
-  const [preview, setPreview] = useState<string | null>(profile.avatar_url);
+  const photo = useImageUpload("avatar", profile.avatar_url);
   const fields = [
     { name: "full_name", label: "Full name", required: true, max: 80, hint: "" },
     { name: "headline", label: "Headline", required: false, max: 120, hint: "Founder, Maple Bakery" },
@@ -778,21 +781,15 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   return (
     <form action={action} className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
-        <AvatarImg person={{ id: profile.id, full_name: profile.full_name, avatar_url: preview }} size={72} />
-        <label className="press cursor-pointer rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold hover:bg-muted">
-          Change photo
-          <input
-            name="avatar"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) setPreview(URL.createObjectURL(file));
-            }}
-          />
+        <AvatarImg person={{ id: profile.id, full_name: profile.full_name, avatar_url: photo.preview }} size={72} />
+        <label className={cx("press cursor-pointer rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold hover:bg-muted", photo.busy && "pointer-events-none opacity-60")}>
+          {photo.busy ? "Uploading…" : "Change photo"}
+          {/* no name: the file itself is never sent with the form, only the uploaded address below */}
+          <input type="file" accept="image/*" className="hidden" onChange={(e) => photo.pick(e.target.files?.[0])} />
         </label>
+        <input type="hidden" name="avatar_url" value={photo.url} />
       </div>
+      {photo.error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{photo.error}</p>}
       {fields.map((f) => (
         <label key={f.name} className="grid gap-1.5 text-sm font-medium">
           {f.label}
@@ -818,7 +815,9 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         />
       </label>
       {state.error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.error}</p>}
-      <SubmitButton className="self-start">Save profile</SubmitButton>
+      <SubmitButton className="self-start" disabled={photo.busy}>
+        Save profile
+      </SubmitButton>
     </form>
   );
 }

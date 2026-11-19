@@ -20,6 +20,18 @@ function fail(error: { message: string } | null) {
 
 export type FormState = { error?: string; ok?: number };
 
+/**
+ * A picture the browser already uploaded. Only an address inside this member's own storage folder is accepted,
+ * so nobody can attach another member's file or an outside link.
+ */
+function ownUpload(form: FormData, field: string, userId: string): string | null {
+  const url = text(form, field);
+  if (!url) return null;
+  const prefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${userId}/`;
+  if (!url.startsWith(prefix) || !/^[a-z]+-[0-9a-f-]{36}\.(jpg|png)$/.test(url.slice(prefix.length))) throw new Error("That picture cannot be used.");
+  return url;
+}
+
 // ---------- posts ----------
 export async function createPost(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase, userId } = await requireUser();
@@ -30,18 +42,7 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const groupId = text(form, "group_id") ? uuid(text(form, "group_id")) : null;
   const rawKind = text(form, "kind");
   const kind = ["question", "win", "offer", "hiring"].includes(rawKind) ? rawKind : "update";
-  let image_url: string | null = null;
-
-  const image = form.get("image");
-  if (image instanceof File && image.size > 0) {
-    if (!image.type.startsWith("image/")) return { error: "That file is not an image." };
-    if (image.size > 5 * 1024 * 1024) return { error: "Images can be up to 5 MB." };
-    const ext = image.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-    const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await supabase.storage.from("media").upload(path, image, { contentType: image.type });
-    if (error) return { error: `Image upload failed: ${error.message}` };
-    image_url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
-  }
+  const image_url = ownUpload(form, "image_url", userId);
 
   const { error } = await supabase
     .from("posts")
@@ -208,15 +209,8 @@ export async function updateProfile(_prev: FormState, form: FormData): Promise<F
   };
   if (!update.full_name) return { error: "Add your name so people can find you." };
 
-  const avatar = form.get("avatar");
-  if (avatar instanceof File && avatar.size > 0) {
-    if (!avatar.type.startsWith("image/")) return { error: "The profile photo must be an image." };
-    if (avatar.size > 2 * 1024 * 1024) return { error: "Profile photos can be up to 2 MB." };
-    const path = `${userId}/avatar-${crypto.randomUUID()}`;
-    const { error } = await supabase.storage.from("media").upload(path, avatar, { contentType: avatar.type });
-    if (error) return { error: `Photo upload failed: ${error.message}` };
-    update.avatar_url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
-  }
+  const avatar = ownUpload(form, "avatar_url", userId);
+  if (avatar) update.avatar_url = avatar;
 
   const { error } = await supabase.from("profiles").update(update).eq("id", userId);
   if (error) return { error: error.message };
@@ -337,15 +331,8 @@ export async function saveBusiness(_prev: FormState, form: FormData): Promise<Fo
     website: text(form, "website"),
   };
 
-  const logo = form.get("logo");
-  if (logo instanceof File && logo.size > 0) {
-    if (!logo.type.startsWith("image/")) return { error: "The logo must be an image." };
-    if (logo.size > 2 * 1024 * 1024) return { error: "Logos can be up to 2 MB." };
-    const path = `${userId}/logo-${crypto.randomUUID()}`;
-    const { error } = await supabase.storage.from("media").upload(path, logo, { contentType: logo.type });
-    if (error) return { error: `Logo upload failed: ${error.message}` };
-    fields.logo_url = supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
-  }
+  const logo = ownUpload(form, "logo_url", userId);
+  if (logo) fields.logo_url = logo;
 
   if (id) {
     const { error } = await supabase.from("companies").update(fields).eq("id", id);

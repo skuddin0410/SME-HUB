@@ -23,8 +23,6 @@ const OLD_RESOURCES: [string, string][] = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // post images go through server actions (limit there is 5 MB)
-  experimental: { serverActions: { bodySizeLimit: "6mb" } },
   async redirects() {
     return [
       ...OLD_GUIDES.map((g) => ({ source: `/business-guide-${g}`, destination: `/guides/${g}`, permanent: true })),
