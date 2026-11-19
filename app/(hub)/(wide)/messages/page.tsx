@@ -2,6 +2,8 @@ import { AUTHOR_FIELDS, requireUser, type Author } from "@/lib/hub";
 import { MessagingApp, type Msg } from "@/components/messages-client";
 import { ActiveMembersCard, SocialCard } from "@/components/rails";
 
+export const metadata = { title: "Messaging", robots: { index: false } };
+
 type Conn = { requester_id: string; requester: Author; addressee: Author };
 type Row = Msg & { sender: Author; recipient: Author };
 

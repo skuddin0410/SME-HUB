@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { Handshake, Lightbulb, Megaphone, UsersRound } from "lucide-react";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ title: "About SMB Hub", description: "SMB Hub is CanadianSME's network for Canadian small business owners, advisors and professionals.", path: "/about" });
 
 const POINTS = [
   { icon: Handshake, title: "Meet other owners", text: "Connect with people running businesses like yours, in your city or your industry." },

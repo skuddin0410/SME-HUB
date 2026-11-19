@@ -1,9 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { cleanTerm, getViewer } from "@/lib/hub";
+import { ftsQuery, getViewer } from "@/lib/hub";
 import { Empty, PageTitle } from "@/components/hub";
 import { Cover, SubmitButton } from "@/components/hub-client";
 import { Stars } from "@/components/business-client";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ title: "Business directory", description: "Find Canadian small businesses by name, category and member rating in the SMB Hub directory.", path: "/businesses" });
 
 type Company = {
   id: string;
@@ -26,8 +29,8 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
     .select("id, slug, name, category, description, logo_url, owner:profiles!companies_owner_id_fkey(id, full_name), company_reviews(rating)")
     .order("name")
     .limit(80);
-  const term = cleanTerm(q);
-  if (term) query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
+  const fts = ftsQuery(q);
+  if (fts) query = query.textSearch("fts", fts, { config: "english" });
   if (category) query = query.eq("category", category);
   const [{ data }, { data: cats }] = await Promise.all([query, supabase.from("companies").select("category")]);
   const categories = [...new Set((cats ?? []).map((c) => c.category as string).filter(Boolean))].sort();

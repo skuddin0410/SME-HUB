@@ -5,6 +5,8 @@ import { AvatarImg } from "@/components/hub-client";
 import { ConnectButton, Invitations, Suggestions, type Person } from "@/components/network-client";
 import { GroupsCard, SocialCard } from "@/components/rails";
 
+export const metadata = { title: "My network", robots: { index: false } };
+
 type Row = { requester_id: string; addressee_id: string; status: "pending" | "accepted"; requester: Author; addressee: Author };
 
 export default async function NetworkPage() {

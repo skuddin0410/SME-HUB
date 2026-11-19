@@ -1,5 +1,8 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import { CONTACT } from "@/lib/site";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ title: "Help and frequently asked questions", description: "Answers about joining SMB Hub, posting, connections, groups, business listings and membership plans.", path: "/help" });
 
 const FAQ = [
   { q: "Do I need an account to look around?", a: "No. Anyone can read the public feed and browse members, groups and businesses. You need a free account to post, like, comment and connect." },

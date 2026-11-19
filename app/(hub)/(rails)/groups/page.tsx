@@ -4,6 +4,9 @@ import { getViewer } from "@/lib/hub";
 import { Empty, PageTitle } from "@/components/hub";
 import { Cover, GroupLogo, SubmitButton } from "@/components/hub-client";
 import { createGroup } from "@/app/(hub)/actions";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ title: "Groups", description: "Join groups on SMB Hub to talk with other Canadian business owners about your industry, city or topic.", path: "/groups" });
 
 type Group = {
   id: string;

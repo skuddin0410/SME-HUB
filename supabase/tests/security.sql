@@ -136,3 +136,24 @@ reset role;
 select t.expect('private post exists for the check above', (select count(*) = 1 from posts where body = 'priv'));
 set role anon; set request.jwt.claim.sub = '';
 select t.expect('visitor gets a connection count without reading connection rows', connection_count('00000000-0000-0000-0000-00000000000a') >= 0);
+
+-- ===== search and connection degrees (0007) =====
+reset role;
+-- a chain: a - b - c, and d on their own
+delete from connections;
+insert into connections (requester_id, addressee_id, status) values
+  ('00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-00000000000b', 'accepted'),
+  ('00000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-00000000000c', 'accepted');
+update profiles set full_name = 'Daniel Okafor', headline = 'Owner, Northside Logistics' where id = '00000000-0000-0000-0000-00000000000b';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect('degrees: connection is 1st, friend of a friend is 2nd, stranger is 3rd+',
+  (select array_agg(degree order by id) = array[1, 2, 3] from connection_degrees(array[
+    '00000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-00000000000c', '00000000-0000-0000-0000-00000000000d']::uuid[])));
+select t.expect('degrees: no row for yourself', (select count(*) = 0 from connection_degrees(array['00000000-0000-0000-0000-00000000000a']::uuid[])));
+select t.expect('mutual connections counted', mutual_connections('00000000-0000-0000-0000-00000000000c') = 1);
+select t.expect('people search matches the start of a word and a stemmed word',
+  (select count(*) = 1 from search_profiles('dan:* & logistic:*')));
+select t.expect('post search column is filled', (select count(*) > 0 from posts where fts @@ to_tsquery('english', 'pub:*')));
+set role anon; set request.jwt.claim.sub = '';
+select t.expect_denied('visitor cannot ask for connection degrees', $$select * from connection_degrees(array['00000000-0000-0000-0000-00000000000b']::uuid[])$$);
+select t.expect_denied('visitor cannot ask for mutual connections', $$select mutual_connections('00000000-0000-0000-0000-00000000000b')$$);

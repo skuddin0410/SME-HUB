@@ -1,7 +1,10 @@
-import { cleanTerm, getLinks, getViewer, MEMBER_TYPES } from "@/lib/hub";
+import { ftsQuery, getDegrees, getLinks, getViewer, MEMBER_TYPES } from "@/lib/hub";
 import { Empty, PageTitle, Pager } from "@/components/hub";
 import { SubmitButton } from "@/components/hub-client";
 import { PersonCard, type Person } from "@/components/network-client";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ title: "Members", description: "Meet Canadian small business owners, advisors and professionals on SMB Hub.", path: "/members" });
 
 const SIZE = 18;
 
@@ -14,16 +17,17 @@ export default async function MembersPage({
   const page = Number(p) || 1;
   const { supabase, userId } = await getViewer();
 
-  let query = supabase
-    .from("profiles")
-    .select("id, full_name, headline, avatar_url, member_type, location")
-    .order("created_at", { ascending: false })
-    .range((page - 1) * SIZE, page * SIZE - 1);
-  const term = cleanTerm(q);
-  if (term) query = query.or(`full_name.ilike.%${term}%,headline.ilike.%${term}%,location.ilike.%${term}%`);
+  // with a search term, the best matches come first; otherwise the newest members do
+  const fts = ftsQuery(q);
+  const fields = "id, full_name, headline, avatar_url, member_type, location";
+  let query = fts
+    ? supabase.rpc("search_profiles", { q: fts }).select(fields)
+    : supabase.from("profiles").select(fields).order("created_at", { ascending: false });
   if (type in MEMBER_TYPES) query = query.eq("member_type", type);
-  const [{ data }, links] = await Promise.all([query, getLinks()]);
-  const members = ((data ?? []) as Person[]).filter((m) => m.id !== userId);
+  const [{ data }, links] = await Promise.all([query.range((page - 1) * SIZE, page * SIZE - 1), getLinks()]);
+  const rows = (data ?? []) as Person[];
+  const members = rows.filter((m) => m.id !== userId);
+  const degrees = await getDegrees(supabase, userId, members.map((m) => m.id));
 
   const base = `/members?q=${encodeURIComponent(q)}&type=${encodeURIComponent(type)}`;
   return (
@@ -45,10 +49,10 @@ export default async function MembersPage({
       {members.length === 0 && <Empty title="No members match that search">Try a different name or clear the filters.</Empty>}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
         {members.map((m) => (
-          <PersonCard key={m.id} person={m} link={links.get(m.id) ?? "none"} signedIn={!!userId} />
+          <PersonCard key={m.id} person={m} link={links.get(m.id) ?? "none"} signedIn={!!userId} degree={degrees.get(m.id)} />
         ))}
       </div>
-      <Pager page={page} hasMore={(data ?? []).length === SIZE} base={base} />
+      <Pager page={page} hasMore={rows.length === SIZE} base={base} />
     </>
   );
 }

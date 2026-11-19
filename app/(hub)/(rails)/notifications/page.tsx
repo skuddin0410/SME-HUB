@@ -1,6 +1,8 @@
 import { AUTHOR_FIELDS, getLinks, requireUser, type Author } from "@/lib/hub";
 import { NotificationsList, type Note } from "@/components/notifications-client";
 
+export const metadata = { title: "Notifications", robots: { index: false } };
+
 type Row = Omit<Note, "excerpt" | "link"> & { actor: Author; post: { body: string } | null };
 
 export default async function NotificationsPage() {

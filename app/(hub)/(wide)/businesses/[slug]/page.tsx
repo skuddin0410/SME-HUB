@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { absolute, jsonLd, pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Globe } from "lucide-react";
@@ -16,6 +17,20 @@ type Company = {
   owner_id: string;
   owner: Author | null;
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  if (!/^[a-z0-9-]{1,80}$/.test(slug)) return { title: "Business not found" };
+  const { supabase } = await getViewer();
+  const { data } = await supabase.from("companies").select("name, category, description, logo_url").eq("slug", slug).maybeSingle();
+  if (!data) return { title: "Business not found" };
+  return pageMeta({
+    title: data.category ? `${data.name} - ${data.category}` : data.name,
+    description: data.description || `${data.name} is listed in the SMB Hub business directory.`,
+    path: `/businesses/${slug}`,
+    image: data.logo_url,
+  });
+}
 
 export default async function BusinessPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -41,8 +56,24 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
     ? { id: profile.id, full_name: profile.full_name, headline: profile.headline, avatar_url: profile.avatar_url, member_type: profile.member_type }
     : null;
 
+  const rated = reviews.filter((r) => r.rating > 0);
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd({
+          "@type": "Organization",
+          name: company.name,
+          description: company.description || undefined,
+          url: absolute(`/businesses/${slug}`),
+          logo: company.logo_url ?? undefined,
+          sameAs: site ? [site] : undefined,
+          aggregateRating: rated.length
+            ? { "@type": "AggregateRating", ratingValue: (rated.reduce((n, r) => n + r.rating, 0) / rated.length).toFixed(1), reviewCount: rated.length }
+            : undefined,
+        })}
+      />
       <Link href="/businesses" className="inline-flex items-center gap-1.5 self-start rounded px-1 py-1 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> All businesses
       </Link>

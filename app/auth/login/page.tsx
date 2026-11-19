@@ -1,6 +1,8 @@
 import { AuthLanding } from "@/components/auth-landing";
 import { landingData } from "@/lib/landing";
 
+export const metadata = { title: "Sign in" };
+
 export const dynamic = "force-dynamic";
 
 export default async function Page() {

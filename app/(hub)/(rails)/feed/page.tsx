@@ -3,6 +3,9 @@ import { fetchPosts, getViewer, PAGE_SIZE } from "@/lib/hub";
 import { KINDS, type Kind } from "@/lib/demo";
 import { Empty, Pager, PostCard } from "@/components/hub";
 import { Composer } from "@/components/hub-client";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ title: "Feed", description: "What Canadian small business owners are posting: questions, wins, offers and hiring.", path: "/feed" });
 
 const FILTERS: { key: string; label: string }[] = [
   { key: "", label: "Everything" },

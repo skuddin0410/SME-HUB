@@ -1,8 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
+import { cache } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Building2, CalendarDays, Ellipsis, Globe, Link2, MessageSquareText, Pencil, SquareArrowOutUpRight } from "lucide-react";
-import { AUTHOR_FIELDS, fetchPosts, getLinks, getViewer, MEMBER_TYPES, PAGE_SIZE, type Author, type Profile } from "@/lib/hub";
+import { AUTHOR_FIELDS, DEGREE_LABEL, fetchPosts, getDegrees, getLinks, getViewer, MEMBER_TYPES, PAGE_SIZE, type Author, type Profile } from "@/lib/hub";
+import { absolute, jsonLd, pageMeta } from "@/lib/seo";
+import { DEMO_IMAGES, demoAvatar } from "@/lib/demo";
 import { Empty, Pager, PostCard, TierBadge } from "@/components/hub";
 import { TwoCol } from "@/components/rails";
 import { ConnectButton } from "@/components/network-client";
@@ -10,6 +13,32 @@ import { AvatarImg, Cover, SubmitButton } from "@/components/hub-client";
 import { blockMember } from "@/app/(hub)/actions";
 
 type Listing = { slug: string; name: string; category: string; logo_url: string | null };
+
+const valid = (id: string) => /^[0-9a-f-]{36}$/i.test(id);
+
+// one read shared by the page and its search-engine tags
+const getMember = cache(async (id: string) => {
+  const { supabase } = await getViewer();
+  const { data } = await supabase.from("profiles").select("id, full_name, headline, bio, location, website, avatar_url, member_type, role, status, created_at").eq("id", id).maybeSingle();
+  return data as Profile | null;
+});
+
+const photo = (m: Profile) => m.avatar_url ?? (DEMO_IMAGES ? demoAvatar(m.id) : null);
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const member = valid(id) ? await getMember(id) : null;
+  if (!member) return { title: "Member not found" };
+  const name = member.full_name || "Member";
+  return pageMeta({
+    title: member.headline ? `${name} - ${member.headline}` : name,
+    description: member.bio || [member.headline, member.location, `${name} is on SMB Hub, Canada's small business network.`].filter(Boolean).join(". "),
+    path: `/members/${id}`,
+    image: photo(member),
+    type: "profile",
+    index: member.status === "active",
+  });
+}
 
 export default async function MemberPage({
   params,
@@ -19,27 +48,30 @@ export default async function MemberPage({
   searchParams: Promise<{ page?: string }>;
 }) {
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
+  if (!valid(id)) notFound();
   const page = Number((await searchParams).page) || 1;
   const viewer = await getViewer();
   const { supabase, userId } = viewer;
 
-  const { data } = await supabase.from("profiles").select("*").eq("id", id).maybeSingle();
-  const member = data as Profile | null;
+  const member = await getMember(id);
   if (!member) notFound();
   const isMe = id === userId;
 
-  const [links, posts, listingRows, countRow, otherRows] = await Promise.all([
+  const [links, posts, listingRows, countRow, otherRows, mutualRow] = await Promise.all([
     getLinks(),
     fetchPosts(supabase, userId, { authorId: id, page }),
     supabase.from("companies").select("slug, name, category, logo_url").eq("owner_id", id).order("created_at").limit(4),
     supabase.rpc("connection_count", { member: id }),
     supabase.from("profiles").select(AUTHOR_FIELDS).neq("id", id).order("created_at", { ascending: false }).limit(8),
+    userId && !isMe ? supabase.rpc("mutual_connections", { other: id }) : null,
   ]);
   const link = links.get(id) ?? "none";
   const listings = (listingRows.data ?? []) as Listing[];
   const connections = typeof countRow.data === "number" ? countRow.data : null;
   const others = ((otherRows.data ?? []) as Author[]).filter((p) => p.id !== userId).slice(0, 5);
+  const degrees = await getDegrees(supabase, userId, [id, ...others.map((p) => p.id)]);
+  const degree = degrees.get(id);
+  const mutual = typeof mutualRow?.data === "number" ? mutualRow.data : 0;
   const site = member.website && (member.website.startsWith("http") ? member.website : `https://${member.website}`);
 
   const solid = "press inline-flex h-8 items-center gap-1.5 rounded-full bg-primary px-4 text-base font-semibold text-white transition-colors hover:bg-primary/90";
@@ -62,6 +94,7 @@ export default async function MemberPage({
                   <div className="min-w-0">
                     <Link href={`/members/${p.id}`} className="block truncate text-base font-semibold leading-tight hover:underline">
                       {p.full_name || "Member"}
+                      {degrees.get(p.id) && <span className="text-sm font-normal text-muted-foreground"> · {DEGREE_LABEL[degrees.get(p.id)!]}</span>}
                     </Link>
                     <p className="line-clamp-2 text-xs leading-snug">{p.headline || MEMBER_TYPES[p.member_type]}</p>
                     <div className="mt-2">
@@ -75,6 +108,26 @@ export default async function MemberPage({
         )
       }
     >
+      {member.status === "active" && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={jsonLd({
+            "@type": "ProfilePage",
+            dateCreated: member.created_at,
+            mainEntity: {
+              "@type": "Person",
+              name: member.full_name,
+              description: member.bio || member.headline || undefined,
+              jobTitle: member.headline || undefined,
+              image: photo(member) ?? undefined,
+              url: absolute(`/members/${id}`),
+              homeLocation: member.location ? { "@type": "Place", name: member.location } : undefined,
+              sameAs: site ? [site] : undefined,
+              worksFor: listings.length ? listings.map((c) => ({ "@type": "Organization", name: c.name, url: absolute(`/businesses/${c.slug}`) })) : undefined,
+            },
+          })}
+        />
+      )}
       <section className="panel">
         <Cover seed={member.id} className="aspect-[4/1] min-h-[120px] rounded-t-lg" />
         <div className="relative px-6 pb-6">
@@ -96,6 +149,7 @@ export default async function MemberPage({
             <div>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <h1 className="text-2xl font-semibold leading-tight">{member.full_name || "Member"}</h1>
+                {degree && <span className="text-sm text-muted-foreground">· {DEGREE_LABEL[degree]}</span>}
                 <TierBadge type={member.member_type} />
                 {member.status === "suspended" && <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[11px] font-semibold text-white">Suspended</span>}
               </div>
@@ -145,6 +199,11 @@ export default async function MemberPage({
               {connections !== null && (
                 <p className="mt-2 text-sm text-muted-foreground">
                   {connections >= 500 ? "500+" : connections} {connections === 1 ? "connection" : "connections"}
+                </p>
+              )}
+              {mutual > 0 && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {mutual} mutual {mutual === 1 ? "connection" : "connections"}
                 </p>
               )}
             </div>

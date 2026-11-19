@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Lock } from "lucide-react";
@@ -6,6 +7,19 @@ import { InvitePanel } from "@/components/business-client";
 import { Empty, Pager, PostCard } from "@/components/hub";
 import { Composer, Cover, GroupLogo, SubmitButton } from "@/components/hub-client";
 import { joinGroup, leaveGroup, removeGroupInvite } from "@/app/(hub)/actions";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const { supabase } = await getViewer();
+  const { data } = await supabase.from("groups").select("name, description, is_private").eq("slug", slug).maybeSingle();
+  if (!data) return { title: "Group not found" };
+  return pageMeta({
+    title: `${data.name} group`,
+    description: data.description || `${data.name} is a group on SMB Hub, Canada's small business network.`,
+    path: `/groups/${slug}`,
+    index: !data.is_private,
+  });
+}
 
 export default async function GroupPage({
   params,

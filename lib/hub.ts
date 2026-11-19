@@ -126,7 +126,8 @@ export async function fetchPosts(
   if (opts.authorId) query = query.eq("author_id", opts.authorId);
   if (opts.postId) query = query.eq("id", opts.postId);
   if (opts.kind) query = query.eq("kind", opts.kind);
-  if (opts.search) query = query.ilike("body", `%${opts.search}%`);
+  const fts = opts.search ? ftsQuery(opts.search) : "";
+  if (fts) query = query.textSearch("fts", fts, { config: "english" });
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);
@@ -176,4 +177,28 @@ export function slugify(text: string) {
 /** Removes characters that have meaning in Supabase filter strings. */
 export function cleanTerm(q: string) {
   return q.replace(/[%,()*\\]/g, " ").trim().slice(0, 80);
+}
+
+/**
+ * Turns what someone typed into a Postgres full-text query: every word must match, and each word
+ * also matches longer words that start with it ("dan logi" finds "Daniel ... Logistics").
+ * Only letters and digits survive, so the result is always valid query syntax.
+ */
+export function ftsQuery(q: string) {
+  return (q.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [])
+    .slice(0, 8)
+    .map((w) => `${w}:*`)
+    .join(" & ");
+}
+
+export type Degree = 1 | 2 | 3;
+export const DEGREE_LABEL: Record<Degree, string> = { 1: "1st", 2: "2nd", 3: "3rd+" };
+
+/** The signed-in member's distance to each of these members. Empty for visitors. */
+export async function getDegrees(supabase: Supabase, userId: string | null, ids: string[]) {
+  const map = new Map<string, Degree>();
+  if (!userId || ids.length === 0) return map;
+  const { data } = await supabase.rpc("connection_degrees", { ids });
+  for (const row of (data ?? []) as { id: string; degree: Degree }[]) map.set(row.id, row.degree);
+  return map;
 }

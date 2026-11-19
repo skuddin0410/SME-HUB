@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { Lock, Pin } from "lucide-react";
-import { MEMBER_TYPES, timeAgo, type Author, type Post, type Profile } from "@/lib/hub";
+import { DEGREE_LABEL, MEMBER_TYPES, timeAgo, type Author, type Degree, type Post, type Profile } from "@/lib/hub";
 import { AvatarImg, GroupLogo, PostActions, PostBody, PostMenu } from "@/components/hub-client";
 import { ConnectButton } from "@/components/network-client";
 import { KINDS } from "@/lib/demo";
@@ -18,7 +18,7 @@ export function TierBadge({ type }: { type: Profile["member_type"] }) {
   return <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${tone}`}>{MEMBER_TYPES[type]}</span>;
 }
 
-export function PersonLine({ person, extra, size = 44 }: { person: Author; extra?: React.ReactNode; size?: number }) {
+export function PersonLine({ person, extra, size = 44, degree }: { person: Author; extra?: React.ReactNode; size?: number; degree?: Degree }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
       <Link href={`/members/${person.id}`} className="shrink-0">
@@ -29,6 +29,7 @@ export function PersonLine({ person, extra, size = 44 }: { person: Author; extra
           <Link href={`/members/${person.id}`} className="truncate text-sm font-semibold leading-tight hover:underline">
             {person.full_name || "Member"}
           </Link>
+          {degree && <span className="text-xs text-muted-foreground">· {DEGREE_LABEL[degree]}</span>}
           <TierBadge type={person.member_type} />
         </div>
         <p className="truncate text-xs text-muted-foreground">{extra ?? (person.headline || "SMB Hub member")}</p>

@@ -110,12 +110,15 @@ export function PersonCard({
   link,
   signedIn,
   note,
+  degree,
   onDismiss,
 }: {
   person: Person;
   link: LinkState;
   signedIn: boolean;
   note?: string;
+  /** 1 = connected, 2 = shares a connection, 3 = further */
+  degree?: 1 | 2 | 3;
   onDismiss?: () => void;
 }) {
   return (
@@ -137,6 +140,7 @@ export function PersonCard({
       <div className="flex flex-1 flex-col px-3 pb-3 pt-2">
         <Link href={`/members/${person.id}`} className="text-base font-semibold leading-tight hover:underline">
           {person.full_name || "Member"}
+          {degree && <span className="text-xs font-normal text-muted-foreground"> · {degree === 1 ? "1st" : degree === 2 ? "2nd" : "3rd+"}</span>}
         </Link>
         <p className="mt-0.5 line-clamp-2 min-h-[40px] text-sm leading-5 text-muted-foreground">{person.headline || "SMB Hub member"}</p>
         <p className="mb-2 mt-auto pt-2 text-xs text-muted-foreground">

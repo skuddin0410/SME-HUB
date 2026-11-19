@@ -2,6 +2,9 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import { PLANS } from "@/lib/site";
 import { getViewer } from "@/lib/hub";
+import { pageMeta } from "@/lib/seo";
+
+export const metadata = pageMeta({ title: "Membership plans", description: "Compare SMB Hub membership plans: Business Owner, SMB Plus, SMB Elite and SMB Advisor.", path: "/membership-plans" });
 
 export default async function PlansPage() {
   const { userId, profile } = await getViewer();
