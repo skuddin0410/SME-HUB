@@ -322,10 +322,11 @@ export function Composer({
                 setOpen(true);
                 run();
               }}
-              className="press inline-flex items-center gap-2 rounded-md px-2 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-muted"
+              aria-label={label}
+              className="press inline-flex items-center gap-2 whitespace-nowrap rounded-md px-2 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-muted"
             >
               <Icon className={cx("h-5 w-5", tone)} />
-              <span className="hidden sm:inline">{label}</span>
+              <span className={label === "Photo" ? "hidden sm:inline" : "hidden sm:inline lg:max-xl:hidden"}>{label}</span>
             </button>
           ))}
         </div>
