@@ -1,0 +1,7 @@
+# Uses gitleaks' built-in rules. Test fixtures below hold fake values made up for unit tests.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "test fixtures"
+paths = ['''tests/unit/.*\.test\.ts''']

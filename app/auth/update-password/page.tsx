@@ -1,11 +1,18 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { UpdatePasswordForm } from "@/components/update-password-form";
+import { AuthShell } from "@/components/auth-shell";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Page() {
+export const metadata: Metadata = { title: "Choose a new password", robots: { index: false, follow: false }, referrer: "no-referrer" };
+
+export default async function Page() {
+  // only reachable with the session the reset link created (or while signed in)
+  const { data } = await (await createClient()).auth.getUser();
+  if (!data.user) redirect("/auth/error?reason=expired&type=recovery");
   return (
-    <div className="flex min-h-[60vh] w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <UpdatePasswordForm />
-      </div>
-    </div>
+    <AuthShell>
+      <UpdatePasswordForm />
+    </AuthShell>
   );
 }

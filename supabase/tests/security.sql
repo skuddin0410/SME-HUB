@@ -161,3 +161,14 @@ select t.expect_denied('visitor cannot ask for mutual connections', $$select mut
 -- ===== two roles only (0008) =====
 reset role;
 select t.expect_denied('moderator is no longer a valid role', $$update profiles set role = 'moderator' where id = '00000000-0000-0000-0000-00000000000b'$$);
+
+-- ===== welcome email sent once (0009) =====
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+select t.expect('first confirmation claims the welcome email', claim_welcome_email() = true);
+select t.expect('a second claim (link clicked twice) does not', claim_welcome_email() = false);
+select t.expect('members cannot read who was welcomed', (select count(*) = 0 from welcome_emails));
+select t.expect_denied('members cannot mark themselves welcomed directly', $$insert into welcome_emails (user_id) values ('00000000-0000-0000-0000-00000000000b')$$);
+set role anon; set request.jwt.claim.sub = '';
+select t.expect_denied('visitors cannot claim a welcome email', $$select claim_welcome_email()$$);
+reset role;
+select t.expect('the claim is stored once', (select count(*) = 1 from welcome_emails where user_id = '00000000-0000-0000-0000-00000000000c'));

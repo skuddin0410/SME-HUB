@@ -14,8 +14,8 @@ const walk = (dir) =>
         const p = join(dir, n);
         return statSync(p).isDirectory() ? walk(p) : [p];
       });
-const rootFiles = ["package.json", "amplify.yml", "next.config.ts"].map((f) => join(ROOT, f)).filter(existsSync);
-const files = [...["app", "components", "lib", "supabase", "public"].flatMap((d) => walk(join(ROOT, d))), ...rootFiles];
+const rootFiles = ["package.json", "amplify.yml", "next.config.ts", "vitest.config.ts"].map((f) => join(ROOT, f)).filter(existsSync);
+const files = [...["app", "components", "lib", "supabase", "public", ".github", "tests"].flatMap((d) => walk(join(ROOT, d))), ...rootFiles];
 const text = new Map([...files, ...rootFiles].filter((f) => !/\.(png|jpg|mp4)$/.test(f)).map((f) => [f, readFileSync(f, "utf8")]));
 const code = (f) => /\.(tsx?|mjs)$/.test(f);
 
@@ -24,6 +24,7 @@ const file = (path) => ({ label: `file ${path}`, ok: files.some((f) => relative(
 const code_ = (re) => ({ label: `code /${re.source}/`, ok: [...text].some(([f, t]) => code(f) && re.test(t)) });
 const sql = (re) => ({ label: `database /${re.source}/`, ok: [...text].some(([f, t]) => f.includes("supabase/migrations") && re.test(t)) });
 const any = (...cs) => ({ label: cs.map((c) => c.label).join("  OR  "), ok: cs.some((c) => c.ok) });
+const yml = (re) => ({ label: `workflow /${re.source}/`, ok: [...text].some(([f, t]) => f.includes(".github/workflows") && re.test(t)) });
 const pkg = (re) => ({ label: `package ${re.source}`, ok: re.test(text.get(join(ROOT, "package.json")) ?? "") });
 
 // [area, feature, what LinkedIn does, when to build (if missing), checks]
@@ -31,6 +32,10 @@ const F = [
   ["Accounts", "Sign up, sign in, email confirmation", "Account creation with email verification", "", [file("app/auth/sign-up"), file("app/auth/confirm")]],
   ["Accounts", "Password reset", "Forgot / update password", "", [file("app/auth/forgot-password"), file("app/auth/update-password")]],
   ["Accounts", "Two roles only: member and admin", "Members plus staff tools", "", [sql(/profiles_role_check/)]],
+  ["Accounts", "Branded account emails from accounts@smbhub.ca", "Own templates and sender for sign-up and reset mail", "", [file("app/api/auth/send-email/route.ts"), file("lib/auth/webhook.ts"), code_(/accounts@/)]],
+  ["Accounts", "Scanner-safe confirm link that signs you in", "One-click verification link", "", [file("app/auth/confirm/actions.ts"), code_(/verifyOtp/)]],
+  ["Accounts", "Welcome email, sent once", "Onboarding email after joining", "", [sql(/claim_welcome_email/), code_(/templates\.welcome/)]],
+  ["Accounts", "Password changed notice + sign out other devices", "Security alert on password change", "", [code_(/passwordChanged/), code_(/scope: "others"/)]],
   ["Profiles", "Profile page (cover, photo, headline, about)", "Profile with banner, photo, headline", "", [file("app/(hub)/(wide)/members/[id]")]],
   ["Profiles", "Edit profile and upload photo", "Edit intro, upload photo", "", [file("app/(hub)/(plain)/profile/edit"), file("lib/upload.ts")]],
   ["Profiles", "Profile strength meter", "Profile completeness prompts", "", [code_(/Profile strength/)]],
@@ -78,6 +83,8 @@ const F = [
   ["Safety", "Rate limits against spam", "Abuse protection", "", [sql(/function enforce_rate/)]],
   ["Platform", "Pre-launch SEO switch", "Controlled indexing", "", [file("app/robots.ts"), code_(/INDEXABLE/)]],
   ["Platform", "Deployed on AWS Amplify", "Hosting", "", [file("amplify.yml")]],
+  ["Platform", "CI: lint, types, unit + database tests, secret scan", "Automated checks on every change", "", [file(".github/workflows/ci.yml"), file("vitest.config.ts")]],
+  ["Platform", "Deploy only after CI passes", "Gated continuous delivery", "", [yml(/needs: \[test, database, secrets\]/), yml(/AMPLIFY_WEBHOOK_URL/)]],
   ["Platform", "Caching layer (Redis)", "Caching and rate counters", "Next", [pkg(/redis|upstash|ioredis/)]],
   ["Platform", "Background job queue", "Kafka / Samza pipelines", "Next", [pkg(/bullmq|pg-boss|inngest/)]],
 ];

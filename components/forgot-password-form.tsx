@@ -1,107 +1,88 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useState } from "react";
+import { Loader2, Mail, MailCheck } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { AUTH_ALERT, AUTH_CTA, AUTH_ICON, AUTH_INPUT, AUTH_LINK, NAVY } from "@/components/auth-ui";
 
-export function ForgotPasswordForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Always answers "check your inbox" when the request went through, whether or not the address
+ * has an account, so the form cannot be used to find out who is a member.
+ */
+export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  const handleForgotPassword = async (
-    e: React.SubmitEvent<HTMLFormElement>,
-  ) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
-    setIsLoading(true);
+    if (busy) return;
+    if (!EMAIL.test(email.trim())) return setError("Enter the email address you joined with.");
+    setBusy(true);
     setError(null);
-
-    try {
-      // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`,
-      });
-      if (error) throw error;
-      setSuccess(true);
-    } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setIsLoading(false);
+    const { error } = await createClient().auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/auth/update-password`,
+    });
+    setBusy(false);
+    if (error && (error.status === 429 || /rate|seconds/i.test(error.message))) {
+      return setError("Too many requests. Wait a minute, then try again.");
     }
+    if (error && error.status && error.status >= 500) return setError("Something went wrong on our side. Try again in a minute.");
+    setSent(true);
   };
 
+  if (sent) {
+    return (
+      <div>
+        <MailCheck className="h-9 w-9 text-emerald-700" aria-hidden="true" />
+        <h1 className={`mt-3 text-[28px] font-semibold leading-tight ${NAVY}`}>Check your inbox</h1>
+        <p className="mt-3 text-[15px] leading-6 text-slate-600">
+          If <span className="font-semibold text-slate-800">{email.trim()}</span> has an SMB Hub account, a reset link is on its way from
+          accounts@smbhub.ca. It works once and expires in one hour. Check your spam folder if it does not arrive in a few minutes.
+        </p>
+        <Link href="/auth/login" className={`mt-6 inline-block text-[15px] ${AUTH_LINK}`}>
+          Back to sign in
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      {success ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              If you registered using your email and password, you will receive
-              a password reset email.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-            <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your
-              password
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleForgotPassword}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send reset email"}
-                </Button>
-              </div>
-              <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="underline underline-offset-4"
-                >
-                  Login
-                </Link>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+    <form onSubmit={submit} noValidate>
+      <h1 className={`text-[28px] font-semibold leading-tight ${NAVY}`}>Forgot your password?</h1>
+      <p className="mt-2 text-[15px] leading-6 text-slate-600">Enter your email and we will send you a link to choose a new one.</p>
+      <label className="relative mt-6 block">
+        <Mail className={AUTH_ICON} />
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email address"
+          aria-label="Email address"
+          autoComplete="email"
+          autoFocus
+          className={AUTH_INPUT}
+        />
+      </label>
+      {error && (
+        <p role="alert" className={`mt-3 ${AUTH_ALERT}`}>
+          {error}
+        </p>
       )}
-    </div>
+      <button type="submit" disabled={busy} className={`mt-4 ${AUTH_CTA}`}>
+        {busy && <Loader2 className="h-5 w-5 animate-spin" />}
+        Send reset link
+      </button>
+      <p className="mt-5 text-center text-[15px] text-slate-600">
+        Remembered it?{" "}
+        <Link href="/auth/login" className={AUTH_LINK}>
+          Sign in
+        </Link>
+      </p>
+    </form>
   );
 }

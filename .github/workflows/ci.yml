@@ -1,0 +1,82 @@
+# Every push and pull request: lint, type-check, unit tests, database security tests, a production
+# build and a secret scan. A push to main deploys to AWS Amplify only after all of them pass.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Lint, types, unit tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - name: Production build
+        run: npm run build
+        env:
+          # placeholders only: the build needs the names, never real values
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+
+  database:
+    name: Database security tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run every migration and the RLS tests on a throwaway Postgres
+        run: |
+          sudo apt-get -qq update && sudo apt-get -qq install -y postgresql >/dev/null
+          sudo -u postgres bash -c 'echo ok' >/dev/null
+          sudo bash supabase/tests/run.sh | tee db-tests.txt
+          if grep -q '^FAIL' db-tests.txt; then echo "::error::A database security test failed"; exit 1; fi
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    name: Deploy to AWS Amplify
+    needs: [test, database, secrets]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - name: Start the Amplify build
+        env:
+          AMPLIFY_WEBHOOK_URL: ${{ secrets.AMPLIFY_WEBHOOK_URL }}
+        run: |
+          if [ -z "$AMPLIFY_WEBHOOK_URL" ]; then
+            echo "::error::Add the AMPLIFY_WEBHOOK_URL repository secret (see docs/setup-email-and-deploys.md)"
+            exit 1
+          fi
+          curl --fail --silent --show-error -X POST -H "Content-Type: application/json" -d '{}' "$AMPLIFY_WEBHOOK_URL"
+          echo "Amplify build started for ${GITHUB_SHA::7}"

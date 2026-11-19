@@ -19,7 +19,7 @@ export function AuthNav() {
   const home = pathname.startsWith("/auth");
   return (
     <>
-      <nav className="mx-auto hidden items-center gap-1 lg:flex" aria-label="Browse">
+      <nav className="mx-auto hidden items-center gap-1 xl:flex" aria-label="Browse">
         {LINKS.map(({ href, label }, i) => (
           <Link
             key={label}
@@ -35,7 +35,7 @@ export function AuthNav() {
           </Link>
         ))}
       </nav>
-      <div className="ml-auto flex items-center gap-2.5 lg:ml-0">
+      <div className="ml-auto flex items-center gap-2.5 xl:ml-0">
         <Link href="/search" aria-label="Search" className="press mr-2 hidden rounded-full p-2 text-[#0b1437] transition-colors hover:bg-[#e3ecfb] sm:block">
           <Search className="h-5 w-5" />
         </Link>

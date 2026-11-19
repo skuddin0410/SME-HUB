@@ -5,10 +5,13 @@ frontend:
       commands:
         - nvm use 22
         - npm ci
+        # defence in depth: even a build started by hand in the console runs the unit tests
+        - npm test
     build:
       commands:
-        # make the Amplify environment variables available to the Next.js server
-        - env | grep -e NEXT_PUBLIC_ >> .env.production
+        # Pass the Amplify environment variables to the Next.js server at runtime.
+        # Values live only in Amplify (App settings > Environment variables), never in the repo.
+        - env | grep -E '^(NEXT_PUBLIC_|RESEND_API_KEY=|SEND_EMAIL_HOOK_SECRET=|EMAIL_DOMAIN=)' >> .env.production || true
         - npm run build
   artifacts:
     baseDirectory: .next

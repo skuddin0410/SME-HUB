@@ -1,5 +1,5 @@
 {
-  "checked": "2026-11-19 22:49 UTC",
+  "checked": "2026-11-19 23:57 UTC",
   "rows": [
     {
       "area": "Accounts",
@@ -24,6 +24,38 @@
       "status": "Built",
       "when": "",
       "evidence": "ok: database /profiles_role_check/"
+    },
+    {
+      "area": "Accounts",
+      "feature": "Branded account emails from accounts@smbhub.ca",
+      "linkedin": "Own templates and sender for sign-up and reset mail",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/api/auth/send-email/route.ts; ok: file lib/auth/webhook.ts; ok: code /accounts@/"
+    },
+    {
+      "area": "Accounts",
+      "feature": "Scanner-safe confirm link that signs you in",
+      "linkedin": "One-click verification link",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file app/auth/confirm/actions.ts; ok: code /verifyOtp/"
+    },
+    {
+      "area": "Accounts",
+      "feature": "Welcome email, sent once",
+      "linkedin": "Onboarding email after joining",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /claim_welcome_email/; ok: code /templates\\.welcome/"
+    },
+    {
+      "area": "Accounts",
+      "feature": "Password changed notice + sign out other devices",
+      "linkedin": "Security alert on password change",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /passwordChanged/; ok: code /scope: \"others\"/"
     },
     {
       "area": "Profiles",
@@ -400,6 +432,22 @@
       "status": "Built",
       "when": "",
       "evidence": "ok: file amplify.yml"
+    },
+    {
+      "area": "Platform",
+      "feature": "CI: lint, types, unit + database tests, secret scan",
+      "linkedin": "Automated checks on every change",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file .github/workflows/ci.yml; ok: file vitest.config.ts"
+    },
+    {
+      "area": "Platform",
+      "feature": "Deploy only after CI passes",
+      "linkedin": "Gated continuous delivery",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: workflow /needs: \\[test, database, secrets\\]/; ok: workflow /AMPLIFY_WEBHOOK_URL/"
     },
     {
       "area": "Platform",
