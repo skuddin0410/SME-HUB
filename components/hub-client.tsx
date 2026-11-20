@@ -132,7 +132,7 @@ export function PostBody({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div>
-      <p className={cx("text-[13.5px] text-zinc-800 leading-[1.6] whitespace-pre-line break-words", long && !open && "line-clamp-5")}>{text}</p>
+      <p className={cx("text-[13.5px] text-zinc-900 leading-[1.6] whitespace-pre-line break-words", long && !open && "line-clamp-5")}>{text}</p>
       {long && (
         <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-xs font-semibold text-blue-600 hover:underline">
           {open ? "Show less" : "See more"}
@@ -220,8 +220,8 @@ export function SubmitButton({
   const tones = {
     primary: "bg-blue-600 text-white shadow-sm hover:bg-blue-700",
     dark: "bg-zinc-900 text-white hover:bg-zinc-800",
-    outline: "border border-[#E6E3DC] bg-white text-zinc-700 hover:bg-[#F4F2EE]",
-    ghost: "text-zinc-600 hover:bg-[#F4F2EE] hover:text-zinc-900",
+    outline: "border border-[#E5E5E8] bg-white text-zinc-800 hover:bg-[#F5F5F6]",
+    ghost: "text-zinc-600 hover:bg-[#F5F5F6] hover:text-zinc-900",
     danger: "border border-rose-200 text-rose-600 hover:bg-rose-50",
   }[tone];
   return (
@@ -248,8 +248,8 @@ const KIND_OPTIONS: { value: Kind; label: string }[] = [
   { value: "offer", label: "📣 Post an Offer" },
   { value: "hiring", label: "💼 Hiring / Talent" },
 ];
-const QUICK = "flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors";
-const SMALL_SELECT = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F4F2EE] border border-[#E6E3DC] text-zinc-800 focus:outline-none focus:border-blue-600";
+const QUICK = "flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F5F5F6] transition-colors";
+const SMALL_SELECT = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F5F5F6] border border-[#E5E5E8] text-zinc-900 focus:outline-none focus:border-blue-600";
 
 export function Composer({
   me,
@@ -317,7 +317,7 @@ export function Composer({
           <Link href="/auth/sign-up" className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all">
             Join free
           </Link>
-          <Link href="/auth/login" className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-700 border border-[#E6E3DC] hover:bg-[#F4F2EE] transition-all">
+          <Link href="/auth/login" className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-800 border border-[#E5E5E8] hover:bg-[#F5F5F6] transition-all">
             Sign in
           </Link>
         </div>
@@ -340,7 +340,7 @@ export function Composer({
             <button
               type="button"
               onClick={() => expand()}
-              className="w-full text-left px-4 py-2.5 rounded-xl bg-[#F4F2EE]/80 hover:bg-[#ECE9E2] border border-[#E6E3DC] text-xs sm:text-[13px] text-zinc-500 transition-colors"
+              className="w-full text-left px-4 py-2.5 rounded-xl bg-[#F5F5F6]/80 hover:bg-[#ECE9E2] border border-[#E5E5E8] text-xs sm:text-[13px] text-zinc-500 transition-colors"
             >
               {placeholder ?? "Start a post, ask a question, or share a win..."}
             </button>
@@ -365,7 +365,7 @@ export function Composer({
                     </select>
                   )}
                 </div>
-                <button type="button" onClick={collapse} aria-label="Close" className="text-xs text-zinc-400 hover:text-zinc-700 p-1">
+                <button type="button" onClick={collapse} aria-label="Close" className="text-xs text-zinc-400 hover:text-zinc-800 p-1">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -378,12 +378,12 @@ export function Composer({
                 rows={3}
                 onChange={(e) => setCount(e.target.value.length)}
                 placeholder={kind === "update" ? "Share a practical lesson, wholesale milestone, supplier question, or B2B offer with Canadian founders..." : KINDS[kind].prompt}
-                className="w-full p-3 rounded-xl bg-[#F4F2EE]/60 border border-[#E6E3DC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 text-[13px] text-zinc-900 placeholder-zinc-400 resize-none leading-relaxed"
+                className="w-full p-3 rounded-xl bg-[#F5F5F6]/60 border border-[#E5E5E8] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 text-[13px] text-zinc-900 placeholder-zinc-400 resize-none leading-relaxed"
               />
 
               {photo.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{photo.error}</p>}
               {photo.preview && (
-                <div className="relative rounded-xl overflow-hidden border border-[#E6E3DC] bg-zinc-100">
+                <div className="relative rounded-xl overflow-hidden border border-[#E5E5E8] bg-zinc-100">
                   <img src={photo.preview} alt="Selected image" className={cx("w-full max-h-[360px] object-cover", photo.busy && "opacity-60")} />
                   <button
                     type="button"
@@ -401,13 +401,13 @@ export function Composer({
               {state.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{state.error}</p>}
 
               <div className="flex items-center justify-between pt-1">
-                <button type="button" onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE] transition-colors">
+                <button type="button" onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:bg-[#F5F5F6] transition-colors">
                   <ImagePlus className="w-3.5 h-3.5 text-blue-600" />
                   <span>{photo.busy ? "Uploading…" : photo.preview ? "Change photo" : "Add photo"}</span>
                 </button>
                 <div className="flex items-center gap-2">
                   <span className={cx("hidden sm:inline text-[11px]", count > 4800 ? "text-rose-600" : "text-zinc-400")}>{count}/5000</span>
-                  <button type="button" onClick={collapse} className="px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE]">
+                  <button type="button" onClick={collapse} className="px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F5F5F6]">
                     Cancel
                   </button>
                   <PublishButton disabled={photo.busy} />
@@ -418,7 +418,7 @@ export function Composer({
         </div>
       </div>
 
-      <div className="mt-3 pt-3 border-t border-[#F4F2EE] grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+      <div className="mt-3 pt-3 border-t border-[#F5F5F6] grid grid-cols-2 sm:grid-cols-4 gap-1.5">
         <button type="button" onClick={() => expand(undefined, true)} className={QUICK}>
           <ImagePlus className="w-3.5 h-3.5 text-blue-600" />
           <span>Photo</span>
@@ -456,7 +456,7 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"menu" | "report" | "done" | "copied">("menu");
   const [gone, setGone] = useState(false);
-  const row = "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs text-zinc-700 transition-colors hover:bg-[#F4F2EE] [&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:text-zinc-400";
+  const row = "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs text-zinc-800 transition-colors hover:bg-[#F5F5F6] [&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:text-zinc-400";
 
   useEffect(() => {
     if (!open) return;
@@ -471,11 +471,11 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
   if (gone) return null;
   return (
     <div className="relative" onClick={(e) => e.stopPropagation()} role="presentation">
-      <button type="button" aria-label="Post options" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="p-1.5 rounded-lg text-zinc-400 transition-colors hover:bg-[#F4F2EE] hover:text-zinc-800">
+      <button type="button" aria-label="Post options" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="p-1.5 rounded-lg text-zinc-400 transition-colors hover:bg-[#F5F5F6] hover:text-zinc-900">
         <Ellipsis className="h-4 w-4" />
       </button>
       {open && (
-        <div className="absolute right-0 z-20 mt-1 w-60 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-2 fade-in">
+        <div className="absolute right-0 z-20 mt-1 w-60 bg-white rounded-2xl border border-[#E5E5E8] shadow-popover p-2 fade-in">
           {step === "menu" && (
             <>
               <button
@@ -545,8 +545,8 @@ const REACTIONS: { kind: ReactionKind; emoji: string; label: string; on: string 
   { kind: "love", emoji: "💡", label: "Insightful", on: "bg-amber-50 text-amber-800 border-amber-200" },
   { kind: "celebrate", emoji: "🎉", label: "Celebrate", on: "bg-emerald-50 text-emerald-700 border-emerald-200" },
 ];
-const PILL_OFF = "bg-[#F4F2EE]/70 hover:bg-[#F4F2EE] text-zinc-600 border-transparent";
-const ICON_ACTION = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors";
+const PILL_OFF = "bg-[#F5F5F6]/70 hover:bg-[#F5F5F6] text-zinc-600 border-transparent";
+const ICON_ACTION = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F5F5F6] transition-colors";
 
 export function PostActions({
   postId,
@@ -647,7 +647,7 @@ export function PostActions({
 
   return (
     <>
-      <div className="pt-3 border-t border-[#F4F2EE] flex flex-wrap items-center justify-between gap-2">
+      <div className="pt-3 border-t border-[#F5F5F6] flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
           {REACTIONS.map(({ kind, emoji, label, on }) => (
             <button
@@ -702,7 +702,7 @@ export function PostActions({
               if (needAccount()) return;
               router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`);
             }}
-            className="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors"
+            className="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 hover:bg-[#F5F5F6] transition-colors"
           >
             <Send className="w-3.5 h-3.5" />
           </button>
@@ -710,7 +710,7 @@ export function PostActions({
       </div>
 
       {open && (
-        <div className="pt-3 border-t border-[#F4F2EE] space-y-3 fade-in">
+        <div className="pt-3 border-t border-[#F5F5F6] space-y-3 fade-in">
           <div className="space-y-2">
             {list === null && (
               <>
@@ -719,7 +719,7 @@ export function PostActions({
               </>
             )}
             {list?.map((c) => (
-              <div key={c.id} className="group p-2.5 rounded-xl bg-[#F4F2EE]/75 border border-[#E6E3DC]/70">
+              <div key={c.id} className="group p-2.5 rounded-xl bg-[#F5F5F6]/75 border border-[#E5E5E8]/70">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-1.5">
                     <Link href={`/members/${c.author.id}`} className="truncate text-xs font-bold text-zinc-900 hover:underline">
@@ -742,7 +742,7 @@ export function PostActions({
                     </button>
                   )}
                 </div>
-                <p className="text-xs text-zinc-700 mt-1 leading-relaxed whitespace-pre-wrap break-words">{c.body}</p>
+                <p className="text-xs text-zinc-800 mt-1 leading-relaxed whitespace-pre-wrap break-words">{c.body}</p>
               </div>
             ))}
             {list?.length === 0 && <p className="text-xs text-zinc-500">No replies yet. Start the conversation.</p>}
@@ -757,7 +757,7 @@ export function PostActions({
                 maxLength={2000}
                 placeholder="Add a thoughtful reply..."
                 aria-label="Add a reply"
-                className="flex-1 px-3 py-2 rounded-xl bg-[#F4F2EE]/70 border border-[#E6E3DC] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600"
+                className="flex-1 px-3 py-2 rounded-xl bg-[#F5F5F6]/70 border border-[#E5E5E8] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600"
               />
               <button
                 type="submit"

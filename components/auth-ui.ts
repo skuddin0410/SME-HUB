@@ -4,7 +4,7 @@
  */
 
 /** White card that holds a form. */
-export const CARD = "bg-white border border-[#E6E3DC] rounded-3xl p-6 sm:p-7 shadow-auth-card";
+export const CARD = "bg-white border border-[#E5E5E8] rounded-3xl p-6 sm:p-7 shadow-auth-card";
 
 export const LABEL = "block text-xs font-semibold text-slate-700 mb-1";
 

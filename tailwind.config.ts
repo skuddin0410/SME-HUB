@@ -28,8 +28,8 @@ export default {
         popover: "0 16px 40px -8px rgba(24, 24, 27, 0.14), 0 2px 6px rgba(24, 24, 27, 0.06)",
       },
       colors: {
-        stonebg: "#F4F2EE",
-        hairline: "#E6E3DC",
+        stonebg: "#F5F5F6",
+        hairline: "#E5E5E8",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

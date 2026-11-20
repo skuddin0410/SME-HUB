@@ -17,8 +17,8 @@ const SOCIALS = [
 ];
 
 // design: docs/design/feed.html
-const SHOW_ALL = "mt-3.5 pt-2.5 border-t border-[#E6E3DC] w-full flex items-center justify-between text-xs font-semibold text-zinc-700 hover:text-blue-600 transition-colors";
-const QUICK_ROW = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors";
+const SHOW_ALL = "mt-3.5 pt-2.5 border-t border-[#E5E5E8] w-full flex items-center justify-between text-xs font-semibold text-zinc-800 hover:text-blue-600 transition-colors";
+const QUICK_ROW = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-800 hover:bg-[#F5F5F6] hover:text-zinc-900 transition-colors";
 const PROFILE_FIELDS = [
   ["avatar_url", "Add a photo"],
   ["headline", "Add headline"],
@@ -34,7 +34,7 @@ export async function ProfileCard() {
   if (!profile || !userId) {
     return (
       <div className="panel overflow-hidden">
-        <div className="h-16 bg-gradient-to-r from-stone-800 via-zinc-800 to-stone-700" />
+        <div className="h-16 bg-gradient-to-r from-zinc-800 via-zinc-800 to-zinc-700" />
         <div className="p-4 space-y-2">
           <p className="font-display font-bold text-[15px] text-zinc-900 leading-snug">Where Canadian business owners meet.</p>
           <p className="text-xs text-zinc-500">Ask questions, share what is working and find the people who can help you grow.</p>
@@ -63,7 +63,7 @@ export async function ProfileCard() {
   return (
     <>
       <div className="panel overflow-hidden">
-        <div className="h-16 bg-gradient-to-r from-stone-800 via-zinc-800 to-stone-700" />
+        <div className="h-16 bg-gradient-to-r from-zinc-800 via-zinc-800 to-zinc-700" />
         <div className="px-4 pb-4">
           <div className="-mt-8 mb-3 flex items-end justify-between">
             <Link href={`/members/${userId}`} className="relative">
@@ -72,7 +72,7 @@ export async function ProfileCard() {
               </span>
               <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" title="Online now" />
             </Link>
-            <Link href="/profile/edit" className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-[#F4F2EE] hover:bg-[#E6E3DC] text-zinc-700 transition-colors">
+            <Link href="/profile/edit" className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-[#F5F5F6] hover:bg-[#E5E5E8] text-zinc-800 transition-colors">
               Edit
             </Link>
           </div>
@@ -87,9 +87,9 @@ export async function ProfileCard() {
           </div>
 
           {done < 100 && (
-            <div className="mt-4 p-3 rounded-xl bg-[#F4F2EE]/80 border border-[#E6E3DC]/90">
+            <div className="mt-4 p-3 rounded-xl bg-[#F5F5F6]/80 border border-[#E5E5E8]/90">
               <div className="flex items-center justify-between text-xs mb-1.5">
-                <span className="font-medium text-zinc-700">Profile strength</span>
+                <span className="font-medium text-zinc-800">Profile strength</span>
                 <span className="font-display font-bold text-blue-600">{done}%</span>
               </div>
               <div className="w-full h-1.5 rounded-full bg-zinc-200/80 overflow-hidden">
@@ -106,16 +106,16 @@ export async function ProfileCard() {
             </div>
           )}
 
-          <div className="mt-3.5 pt-3.5 border-t border-[#E6E3DC] grid grid-cols-2 divide-x divide-[#E6E3DC]">
+          <div className="mt-3.5 pt-3.5 border-t border-[#E5E5E8] grid grid-cols-2 divide-x divide-[#E5E5E8]">
             <Link href="/network" className="pr-3 text-left group">
-              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-800 transition-colors">Connections</span>
+              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-900 transition-colors">Connections</span>
               <span className="flex items-baseline justify-between mt-0.5">
                 <span className="font-display font-bold text-sm text-blue-600">{(connections.data as number | null) ?? 0}</span>
                 <span className="text-[10px] text-zinc-400 group-hover:text-blue-600">Grow</span>
               </span>
             </Link>
             <ComposeLink className="pl-3 text-left group">
-              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-800 transition-colors">Your posts</span>
+              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-900 transition-colors">Your posts</span>
               <span className="flex items-baseline justify-between mt-0.5">
                 <span className="font-display font-bold text-sm text-zinc-900">{posts.count ?? 0}</span>
                 <span className="text-[10px] text-zinc-400 group-hover:text-blue-600">+ New</span>
@@ -167,14 +167,14 @@ export function ArticlesCard() {
     <div className="panel p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-display font-bold text-xs uppercase tracking-wider text-zinc-500">Recent Articles</h3>
-        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F4F2EE] text-zinc-600">CA Editorial</span>
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F5F5F6] text-zinc-600">CA Editorial</span>
       </div>
       <div className="space-y-2.5">
         {BLOG.slice(0, 6).map((a) => (
-          <Link key={a.slug} href={`/blog/${a.slug}`} className="w-full flex items-center gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F4F2EE] text-left group transition-colors">
-            <Thumb src={a.image} className="w-10 h-10 rounded-lg shrink-0 border border-[#E6E3DC]" />
+          <Link key={a.slug} href={`/blog/${a.slug}`} className="w-full flex items-center gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F5F5F6] text-left group transition-colors">
+            <Thumb src={a.image} className="w-10 h-10 rounded-lg shrink-0 border border-[#E5E5E8]" />
             <span className="min-w-0 flex-1">
-              <span className="text-xs font-medium text-zinc-800 group-hover:text-blue-600 leading-snug line-clamp-2 transition-colors">{a.title}</span>
+              <span className="text-xs font-medium text-zinc-900 group-hover:text-blue-600 leading-snug line-clamp-2 transition-colors">{a.title}</span>
               <span className="text-[10px] text-zinc-400 mt-0.5 block">CanadianSME Magazine</span>
             </span>
           </Link>
@@ -211,7 +211,7 @@ export async function ActiveMembersCard() {
             key={m.id}
             href={`/members/${m.id}`}
             title={`${m.full_name}${m.headline ? ` • ${m.headline}` : ""}`}
-            className="relative group focus:outline-none rounded-full [&_img]:ring-1 [&_img]:ring-[#E6E3DC] [&_img]:transition-all group-hover:[&_img]:ring-2 group-hover:[&_img]:ring-blue-600 hover:scale-105 transition-transform"
+            className="relative group focus:outline-none rounded-full [&_img]:ring-1 [&_img]:ring-[#E5E5E8] [&_img]:transition-all group-hover:[&_img]:ring-2 group-hover:[&_img]:ring-blue-600 hover:scale-105 transition-transform"
           >
             <AvatarImg person={m} size={40} />
           </Link>
@@ -238,15 +238,15 @@ export async function GroupsCard() {
     <div className="panel p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-display font-bold text-[13px] text-zinc-900">Groups to Explore</h3>
-        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F2EE] text-zinc-600">Canada</span>
+        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F5F5F6] text-zinc-600">Canada</span>
       </div>
       <div className="space-y-2.5">
         {groups.map((g) => {
           const members = g.group_members[0]?.count ?? 0;
           return (
-            <div key={g.id} className="flex items-center justify-between gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F4F2EE]/70 transition-colors">
+            <div key={g.id} className="flex items-center justify-between gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F5F5F6]/70 transition-colors">
               <Link href={`/groups/${g.slug}`} className="flex items-center gap-2.5 min-w-0">
-                <GroupLogo seed={g.slug} name={g.name} size={36} className="!rounded-xl border border-[#E6E3DC]" />
+                <GroupLogo seed={g.slug} name={g.name} size={36} className="!rounded-xl border border-[#E5E5E8]" />
                 <span className="min-w-0">
                   <span className="block text-xs font-semibold text-zinc-900 truncate">{g.name}</span>
                   <span className="block text-[11px] text-zinc-500">
@@ -256,7 +256,7 @@ export async function GroupsCard() {
                 </span>
               </Link>
               {g.is_private ? (
-                <Link href={`/groups/${g.slug}`} className="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-700 hover:text-white transition-all">
+                <Link href={`/groups/${g.slug}`} className="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F5F5F6] hover:bg-zinc-900 text-zinc-800 hover:text-white transition-all">
                   View
                 </Link>
               ) : (
@@ -290,7 +290,7 @@ export function SocialCard() {
             target="_blank"
             rel="noreferrer"
             aria-label={label}
-            className="w-9 h-9 rounded-full bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"
+            className="w-9 h-9 rounded-full bg-[#F5F5F6] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"
           >
             <Icon className="w-4 h-4" />
           </a>

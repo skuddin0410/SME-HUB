@@ -22,7 +22,7 @@ export function Hero({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-[#E6E3DC] bg-white p-6 sm:p-8 shadow-card">
+    <section className="relative overflow-hidden rounded-3xl border border-[#E5E5E8] bg-white p-6 sm:p-8 shadow-card">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/brand/smb-hub-mark.png" alt="" aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 w-48 opacity-[0.06] select-none" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-600 via-red-500 to-blue-600" />
@@ -33,7 +33,7 @@ export function Hero({
         </Link>
       )}
       {eyebrow && (
-        <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#E6E3DC] bg-[#F6F5F1] px-3 py-1 text-[11.5px] font-semibold text-zinc-700">
+        <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#E5E5E8] bg-[#F7F7F8] px-3 py-1 text-[11.5px] font-semibold text-zinc-800">
           <span className="h-1.5 w-1.5 rounded-full bg-rose-600" />
           {eyebrow}
         </p>
@@ -48,12 +48,12 @@ export function Hero({
 /** A list of links to other pages on this site, used for "more guides" style blocks. */
 export function LinkList({ title, items }: { title: string; items: { label: string; href: string }[] }) {
   return (
-    <section className="rounded-3xl border border-[#E6E3DC] bg-white p-5 shadow-card">
+    <section className="rounded-3xl border border-[#E5E5E8] bg-white p-5 shadow-card">
       <h2 className="font-display text-[15px] font-bold text-zinc-950">{title}</h2>
       <ul className="mt-3 grid gap-x-4 gap-y-0.5 sm:grid-cols-2">
         {items.map((i) => (
           <li key={i.href}>
-            <Link href={i.href} className="group flex items-center justify-between rounded-xl px-3 py-2 text-[13px] text-zinc-700 transition-colors hover:bg-[#F4F2EE] hover:text-zinc-950">
+            <Link href={i.href} className="group flex items-center justify-between rounded-xl px-3 py-2 text-[13px] text-zinc-800 transition-colors hover:bg-[#F5F5F6] hover:text-zinc-950">
               {i.label}
               <ChevronRight className="h-4 w-4 text-zinc-300 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-600" />
             </Link>

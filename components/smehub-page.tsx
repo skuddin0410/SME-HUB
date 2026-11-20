@@ -9,16 +9,16 @@ import { SectionAside } from "@/components/section-aside";
 // with the other pages of the same menu group in a sticky side card.
 
 const ICONS = { facebook: Facebook, twitter: Twitter, instagram: Instagram, linkedin: Linkedin };
-const CARD = "rounded-3xl border border-[#E6E3DC] bg-white shadow-card";
+const CARD = "rounded-3xl border border-[#E5E5E8] bg-white shadow-card";
 
 function Accordion({ items, group }: { items: [string, string][]; group: string }) {
   return (
-    <div className={`${CARD} divide-y divide-[#F0EEE9] overflow-hidden`}>
+    <div className={`${CARD} divide-y divide-[#F0F0F2] overflow-hidden`}>
       {items.map(([title, body], i) => (
         // same `name` = only one open per column; the first starts open
         <details key={title} name={group} open={i === 0} className="group">
-          <summary className="flex cursor-pointer list-none items-start gap-3 px-5 py-4 text-[14px] font-semibold leading-snug text-zinc-900 hover:bg-[#FAF9F7] [&::-webkit-details-marker]:hidden">
-            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#F4F2EE] text-zinc-500 transition-transform group-open:rotate-45 group-open:bg-blue-50 group-open:text-blue-600">
+          <summary className="flex cursor-pointer list-none items-start gap-3 px-5 py-4 text-[14px] font-semibold leading-snug text-zinc-900 hover:bg-[#FAFAFA] [&::-webkit-details-marker]:hidden">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#F5F5F6] text-zinc-500 transition-transform group-open:rotate-45 group-open:bg-blue-50 group-open:text-blue-600">
               <Plus className="h-3 w-3" strokeWidth={3} />
             </span>
             {title}
@@ -33,7 +33,7 @@ function Accordion({ items, group }: { items: [string, string][]; group: string 
 function OrgCard({ org }: { org: Org }) {
   return (
     <article className={`${CARD} flex flex-col gap-5 p-5 sm:flex-row`}>
-      <div className="flex h-[132px] w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#F0EEE9] bg-[#FAF9F7] sm:w-[180px]">
+      <div className="flex h-[132px] w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#F0F0F2] bg-[#FAFAFA] sm:w-[180px]">
         <img src={org.logo} alt={`${org.name} logo`} loading="lazy" className="max-h-full max-w-full object-contain p-3" />
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
@@ -50,7 +50,7 @@ function OrgCard({ org }: { org: Org }) {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`${org.name} on ${s.kind}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E6E3DC] text-zinc-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E5E5E8] text-zinc-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
                   >
                     <Icon className="h-3.5 w-3.5" />
                   </a>
@@ -86,15 +86,15 @@ export function SmehubPage({ page }: { page: FullPage }) {
                 <ArrowLeft className="h-3.5 w-3.5" />
                 {guide ? "All province guides" : "All SMB resources"}
               </Link>
-              <p className="mb-3 flex w-fit items-center gap-2 rounded-full border border-[#E6E3DC] bg-[#F6F5F1] px-3 py-1 text-[11.5px] font-semibold text-zinc-700">
+              <p className="mb-3 flex w-fit items-center gap-2 rounded-full border border-[#E5E5E8] bg-[#F7F7F8] px-3 py-1 text-[11.5px] font-semibold text-zinc-800">
                 <span className="h-1.5 w-1.5 rounded-full bg-rose-600" />
                 {guide ? "Province-wide resources" : "SMB resources"}
               </p>
               <h1 className="font-jakarta text-[26px] font-extrabold leading-[1.15] tracking-tight text-zinc-950 sm:text-[32px]">{first.replace(/:$/, "")}</h1>
-              {second && <p className="mt-2 font-display text-[16px] font-semibold leading-snug text-zinc-700">{second}</p>}
+              {second && <p className="mt-2 font-display text-[16px] font-semibold leading-snug text-zinc-800">{second}</p>}
               <p className="mt-3 text-[13.5px] leading-relaxed text-zinc-600">{page.intro}</p>
             </div>
-            <img src={page.img} alt="" className="h-[260px] w-full rounded-2xl bg-[#F4F2EE] object-cover md:h-[300px]" />
+            <img src={page.img} alt="" className="h-[260px] w-full rounded-2xl bg-[#F5F5F6] object-cover md:h-[300px]" />
           </section>
 
           <section>

@@ -432,7 +432,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
       {/* left: badge, heading and the sign-in / join card */}
       <div className="flex flex-col w-full">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E6E3DC] mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E5E5E8] mb-3">
             <span className="w-2 h-2 rounded-full bg-rose-600" />
             <span className="text-xs font-bold text-slate-800">CA</span>
             <span className="text-xs font-medium text-slate-600">Canada&apos;s Professional Network</span>
@@ -448,7 +448,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
         {/* One fixed-size card sized to its content: invisible copies of both layouts sit in the same
             grid cell, so Sign in, Join now and "Check your inbox" all share the taller height and
             switching never resizes the card or the page */}
-        <div className="bg-white border border-[#E6E3DC] rounded-3xl p-6 sm:p-7 shadow-auth-card grid">
+        <div className="bg-white border border-[#E5E5E8] rounded-3xl p-6 sm:p-7 shadow-auth-card grid">
           <div className="row-start-1 col-start-1 flex flex-col">{sentTo ? renderInbox(sentTo) : renderCard(signup, false)}</div>
           {(sentTo || !signup) && (
             <div className="row-start-1 col-start-1 invisible flex flex-col" aria-hidden="true" inert>

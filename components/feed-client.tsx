@@ -50,7 +50,7 @@ export function JoinGroupButton({ groupId, initial, signedIn }: { groupId: strin
       }}
       className={
         "shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all " +
-        (joined ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-700 hover:text-white")
+        (joined ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-[#F5F5F6] hover:bg-zinc-900 text-zinc-800 hover:text-white")
       }
     >
       {joined ? "Joined ✓" : "Join"}
@@ -74,7 +74,7 @@ export function SaveButton({ postId, initial, signedIn }: { postId: string; init
         setSaved(!was);
         toggleSave(postId, was).catch(() => setSaved(was));
       }}
-      className="p-1.5 rounded-lg hover:bg-[#F4F2EE] text-zinc-400 hover:text-zinc-800 transition-colors"
+      className="p-1.5 rounded-lg hover:bg-[#F5F5F6] text-zinc-400 hover:text-zinc-900 transition-colors"
     >
       <Bookmark className={"w-4 h-4" + (saved ? " fill-zinc-900 text-zinc-900" : "")} />
     </button>

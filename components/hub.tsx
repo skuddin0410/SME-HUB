@@ -13,10 +13,10 @@ export type Viewer = { userId: string | null; profile: Profile | null; isStaff: 
 export function TierBadge({ type, always = false }: { type: Profile["member_type"]; always?: boolean }) {
   if (type === "owner" && !always) return null;
   const tone = {
-    owner: "bg-zinc-100 text-zinc-700 border-zinc-200",
-    plus: "bg-white text-zinc-800 border-zinc-300",
+    owner: "bg-zinc-100 text-zinc-800 border-zinc-200",
+    plus: "bg-white text-zinc-900 border-zinc-300",
     elite: "bg-blue-950 text-white border-blue-900",
-    advisor: "bg-zinc-100 text-zinc-700 border-zinc-200",
+    advisor: "bg-zinc-100 text-zinc-800 border-zinc-200",
   }[type];
   return <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border ${tone}`}>{MEMBER_TYPES[type]}</span>;
 }
@@ -26,7 +26,7 @@ const KIND_CHIP = {
   question: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
   offer: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
   hiring: "bg-rose-50 text-rose-700 border-rose-200/80",
-  update: "bg-zinc-100 text-zinc-700 border-zinc-200",
+  update: "bg-zinc-100 text-zinc-800 border-zinc-200",
 } as const;
 
 export function PersonLine({ person, extra, size = 44, degree }: { person: Author; extra?: React.ReactNode; size?: number; degree?: Degree }) {
@@ -59,7 +59,7 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
     <article id={`post-${post.id}`} className="panel panel-hover p-4 sm:p-5 space-y-3.5 fade-in">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
-          <Link href={`/members/${post.author.id}`} className="shrink-0 [&_img]:ring-[#E6E3DC]">
+          <Link href={`/members/${post.author.id}`} className="shrink-0 [&_img]:ring-[#E5E5E8]">
             <AvatarImg person={post.author} size={40} />
           </Link>
           <div className="min-w-0">
@@ -70,7 +70,7 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
               {post.group && (
                 <span className="text-xs text-zinc-500">
                   posted in{" "}
-                  <Link href={`/groups/${post.group.slug}`} className="font-semibold text-zinc-700 hover:underline">
+                  <Link href={`/groups/${post.group.slug}`} className="font-semibold text-zinc-800 hover:underline">
                     {post.group.name}
                   </Link>
                 </span>
@@ -105,7 +105,7 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
       </div>
       <PostBody text={post.body} />
       {post.image_url && (
-        <div className="rounded-xl overflow-hidden border border-[#E6E3DC] bg-zinc-100">
+        <div className="rounded-xl overflow-hidden border border-[#E5E5E8] bg-zinc-100">
           <img src={post.image_url} alt="" loading="lazy" className="w-full max-h-[360px] object-cover" />
         </div>
       )}
@@ -142,7 +142,7 @@ export function GroupLine({ group }: { group: { slug: string; name: string; is_p
 export function Pager({ page, hasMore, base }: { page: number; hasMore: boolean; base: string }) {
   if (page === 1 && !hasMore) return null;
   const sep = base.includes("?") ? "&" : "?";
-  const cls = "px-3.5 py-2 rounded-xl text-xs font-semibold border border-[#E6E3DC] bg-white text-zinc-700 hover:bg-[#F4F2EE] transition-colors";
+  const cls = "px-3.5 py-2 rounded-xl text-xs font-semibold border border-[#E5E5E8] bg-white text-zinc-800 hover:bg-[#F5F5F6] transition-colors";
   return (
     <div className="flex justify-between">
       {page > 1 ? (

@@ -54,11 +54,11 @@ export type NavNote = { id: string; actor: string; text: string; href: string; a
 type Me = { id: string; full_name: string; avatar_url: string | null; headline?: string | null } | null;
 
 const TAB_ON = "h-8 px-2.5 sm:px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 bg-[#18181B] text-white transition-all";
-const TAB_OFF = "h-8 px-2.5 sm:px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all";
-const POPOVER = "absolute right-0 mt-2.5 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover z-50 fade-in";
-const MENU_BTN = "h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-100/80 transition-all";
-const MENU_BTN_ON = "h-8 px-2.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap flex items-center gap-1.5 bg-stone-100 text-stone-900 transition-all";
-const MENU_ROW = "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-700 hover:bg-[#F4F2EE] text-left";
+const TAB_OFF = "h-8 px-2.5 sm:px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-zinc-800 hover:text-zinc-950 hover:bg-white/70 transition-all";
+const POPOVER = "absolute right-0 mt-2.5 bg-white rounded-2xl border border-[#E5E5E8] shadow-popover z-50 fade-in";
+const MENU_BTN = "h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap flex items-center gap-1.5 text-zinc-800 hover:text-zinc-950 hover:bg-zinc-100/80 transition-all";
+const MENU_BTN_ON = "h-8 px-2.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap flex items-center gap-1.5 bg-zinc-100 text-zinc-950 transition-all";
+const MENU_ROW = "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-800 hover:bg-[#F5F5F6] text-left";
 
 /** Opens the command palette from anywhere (the left rail's quick links use it too). */
 export const PALETTE_EVENT = "smbhub:palette";
@@ -144,7 +144,7 @@ export function SiteNav({
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/[0.92] backdrop-blur-[16px] border-b border-[#E6E3DC]">
+    <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E5E5E8]">
       <div ref={bar} className="max-w-[1360px] mx-auto px-3 sm:px-6 lg:px-8 h-[62px] flex items-center justify-between gap-2 sm:gap-3">
         {/* left: brand and search */}
         <div className="flex items-center gap-3.5 shrink-0">
@@ -152,19 +152,19 @@ export function SiteNav({
           <button
             type="button"
             onClick={() => setPalette(true)}
-            className="hidden sm:flex items-center justify-between gap-2 w-[180px] lg:w-[200px] 2xl:w-[210px] h-9 px-3.5 rounded-full bg-[#F6F5F1] hover:bg-[#EFECE6] border border-[#E6E3DC] hover:border-stone-300 text-[13px] text-stone-500 transition-colors shrink-0"
+            className="hidden sm:flex items-center justify-between gap-2 w-[180px] lg:w-[200px] 2xl:w-[210px] h-9 px-3.5 rounded-full bg-[#F7F7F8] hover:bg-[#EFEFF1] border border-[#E5E5E8] hover:border-zinc-300 text-[13px] text-zinc-500 transition-colors shrink-0"
           >
             <span className="flex items-center gap-2 min-w-0">
-              <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+              <Search className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
               <span className="truncate">Search SMB Hub...</span>
             </span>
-            <kbd className="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium bg-white border border-[#E6E3DC] rounded-md text-stone-500">⌘K</kbd>
+            <kbd className="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium bg-white border border-[#E5E5E8] rounded-md text-zinc-500">⌘K</kbd>
           </button>
           <button
             type="button"
             onClick={() => setPalette(true)}
             aria-label="Search SMB Hub"
-            className="hidden w-8 h-8 rounded-full bg-[#F6F5F1] border border-[#E6E3DC] items-center justify-center text-stone-600 shrink-0"
+            className="hidden w-8 h-8 rounded-full bg-[#F7F7F8] border border-[#E5E5E8] items-center justify-center text-zinc-800 shrink-0"
           >
             <Search className="w-3.5 h-3.5" />
           </button>
@@ -172,7 +172,7 @@ export function SiteNav({
 
         {/* centre: the segmented capsule */}
         {me ? (
-          <nav aria-label="Workspace Navigation" className="flex items-center gap-1 bg-[#F6F5F1]/95 p-1 rounded-full border border-[#E6E3DC]/90 shrink-0">
+          <nav aria-label="Workspace Navigation" className="flex items-center gap-1 bg-[#F7F7F8]/95 p-1 rounded-full border border-[#E5E5E8]/90 shrink-0">
             {tabs.map(({ href, label, icon: Icon, active, extra }) => (
               <Link key={href} href={href} aria-label={label} aria-current={active ? "page" : undefined} className={active ? TAB_ON : TAB_OFF}>
                 <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -182,7 +182,7 @@ export function SiteNav({
             ))}
           </nav>
         ) : (
-          <nav aria-label="Browse" className="hidden md:flex items-center gap-1 bg-[#F6F5F1]/95 p-1 rounded-full border border-[#E6E3DC]/90 shrink-0">
+          <nav aria-label="Browse" className="hidden md:flex items-center gap-1 bg-[#F7F7F8]/95 p-1 rounded-full border border-[#E5E5E8]/90 shrink-0">
             {[
               { href: "/feed", label: "Home", icon: Home },
               { href: "/members", label: "People", icon: Users },
@@ -240,7 +240,7 @@ export function SiteNav({
             <span className="hidden 2xl:inline">Help</span>
           </Link>
 
-          <div className="h-4 w-px bg-[#E6E3DC] mx-0.5 hidden sm:block shrink-0" />
+          <div className="h-4 w-px bg-[#E5E5E8] mx-0.5 hidden sm:block shrink-0" />
 
           {me ? (
             <>
@@ -254,7 +254,7 @@ export function SiteNav({
                 className={`relative w-8 h-8 rounded-full flex items-center justify-center border transition-all ${
                   pathname.startsWith("/notifications") || open === "notes"
                     ? "bg-[#18181B] text-white border-[#18181B]"
-                    : "bg-white text-stone-600 hover:text-stone-900 border-[#E6E3DC] hover:bg-stone-50"
+                    : "bg-white text-zinc-800 hover:text-zinc-950 border-[#E5E5E8] hover:bg-zinc-50"
                 }`}
               >
                 <Bell className="w-4 h-4" />
@@ -266,7 +266,7 @@ export function SiteNav({
               </button>
               {open === "notes" && (
                 <div className={`${POPOVER} w-80 p-3 -right-24 sm:right-0`}>
-                  <div className="flex items-center justify-between px-2 pb-2.5 border-b border-[#E6E3DC]">
+                  <div className="flex items-center justify-between px-2 pb-2.5 border-b border-[#E5E5E8]">
                     <span className="font-display font-bold text-xs text-zinc-900">Notifications</span>
                     {unreadNow > 0 && (
                       <button
@@ -282,11 +282,11 @@ export function SiteNav({
                       </button>
                     )}
                   </div>
-                  <div className="divide-y divide-[#F4F2EE] max-h-72 overflow-y-auto">
+                  <div className="divide-y divide-[#F5F5F6] max-h-72 overflow-y-auto">
                     {notes.length === 0 && <p className="p-2.5 text-xs text-zinc-500">Nothing new yet. Likes, comments and invitations show up here.</p>}
                     {notes.map((n) => (
-                      <Link key={n.id} href={n.href} className="block p-2.5 hover:bg-[#F4F2EE]/60 rounded-xl transition-colors">
-                        <p className="text-xs text-zinc-800">
+                      <Link key={n.id} href={n.href} className="block p-2.5 hover:bg-[#F5F5F6]/60 rounded-xl transition-colors">
+                        <p className="text-xs text-zinc-900">
                           {n.unread && <span className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-indigo-600 align-middle" />}
                           <span className="font-semibold">{n.actor}</span> {n.text}
                         </p>
@@ -294,7 +294,7 @@ export function SiteNav({
                       </Link>
                     ))}
                   </div>
-                  <Link href="/notifications" className="mt-1 block rounded-xl px-2 py-2 text-center text-[11px] font-semibold text-zinc-700 hover:bg-[#F4F2EE]">
+                  <Link href="/notifications" className="mt-1 block rounded-xl px-2 py-2 text-center text-[11px] font-semibold text-zinc-800 hover:bg-[#F5F5F6]">
                     See all notifications
                   </Link>
                 </div>
@@ -305,15 +305,15 @@ export function SiteNav({
                   type="button"
                   onClick={() => toggle("me")}
                   aria-expanded={open === "me"}
-                  className="h-8 pl-1 pr-2.5 rounded-full border border-[#E6E3DC] bg-white hover:bg-stone-50 flex items-center gap-1.5 whitespace-nowrap transition-all"
+                  className="h-8 pl-1 pr-2.5 rounded-full border border-[#E5E5E8] bg-white hover:bg-zinc-50 flex items-center gap-1.5 whitespace-nowrap transition-all"
                 >
                   <AvatarImg person={me} size={24} />
-                  <span className="hidden sm:inline text-[12.5px] font-medium text-zinc-700">Me</span>
-                  <ChevronDown className="w-3 h-3 text-stone-400 shrink-0" />
+                  <span className="hidden sm:inline text-[12.5px] font-medium text-zinc-800">Me</span>
+                  <ChevronDown className="w-3 h-3 text-zinc-400 shrink-0" />
                 </button>
                 {open === "me" && (
                   <div className={`${POPOVER} w-60 p-2`}>
-                    <Link href={`/members/${me.id}`} className="block px-3 py-2 border-b border-[#F4F2EE] mb-1 rounded-t-xl hover:bg-[#F4F2EE]/60">
+                    <Link href={`/members/${me.id}`} className="block px-3 py-2 border-b border-[#F5F5F6] mb-1 rounded-t-xl hover:bg-[#F5F5F6]/60">
                       <span className="block text-xs font-display font-bold text-zinc-900 truncate">{me.full_name}</span>
                       <span className="block text-[11px] text-zinc-500 truncate">{me.headline || "View your profile"}</span>
                     </Link>
@@ -343,7 +343,7 @@ export function SiteNav({
                       <Crown className="w-3.5 h-3.5 text-amber-500" />
                       <span>Upgrade to SMB Elite</span>
                     </Link>
-                    <div className="my-1 border-t border-[#F4F2EE]" />
+                    <div className="my-1 border-t border-[#F5F5F6]" />
                     <span className="flex items-center gap-2 px-3 rounded-xl text-xs font-medium text-rose-600 hover:bg-rose-50">
                       <LogOut className="w-3.5 h-3.5 text-rose-500" />
                       <SignOutButton className="flex-1 py-2 text-left" />
@@ -364,7 +364,7 @@ export function SiteNav({
             </>
           ) : (
             <>
-              <Link href="/auth/login" className="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium text-zinc-700 hover:bg-stone-100 border border-[#E6E3DC] transition-all">
+              <Link href="/auth/login" className="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium text-zinc-800 hover:bg-zinc-100 border border-[#E5E5E8] transition-all">
                 Sign in
               </Link>
               <Link href="/auth/sign-up" className="px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all">
@@ -374,7 +374,7 @@ export function SiteNav({
           )}
           <button
             type="button"
-            className="md:hidden w-8 h-8 rounded-full border border-[#E6E3DC] bg-white flex items-center justify-center text-stone-600"
+            className="md:hidden w-8 h-8 rounded-full border border-[#E5E5E8] bg-white flex items-center justify-center text-zinc-800"
             aria-label="Menu"
             aria-expanded={mobile}
             onClick={() => setMobile((m) => !m)}
@@ -385,16 +385,16 @@ export function SiteNav({
       </div>
 
       {mobile && (
-        <div className="md:hidden max-h-[calc(100vh-62px)] overflow-y-auto border-t border-[#E6E3DC] bg-white p-4 space-y-4 fade-in">
+        <div className="md:hidden max-h-[calc(100vh-62px)] overflow-y-auto border-t border-[#E5E5E8] bg-white p-4 space-y-4 fade-in">
           <button
             type="button"
             onClick={() => {
               setMobile(false);
               setPalette(true);
             }}
-            className="flex w-full items-center gap-2 h-9 px-3.5 rounded-full bg-[#F6F5F1] border border-[#E6E3DC] text-[13px] text-stone-500"
+            className="flex w-full items-center gap-2 h-9 px-3.5 rounded-full bg-[#F7F7F8] border border-[#E5E5E8] text-[13px] text-zinc-500"
           >
-            <Search className="w-3.5 h-3.5 text-stone-400" />
+            <Search className="w-3.5 h-3.5 text-zinc-400" />
             Search SMB Hub...
           </button>
           {me && (
@@ -405,7 +405,7 @@ export function SiteNav({
                 { href: "/notifications", label: `Notifications${unreadNow ? ` (${unreadNow})` : ""}` },
                 { href: "/membership-plans", label: "Upgrade" },
               ].map((l) => (
-                <Link key={l.href} href={l.href} className="rounded-xl border border-[#E6E3DC] px-3 py-2 text-xs font-semibold text-zinc-800 hover:bg-[#F4F2EE]">
+                <Link key={l.href} href={l.href} className="rounded-xl border border-[#E5E5E8] px-3 py-2 text-xs font-semibold text-zinc-900 hover:bg-[#F5F5F6]">
                   {l.label}
                 </Link>
               ))}
@@ -432,13 +432,13 @@ export function SiteNav({
 function MegaColumn({ title, items, dense = false }: { title: string; items: NavItem[]; dense?: boolean }) {
   return (
     <div className="min-w-0">
-      <p className="px-2 pb-1.5 text-[10.5px] font-bold uppercase tracking-wider text-stone-400">{title}</p>
+      <p className="px-2 pb-1.5 text-[10.5px] font-bold uppercase tracking-wider text-zinc-400">{title}</p>
       <ul className={dense ? "grid grid-cols-1 gap-px" : "grid gap-0.5"}>
         {items.map((i) => (
           <li key={i.href}>
             <Link
               href={i.href}
-              className={`block rounded-lg px-2 ${dense ? "py-1 text-[12px]" : "py-1.5 text-[12.5px]"} text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-950 truncate transition-colors`}
+              className={`block rounded-lg px-2 ${dense ? "py-1 text-[12px]" : "py-1.5 text-[12.5px]"} text-zinc-800 hover:bg-[#F5F5F6] hover:text-zinc-950 truncate transition-colors`}
             >
               {i.label}
             </Link>
@@ -454,7 +454,7 @@ function MenuColumn({ title, items }: { title: string; items: NavItem[] }) {
     <div>
       <p className="px-1 pb-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">{title}</p>
       {items.map((i) => (
-        <Link key={i.href} href={i.href} className="block rounded-xl px-2 py-1.5 text-sm text-zinc-700 hover:bg-[#F4F2EE]">
+        <Link key={i.href} href={i.href} className="block rounded-xl px-2 py-1.5 text-sm text-zinc-800 hover:bg-[#F5F5F6]">
           {i.label}
         </Link>
       ))}
@@ -517,13 +517,13 @@ export function CommandPalette({ onClose, signedIn }: { onClose: () => void; sig
       aria-modal="true"
       aria-label="Search SMB Hub"
     >
-      <div className="w-full max-w-lg bg-white rounded-2xl border border-[#E6E3DC] shadow-popover overflow-hidden fade-in">
+      <div className="w-full max-w-lg bg-white rounded-2xl border border-[#E5E5E8] shadow-popover overflow-hidden fade-in">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             shown[0]?.run();
           }}
-          className="flex items-center gap-3 px-4 py-3.5 border-b border-[#E6E3DC]"
+          className="flex items-center gap-3 px-4 py-3.5 border-b border-[#E5E5E8]"
         >
           <Search className="w-4 h-4 text-blue-600" />
           <input
@@ -534,16 +534,16 @@ export function CommandPalette({ onClose, signedIn }: { onClose: () => void; sig
             aria-label="Search"
             className="flex-1 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none bg-transparent"
           />
-          <button type="button" onClick={onClose} className="px-2 py-0.5 rounded bg-[#F4F2EE] text-[10px] font-mono text-zinc-500">
+          <button type="button" onClick={onClose} className="px-2 py-0.5 rounded bg-[#F5F5F6] text-[10px] font-mono text-zinc-500">
             ESC
           </button>
         </form>
         <div className="p-2 max-h-80 overflow-y-auto space-y-1">
           {shown.length === 0 && <p className="p-4 text-xs text-center text-zinc-400">No matching pages or actions.</p>}
           {shown.map((c) => (
-            <button key={c.label} type="button" onClick={c.run} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-[#F4F2EE] transition-colors">
-              <span className="text-xs font-medium text-zinc-800 truncate">{c.label}</span>
-              <span className="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded bg-[#F4F2EE] text-zinc-500">{c.type}</span>
+            <button key={c.label} type="button" onClick={c.run} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-[#F5F5F6] transition-colors">
+              <span className="text-xs font-medium text-zinc-900 truncate">{c.label}</span>
+              <span className="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded bg-[#F5F5F6] text-zinc-500">{c.type}</span>
             </button>
           ))}
         </div>

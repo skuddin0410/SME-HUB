@@ -22,8 +22,8 @@ export function SectionAside() {
   const group = GROUPS.find((g) => g.match(path))!;
   return (
     <div className="flex flex-col gap-4">
-      <nav aria-label={group.title} className="rounded-3xl border border-[#E6E3DC] bg-white p-4 shadow-card">
-        <p className="px-2 pb-2 text-[10.5px] font-bold uppercase tracking-wider text-stone-400">In this section</p>
+      <nav aria-label={group.title} className="rounded-3xl border border-[#E5E5E8] bg-white p-4 shadow-card">
+        <p className="px-2 pb-2 text-[10.5px] font-bold uppercase tracking-wider text-zinc-400">In this section</p>
         <h2 className="px-2 pb-2 font-display text-[15px] font-bold text-zinc-950">{group.title}</h2>
         <ul className="grid gap-0.5">
           {group.items.map((i) => {
@@ -34,10 +34,10 @@ export function SectionAside() {
                   href={i.href}
                   aria-current={on ? "page" : undefined}
                   className={`flex items-center gap-2 rounded-xl px-2.5 py-2 text-[13px] transition-colors ${
-                    on ? "bg-[#18181B] font-semibold text-white" : "text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-950"
+                    on ? "bg-[#18181B] font-semibold text-white" : "text-zinc-800 hover:bg-[#F5F5F6] hover:text-zinc-950"
                   }`}
                 >
-                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${on ? "bg-rose-500" : "bg-stone-300"}`} />
+                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${on ? "bg-rose-500" : "bg-zinc-300"}`} />
                   <span className="truncate">{i.label}</span>
                 </Link>
               </li>
@@ -46,14 +46,14 @@ export function SectionAside() {
         </ul>
       </nav>
 
-      <section className="rounded-3xl border border-[#E6E3DC] bg-white p-5 shadow-card">
+      <section className="rounded-3xl border border-[#E5E5E8] bg-white p-5 shadow-card">
         <h2 className="font-display text-[14px] font-bold text-zinc-950">Questions?</h2>
         <p className="mt-1 text-[12.5px] leading-relaxed text-zinc-500">The CanadianSME team answers every message, usually within one business day.</p>
         <a href={`mailto:${CONTACT.emails[0]}`} className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-blue-600 hover:underline">
           <Mail className="h-3.5 w-3.5" />
           {CONTACT.emails[0]}
         </a>
-        <Link href="/contact" className="mt-1.5 flex items-center gap-1 text-[12.5px] font-semibold text-zinc-700 hover:text-zinc-950">
+        <Link href="/contact" className="mt-1.5 flex items-center gap-1 text-[12.5px] font-semibold text-zinc-800 hover:text-zinc-950">
           All contact details <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
       </section>

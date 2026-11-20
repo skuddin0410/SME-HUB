@@ -18,7 +18,7 @@ const FILTERS: { key: string; label: string }[] = [
 ];
 
 const PILL_ON = "px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition-all";
-const PILL_OFF = "px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all";
+const PILL_OFF = "px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-800 border border-[#E5E5E8] transition-all";
 
 type Params = { page?: string; kind?: string; sort?: string; saved?: string; compose?: string };
 
@@ -67,7 +67,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           <Link
             href={href({ ...keep, sort: latest ? undefined : "latest" })}
             title={latest ? "Showing newest first. Switch to Top Signal" : "Showing what members found most useful. Switch to Latest"}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-[#E6E3DC] text-[11px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-[#E5E5E8] text-[11px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
           >
             {latest ? <Clock className="w-3 h-3 text-blue-600" /> : <Sparkles className="w-3 h-3 text-amber-500" />}
             <span>{latest ? "Latest" : "Top Signal"}</span>

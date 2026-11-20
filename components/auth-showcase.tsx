@@ -107,15 +107,15 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
       className="h-full flex flex-col gap-4 select-none"
     >
       {/* card 1: badge and city tabs */}
-      <div className="bg-white border border-[#E6E3DC] rounded-3xl shadow-auth-card px-4 py-3 flex flex-wrap items-center justify-between gap-2 shrink-0">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#E6E3DC]">
+      <div className="bg-white border border-[#E5E5E8] rounded-3xl shadow-auth-card px-4 py-3 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#E5E5E8]">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
           <span className="text-[11.5px] font-semibold text-slate-800 whitespace-nowrap">Built for Canadian founders &amp; owners</span>
         </div>
-        <div className="inline-flex items-center p-1 rounded-full bg-white border border-[#E6E3DC]" role="tablist" aria-label="City">
+        <div className="inline-flex items-center p-1 rounded-full bg-white border border-[#E5E5E8]" role="tablist" aria-label="City">
           {CITIES.map((c, i) => (
             <button
               key={c.city}
@@ -138,7 +138,7 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
       {/* cards 2-4: the reel, featured hub and city circle at fixed heights, so photos never stretch */}
       <div className="grid grid-cols-12 gap-4 shrink-0">
         {/* the reel */}
-        <div className="col-span-12 sm:col-span-7 relative rounded-3xl overflow-hidden group cursor-pointer shadow-auth-card border border-[#E6E3DC] bg-stone-200 flex flex-col justify-between h-[480px] lg:h-[420px] xl:h-[480px]">
+        <div className="col-span-12 sm:col-span-7 relative rounded-3xl overflow-hidden group cursor-pointer shadow-auth-card border border-[#E5E5E8] bg-zinc-200 flex flex-col justify-between h-[480px] lg:h-[420px] xl:h-[480px]">
           <img
             src={UNSPLASH(story.person, 900)}
             alt=""
@@ -229,7 +229,7 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
 
         {/* featured hub and city circle */}
         <div className="col-span-12 sm:col-span-5 grid grid-rows-2 gap-4 h-[480px] lg:h-[420px] xl:h-[480px]">
-          <Link href="/groups" className="relative rounded-3xl overflow-hidden group cursor-pointer border border-[#E6E3DC] shadow-auth-card flex flex-col justify-between p-3.5">
+          <Link href="/groups" className="relative rounded-3xl overflow-hidden group cursor-pointer border border-[#E5E5E8] shadow-auth-card flex flex-col justify-between p-3.5">
             <img src={UNSPLASH(story.hub, 800)} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20" />
             <div className="relative z-10 flex items-center justify-between gap-1.5">
@@ -254,7 +254,7 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
             </div>
           </Link>
 
-          <div className="relative rounded-3xl overflow-hidden group border border-[#E6E3DC] shadow-auth-card flex flex-col justify-between p-3.5">
+          <div className="relative rounded-3xl overflow-hidden group border border-[#E5E5E8] shadow-auth-card flex flex-col justify-between p-3.5">
             <img src={UNSPLASH(story.mini, 700)} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/20" />
             <div className="relative z-10 flex items-center justify-between gap-1.5">
@@ -288,10 +288,10 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
       </div>
 
       {/* card 5: what members do here. Grows to meet the bottom of the sign-in card. */}
-      <div className="flex-1 bg-white border border-[#E6E3DC] rounded-3xl shadow-auth-card p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="flex-1 bg-white border border-[#E5E5E8] rounded-3xl shadow-auth-card p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
         {FEATURES.map((f) => (
           <div key={f.title} className="rounded-2xl bg-slate-50 border border-slate-200/70 p-3.5 flex flex-col justify-center">
-            <span className="w-8 h-8 rounded-xl bg-white border border-[#E6E3DC] flex items-center justify-center">
+            <span className="w-8 h-8 rounded-xl bg-white border border-[#E5E5E8] flex items-center justify-center">
               <f.icon className={`w-4 h-4 ${f.tint}`} />
             </span>
             <h4 className="mt-2.5 font-jakarta font-bold text-[13px] text-slate-950">{f.title}</h4>

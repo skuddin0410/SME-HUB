@@ -51,10 +51,10 @@ export function ConnectButton({
     variant === "solid"
       ? "bg-zinc-900 text-white hover:bg-zinc-800"
       : variant === "quiet"
-        ? "bg-[#F4F2EE] text-zinc-700 hover:bg-zinc-900 hover:text-white"
+        ? "bg-[#F5F5F6] text-zinc-800 hover:bg-zinc-900 hover:text-white"
         : null;
   const outline = variant === "text" ? "text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100" : "border border-blue-200 text-blue-600 bg-white hover:bg-blue-50";
-  const quiet = variant === "text" ? "text-zinc-500 hover:bg-[#F4F2EE]" : "border border-[#E6E3DC] text-zinc-600 bg-white hover:bg-[#F4F2EE]";
+  const quiet = variant === "text" ? "text-zinc-500 hover:bg-[#F5F5F6]" : "border border-[#E5E5E8] text-zinc-600 bg-white hover:bg-[#F5F5F6]";
 
   if (state === "connected") {
     if (variant === "text") return <span className={cx(base, "bg-emerald-50 text-emerald-700 border border-emerald-200")}>Connected ✓</span>;
@@ -84,7 +84,7 @@ export function ConnectButton({
   if (state === "received") {
     return (
       <span className={cx("inline-flex gap-2", variant === "block" && "w-full")}>
-        <button type="button" onClick={() => go("none", () => removeConnection(otherId))} className={cx(base, "text-zinc-600 hover:bg-[#F4F2EE]", variant === "block" && "!w-auto flex-1")}>
+        <button type="button" onClick={() => go("none", () => removeConnection(otherId))} className={cx(base, "text-zinc-600 hover:bg-[#F5F5F6]", variant === "block" && "!w-auto flex-1")}>
           Ignore
         </button>
         <button type="button" onClick={() => go("connected", () => acceptConnection(otherId))} className={cx(base, variant === "solid" ? connect : outline, variant === "block" && "!w-auto flex-1")}>
