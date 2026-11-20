@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, MailCheck, User } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, MailCheck, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { passwordProblem } from "@/lib/auth/safe-next";
 import { AUTH_MODE_EVENT } from "@/components/auth-chrome";
@@ -46,6 +46,8 @@ function strengthLevel(v: string) {
 
 const TAB_ON = "relative z-10 py-2 rounded-full text-[13px] font-semibold text-slate-950 transition-colors";
 const TAB_OFF = "relative z-10 py-2 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-900 transition-colors";
+const SECONDARY =
+  "w-full h-11 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-800 flex items-center justify-center gap-2 transition-colors disabled:opacity-60";
 const SSO =
   "h-10 px-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 flex items-center justify-center gap-2 transition-colors disabled:opacity-60";
 
@@ -66,6 +68,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
   const [sso, setSso] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [forgotOpen, setForgotOpen] = useState(false);
+  const [magic, setMagic] = useState<"idle" | "busy">("idle");
   const emailRef = useRef<HTMLInputElement>(null);
 
   const setMode = useCallback((m: Mode, focus = false) => {
@@ -143,6 +146,29 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
     }
   };
 
+  /** One-time sign-in link for an existing account (never creates one). Sent by accounts@smbhub.ca. */
+  const sendMagicLink = async () => {
+    if (magic === "busy") return;
+    if (!EMAIL.test(email.trim())) {
+      setErrors({ email: "Enter your email above and we will send you a sign-in link." });
+      emailRef.current?.focus();
+      return;
+    }
+    setErrors({});
+    setMagic("busy");
+    const { error } = await createClient().auth.signInWithOtp({
+      email: email.trim(),
+      options: { shouldCreateUser: false, emailRedirectTo: `${window.location.origin}/auth/callback?next=/feed` },
+    });
+    setMagic("idle");
+    if (error && /rate|seconds/i.test(error.message)) {
+      setErrors({ form: "Too many attempts. Wait a minute, then try again." });
+      return;
+    }
+    // same message whether or not the account exists, so the form cannot be used to probe for members
+    toast(`If ${email.trim()} has an SMB Hub account, a sign-in link is on its way from accounts@smbhub.ca.`);
+  };
+
   /** Google or Microsoft. Checks first that the provider is switched on in Supabase. */
   const startSso = async (provider: "google" | "azure", label: string) => {
     setSso(provider);
@@ -173,81 +199,80 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
   const renderForm = (isJoin: boolean, ghost: boolean) => (
     <form onSubmit={submit} className="space-y-3.5" noValidate>
       {isJoin && (
-        <div className="space-y-3 auth-fade-in">
-          <div>
+        <div className="grid grid-cols-2 gap-2.5 auth-fade-in">
+          <div className="min-w-0">
             <label htmlFor="auth-fullname" className={LABEL}>
               Full name
             </label>
-            <div className="relative">
-              <User className={ICON} />
-              <input
-                id="auth-fullname"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Abdur Rahman Uddin"
-                autoComplete="name"
-                maxLength={80}
-                className={INPUT.replace("h-11", "h-10")}
-              />
-            </div>
+            <input
+              id="auth-fullname"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Abdur Rahman Uddin"
+              autoComplete="name"
+              maxLength={80}
+              className={INPUT_PLAIN}
+            />
             {errors.name && <p className={FIELD_ERROR}>{errors.name}</p>}
           </div>
-          <div className="grid grid-cols-12 gap-2.5">
-            <div className="col-span-8">
-              <label htmlFor="auth-company" className={LABEL}>
-                Business / Company
-              </label>
-              <input
-                id="auth-company"
-                type="text"
-                value={business}
-                onChange={(e) => setBusiness(e.target.value)}
-                placeholder="NorthPeak Solutions Inc."
-                autoComplete="organization"
-                maxLength={120}
-                className={INPUT_PLAIN}
-              />
-            </div>
-            <div className="col-span-4">
-              <label htmlFor="auth-province" className={LABEL}>
-                Province
-              </label>
-              <select
-                id="auth-province"
-                value={province}
-                onChange={(e) => setProvince(e.target.value)}
-                className="w-full h-10 px-3 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600"
-              >
-                {PROVINCES.map(([code, label]) => (
-                  <option key={code} value={code} title={label}>
-                    {code}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="min-w-0">
+            <label htmlFor="auth-company" className={LABEL}>
+              Business / Company
+            </label>
+            <input
+              id="auth-company"
+              type="text"
+              value={business}
+              onChange={(e) => setBusiness(e.target.value)}
+              placeholder="NorthPeak Solutions Inc."
+              autoComplete="organization"
+              maxLength={120}
+              className={INPUT_PLAIN}
+            />
           </div>
         </div>
       )}
 
-      <div>
-        <label htmlFor="auth-email" className={LABEL}>
-          Work or business email
-        </label>
-        <div className="relative">
-          <Mail className={ICON} />
-          <input
-            ref={ghost ? undefined : emailRef}
-            id="auth-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@company.ca"
-            autoComplete="email"
-            className={INPUT}
-          />
+      <div className={isJoin ? "grid grid-cols-12 gap-2.5" : ""}>
+        <div className={isJoin ? "col-span-8 min-w-0" : ""}>
+          <label htmlFor="auth-email" className={LABEL}>
+            Work or business email
+          </label>
+          <div className="relative">
+            <Mail className={ICON} />
+            <input
+              ref={ghost ? undefined : emailRef}
+              id="auth-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@company.ca"
+              autoComplete="email"
+              className={INPUT}
+            />
+          </div>
+          {errors.email && <p className={FIELD_ERROR}>{errors.email}</p>}
         </div>
-        {errors.email && <p className={FIELD_ERROR}>{errors.email}</p>}
+        {isJoin && (
+          <div className="col-span-4 min-w-0">
+            <label htmlFor="auth-province" className={LABEL}>
+              Province
+            </label>
+            <select
+              id="auth-province"
+              value={province}
+              onChange={(e) => setProvince(e.target.value)}
+              className="w-full h-11 px-3 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600"
+            >
+              {PROVINCES.map(([code, label]) => (
+                <option key={code} value={code} title={label}>
+                  {code}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       <div>
@@ -268,7 +293,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
             type={show ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
+            placeholder={isJoin ? "Create a password" : "Enter password"}
             autoComplete={isJoin ? "new-password" : "current-password"}
             maxLength={72}
             className={INPUT.replace("pr-4", "pr-10")}
@@ -310,13 +335,26 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
         <span>{busy ? (isJoin ? "Creating your account..." : "Signing in...") : isJoin ? "Create free account" : "Sign in"}</span>
         {!busy && <ArrowRight className="w-4 h-4" />}
       </button>
+
+      {!isJoin && (
+        <>
+          <button type="button" disabled={magic === "busy"} onClick={sendMagicLink} className={SECONDARY}>
+            {magic === "busy" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4 text-slate-500" />}
+            <span>Email me a one-time sign-in link</span>
+          </button>
+          <p className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            Encrypted sign-in • Your data is stored in Canada
+          </p>
+        </>
+      )}
     </form>
   );
 
   /** Tabs, sign-in buttons, the form and the card footer for one mode. */
   const renderCard = (isJoin: boolean, ghost: boolean) => (
     <>
-      <div className="space-y-4">
+      <div className="flex-1 space-y-4">
         <div role="tablist" aria-label="Sign in or join" className="relative grid grid-cols-2 p-1 rounded-full bg-slate-100/90 border border-slate-200/70">
           <div
             className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-white transition-transform duration-200 ease-out"
@@ -390,9 +428,9 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
   );
 
   return (
-    <main className="flex-1 max-w-[1280px] w-full mx-auto px-6 lg:px-8 py-8 lg:py-9 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+    <main className="flex-1 max-w-[1280px] w-full mx-auto px-6 lg:px-8 py-8 lg:py-9 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch content-center">
       {/* left: badge, heading and the sign-in / join card */}
-      <div className="flex flex-col justify-between h-full w-full">
+      <div className="flex flex-col w-full">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E6E3DC] mb-3">
             <span className="w-2 h-2 rounded-full bg-rose-600" />
@@ -407,20 +445,26 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
           </p>
         </div>
 
-        {/* One fixed-size card: an invisible copy of the Join layout holds its height, so switching
-            between Sign in, Join now and "Check your inbox" never changes the card or the page */}
-        <div className="flex-1 bg-white border border-[#E6E3DC] rounded-3xl p-6 sm:p-7 shadow-auth-card grid">
-          <div className="row-start-1 col-start-1 flex flex-col justify-between">{sentTo ? renderInbox(sentTo) : renderCard(signup, false)}</div>
+        {/* One fixed-size card sized to its content: invisible copies of both layouts sit in the same
+            grid cell, so Sign in, Join now and "Check your inbox" all share the taller height and
+            switching never resizes the card or the page */}
+        <div className="bg-white border border-[#E6E3DC] rounded-3xl p-6 sm:p-7 shadow-auth-card grid">
+          <div className="row-start-1 col-start-1 flex flex-col">{sentTo ? renderInbox(sentTo) : renderCard(signup, false)}</div>
           {(sentTo || !signup) && (
-            <div className="row-start-1 col-start-1 invisible flex flex-col justify-between" aria-hidden="true" inert>
+            <div className="row-start-1 col-start-1 invisible flex flex-col" aria-hidden="true" inert>
               {renderCard(true, true)}
+            </div>
+          )}
+          {(sentTo || signup) && (
+            <div className="row-start-1 col-start-1 invisible flex flex-col" aria-hidden="true" inert>
+              {renderCard(false, true)}
             </div>
           )}
         </div>
       </div>
 
       {/* right: founder stories showcase, same height as the left column */}
-      <div className="flex flex-col h-full w-full">
+      <div className="flex flex-col w-full">
         <AuthShowcase onJoin={() => setMode("signup", true)} />
       </div>
 
