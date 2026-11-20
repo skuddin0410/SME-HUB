@@ -11,6 +11,16 @@ export default {
   ],
   theme: {
     extend: {
+      // sign-in and join screens (design: docs/design/auth.html)
+      fontFamily: {
+        inter: ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        jakarta: ["\"Plus Jakarta Sans\"", "Inter", "sans-serif"],
+      },
+      boxShadow: {
+        subtle: "0 1px 2px 0 rgba(15, 23, 42, 0.04)",
+        elevated: "0 20px 45px -15px rgba(15, 23, 42, 0.12)",
+        glass: "0 8px 32px 0 rgba(15, 23, 42, 0.14)",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

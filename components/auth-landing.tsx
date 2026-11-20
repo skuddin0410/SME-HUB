@@ -2,123 +2,138 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import {
-  ArrowRight,
-  Check,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-  MailCheck,
-  User,
-} from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ArrowRight, Building2, Eye, EyeOff, Loader2, Lock, Mail, MailCheck, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { AUTH_ALERT, AUTH_CTA, AUTH_ICON, AUTH_INPUT, AUTH_LINK, NAVY } from "@/components/auth-ui";
+import { passwordProblem } from "@/lib/auth/safe-next";
+import { AUTH_MODE_EVENT, MAPLE_STAR } from "@/components/auth-chrome";
+import { AuthShowcase } from "@/components/auth-showcase";
+import { ForgotPasswordDialog } from "@/components/forgot-password-form";
+import { useToast } from "@/components/auth-toast";
+import { FIELD_ERROR, FORM_ERROR, ICON, INPUT, INPUT_PLAIN, LABEL, LINK, PRIMARY } from "@/components/auth-ui";
 
-const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
+type Mode = "signin" | "signup";
 
-type Mode = "signin" | "join";
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PROVINCES = [
+  ["ON", "Ontario (ON)"],
+  ["BC", "British Columbia (BC)"],
+  ["QC", "Québec (QC)"],
+  ["AB", "Alberta (AB)"],
+  ["NS", "Nova Scotia (NS)"],
+  ["MB", "Manitoba (MB)"],
+  ["SK", "Saskatchewan (SK)"],
+  ["NB", "New Brunswick (NB)"],
+  ["NL", "Newfoundland and Labrador (NL)"],
+  ["PE", "Prince Edward Island (PE)"],
+  ["YT", "Yukon (YT)"],
+  ["NT", "Northwest Territories (NT)"],
+  ["NU", "Nunavut (NU)"],
+] as const;
 
-
-function strength(pw: string) {
-  let score = 0;
-  if (pw.length >= 8) score++;
-  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
-  if (/\d/.test(pw)) score++;
-  if (/[^A-Za-z0-9]/.test(pw) || pw.length >= 14) score++;
-  return score;
-}
-const STRENGTH = ["Too short", "Weak", "Fair", "Good", "Strong"];
-const BAR = ["bg-rose-500", "bg-rose-500", "bg-amber-500", "bg-sky-500", "bg-emerald-600"];
-
-/** Sends the confirmation email again, at most once a minute. */
-function ResendLink({ email }: { email: string }) {
-  const [state, setState] = useState<"idle" | "busy" | "sent" | "wait">("idle");
-  const resend = async () => {
-    setState("busy");
-    const { error } = await createClient().auth.resend({ type: "signup", email, options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/feed` } });
-    setState(error ? "wait" : "sent");
-  };
-  return (
-    <p className="mt-4 text-sm text-slate-600">
-      {state === "sent" ? (
-        "Sent again. It can take a minute to arrive."
-      ) : state === "wait" ? (
-        "Please wait a minute before asking again."
-      ) : (
-        <>
-          No email?{" "}
-          <button type="button" disabled={state === "busy"} onClick={resend} className={AUTH_LINK}>
-            Send it again
-          </button>
-        </>
-      )}
-    </p>
-  );
+const STRENGTH_COLORS = ["bg-rose-500", "bg-amber-500", "bg-blue-500", "bg-emerald-500"];
+const STRENGTH_LABELS = ["Weak password", "Fair — add numbers or symbols", "Good business password", "Strong security"];
+function strengthScore(v: string) {
+  let s = 0;
+  if (v.length >= 8) s++;
+  if (v.length >= 12) s++;
+  if (/[0-9]/.test(v)) s++;
+  if (/[^A-Za-z0-9]/.test(v)) s++;
+  return s;
 }
 
-// ---------- the form ----------
-function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
+const TAB_ON = "relative z-10 py-2 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white transition-colors";
+const TAB_OFF = "relative z-10 py-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors";
+const SSO =
+  "flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/70 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-200 transition-all active:scale-[0.99] disabled:opacity-60";
+
+export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "join"; notice?: string }) {
   const router = useRouter();
+  const toast = useToast();
+  const [mode, setModeState] = useState<Mode>(initialMode === "join" ? "signup" : "signin");
+  const signup = mode === "signup";
+
   const [name, setName] = useState("");
+  const [business, setBusiness] = useState("");
+  const [province, setProvince] = useState("ON");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string; form?: string }>({});
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [sso, setSso] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
-  const join = mode === "join";
-  const score = strength(password);
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const ready = emailOk && (join ? name.trim().length > 1 && password.length >= 8 : password.length > 0);
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => setError(null), [mode]);
+  const setMode = useCallback((m: Mode, focus = false) => {
+    setModeState(m);
+    setErrors({});
+    setSentTo(null);
+    window.history.replaceState(null, "", m === "signup" ? "/auth/sign-up" : "/auth/login");
+    if (focus) setTimeout(() => emailRef.current?.focus(), 0);
+  }, []);
+
+  // the header's Sign in / Join now buttons
+  useEffect(() => {
+    const on = (e: Event) => setMode((e as CustomEvent<Mode>).detail, true);
+    window.addEventListener(AUTH_MODE_EVENT, on);
+    return () => window.removeEventListener(AUTH_MODE_EVENT, on);
+  }, [setMode]);
+
+  useEffect(() => {
+    if (notice === "link-expired") toast("That link has expired or was already used. Sign in, or reset your password.");
+  }, [notice, toast]);
+
+  const score = strengthScore(password);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
-    if (!ready) {
-      setError(
-        !emailOk
-          ? "Enter your email address."
-          : join && name.trim().length < 2
-            ? "Enter your full name."
-            : join
-              ? "Choose a password with 8 or more characters."
-              : "Enter your password.",
-      );
-      return;
-    }
+    const next: typeof errors = {};
+    if (!EMAIL.test(email.trim())) next.email = "Please enter a valid business or personal email address.";
+    if (signup) {
+      if (name.trim().length < 2) next.name = "Please enter your full name.";
+      const problem = passwordProblem(password, email);
+      if (problem) next.password = problem;
+    } else if (!password) next.password = "Please enter your password.";
+    setErrors(next);
+    if (Object.keys(next).length) return;
+
     setBusy(true);
-    setError(null);
     const supabase = createClient();
-    if (join) {
+    if (signup) {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
-        options: { data: { full_name: name.trim() }, emailRedirectTo: `${window.location.origin}/auth/callback?next=/feed` },
+        options: {
+          data: { full_name: name.trim(), business_name: business.trim() || null, province },
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/feed`,
+        },
       });
+      setBusy(false);
       if (error) {
-        setError(error.message);
-        setBusy(false);
+        setErrors({ form: /rate|seconds/i.test(error.message) ? "Too many attempts. Wait a minute, then try again." : error.message });
       } else if (data.user && data.user.identities?.length === 0) {
-        // Supabase answers a sign-up for an existing address without saying so; this is how it shows
-        setError("That email already has an account. Sign in instead.");
-        setBusy(false);
+        setErrors({ form: "That email already has an account. Sign in instead, or reset your password." });
       } else if (data.session) {
         router.push("/feed");
         router.refresh();
       } else {
-        setSentTo(email);
-        setBusy(false);
+        setSentTo(email.trim());
       }
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) {
-        setError(error.message === "Email not confirmed" ? "Confirm your email first. Check your inbox for our message." : "That email and password do not match.");
         setBusy(false);
+        setErrors({
+          form:
+            error.message === "Email not confirmed"
+              ? "Confirm your email first. Check your inbox for the message from accounts@smbhub.ca."
+              : /rate|seconds/i.test(error.message)
+                ? "Too many attempts. Wait a minute, then try again."
+                : "That email and password do not match.",
+        });
       } else {
         router.push("/feed");
         router.refresh();
@@ -126,224 +141,311 @@ function AuthForm({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void })
     }
   };
 
-  if (sentTo) {
-    return (
-      <div className="animate-rise rounded-lg border border-[#e0dfdc] bg-white p-6 text-center">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-md bg-emerald-50 text-emerald-700">
-          <MailCheck className="h-7 w-7" />
-        </span>
-        <h2 className={cx("mt-4 text-2xl font-semibold", NAVY)}>Check your inbox</h2>
-        <p className="mt-2 text-sm text-slate-500">
-          We sent a confirmation link to <span className="font-semibold text-slate-800">{sentTo}</span>. It comes from accounts@smbhub.ca. Open it to finish joining; the link signs you in. Check spam if it does not arrive in a few minutes.
-        </p>
-        <ResendLink email={sentTo} />
-        <button
-          type="button"
-          onClick={() => {
-            setSentTo(null);
-            setMode("signin");
-          }}
-          className="press mt-5 rounded-md border border-[#0a66c2] px-5 py-2 text-sm font-semibold text-[#0a66c2] hover:bg-[#edf3f8]"
-        >
-          Back to sign in
-        </button>
-      </div>
-    );
-  }
-
-  const wrap = "relative block";
-  const icon = AUTH_ICON;
-  const input = AUTH_INPUT;
+  /** Google or Microsoft. Checks first that the provider is switched on in Supabase. */
+  const startSso = async (provider: "google" | "azure", label: string) => {
+    setSso(provider);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/settings`, {
+        headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY! },
+      });
+      const settings = (await res.json()) as { external?: Record<string, boolean> };
+      if (!settings.external?.[provider]) {
+        toast(`${label} sign-in is coming soon. Please use your email for now.`);
+        return setSso(null);
+      }
+    } catch {
+      toast("We could not reach the sign-in service. Try again in a moment.");
+      return setSso(null);
+    }
+    const { error } = await createClient().auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/feed`, scopes: provider === "azure" ? "email" : undefined },
+    });
+    if (error) {
+      toast(`Could not start ${label} sign-in. Please use your email.`);
+      setSso(null);
+    }
+  };
 
   return (
-    <form onSubmit={submit} noValidate className="flex flex-col">
-      {/* instant switch between the two forms */}
-      <div className="relative grid h-11 grid-cols-2 rounded-md bg-[#e3e9f4] p-[3px] text-[15px]" role="tablist">
-        <span
-          className={cx(
-            "absolute inset-y-[3px] left-[3px] w-[calc(50%-3px)] rounded-[5px] bg-white shadow-[0_1px_4px_rgb(15_23_42/0.18)] transition-transform duration-200 ease-out",
-            join && "translate-x-full",
-          )}
-        />
-        {(["signin", "join"] as Mode[]).map((m) => (
-          <button
-            key={m}
-            type="button"
-            role="tab"
-            aria-selected={mode === m}
-            onClick={() => setMode(m)}
-            className={cx("relative z-10 rounded-[5px] transition-colors", mode === m ? cx("font-semibold", NAVY) : "font-medium text-slate-500 hover:text-slate-800")}
-          >
-            {m === "signin" ? "Sign in" : "Join now"}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-[18px] flex flex-col gap-[10px]">
-        {join && (
-          <label className={cx(wrap, "animate-rise")}>
-            <User className={icon} />
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" aria-label="Full name" autoComplete="name" maxLength={80} className={input} />
-          </label>
-        )}
-        <label className={wrap}>
-          <Mail className={icon} />
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email address" aria-label="Email address" autoComplete="email" className={cx(input, "pr-12")} />
-          {emailOk && <Check className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 animate-pop text-emerald-600" />}
-        </label>
-        <label className={wrap}>
-          <Lock className={icon} />
-          <input
-            type={show ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={join ? "Password (8 or more characters)" : "Password"}
-            aria-label="Password"
-            autoComplete={join ? "new-password" : "current-password"}
-            className={cx(input, "pr-12")}
-          />
-          <button
-            type="button"
-            onClick={() => setShow((s) => !s)}
-            aria-label={show ? "Hide password" : "Show password"}
-            className="press absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-          >
-            {show ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
-          </button>
-        </label>
-      </div>
-
-      {join && password.length > 0 && (
-        <div className="mt-2 animate-rise px-2">
-          <div className="flex gap-1">
-            {[1, 2, 3, 4].map((i) => (
-              <span key={i} className={cx("h-1 flex-1 rounded-full transition-colors duration-200", i <= score ? BAR[score] : "bg-slate-200")} />
-            ))}
-          </div>
-          <p className="mt-1 text-xs text-slate-500">{password.length < 8 ? STRENGTH[0] : STRENGTH[Math.max(1, score)]}</p>
+    <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      {/* left: headline and the sign-in / join card */}
+      <div className="lg:col-span-5 space-y-6 auth-fade-in">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-subtle">
+          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d={MAPLE_STAR} />
+            </svg>
+          </span>
+          <span className="text-xs font-semibold tracking-tight text-slate-700 dark:text-slate-200">
+            <span className="text-slate-400 dark:text-slate-500 font-bold mr-1">CA</span> Canada&apos;s Professional Network
+          </span>
         </div>
-      )}
-      {!join && (
-        <Link href="/auth/forgot-password" className={cx("mt-3 self-start text-[15px]", AUTH_LINK)}>
-          Forgot password?
-        </Link>
-      )}
 
-      {error && (
-        <p role="alert" className={cx("mt-3 animate-rise", AUTH_ALERT)}>
-          {error}
-        </p>
-      )}
+        <div className="space-y-3">
+          <h1 className="font-jakarta font-extrabold text-3xl sm:text-4xl lg:text-[42px] leading-[1.12] tracking-tight text-slate-900 dark:text-white">
+            Welcome to your small business community
+          </h1>
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+            Connect, learn, and grow with entrepreneurs, professionals, and business leaders across Canada.
+          </p>
+        </div>
 
-      <button
-        type="submit"
-        disabled={busy}
-        className={cx("mt-[14px]", AUTH_CTA)}
-      >
-        {busy && <Loader2 className="h-5 w-5 animate-spin" />}
-        {join ? "Agree and join" : "Sign in"}
-        {!busy && <ArrowRight className="h-[18px] w-[18px] transition-transform duration-150 group-hover:translate-x-1" />}
-      </button>
+        <div className="bg-white dark:bg-[#0E1526] rounded-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-elevated p-5 sm:p-6 space-y-5">
+          {sentTo ? (
+            <div className="text-center space-y-3 py-2 auth-fade-in">
+              <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-200/70 dark:border-emerald-800/60">
+                <MailCheck className="w-7 h-7" />
+              </div>
+              <h2 className="font-jakarta font-bold text-xl text-slate-900 dark:text-white">Check your inbox</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                We sent a confirmation link to <span className="font-semibold text-slate-900 dark:text-white">{sentTo}</span> from accounts@smbhub.ca. One click
+                confirms your email and signs you in.
+              </p>
+              <ResendLink email={sentTo} />
+              <button type="button" onClick={() => setMode("signin")} className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                Back to sign in
+              </button>
+            </div>
+          ) : (
+            <>
+              <div role="tablist" aria-label="Authentication Mode" className="relative grid grid-cols-2 p-1 rounded-xl bg-slate-100/90 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
+                <div
+                  className="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200/60 dark:border-slate-700 transition-transform duration-200 ease-out"
+                  style={{ transform: signup ? "translateX(100%)" : "translateX(0%)" }}
+                />
+                <button type="button" role="tab" aria-selected={!signup} onClick={() => setMode("signin")} className={signup ? TAB_OFF : TAB_ON}>
+                  Sign in
+                </button>
+                <button type="button" role="tab" aria-selected={signup} onClick={() => setMode("signup")} className={signup ? TAB_ON : TAB_OFF}>
+                  Join now
+                </button>
+              </div>
 
-      <p className="mt-[13px] text-center text-[12.5px] text-slate-600 sm:whitespace-nowrap">
-        By continuing, you agree to the SMB Hub{" "}
-        <Link href="/policies/terms" className="font-semibold text-[#0a66c2] hover:underline">
-          Terms
-        </Link>{" "}
-        and{" "}
-        <Link href="/policies/community-guidelines" className="font-semibold text-[#0a66c2] hover:underline">
-          Community Guidelines
-        </Link>
-        .
-      </p>
-      <p className={cx("mt-[16px] text-center text-[17px]", NAVY)}>
-        {join ? "Already on SMB Hub? " : "New to SMB Hub? "}
-        <button type="button" onClick={() => setMode(join ? "signin" : "join")} className="ml-2 rounded px-1 font-semibold text-[#0a66c2] hover:underline">
-          {join ? "Sign in" : "Join now"}
-        </button>
-      </p>
-    </form>
+              <div className="grid grid-cols-2 gap-2.5">
+                <button type="button" disabled={sso !== null} onClick={() => startSso("google", "Google")} className={SSO}>
+                  {sso === "google" ? <Loader2 className="w-4 h-4 animate-spin" /> : <GoogleMark />}
+                  <span>Google</span>
+                </button>
+                <button type="button" disabled={sso !== null} onClick={() => startSso("azure", "Microsoft 365")} className={SSO}>
+                  {sso === "azure" ? <Loader2 className="w-4 h-4 animate-spin" /> : <MicrosoftMark />}
+                  <span>Microsoft 365</span>
+                </button>
+              </div>
+
+              <div className="relative flex items-center py-0.5">
+                <div className="flex-grow border-t border-slate-200/80 dark:border-slate-800" />
+                <span className="shrink mx-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">or continue with email</span>
+                <div className="flex-grow border-t border-slate-200/80 dark:border-slate-800" />
+              </div>
+
+              <form onSubmit={submit} className="space-y-3.5" noValidate>
+                {signup && (
+                  <div className="space-y-3.5 auth-fade-in">
+                    <div>
+                      <label htmlFor="full-name" className={LABEL}>
+                        Full name
+                      </label>
+                      <div className="relative">
+                        <User className={ICON} />
+                        <input id="full-name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Claire Tremblay" autoComplete="name" maxLength={80} className={INPUT} />
+                      </div>
+                      {errors.name && <p className={FIELD_ERROR}>{errors.name}</p>}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label htmlFor="business-name" className={LABEL}>
+                          Business / Venture
+                        </label>
+                        <div className="relative">
+                          <Building2 className={ICON} />
+                          <input
+                            id="business-name"
+                            type="text"
+                            value={business}
+                            onChange={(e) => setBusiness(e.target.value)}
+                            placeholder="NorthStar Roasters"
+                            autoComplete="organization"
+                            maxLength={120}
+                            className={INPUT.replace("pr-3.5", "pr-3")}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label htmlFor="province-select" className={LABEL}>
+                          Province / Territory
+                        </label>
+                        <select id="province-select" value={province} onChange={(e) => setProvince(e.target.value)} className={INPUT_PLAIN}>
+                          {PROVINCES.map(([code, label]) => (
+                            <option key={code} value={code}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label htmlFor="email-input" className={LABEL}>
+                    Work or business email
+                  </label>
+                  <div className="relative">
+                    <Mail className={ICON} />
+                    <input
+                      ref={emailRef}
+                      id="email-input"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@company.ca"
+                      autoComplete="email"
+                      className={INPUT}
+                    />
+                  </div>
+                  {errors.email && <p className={FIELD_ERROR}>{errors.email}</p>}
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="password-input" className="block text-xs font-medium text-slate-700 dark:text-slate-300">
+                      Password
+                    </label>
+                    {!signup && (
+                      <button type="button" onClick={() => setForgotOpen(true)} className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Lock className={ICON} />
+                    <input
+                      id="password-input"
+                      type={show ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      autoComplete={signup ? "new-password" : "current-password"}
+                      maxLength={72}
+                      className={INPUT.replace("pr-3.5", "pr-10")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShow((s) => !s)}
+                      aria-label="Toggle password visibility"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+                    >
+                      {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  {signup && (
+                    <div className="mt-2 space-y-1">
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div
+                            key={i}
+                            className={`h-1 rounded-full transition-colors ${i <= score && password ? STRENGTH_COLORS[Math.max(0, score - 1)] : "bg-slate-200 dark:bg-slate-800"}`}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-[11px] text-slate-400">{password ? STRENGTH_LABELS[Math.max(0, score - 1)] : "Use 8+ characters with a number & symbol"}</p>
+                    </div>
+                  )}
+                  {errors.password && <p className={FIELD_ERROR}>{errors.password}</p>}
+                </div>
+
+                {errors.form && (
+                  <p role="alert" className={FORM_ERROR}>
+                    {errors.form}
+                  </p>
+                )}
+
+                <button type="submit" disabled={busy} className={PRIMARY}>
+                  {busy && <Loader2 className="w-4 h-4 animate-spin" />}
+                  <span>{busy ? (signup ? "Creating your account..." : "Signing in...") : signup ? "Create your SMB Hub account" : "Sign in"}</span>
+                  {!busy && <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />}
+                </button>
+              </form>
+
+              <div className="pt-1 space-y-3 text-center">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                  By continuing, you agree to the SMB Hub{" "}
+                  <Link href="/policies/terms" className={LINK}>
+                    Terms
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/policies/community-guidelines" className={LINK}>
+                    Community Guidelines
+                  </Link>
+                  .
+                </p>
+                <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-400">
+                  <span>{signup ? "Already have an SMB Hub account?" : "New to SMB Hub?"}</span>{" "}
+                  <button type="button" onClick={() => setMode(signup ? "signin" : "signup")} className="ml-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    {signup ? "Sign in" : "Join now"}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* right: skyline and city cards */}
+      <div className="lg:col-span-7">
+        <AuthShowcase />
+      </div>
+
+      <ForgotPasswordDialog open={forgotOpen} initialEmail={email} onClose={() => setForgotOpen(false)} />
+    </div>
   );
 }
 
-// ---------- the page ----------
-function MapleLeaf() {
+/** Sends the confirmation email again. Supabase allows it about once a minute. */
+function ResendLink({ email }: { email: string }) {
+  const [state, setState] = useState<"idle" | "busy" | "sent" | "wait">("idle");
+  const resend = async () => {
+    setState("busy");
+    const { error } = await createClient().auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/feed` },
+    });
+    setState(error ? "wait" : "sent");
+  };
+  if (state === "sent") return <p className="text-xs text-slate-500 dark:text-slate-400">Sent again. It can take a minute to arrive.</p>;
+  if (state === "wait") return <p className="text-xs text-slate-500 dark:text-slate-400">Please wait a minute before asking again.</p>;
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-[#d52b1e]">
-      <path d="M12 1.5 10.2 5 8 4.2l.8 5-2.6-2.6-.9 1.9-2.6-.6 1 3.1-1.6.8 4.6 3.7-.7 2.1 4.8-.7-.2 5.6h1.4l-.2-5.6 4.8.7-.7-2.1 4.6-3.7-1.6-.8 1-3.1-2.6.6-.9-1.9-2.6 2.6.8-5-2.2.8z" />
+    <p className="text-xs text-slate-600 dark:text-slate-400">
+      No email?{" "}
+      <button type="button" disabled={state === "busy"} onClick={resend} className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+        Send it again
+      </button>
+    </p>
+  );
+}
+
+function GoogleMark() {
+  return (
+    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z" />
+      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z" />
+      <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z" />
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z" />
     </svg>
   );
 }
 
-/** The supplied Toronto artwork, always shown whole (16:9, never cropped or stretched past its 1280px size). */
-function Artwork() {
-  const fade = {
-    maskImage: "linear-gradient(to right, transparent, black 7%), linear-gradient(to bottom, transparent, black 7%, black 88%, transparent)",
-    WebkitMaskImage: "linear-gradient(to right, transparent, black 7%), linear-gradient(to bottom, transparent, black 7%, black 88%, transparent)",
-    maskComposite: "intersect",
-    WebkitMaskComposite: "source-in",
-  } as const;
+function MicrosoftMark() {
   return (
-    <>
-      {/* desktop: the video, beside the form, reaching the right edge of the screen */}
-      <div aria-hidden="true" className="hidden min-w-0 flex-1 lg:block">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/auth-bg-poster.jpg"
-          className="ml-auto block aspect-video w-full max-w-[1280px] motion-reduce:hidden"
-          style={fade}
-        >
-          <source src="/auth-bg.mp4" type="video/mp4" />
-        </video>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/auth-bg.jpg" alt="" className="ml-auto hidden aspect-video w-full max-w-[1280px] motion-reduce:block" style={fade} />
-      </div>
-      {/* phones and tablets: the still picture as a banner, which saves loading a 5 MB video on mobile data */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/auth-bg.jpg"
-        alt=""
-        aria-hidden="true"
-        className="block aspect-video max-h-[200px] w-full object-cover sm:max-h-[240px] object-[center_45%] lg:hidden"
-        style={{ maskImage: "linear-gradient(to bottom, black 80%, transparent)", WebkitMaskImage: "linear-gradient(to bottom, black 80%, transparent)" }}
-      />
-    </>
-  );
-}
-
-export function AuthLanding({ initialMode, notice }: { initialMode: Mode; notice?: string }) {
-  const [mode, setModeState] = useState<Mode>(initialMode);
-  const setMode = (m: Mode) => {
-    setModeState(m);
-    window.history.replaceState(null, "", m === "join" ? "/auth/sign-up" : "/auth/login");
-  };
-
-  return (
-    <section className="flex flex-1 flex-col lg:flex-row lg:items-center lg:gap-10 lg:pl-[max(20px,calc((100vw-1270px)/2))]">
-      <div className="order-2 mx-auto w-full max-w-[465px] shrink-0 px-5 pb-10 pt-6 lg:order-1 lg:mx-0 lg:px-0 lg:py-8 lg:[@media(max-height:820px)]:py-4">
-        <p className={cx("inline-flex items-center gap-2 rounded-md bg-[#e2ecfb] px-3 py-1.5 text-[14px] font-semibold", NAVY)}>
-          <MapleLeaf /> Canada&apos;s professional network
-        </p>
-        <h1 className={cx("mt-4 text-[32px] font-semibold leading-[1.1] tracking-[-0.015em] sm:text-[44px] xl:text-[48px] lg:[@media(max-height:820px)]:text-[38px]", NAVY)}>
-          {mode === "join" ? "Join Canada's small business community" : "Welcome to your small business community"}
-        </h1>
-        <p className="mt-4 text-[17px] leading-[26px] text-slate-600 lg:[@media(max-height:820px)]:hidden">Connect, learn, and grow with entrepreneurs, professionals, and business leaders across Canada.</p>
-        {notice === "link-expired" && (
-          <p role="status" className="mt-4 rounded-md bg-amber-50 px-4 py-2.5 text-sm text-amber-800">
-            That link has expired or was already used. Sign in below, or use Forgot password.
-          </p>
-        )}
-        <div className="mt-5">
-          <AuthForm mode={mode} setMode={setMode} />
-        </div>
-      </div>
-      <div className="order-1 flex min-w-0 lg:order-2 lg:flex-1">
-        <Artwork />
-      </div>
-    </section>
+    <svg className="w-4 h-4 shrink-0" viewBox="0 0 21 21" aria-hidden="true">
+      <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+      <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+      <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+      <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+    </svg>
   );
 }

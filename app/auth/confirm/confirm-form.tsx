@@ -4,16 +4,14 @@ import { useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
 import { verifyEmailLink } from "./actions";
+import { BODY, CARD, PRIMARY_SM, TITLE } from "@/components/auth-ui";
+import { AuthShell } from "@/components/auth-shell";
 
 function Continue() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-md bg-[#0a66c2] px-6 text-[15px] font-semibold text-white hover:bg-[#004182] disabled:opacity-70"
-    >
-      {pending && <Loader2 className="h-4 w-4 animate-spin" />}
+    <button type="submit" disabled={pending} className={PRIMARY_SM}>
+      {pending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
       Continue
     </button>
   );
@@ -30,18 +28,19 @@ export function ConfirmForm({ tokenHash, type, next }: { tokenHash: string; type
     }
   }, [tokenHash]);
 
-  const heading = type === "recovery" ? "Opening password reset" : "Confirming your email";
   return (
-    <section className="mx-auto flex w-full max-w-[465px] flex-1 flex-col justify-center px-5 py-12 text-center">
-      <Loader2 className="mx-auto h-8 w-8 animate-spin text-[#0a66c2]" aria-hidden="true" />
-      <h1 className="mt-4 text-2xl font-semibold text-[#0b1437]">{heading}</h1>
-      <p className="mt-2 text-[15px] text-slate-600">This takes a second. You will be signed in automatically.</p>
-      <form ref={form} action={verifyEmailLink}>
-        <input type="hidden" name="token_hash" value={tokenHash} />
-        <input type="hidden" name="type" value={type} />
-        <input type="hidden" name="next" value={next} />
-        <Continue />
-      </form>
-    </section>
+    <AuthShell>
+      <div className={`${CARD} text-center space-y-3`}>
+        <Loader2 className="mx-auto w-7 h-7 animate-spin text-blue-600" aria-hidden="true" />
+        <h1 className={TITLE}>{type === "recovery" ? "Opening password reset" : "Confirming your email"}</h1>
+        <p className={BODY}>This takes a second. You will be signed in automatically.</p>
+        <form ref={form} action={verifyEmailLink} className="pt-1">
+          <input type="hidden" name="token_hash" value={tokenHash} />
+          <input type="hidden" name="type" value={type} />
+          <input type="hidden" name="next" value={next} />
+          <Continue />
+        </form>
+      </div>
+    </AuthShell>
   );
 }

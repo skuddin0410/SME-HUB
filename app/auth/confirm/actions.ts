@@ -6,8 +6,7 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/auth/safe-next";
 import { siteOrigin } from "@/lib/auth/site";
-import { sendEmail } from "@/lib/email/send";
-import { templates } from "@/lib/email/templates";
+import { sendWelcomeOnce } from "@/lib/auth/welcome";
 
 const TYPES: EmailOtpType[] = ["email", "signup", "recovery", "magiclink", "invite", "email_change"];
 
@@ -32,22 +31,8 @@ export async function verifyEmailLink(formData: FormData) {
 
   // first confirmation of a new account: send the welcome email, exactly once
   if (type === "email" || type === "signup") {
-    try {
-      const { data: claimed } = await supabase.rpc("claim_welcome_email");
-      if (claimed === true && data.user.email) {
-        const h = await headers();
-        const site = siteOrigin(h, `https://${h.get("host") ?? "localhost"}`);
-        await sendEmail({
-          from: "info",
-          to: data.user.email,
-          idempotencyKey: `welcome-${data.user.id}`,
-          ...templates.welcome(data.user.user_metadata?.full_name as string | undefined, site),
-        });
-      }
-    } catch (e) {
-      // never block someone from signing in because the welcome email failed
-      console.error("welcome email:", (e as Error).message);
-    }
+    const h = await headers();
+    await sendWelcomeOnce(supabase, data.user, siteOrigin(h, `https://${h.get("host") ?? "localhost"}`));
   }
 
   redirect(type === "recovery" ? "/auth/update-password" : next);

@@ -114,3 +114,21 @@
   .animate-pop, .animate-rise, .animate-pulse { animation: none; }
   .press { transition: none; }
 }
+
+/* ---------- sign-in and join screens (design: docs/design/auth.html) ---------- */
+.auth-grid-pattern {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.22) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.dark .auth-grid-pattern {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+}
+@keyframes auth-float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes auth-float-delayed { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes auth-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.auth-float-slow { animation: auth-float-slow 6s ease-in-out infinite; }
+.auth-float-delayed { animation: auth-float-delayed 7s ease-in-out 1.5s infinite; }
+.auth-fade-in { animation: auth-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .auth-float-slow, .auth-float-delayed, .auth-fade-in { animation: none; }
+}

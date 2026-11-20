@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { BODY, CARD, PRIMARY_SM, SECONDARY_SM, TITLE } from "@/components/auth-ui";
+import { AuthShell } from "@/components/auth-shell";
 
 export const metadata: Metadata = { title: "Link problem", robots: { index: false, follow: false } };
 
@@ -17,22 +19,23 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ r
   const copy = COPY[reason] ?? COPY.failed;
   const recovery = type === "recovery";
   return (
-    <section className="mx-auto flex w-full max-w-[465px] flex-1 flex-col justify-center px-5 py-12">
-      <h1 className="text-[28px] font-semibold leading-tight text-[#0b1437]">{copy.title}</h1>
-      <p className="mt-3 text-[15px] leading-6 text-slate-600">{copy.body}</p>
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href={recovery ? "/auth/forgot-password" : "/auth/login"}
-          className="inline-flex h-11 items-center rounded-md bg-[#0a66c2] px-5 text-[15px] font-semibold text-white hover:bg-[#004182]"
-        >
-          {recovery ? "Send a new reset link" : "Sign in"}
-        </Link>
-        {!recovery && (
-          <Link href="/auth/forgot-password" className="inline-flex h-11 items-center rounded-md border border-[#0a66c2] px-5 text-[15px] font-semibold text-[#0a66c2] hover:bg-[#edf3f8]">
-            Forgot password
+    <AuthShell>
+      <div className={`${CARD} space-y-4`}>
+        <div className="space-y-1.5">
+          <h1 className={TITLE}>{copy.title}</h1>
+          <p className={BODY}>{copy.body}</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {!recovery && (
+            <Link href="/auth/forgot-password" className={SECONDARY_SM}>
+              Forgot password
+            </Link>
+          )}
+          <Link href={recovery ? "/auth/forgot-password" : "/auth/login"} className={PRIMARY_SM}>
+            {recovery ? "Send a new reset link" : "Sign in"}
           </Link>
-        )}
+        </div>
       </div>
-    </section>
+    </AuthShell>
   );
 }

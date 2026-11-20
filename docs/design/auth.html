@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMB HUB — Canada's Small Business Network</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef4ff',
+              100: '#d9e6ff',
+              500: '#2563eb',
+              600: '#1d4ed8',
+              700: '#1e40af',
+              900: '#0f172a',
+            },
+            maple: {
+              500: '#e11d48',
+              600: '#be123c',
+            }
+          },
+          boxShadow: {
+            'subtle': '0 1px 2px 0 rgba(15, 23, 42, 0.04)',
+            'elevated': '0 20px 45px -15px rgba(15, 23, 42, 0.12)',
+            'glass': '0 8px 32px 0 rgba(15, 23, 42, 0.14)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .glass-header {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .glass-card {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .grid-pattern {
+      background-image: radial-gradient(rgba(148, 163, 184, 0.22) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+    .dark .grid-pattern {
+      background-image: radial-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes floatDelayed {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+    .animate-float-slow {
+      animation: floatSlow 6s ease-in-out infinite;
+    }
+    .animate-float-delayed {
+      animation: floatDelayed 7s ease-in-out 1.5s infinite;
+    }
+    .fade-in {
+      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-blue-600/15 selection:text-blue-700 dark:selection:text-blue-300 transition-colors duration-200 grid-pattern">
+
+  <!-- ==================== STICKY GLASSMORPHIC HEADER ==================== -->
+  <header class="sticky top-0 z-40 w-full border-b border-slate-200/75 dark:border-slate-800/80 bg-white/80 dark:bg-[#0B1120]/80 glass-header transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+
+      <!-- Left: SMB HUB Brand Emblem -->
+      <a href="#home" onclick="resetToAuthView(event)" class="flex items-center gap-2.5 group focus:outline-none">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 flex items-center justify-center shadow-sm ring-1 ring-black/5 group-hover:scale-105 transition-transform">
+          <!-- Custom Crisp Maple-Star Crest SVG -->
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2L14.2 7.2L19.5 6.4L17.1 11.2L21 14.5L15.6 15.4L16.2 20.5L12 17.6L7.8 20.5L8.4 15.4L3 14.5L6.9 11.2L4.5 6.4L9.8 7.2L12 2Z" />
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="font-display font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">SMB HUB</span>
+          <span class="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">CA</span>
+        </div>
+      </a>
+
+      <!-- Center: Minimalist Navigation Links -->
+      <nav aria-label="Primary Navigation" class="hidden lg:flex items-center gap-1">
+        <button onclick="selectNav(this, 'Home')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 transition-all">
+          Home
+        </button>
+        <button onclick="selectNav(this, 'Top Posts')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
+          Top Posts
+        </button>
+        <button onclick="selectNav(this, 'People')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
+          People
+        </button>
+        <button onclick="selectNav(this, 'Groups')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
+          Groups
+        </button>
+        <button onclick="selectNav(this, 'Businesses')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
+          Businesses
+        </button>
+        <button onclick="selectNav(this, 'Plans')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
+          Plans
+        </button>
+      </nav>
+
+      <!-- Right: Quick Search, Theme Toggle & Auth Actions -->
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <button onclick="openSearchModal()" aria-label="Quick Search" class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 hover:border-slate-300 dark:hover:border-slate-700 text-slate-500 dark:text-slate-400 text-xs transition-all">
+          <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          <span class="hidden xl:inline">Search</span>
+          <kbd class="hidden md:inline-block px-1.5 py-0.2 text-[10px] font-mono bg-slate-100 dark:bg-slate-800 rounded text-slate-500">⌘K</kbd>
+        </button>
+
+        <button onclick="toggleTheme()" aria-label="Toggle Dark Mode" class="p-2 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
+          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
+        </button>
+
+        <div class="h-4 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
+
+        <button onclick="setAuthMode('signin', true)" id="header-signin-btn" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition-all">
+          Sign in
+        </button>
+
+        <button onclick="setAuthMode('signup', true)" id="header-join-btn" class="px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all active:scale-[0.98]">
+          Join now
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN ASYMMETRIC TWO-COLUMN HERO & AUTH ==================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex items-center">
+    <div id="auth-main-grid" class="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+
+      <!-- LEFT COLUMN: EDITORIAL HERO + HIGH-CRAFT AUTH FORM (5 Cols) -->
+      <div class="lg:col-span-5 space-y-6 fade-in">
+        
+        <!-- Canadian Community Badge -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-subtle">
+          <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L14.2 7.2L19.5 6.4L17.1 11.2L21 14.5L15.6 15.4L16.2 20.5L12 17.6L7.8 20.5L8.4 15.4L3 14.5L6.9 11.2L4.5 6.4L9.8 7.2L12 2Z" />
+            </svg>
+          </span>
+          <span class="text-xs font-semibold tracking-tight text-slate-700 dark:text-slate-200">
+            <span class="text-slate-400 dark:text-slate-500 font-bold mr-1">CA</span> Canada's Small Business Network
+          </span>
+        </div>
+
+        <!-- Editorial Headline & Subcopy -->
+        <div class="space-y-3">
+          <h1 class="font-display font-extrabold text-3xl sm:text-4xl lg:text-[42px] leading-[1.12] tracking-tight text-slate-900 dark:text-white">
+            Welcome to your small business community
+          </h1>
+          <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+            Connect, learn, and grow with entrepreneurs, professionals, and business leaders across Canada.
+          </p>
+        </div>
+
+        <!-- Elevated Auth Card Container -->
+        <div class="bg-white dark:bg-[#0E1526] rounded-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-elevated p-5 sm:p-6 space-y-5">
+
+          <!-- Tactile Segmented Mode Switcher -->
+          <div role="tablist" aria-label="Authentication Mode" class="relative grid grid-cols-2 p-1 rounded-xl bg-slate-100/90 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
+            <div id="tab-pill-indicator" class="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200/60 dark:border-slate-700 transition-transform duration-200 ease-out"></div>
+            <button type="button" role="tab" id="tab-signin" onclick="setAuthMode('signin')" class="relative z-10 py-2 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white transition-colors">
+              Sign in
+            </button>
+            <button type="button" role="tab" id="tab-signup" onclick="setAuthMode('signup')" class="relative z-10 py-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors">
+              Join now
+            </button>
+          </div>
+
+          <!-- Single-Click Enterprise / Social SSO Buttons -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <button type="button" onclick="handleSSO('Google')" class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/70 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-200 transition-all active:scale-[0.99]">
+              <!-- Google G SVG -->
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/>
+                <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/>
+              </svg>
+              <span>Google</span>
+            </button>
+
+            <button type="button" onclick="handleSSO('Microsoft')" class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/70 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-200 transition-all active:scale-[0.99]">
+              <!-- Microsoft 4-square SVG -->
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 21 21">
+                <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+                <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+                <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+                <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+              </svg>
+              <span>Microsoft 365</span>
+            </button>
+          </div>
+
+          <!-- Hairline Divider -->
+          <div class="relative flex items-center py-0.5">
+            <div class="flex-grow border-t border-slate-200/80 dark:border-slate-800"></div>
+            <span class="shrink mx-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">or continue with email</span>
+            <div class="flex-grow border-t border-slate-200/80 dark:border-slate-800"></div>
+          </div>
+
+          <!-- Authentication Form -->
+          <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5" novalidate>
+            
+            <!-- Sign Up Only: Full Name & Province/Role -->
+            <div id="signup-fields" class="hidden space-y-3.5 fade-in">
+              <div>
+                <label for="full-name" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Full name</label>
+                <div class="relative">
+                  <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                  <input id="full-name" type="text" placeholder="Claire Tremblay" class="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder-slate-400 transition-all" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label for="business-name" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Business / Venture</label>
+                  <div class="relative">
+                    <i data-lucide="building-2" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input id="business-name" type="text" placeholder="NorthStar Roasters" class="w-full pl-10 pr-3 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder-slate-400 transition-all" />
+                  </div>
+                </div>
+
+                <div>
+                  <label for="province-select" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Province / Territory</label>
+                  <select id="province-select" class="w-full px-3 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white transition-all">
+                    <option value="ON">Ontario (ON)</option>
+                    <option value="BC">British Columbia (BC)</option>
+                    <option value="QC">Québec (QC)</option>
+                    <option value="AB">Alberta (AB)</option>
+                    <option value="NS">Nova Scotia (NS)</option>
+                    <option value="MB">Manitoba (MB)</option>
+                    <option value="SK">Saskatchewan (SK)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email Input -->
+            <div>
+              <label for="email-input" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Work or business email</label>
+              <div class="relative">
+                <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input id="email-input" type="email" required placeholder="you@company.ca" class="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder-slate-400 transition-all" />
+              </div>
+              <p id="email-error" class="hidden text-[11px] text-rose-600 dark:text-rose-400 mt-1">Please enter a valid business or personal email address.</p>
+            </div>
+
+            <!-- Password Input -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="password-input" class="block text-xs font-medium text-slate-700 dark:text-slate-300">Password</label>
+                <button type="button" id="forgot-password-link" onclick="openForgotModal()" class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                  Forgot password?
+                </button>
+              </div>
+              <div class="relative">
+                <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input id="password-input" type="password" required oninput="updatePasswordStrength(this.value)" placeholder="••••••••••••" class="w-full pl-10 pr-10 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder-slate-400 transition-all" />
+                <button type="button" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+                  <i id="eye-icon" data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+              </div>
+
+              <!-- Live Password Strength Meter (Shown in Join Now mode) -->
+              <div id="strength-meter-wrap" class="hidden mt-2 space-y-1">
+                <div class="grid grid-cols-4 gap-1.5">
+                  <div id="str-bar-1" class="h-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors"></div>
+                  <div id="str-bar-2" class="h-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors"></div>
+                  <div id="str-bar-3" class="h-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors"></div>
+                  <div id="str-bar-4" class="h-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors"></div>
+                </div>
+                <p id="str-label" class="text-[11px] text-slate-400">Use 8+ characters with a number & symbol</p>
+              </div>
+              <p id="password-error" class="hidden text-[11px] text-rose-600 dark:text-rose-400 mt-1">Password must be at least 6 characters.</p>
+            </div>
+
+            <!-- Primary Submit CTA -->
+            <button type="submit" id="auth-submit-btn" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 group active:scale-[0.99]">
+              <span id="auth-submit-text">Sign in</span>
+              <i id="auth-submit-icon" data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-0.5 transition-transform"></i>
+            </button>
+          </form>
+
+          <!-- Terms & Bottom Switch Link -->
+          <div class="pt-1 space-y-3 text-center">
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              By continuing, you agree to the SMB Hub <a href="#terms" onclick="showToast('Viewing SMB Hub Terms of Service')" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Terms</a> and <a href="#guidelines" onclick="showToast('Viewing Community Guidelines')" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Community Guidelines</a>.
+            </p>
+
+            <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-400">
+              <span id="bottom-prompt-text">New to SMB Hub?</span>
+              <button type="button" id="bottom-prompt-btn" onclick="setAuthMode('signup')" class="ml-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                Join now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: ARCHITECTURAL CANADIAN SKYLINE & LIVE COMMUNITY SHOWCASE (7 Cols) -->
+      <div class="lg:col-span-7">
+        <div class="relative rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-elevated bg-slate-950 min-h-[520px] sm:min-h-[580px] flex flex-col justify-between p-5 sm:p-8">
+
+          <!-- Rich Custom Twilight Toronto / Canadian Waterfront Skyline Backdrop SVG -->
+          <svg class="absolute inset-0 w-full h-full object-cover" viewBox="0 0 900 680" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <!-- Dusk Sky Gradient -->
+              <linearGradient id="skyTwilight" x1="0" y1="0" x2="0.8" y2="1">
+                <stop offset="0%" stop-color="#090D1C"/>
+                <stop offset="45%" stop-color="#172554"/>
+                <stop offset="72%" stop-color="#312E81"/>
+                <stop offset="88%" stop-color="#9A3412"/>
+                <stop offset="100%" stop-color="#F59E0B"/>
+              </linearGradient>
+
+              <!-- Lake Ontario Reflection Gradient -->
+              <linearGradient id="waterSurface" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1E1B4B" stop-opacity="0.95"/>
+                <stop offset="45%" stop-color="#0F172A" stop-opacity="0.98"/>
+                <stop offset="100%" stop-color="#050811"/>
+              </linearGradient>
+
+              <!-- Warm Sunset Horizon Glow -->
+              <radialGradient id="horizonGlow" cx="72%" cy="66%" r="55%">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.45"/>
+                <stop offset="45%" stop-color="#EC4899" stop-opacity="0.18"/>
+                <stop offset="100%" stop-color="#0F172A" stop-opacity="0"/>
+              </radialGradient>
+
+              <!-- SkyPod Illumination -->
+              <radialGradient id="towerGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <!-- Sky Fill -->
+            <rect width="900" height="470" fill="url(#skyTwilight)"/>
+            <rect width="900" height="470" fill="url(#horizonGlow)"/>
+
+            <!-- Crisp Twilight Stars -->
+            <g fill="#FFFFFF" opacity="0.65">
+              <circle cx="140" cy="70" r="1.3"/>
+              <circle cx="290" cy="48" r="1.1"/>
+              <circle cx="430" cy="95" r="1.5"/>
+              <circle cx="540" cy="52" r="1"/>
+              <circle cx="810" cy="85" r="1.4"/>
+              <circle cx="210" cy="145" r="0.9"/>
+              <circle cx="620" cy="130" r="1.2"/>
+            </g>
+
+            <!-- Distant Skyline Silhouettes -->
+            <g fill="#0B1120" opacity="0.72">
+              <rect x="80" y="340" width="44" height="130" rx="2"/>
+              <rect x="132" y="310" width="52" height="160" rx="2"/>
+              <rect x="195" y="355" width="38" height="115" rx="2"/>
+              <rect x="330" y="325" width="48" height="145" rx="2"/>
+              <rect x="390" y="295" width="56" height="175" rx="2"/>
+              <rect x="460" y="335" width="42" height="135" rx="2"/>
+              <rect x="515" y="280" width="60" height="190" rx="2"/>
+              <rect x="590" y="315" width="46" height="155" rx="2"/>
+              <rect x="735" y="330" width="50" height="140" rx="2"/>
+              <rect x="795" y="350" width="58" height="120" rx="2"/>
+            </g>
+
+            <!-- Midground Financial District Towers with Warm Window Grids -->
+            <g fill="#070B14">
+              <rect x="245" y="290" width="44" height="180" rx="2"/>
+              <rect x="425" y="265" width="54" height="205" rx="2"/>
+              <rect x="550" y="255" width="50" height="215" rx="2"/>
+              <rect x="615" y="305" width="45" height="165" rx="2"/>
+            </g>
+
+            <!-- Illuminated Office Windows -->
+            <g fill="#FBBF24" opacity="0.55">
+              <rect x="255" y="305" width="4" height="6"/>
+              <rect x="267" y="305" width="4" height="6"/>
+              <rect x="255" y="320" width="4" height="6"/>
+              <rect x="275" y="335" width="4" height="6"/>
+              <rect x="438" y="282" width="5" height="7"/>
+              <rect x="452" y="282" width="5" height="7"/>
+              <rect x="465" y="298" width="5" height="7"/>
+              <rect x="438" y="315" width="5" height="7"/>
+              <rect x="562" y="272" width="5" height="7"/>
+              <rect x="578" y="272" width="5" height="7"/>
+              <rect x="562" y="292" width="5" height="7"/>
+              <rect x="578" y="312" width="5" height="7"/>
+            </g>
+
+            <!-- Rogers Centre Inspired Illuminated Dome -->
+            <path d="M475 470 C475 415, 575 415, 575 470 Z" fill="#1E293B"/>
+            <path d="M482 470 C482 424, 568 424, 568 470 Z" fill="none" stroke="#60A5FA" stroke-width="2.5" opacity="0.85"/>
+
+            <!-- Iconic CN Tower Silhouette & Illuminated SkyPod -->
+            <circle cx="690" cy="212" r="46" fill="url(#towerGlow)"/>
+            <!-- Spire & Shaft -->
+            <line x1="690" y1="68" x2="690" y2="195" stroke="#CBD5E1" stroke-width="2.2"/>
+            <polygon points="682,470 687,225 693,225 698,470" fill="#0F172A"/>
+            <polygon points="686,225 689,195 691,195 694,225" fill="#1E293B"/>
+            <!-- Main Observation Pod -->
+            <ellipse cx="690" cy="212" rx="22" ry="7" fill="#1E293B" stroke="#93C5FD" stroke-width="1.5"/>
+            <rect x="672" y="209" width="36" height="4" rx="2" fill="#60A5FA"/>
+            <!-- SkyPod Upper -->
+            <ellipse cx="690" cy="152" rx="8" ry="3.5" fill="#93C5FD"/>
+
+            <!-- Waterfront Lake Ontario -->
+            <rect x="0" y="470" width="900" height="210" fill="url(#waterSurface)"/>
+            <!-- Horizon Rim Light -->
+            <line x1="0" y1="470" x2="900" y2="470" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.45"/>
+
+            <!-- Shimmering Water Reflections -->
+            <g stroke-linecap="round" opacity="0.45">
+              <line x1="684" y1="485" x2="696" y2="485" stroke="#60A5FA" stroke-width="2"/>
+              <line x1="680" y1="505" x2="700" y2="505" stroke="#60A5FA" stroke-width="1.8"/>
+              <line x1="683" y1="528" x2="697" y2="528" stroke="#93C5FD" stroke-width="1.4"/>
+              <line x1="505" y1="488" x2="545" y2="488" stroke="#818CF8" stroke-width="2"/>
+              <line x1="512" y1="508" x2="538" y2="508" stroke="#818CF8" stroke-width="1.5"/>
+              <line x1="435" y1="492" x2="465" y2="492" stroke="#FBBF24" stroke-width="1.6"/>
+              <line x1="560" y1="496" x2="585" y2="496" stroke="#FBBF24" stroke-width="1.6"/>
+            </g>
+          </svg>
+
+          <!-- Subtle Architectural Glass Edge Highlight (Echoing the graceful curve in the reference) -->
+          <div class="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-gradient-to-tr from-blue-500/20 via-indigo-400/10 to-transparent blur-2xl"></div>
+
+          <!-- Top Floating Bar inside Showcase -->
+          <div class="relative z-10 flex flex-wrap items-center justify-between gap-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/75 border border-white/15 glass-card text-white text-xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="font-medium">4,820+ Verified Canadian Founders Active</span>
+            </div>
+
+            <!-- Interactive City Spotlight Switcher -->
+            <div class="inline-flex items-center gap-1 p-1 rounded-xl bg-slate-900/75 border border-white/15 glass-card">
+              <button type="button" onclick="switchSpotlightCity('Toronto')" class="city-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-900 transition-all">Toronto</button>
+              <button type="button" onclick="switchSpotlightCity('Vancouver')" class="city-pill px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all">Vancouver</button>
+              <button type="button" onclick="switchSpotlightCity('Montréal')" class="city-pill px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all">Montréal</button>
+              <button type="button" onclick="switchSpotlightCity('Calgary')" class="city-pill px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all">Calgary</button>
+            </div>
+          </div>
+
+          <!-- Center/Bottom Floating Glassmorphic Community Cards -->
+          <div class="relative z-10 space-y-4 mt-16 sm:mt-24">
+            
+            <!-- Card 1: Dynamic City Member Pulse Card -->
+            <div id="spotlight-card" class="max-w-md rounded-2xl bg-slate-900/80 border border-white/15 glass-card p-4 text-white shadow-glass animate-float-slow">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div id="spot-avatar" class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 font-display font-bold text-xs flex items-center justify-center shrink-0 ring-1 ring-white/20">
+                    ML
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5">
+                      <h3 id="spot-name" class="text-sm font-semibold text-white">Marcus Lin</h3>
+                      <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-500/25 text-blue-300 border border-blue-400/30">Verified SMB</span>
+                    </div>
+                    <p id="spot-role" class="text-xs text-slate-300">Founder, Harbourline Logistics • Toronto, ON</p>
+                  </div>
+                </div>
+                <span class="text-[11px] text-slate-400">2m ago</span>
+              </div>
+
+              <p id="spot-quote" class="mt-3 text-xs sm:text-[13px] text-slate-200 leading-relaxed">
+                "Found two Ontario-based cold-chain packaging suppliers and an SR&ED tax advisor within 48 hours of joining SMB Hub."
+              </p>
+
+              <div class="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+                <span id="spot-tag" class="text-amber-300 font-medium">#SupplyChainON • B2B Partnership</span>
+                <span class="inline-flex items-center gap-1 text-emerald-300">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Direct Intro Ready
+                </span>
+              </div>
+            </div>
+
+            <!-- Bottom Twin Cards: Funding / Grants & Verified Ecosystem Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div class="rounded-2xl bg-white/95 dark:bg-slate-900/90 border border-white/40 dark:border-slate-700/80 glass-card p-4 shadow-glass animate-float-delayed">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                    FEDERAL & PROVINCIAL GRANTS
+                  </span>
+                  <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                </div>
+                <p class="text-xs font-semibold text-slate-900 dark:text-white">CDAP & Regional Innovation Funding</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">18 active non-dilutive programs curated for Q4 2026.</p>
+              </div>
+
+              <div class="rounded-2xl bg-slate-900/85 border border-white/15 glass-card p-4 text-white shadow-glass">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[11px] font-semibold text-teal-300">COAST-TO-COAST REACH</span>
+                  <span class="text-[11px] font-mono text-slate-400">10 PROV • 3 TERR</span>
+                </div>
+                <div class="flex items-baseline gap-2">
+                  <span class="font-display font-bold text-xl text-white">$140M+</span>
+                  <span class="text-[11px] text-slate-300">member-to-member B2B deals</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">Zero cold-spam guarantee • Verified BN registry</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== INTERACTIVE POST-LOGIN PREVIEW STATE ==================== -->
+    <div id="authenticated-preview" class="hidden w-full max-w-2xl mx-auto bg-white dark:bg-[#0E1526] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-elevated p-8 text-center space-y-5 fade-in">
+      <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-200/70 dark:border-emerald-800/60">
+        <i data-lucide="check-circle-2" class="w-7 h-7"></i>
+      </div>
+      <div class="space-y-2">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
+          Authenticated Session Active
+        </span>
+        <h2 id="welcome-user-heading" class="font-display font-bold text-2xl text-slate-900 dark:text-white">
+          Welcome to SMB HUB
+        </h2>
+        <p id="welcome-user-sub" class="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
+          Your Canadian small business workspace is ready. Explore local founder circles, grant opportunities, and verified B2B partners.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <button onclick="resetToAuthView()" class="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          ← Back to Sign in / Join now
+        </button>
+        <button onclick="showToast('Launching SMB HUB Community Feed...')" class="px-5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors">
+          Enter Community Feed
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== MINIMALIST BALANCED FOOTER ==================== -->
+  <footer class="w-full border-t border-slate-200/70 dark:border-slate-800/70 bg-white/60 dark:bg-[#0B1120]/60 py-4 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+      <div class="flex items-center gap-2">
+        <span>SMB Hub, by Cmarketing Inc. © 2026</span>
+        <span class="hidden sm:inline text-slate-300 dark:text-slate-700">|</span>
+        <a href="#about" onclick="showToast('About SMB Hub by Cmarketing Inc.')" class="hover:text-slate-900 dark:hover:text-white transition-colors">About</a>
+        <span class="text-slate-300 dark:text-slate-700">|</span>
+        <a href="#help" onclick="showToast('Opening Canadian Member Support')" class="hover:text-slate-900 dark:hover:text-white transition-colors">Help</a>
+        <span class="text-slate-300 dark:text-slate-700">|</span>
+        <a href="#privacy" onclick="showToast('PIPEDA & Canadian Privacy Compliant')" class="hover:text-slate-900 dark:hover:text-white transition-colors">Privacy</a>
+      </div>
+
+      <div class="flex items-center gap-2 text-[11px]">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Hosted in Canada (ca-central-1)
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== FORGOT PASSWORD MODAL ==================== -->
+  <div id="forgot-modal" class="hidden fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-sm flex items-center justify-center px-4" onclick="if(event.target === this) closeForgotModal()">
+    <div class="w-full max-w-md bg-white dark:bg-[#0E1526] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-elevated p-6 fade-in">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-display font-bold text-base text-slate-900 dark:text-white">Reset your password</h3>
+        <button onclick="closeForgotModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+        Enter the email associated with your SMB Hub account and we will send a secure password reset link.
+      </p>
+      <form onsubmit="submitForgotPassword(event)" class="space-y-4">
+        <input id="reset-email-input" type="email" required placeholder="you@company.ca" class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-blue-600 text-slate-900 dark:text-white" />
+        <div class="flex items-center justify-end gap-2">
+          <button type="button" onclick="closeForgotModal()" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white">Send Reset Link</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== CMD+K QUICK DIRECTORY SEARCH MODAL ==================== -->
+  <div id="search-modal" class="hidden fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-sm flex items-start justify-center pt-20 px-4" onclick="if(event.target === this) closeSearchModal()">
+    <div class="w-full max-w-lg bg-white dark:bg-[#0E1526] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-elevated overflow-hidden fade-in">
+      <div class="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">
+        <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+        <input id="quick-search-input" type="text" oninput="filterQuickSearch(this.value)" placeholder="Search Canadian businesses, groups, or plans..." class="flex-1 bg-transparent text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none" />
+        <button onclick="closeSearchModal()" class="text-[11px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">ESC</button>
+      </div>
+      <div id="quick-search-results" class="p-2 max-h-72 overflow-y-auto space-y-1"></div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    // --- APPLICATION STATE ---
+    let currentAuthMode = 'signin'; // 'signin' | 'signup'
+
+    const citySpotlights = {
+      Toronto: {
+        initials: 'ML',
+        name: 'Marcus Lin',
+        role: 'Founder, Harbourline Logistics • Toronto, ON',
+        quote: '"Found two Ontario-based cold-chain packaging suppliers and an SR&ED tax advisor within 48 hours of joining SMB Hub."',
+        tag: '#SupplyChainON • B2B Partnership'
+      },
+      Vancouver: {
+        initials: 'SP',
+        name: 'Sonia Patel',
+        role: 'CEO, Pacifica CleanTech • Vancouver, BC',
+        quote: '"Connected with 14 BC manufacturing founders and secured a joint export grant through the Western Canada group."',
+        tag: '#CleanTechBC • Export Growth'
+      },
+      'Montréal': {
+        initials: 'ÉB',
+        name: 'Élodie Bouchard',
+        role: 'Co-Founder, Atelier Nord • Montréal, QC',
+        quote: '"Bilingual community discussions helped us expand our retail distribution from Québec into Ontario seamlessly."',
+        tag: '#CommerceQC • Retail Expansion'
+      },
+      Calgary: {
+        initials: 'DK',
+        name: 'Devon Kowalski',
+        role: 'Managing Partner, Foothills AgTech • Calgary, AB',
+        quote: '"High-signal advice from operators who actually run payroll in Canada—zero fluff, real commercial intros."',
+        tag: '#AgTechAB • Operator Circle'
+      }
+    };
+
+    const quickDirectoryItems = [
+      { category: 'Group', label: 'Ontario Founders & Small Business Owners (1,940 members)' },
+      { category: 'Group', label: 'Canadian E-Commerce & Cross-Border Shipping' },
+      { category: 'Business', label: 'Harbourline Logistics Inc. — Toronto, ON' },
+      { category: 'Business', label: 'Atelier Nord Design Studio — Montréal, QC' },
+      { category: 'Plans', label: 'SMB Hub Verified Business Membership ($0 Starter / $29 Pro)' },
+      { category: 'Top Posts', label: '2026 Guide: Navigating Federal & Provincial Digital Grants' }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      setupKeyboardShortcuts();
+    });
+
+    // --- AUTH MODE SWITCHING ('signin' vs 'signup') ---
+    function setAuthMode(mode, scrollToForm = false) {
+      currentAuthMode = mode;
+      const isSignup = mode === 'signup';
+
+      // Slide segmented indicator pill
+      const pill = document.getElementById('tab-pill-indicator');
+      const tabSignin = document.getElementById('tab-signin');
+      const tabSignup = document.getElementById('tab-signup');
+
+      if (isSignup) {
+        pill.style.transform = 'translateX(100%)';
+        tabSignup.classList.replace('text-slate-500', 'text-slate-900');
+        tabSignup.classList.replace('dark:text-slate-400', 'dark:text-white');
+        tabSignup.classList.replace('font-medium', 'font-semibold');
+
+        tabSignin.classList.replace('text-slate-900', 'text-slate-500');
+        tabSignin.classList.replace('dark:text-white', 'dark:text-slate-400');
+        tabSignin.classList.replace('font-semibold', 'font-medium');
+      } else {
+        pill.style.transform = 'translateX(0%)';
+        tabSignin.classList.replace('text-slate-500', 'text-slate-900');
+        tabSignin.classList.replace('dark:text-slate-400', 'dark:text-white');
+        tabSignin.classList.replace('font-medium', 'font-semibold');
+
+        tabSignup.classList.replace('text-slate-900', 'text-slate-500');
+        tabSignup.classList.replace('dark:text-white', 'dark:text-slate-400');
+        tabSignup.classList.replace('font-semibold', 'font-medium');
+      }
+
+      // Toggle extra signup fields & password strength meter
+      document.getElementById('signup-fields').classList.toggle('hidden', !isSignup);
+      document.getElementById('strength-meter-wrap').classList.toggle('hidden', !isSignup);
+      document.getElementById('forgot-password-link').classList.toggle('hidden', isSignup);
+
+      // Update Submit CTA & Bottom Prompt
+      document.getElementById('auth-submit-text').textContent = isSignup ? 'Create your SMB Hub account' : 'Sign in';
+      document.getElementById('bottom-prompt-text').textContent = isSignup ? 'Already have an SMB Hub account?' : 'New to SMB Hub?';
+      const bottomBtn = document.getElementById('bottom-prompt-btn');
+      bottomBtn.textContent = isSignup ? 'Sign in' : 'Join now';
+      bottomBtn.onclick = () => setAuthMode(isSignup ? 'signin' : 'signup');
+
+      // Clear validation messages
+      document.getElementById('email-error').classList.add('hidden');
+      document.getElementById('password-error').classList.add('hidden');
+
+      if (scrollToForm) {
+        resetToAuthView();
+        document.getElementById('email-input').focus();
+      }
+    }
+
+    // --- PASSWORD VISIBILITY & STRENGTH ---
+    function togglePasswordVisibility() {
+      const input = document.getElementById('password-input');
+      const icon = document.getElementById('eye-icon');
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+      lucide.createIcons();
+    }
+
+    function updatePasswordStrength(val) {
+      if (currentAuthMode !== 'signup') return;
+      let score = 0;
+      if (val.length >= 6) score++;
+      if (val.length >= 10) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const colors = ['bg-rose-500', 'bg-amber-500', 'bg-blue-500', 'bg-emerald-500'];
+      const labels = ['Weak password', 'Fair — add numbers or symbols', 'Good business password', 'Strong security'];
+
+      for (let i = 1; i <= 4; i++) {
+        const bar = document.getElementById(`str-bar-${i}`);
+        bar.className = `h-1 rounded-full transition-colors ${i <= score ? colors[Math.max(0, score - 1)] : 'bg-slate-200 dark:bg-slate-800'}`;
+      }
+      document.getElementById('str-label').textContent = val.length === 0
+        ? 'Use 8+ characters with a number & symbol'
+        : labels[Math.max(0, score - 1)];
+    }
+
+    // --- FORM SUBMISSION & SSO ---
+    function handleAuthSubmit(event) {
+      event.preventDefault();
+      const email = document.getElementById('email-input').value.trim();
+      const password = document.getElementById('password-input').value;
+      const fullName = document.getElementById('full-name').value.trim();
+
+      const emailErr = document.getElementById('email-error');
+      const passErr = document.getElementById('password-error');
+
+      const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      emailErr.classList.toggle('hidden', validEmail);
+      passErr.classList.toggle('hidden', password.length >= 6);
+
+      if (!validEmail || password.length < 6) return;
+
+      const btn = document.getElementById('auth-submit-btn');
+      const btnText = document.getElementById('auth-submit-text');
+      const originalText = btnText.textContent;
+      btn.disabled = true;
+      btnText.textContent = currentAuthMode === 'signup' ? 'Creating workspace...' : 'Signing in...';
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btnText.textContent = originalText;
+
+        const displayName = currentAuthMode === 'signup' && fullName ? fullName : email.split('@')[0];
+        document.getElementById('auth-main-grid').classList.add('hidden');
+        document.getElementById('authenticated-preview').classList.remove('hidden');
+        document.getElementById('welcome-user-heading').textContent = `Welcome to SMB HUB, ${displayName}`;
+        lucide.createIcons();
+        showToast(currentAuthMode === 'signup' ? 'Account created! Welcome to Canada’s SMB network.' : 'Signed in successfully.');
+      }, 550);
+    }
+
+    function handleSSO(provider) {
+      showToast(`Connecting securely with ${provider}...`);
+      setTimeout(() => {
+        document.getElementById('auth-main-grid').classList.add('hidden');
+        document.getElementById('authenticated-preview').classList.remove('hidden');
+        document.getElementById('welcome-user-heading').textContent = `Welcome back via ${provider}`;
+        lucide.createIcons();
+      }, 600);
+    }
+
+    function resetToAuthView(e) {
+      if (e) e.preventDefault();
+      document.getElementById('authenticated-preview').classList.add('hidden');
+      document.getElementById('auth-main-grid').classList.remove('hidden');
+    }
+
+    // --- CITY SPOTLIGHT SWITCHER ---
+    function switchSpotlightCity(city) {
+      const data = citySpotlights[city];
+      if (!data) return;
+
+      document.querySelectorAll('.city-pill').forEach(btn => {
+        const active = btn.textContent.trim() === city;
+        btn.className = active
+          ? 'city-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-900 transition-all'
+          : 'city-pill px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all';
+      });
+
+      document.getElementById('spot-avatar').textContent = data.initials;
+      document.getElementById('spot-name').textContent = data.name;
+      document.getElementById('spot-role').textContent = data.role;
+      document.getElementById('spot-quote').textContent = data.quote;
+      document.getElementById('spot-tag').textContent = data.tag;
+    }
+
+    // --- HEADER NAV & THEME ---
+    function selectNav(btn, label) {
+      document.querySelectorAll('.nav-link').forEach(el => {
+        el.className = 'nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all';
+      });
+      btn.className = 'nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 transition-all';
+      if (label !== 'Home') {
+        showToast(`Sign in or join free to explore ${label}`);
+      }
+    }
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+    }
+
+    // --- MODALS & SEARCH ---
+    function openForgotModal() {
+      document.getElementById('forgot-modal').classList.remove('hidden');
+      document.getElementById('reset-email-input').value = document.getElementById('email-input').value;
+      setTimeout(() => document.getElementById('reset-email-input').focus(), 40);
+      lucide.createIcons();
+    }
+
+    function closeForgotModal() {
+      document.getElementById('forgot-modal').classList.add('hidden');
+    }
+
+    function submitForgotPassword(e) {
+      e.preventDefault();
+      const email = document.getElementById('reset-email-input').value.trim();
+      closeForgotModal();
+      showToast(`Password reset link sent to ${email}`);
+    }
+
+    function openSearchModal() {
+      document.getElementById('search-modal').classList.remove('hidden');
+      const input = document.getElementById('quick-search-input');
+      input.value = '';
+      filterQuickSearch('');
+      setTimeout(() => input.focus(), 40);
+      lucide.createIcons();
+    }
+
+    function closeSearchModal() {
+      document.getElementById('search-modal').classList.add('hidden');
+    }
+
+    function filterQuickSearch(query) {
+      const q = query.toLowerCase().trim();
+      const filtered = q
+        ? quickDirectoryItems.filter(i => i.label.toLowerCase().includes(q) || i.category.toLowerCase().includes(q))
+        : quickDirectoryItems;
+
+      const container = document.getElementById('quick-search-results');
+      container.innerHTML = filtered.length === 0
+        ? '<p class="p-4 text-xs text-center text-slate-400">No matching Canadian businesses or groups found.</p>'
+        : filtered.map(item => `
+            <button type="button" onclick="closeSearchModal(); showToast('Sign in to view: ${item.label.replace(/'/g, '')}')" class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors">
+              <span class="text-xs font-medium text-slate-800 dark:text-slate-200 truncate">${item.label}</span>
+              <span class="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">${item.category}</span>
+            </button>
+          `).join('');
+    }
+
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          const modal = document.getElementById('search-modal');
+          modal.classList.contains('hidden') ? openSearchModal() : closeSearchModal();
+        } else if (e.key === 'Escape') {
+          closeSearchModal();
+          closeForgotModal();
+        }
+      });
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-medium shadow-elevated fade-in';
+      toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-blue-400 dark:bg-blue-600"></span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 220);
+      }, 2600);
+    }
+  </script>
+</body>
+</html>
