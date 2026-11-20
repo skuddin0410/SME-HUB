@@ -545,6 +545,119 @@ const REACTIONS: { kind: ReactionKind; emoji: string; label: string; on: string 
   { kind: "love", emoji: "💡", label: "Insightful", on: "bg-amber-50 text-amber-800 border-amber-200" },
   { kind: "celebrate", emoji: "🎉", label: "Celebrate", on: "bg-emerald-50 text-emerald-700 border-emerald-200" },
 ];
+
+/**
+ * One reaction pill. Turning a reaction on plays that emotion's own moment: the thumb nods and
+ * small thumbs float up (Helpful), the bulb lights up and throws sparkles (Insightful), the popper
+ * shakes and fires confetti (Celebrate). The count rolls to its new value. Turning it off just
+ * settles. Phones that support it get a tiny tap of vibration. Reduced-motion settings skip it all.
+ */
+const CONFETTI = ["#2563EB", "#E11D48", "#F59E0B", "#10B981", "#8B5CF6", "#EC4899"];
+type Particle = { id: number; dx: number; dy: number; r: number; delay: number; content: string; color?: string; size: number };
+
+function burstFor(kind: ReactionKind, seed: number): Particle[] {
+  const rand = (a: number, b: number) => a + Math.random() * (b - a);
+  if (kind === "celebrate") {
+    // confetti fans up and out, then drifts down
+    return Array.from({ length: 14 }, (_, i) => {
+      const angle = rand(-160, -20) * (Math.PI / 180);
+      const dist = rand(26, 54);
+      return { id: seed * 100 + i, dx: Math.cos(angle) * dist, dy: Math.sin(angle) * dist + rand(4, 14), r: rand(-260, 260), delay: rand(0, 60), content: "", color: CONFETTI[i % CONFETTI.length], size: rand(4, 6.5) };
+    });
+  }
+  if (kind === "love") {
+    // sparkles ring out around the bulb
+    return Array.from({ length: 7 }, (_, i) => {
+      const angle = ((i / 7) * 360 - 90 + rand(-12, 12)) * (Math.PI / 180);
+      const dist = rand(18, 30);
+      return { id: seed * 100 + i, dx: Math.cos(angle) * dist, dy: Math.sin(angle) * dist, r: rand(-40, 40), delay: rand(0, 90), content: i % 2 ? "✨" : "✦", color: "#F59E0B", size: i % 2 ? 11 : 9 };
+    });
+  }
+  // little thumbs float up in a loose column
+  return Array.from({ length: 6 }, (_, i) => ({ id: seed * 100 + i, dx: (i - 2.5) * 9 + rand(-5, 5), dy: rand(-60, -36), r: rand(-30, 30), delay: i * 60, content: "👍", size: rand(10, 14) }));
+}
+
+function ReactionButton({
+  reaction,
+  active,
+  count,
+  onToggle,
+}: {
+  reaction: (typeof REACTIONS)[number];
+  active: boolean;
+  count: number;
+  onToggle: () => void;
+}) {
+  const { kind, emoji, label, on } = reaction;
+  const [play, setPlay] = useState<{ n: number; on: boolean } | null>(null);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const seed = useRef(0);
+
+  const click = () => {
+    const turningOn = !active;
+    onToggle();
+    const n = ++seed.current;
+    setPlay({ n, on: turningOn });
+    if (!turningOn || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    try {
+      navigator.vibrate?.(12);
+    } catch {}
+    const burst = burstFor(kind, n);
+    setParticles((p) => [...p, ...burst]);
+    setTimeout(() => setParticles((p) => p.filter((x) => !burst.includes(x))), 1100);
+  };
+
+  const iconAnim = play ? (play.on ? `react-${kind}` : "react-off") : "";
+  return (
+    <button
+      type="button"
+      onClick={click}
+      aria-pressed={active}
+      aria-label={`${label}, ${count}`}
+      className={cx(
+        "relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors duration-200 active:scale-95",
+        active ? on : PILL_OFF,
+      )}
+    >
+      <span className="relative inline-flex">
+        {kind === "love" && play?.on && <span key={`g${play.n}`} aria-hidden="true" className="react-glow pointer-events-none absolute -inset-2 rounded-full" />}
+        {kind === "celebrate" && play?.on && <span key={`r${play.n}`} aria-hidden="true" className="react-ring pointer-events-none absolute -inset-1.5 rounded-full border-2 border-emerald-400" />}
+        <span key={play ? `i${play.n}` : "i"} aria-hidden="true" className={cx("relative inline-block", iconAnim)}>
+          {emoji}
+        </span>
+        <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 z-20">
+          {particles.map((p) => (
+            <span
+              key={p.id}
+              className={cx("react-particle absolute -translate-x-1/2 -translate-y-1/2", kind === "celebrate" ? "rounded-[1.5px]" : "leading-none")}
+              style={
+                {
+                  "--dx": `${p.dx}px`,
+                  "--dy": `${p.dy}px`,
+                  "--r": `${p.r}deg`,
+                  animationDelay: `${p.delay}ms`,
+                  animationDuration: kind === "celebrate" ? "900ms" : kind === "love" ? "700ms" : "950ms",
+                  width: p.content ? undefined : p.size,
+                  height: p.content ? undefined : p.size * 0.6,
+                  background: p.content ? undefined : p.color,
+                  color: p.content ? p.color : undefined,
+                  fontSize: p.content ? p.size : undefined,
+                } as React.CSSProperties
+              }
+            >
+              {p.content}
+            </span>
+          ))}
+        </span>
+      </span>
+      <span>{label}</span>
+      <span key={`c${count}`} className={cx("font-semibold tabular-nums inline-block", play && "react-count")}>
+        {count}
+      </span>
+    </button>
+  );
+}
+
 const PILL_OFF = "bg-[#F5F5F6]/70 hover:bg-[#F5F5F6] text-zinc-600 border-transparent";
 const ICON_ACTION = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F5F5F6] transition-colors";
 
@@ -649,18 +762,8 @@ export function PostActions({
     <>
       <div className="pt-3 border-t border-[#F5F5F6] flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1.5">
-          {REACTIONS.map(({ kind, emoji, label, on }) => (
-            <button
-              key={kind}
-              type="button"
-              onClick={() => react(kind)}
-              aria-pressed={mine === kind}
-              className={cx("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all", mine === kind ? on : PILL_OFF)}
-            >
-              <span aria-hidden="true">{emoji}</span>
-              <span>{label}</span>
-              <span className="font-semibold">{tally[kind] ?? 0}</span>
-            </button>
+          {REACTIONS.map((r) => (
+            <ReactionButton key={r.kind} reaction={r} active={mine === r.kind} count={tally[r.kind] ?? 0} onToggle={() => react(r.kind)} />
           ))}
         </div>
 
