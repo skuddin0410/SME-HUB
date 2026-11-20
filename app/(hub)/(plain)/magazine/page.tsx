@@ -27,7 +27,7 @@ export default function MagazinePage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {[["Blog", "/blog"], ["News", "/news"], ["Podcast", "/podcast"]].map(([label, href]) => (
-            <Link key={href} href={href} className="press rounded-full border border-primary px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5">
+            <Link key={href} href={href} className="press rounded-xl border border-primary px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5">
               {label}
             </Link>
           ))}

@@ -42,7 +42,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
   return (
     <>
       <PageTitle title="Explore businesses">
-        <Link href="/businesses/mine" className="press rounded-full border border-primary px-4 py-1.5 text-sm font-semibold text-primary hover:bg-primary/10">
+        <Link href="/businesses/mine" className="press rounded-xl border border-primary px-4 py-1.5 text-sm font-semibold text-primary hover:bg-primary/10">
           List your business
         </Link>
       </PageTitle>

@@ -150,8 +150,8 @@ export function AuthChrome({ children }: { children: React.ReactNode }) {
                 Help
               </Link>
               <span className="text-slate-300 dark:text-slate-700">|</span>
-              <Link href="/policies/privacy" className="hover:text-slate-900 dark:hover:text-white transition-colors">
-                Privacy
+              <Link href="/policies/terms" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+                Terms
               </Link>
             </div>
             <div className="flex items-center gap-2 text-[11px]">

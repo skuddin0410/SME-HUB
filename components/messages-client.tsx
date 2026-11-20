@@ -306,7 +306,7 @@ export function MessagingApp({
                     type="button"
                     onClick={send}
                     disabled={!(drafts[other.id] ?? "").trim()}
-                    className="press inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
+                    className="press inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
                   >
                     <Send className="h-4 w-4" />
                     Send

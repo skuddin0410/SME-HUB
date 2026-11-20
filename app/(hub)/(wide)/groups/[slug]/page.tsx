@@ -86,7 +86,7 @@ export default async function GroupPage({
             </p>
           </div>
           {!userId && !group.is_private && (
-            <Link href="/auth/login" className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white">
+            <Link href="/auth/login" className="press rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">
               Join group
             </Link>
           )}

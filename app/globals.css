@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 40 21.4% 94.5%; /* LinkedIn page grey #f4f2ee */
-    --foreground: 0 0% 9.8%; /* #191919, LinkedIn's 90% black */
+    --background: 40 21.4% 94.5%; /* stone page #F4F2EE (design: docs/design/feed.html) */
+    --foreground: 240 5.9% 10%; /* zinc-900 #18181B */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 9.8%;
+    --card-foreground: 240 5.9% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9.8%;
-    --primary: 210 90.2% 40%; /* #0a66c2 */
+    --popover-foreground: 240 5.9% 10%;
+    --primary: 221.2 83.2% 53.3%; /* blue-600 #2563EB */
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 92.2%;
     --secondary-foreground: 0 0% 9.8%;
-    --muted: 0 0% 92.2%; /* hover and chip grey */
-    --muted-foreground: 0 0% 40%;
-    --accent: 0 0% 92.2%;
+    --muted: 40 21.4% 94.5%; /* hover and chip stone #F4F2EE */
+    --muted-foreground: 240 3.8% 46.1%; /* zinc-500 */
+    --accent: 40 21.4% 94.5%;
     --accent-foreground: 0 0% 9.8%;
     --destructive: 350 80% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 91%; /* #e8e8e8 dividers and nav line */
-    --input: 0 0% 60%; /* #999 field outline */
-    --ring: 210 90.2% 40%;
+    --border: 42.9 15.9% 88.2%; /* hairline #E6E3DC */
+    --input: 42.9 15.9% 88.2%; /* hairline #E6E3DC */
+    --ring: 221.2 83.2% 53.3%;
     --chart-1: 356 74% 48%;
     --chart-2: 220 43% 11%;
     --chart-3: 197 37% 24%;
@@ -31,7 +31,7 @@
     --radius: 0.5rem;
     --ink: 210 75% 20%;
     --tint: 207.3 44% 95.1%; /* #edf3f8 search fields, selected rows */
-    --card-edge: 45 6.1% 87.1%; /* #e0dfdc ring around cards */
+    --card-edge: 42.9 15.9% 88.2%; /* hairline #E6E3DC around cards */
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -71,23 +71,24 @@
 }
 
 @layer base {
-  /* Same family and scale LinkedIn uses: the device's own UI font, 14px body, 12px meta, 600 for emphasis. */
+  /* Inter for text, Plus Jakarta Sans (font-display) for names and headings. 14px body. */
   body {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen,
-      "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 14px;
     line-height: 1.42857;
-    color: rgb(0 0 0 / 0.9);
+    color: #18181B;
   }
-  h1, h2, h3, .font-display { font-family: inherit; font-weight: 600; letter-spacing: 0; }
+  h1, h2, h3 { font-weight: 600; letter-spacing: 0; }
   :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
 }
 
 @layer components {
-  .panel { @apply rounded-lg border bg-card; border-color: hsl(var(--card-edge)); box-shadow: 0 1px 1px rgb(0 0 0 / 0.04); }
-  .rail { @apply sticky self-start overflow-y-auto; top: 74px; max-height: calc(100vh - 86px); scrollbar-width: none; }
+  /* bento card: the one card style used across the hub */
+  .panel { @apply border bg-white; border-color: #E6E3DC; border-radius: 16px; box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 4px 12px -4px rgba(24, 24, 27, 0.04); transition: border-color 0.18s ease, box-shadow 0.18s ease; }
+  .panel-hover:hover { border-color: #D6D2C9; box-shadow: 0 4px 16px -4px rgba(24, 24, 27, 0.08), 0 1px 3px rgba(24, 24, 27, 0.05); }
+  .rail { @apply sticky self-start overflow-y-auto; top: 86px; max-height: calc(100vh - 98px); scrollbar-width: none; }
   .rail::-webkit-scrollbar { display: none; }
-  .field { @apply w-full rounded-xl border border-input bg-white px-3.5 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus:border-foreground focus:ring-1 focus:ring-foreground; }
+  .field { @apply w-full rounded-xl border border-[#E6E3DC] bg-[#F4F2EE]/60 px-3.5 py-2.5 text-[13px] text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/15; }
   .press { @apply transition active:scale-[0.97]; }
   .lift { @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-xl; }
   .cover { background: linear-gradient(120deg, hsl(var(--ink)), hsl(var(--primary)) 85%, hsl(205 90% 60%)); }
@@ -131,4 +132,15 @@
 .auth-fade-in { animation: auth-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 @media (prefers-reduced-motion: reduce) {
   .auth-float-slow, .auth-float-delayed, .auth-fade-in { animation: none; }
+}
+
+/* ---------- feed (design: docs/design/feed.html) ---------- */
+.fade-in { animation: auth-fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D6D3CD; border-radius: 999px; }
+/* Focus mode: hide both rails and widen the feed */
+html[data-focus="on"] .focus-hide { display: none; }
+@media (min-width: 1024px) {
+  html[data-focus="on"] .focus-center { grid-column: 3 / span 8; }
 }

@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { Building2, Home, Search, Users, UsersRound } from "lucide-react";
-import { getViewer } from "@/lib/hub";
+import { AUTHOR_FIELDS, getViewer, type Author } from "@/lib/hub";
 import { CONTACT, EVENTS } from "@/lib/site";
-import { NavLink } from "@/components/hub-client";
-import { Logo, SiteNav } from "@/components/site-nav";
+import { Logo, SiteNav, type NavNote } from "@/components/site-nav";
+import { HideOn } from "@/components/hide-on";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +18,27 @@ const FOOTER_LINKS = [
   ["Terms and conditions", "/policies/terms"],
 ];
 
+const NOTE_TEXT = {
+  like: "reacted to your post.",
+  comment: "commented on your post.",
+  connection_request: "invited you to connect.",
+  connection_accepted: "accepted your invitation.",
+} as const;
+
+function shortAgo(iso: string) {
+  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 3600) return `${Math.max(1, Math.floor(s / 60))}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  if (s < 604800) return `${Math.floor(s / 86400)}d ago`;
+  return `${Math.floor(s / 604800)}w ago`;
+}
+
 /** Shell shared by every hub page: top navigation, footer, mobile tab bar. */
 export default async function HubShell({ children }: { children: React.ReactNode }) {
   const { supabase, userId, profile, isStaff } = await getViewer();
 
   const none = Promise.resolve({ count: 0 });
-  const [unread, requests, inbox] = await Promise.all([
+  const [unread, requests, inbox, latest] = await Promise.all([
     userId
       ? supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null)
       : none,
@@ -38,24 +52,35 @@ export default async function HubShell({ children }: { children: React.ReactNode
     userId
       ? supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", userId).is("read_at", null)
       : none,
+    userId
+      ? supabase
+          .from("notifications")
+          .select(`id, type, post_id, read_at, created_at, actor:profiles!notifications_actor_id_fkey(${AUTHOR_FIELDS})`)
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(5)
+      : Promise.resolve({ data: [] }),
   ]);
 
-  const tabs = [
-    { href: "/feed", label: "Home", icon: Home },
-    { href: "/members", label: "Members", icon: Users },
-    { href: "/groups", label: "Groups", icon: UsersRound },
-    { href: "/businesses", label: "Businesses", icon: Building2 },
-    { href: "/search", label: "Search", icon: Search },
-  ];
+  type NoteRow = { id: string; type: keyof typeof NOTE_TEXT; post_id: string | null; read_at: string | null; created_at: string; actor: Author };
+  const notes: NavNote[] = ((latest.data ?? []) as unknown as NoteRow[]).map((n) => ({
+    id: n.id,
+    actor: n.actor?.full_name || "A member",
+    text: NOTE_TEXT[n.type] ?? "sent you an update",
+    href: n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network" : `/members/${n.actor?.id}`,
+    ago: shortAgo(n.created_at),
+    unread: !n.read_at,
+  }));
 
   return (
-    <div className="min-h-screen pb-16 lg:pb-0">
+    <div className="min-h-screen">
       <SiteNav
-        me={profile ? { id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url } : null}
+        me={profile ? { id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url, headline: profile.headline } : null}
         isStaff={isStaff}
         requests={requests.count ?? 0}
         messages={inbox.count ?? 0}
         unread={unread.count ?? 0}
+        notes={notes}
       />
 
       {profile?.status === "suspended" && (
@@ -66,7 +91,9 @@ export default async function HubShell({ children }: { children: React.ReactNode
 
       {children}
 
-      <footer className="mt-8 border-t bg-white">
+      {/* the feed carries its own small footer in the right rail */}
+      <HideOn paths={["/feed"]}>
+      <footer className="mt-8 border-t border-[#E6E3DC] bg-white">
         <div className="mx-auto grid max-w-[1260px] gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
             <Logo />
@@ -124,14 +151,9 @@ export default async function HubShell({ children }: { children: React.ReactNode
           All rights reserved. © {new Date().getFullYear()} Cmarketing Inc.
         </p>
       </footer>
+      </HideOn>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t bg-white/90 backdrop-blur-xl lg:hidden" aria-label="Quick links">
-        {tabs.map(({ href, label, icon: Icon }) => (
-          <NavLink key={href} href={href} label={label} variant="bottom">
-            <Icon className="h-5 w-5" />
-          </NavLink>
-        ))}
-      </nav>
+
     </div>
   );
 }

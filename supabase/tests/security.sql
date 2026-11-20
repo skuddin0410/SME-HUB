@@ -172,3 +172,16 @@ set role anon; set request.jwt.claim.sub = '';
 select t.expect_denied('visitors cannot claim a welcome email', $$select claim_welcome_email()$$);
 reset role;
 select t.expect('the claim is stored once', (select count(*) = 1 from welcome_emails where user_id = '00000000-0000-0000-0000-00000000000c'));
+
+-- ===== bookmarks and reaction counts (0010) =====
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+insert into saved_posts (user_id, post_id) select auth.uid(), id from posts where body = 'pub';
+select t.expect('post_extras counts each reaction and shows the viewer saved it',
+  (select (counts ->> 'love')::int = 1 and saved from post_extras(array(select id from posts where body = 'pub'))));
+select t.expect_denied('member cannot save a post in someone else''s name', $$insert into saved_posts (user_id, post_id) select '00000000-0000-0000-0000-00000000000c', id from posts where body = 'pub'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+select t.expect('bookmarks are private to their owner', (select count(*) = 0 from saved_posts));
+select t.expect('another viewer does not see the post as saved', (select count(*) = 0 from post_extras(array(select id from posts where body = 'pub')) where saved));
+set role anon; set request.jwt.claim.sub = '';
+select t.expect_denied('visitors cannot save posts', $$insert into saved_posts (user_id, post_id) select '00000000-0000-0000-0000-00000000000b', id from posts where body = 'pub'$$);
+reset role;

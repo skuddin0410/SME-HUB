@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { ChevronRight, Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
+import { Bookmark, ChevronRight, Facebook, Instagram, Linkedin, MessageCircle, Store, Twitter, UsersRound, Youtube } from "lucide-react";
 import { AUTHOR_FIELDS, getViewer, type Author } from "@/lib/hub";
 import { SOCIAL } from "@/lib/site";
 import { BLOG } from "@/lib/content";
-import { AvatarImg, Cover, Thumb } from "@/components/hub-client";
-import { GroupLine, TierBadge } from "@/components/hub";
+import { AvatarImg, GroupLogo, Thumb } from "@/components/hub-client";
+import { ComposeLink, JoinGroupButton } from "@/components/feed-client";
 
-type GroupRow = { slug: string; name: string; is_private: boolean; group_members: { count: number }[] };
+type GroupRow = { id: string; slug: string; name: string; is_private: boolean; group_members: { count: number }[] };
 
 const SOCIALS = [
   { label: "Facebook", href: SOCIAL.facebook, icon: Facebook },
@@ -16,90 +16,147 @@ const SOCIALS = [
   { label: "LinkedIn", href: SOCIAL.linkedin, icon: Linkedin },
 ];
 
-const card = "panel p-3";
-const railTitle = "mb-3 text-base font-semibold";
-const seeAll = "mt-3 inline-flex items-center gap-1 rounded px-1 py-1 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
+// design: docs/design/feed.html
+const SHOW_ALL = "mt-3.5 pt-2.5 border-t border-[#E6E3DC] w-full flex items-center justify-between text-xs font-semibold text-zinc-700 hover:text-blue-600 transition-colors";
+const QUICK_ROW = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors";
+const PROFILE_FIELDS = [
+  ["avatar_url", "Add a photo"],
+  ["headline", "Add headline"],
+  ["location", "Add your city"],
+  ["bio", "Write an about"],
+  ["website", "Add your website"],
+  ["full_name", "Add your name"],
+] as const;
 
-/** Identity card: cover, photo, name, headline, location. Sits at the top of the left rail. */
+/** Left rail: identity card with profile strength and counts, then quick links. */
 export async function ProfileCard() {
   const { supabase, userId, profile } = await getViewer();
   if (!profile || !userId) {
     return (
-      <div className="cover overflow-hidden rounded-lg p-4 text-white">
-        <p className="text-lg font-semibold leading-snug">Where Canadian small business owners meet.</p>
-        <p className="mt-1.5 text-xs text-white/85">Ask questions, share what is working and find the people who can help you grow.</p>
-        <Link href="/auth/sign-up" className="press mt-3 block rounded-full bg-white py-1.5 text-center text-sm font-semibold text-primary">
-          Join free
-        </Link>
-        <Link href="/auth/login" className="mt-2 block text-center text-xs text-white/85 hover:text-white hover:underline">
-          I already have an account
-        </Link>
+      <div className="panel overflow-hidden">
+        <div className="h-16 bg-gradient-to-r from-stone-800 via-zinc-800 to-stone-700" />
+        <div className="p-4 space-y-2">
+          <p className="font-display font-bold text-[15px] text-zinc-900 leading-snug">Where Canadian business owners meet.</p>
+          <p className="text-xs text-zinc-500">Ask questions, share what is working and find the people who can help you grow.</p>
+          <Link href="/auth/sign-up" className="block w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold text-center shadow-sm transition-colors">
+            Join free
+          </Link>
+          <Link href="/auth/login" className="block text-center text-[11px] font-medium text-blue-600 hover:underline">
+            I already have an account
+          </Link>
+        </div>
       </div>
     );
   }
 
-  const [connections, posts] = await Promise.all([
-    supabase.from("connections").select("requester_id", { count: "exact", head: true }).eq("status", "accepted"),
+  const [connections, posts, inbox, saved] = await Promise.all([
+    supabase.rpc("connection_count", { member: userId }),
     supabase.from("posts").select("id", { count: "exact", head: true }).eq("author_id", userId),
+    supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", userId).is("read_at", null),
+    supabase.from("saved_posts").select("post_id", { count: "exact", head: true }).eq("user_id", userId),
   ]);
-  const filled = [profile.full_name, profile.headline, profile.bio, profile.location, profile.website, profile.avatar_url].filter(Boolean).length;
-  const done = Math.round((filled / 6) * 100);
-  const row = "flex items-center justify-between rounded px-3 py-1 text-xs font-semibold transition-colors hover:bg-muted";
+  const missing = PROFILE_FIELDS.filter(([f]) => !profile[f]);
+  const step = Math.round(100 / PROFILE_FIELDS.length);
+  const done = Math.round(((PROFILE_FIELDS.length - missing.length) / PROFILE_FIELDS.length) * 100);
+  const unread = inbox.count ?? 0;
 
   return (
     <>
       <div className="panel overflow-hidden">
-        <Cover seed={profile.id} className="h-14" />
-        <div className="-mt-9 px-3 pb-3">
-          <Link href={`/members/${userId}`} className="relative inline-block rounded-full ring-2 ring-white">
-            <AvatarImg person={profile} size={72} />
-          </Link>
-          <Link href={`/members/${userId}`} className="mt-1 block truncate text-xl font-semibold leading-tight hover:underline">
-            {profile.full_name}
-          </Link>
-          <p className="text-xs">{profile.headline || "Add a headline"}</p>
-          {profile.location && <p className="mt-1 text-xs text-muted-foreground">{profile.location}</p>}
-          <div className="mt-2">
-            <TierBadge type={profile.member_type} />
-          </div>
-          {done < 100 && (
-            <Link href="/profile/edit" className="mt-3 block rounded border border-dashed border-foreground/50 px-2 py-1.5 text-xs font-semibold transition-colors hover:bg-muted">
-              <span className="flex items-center justify-between">
-                Profile strength <span className="text-primary">{done}%</span>
+        <div className="h-16 bg-gradient-to-r from-stone-800 via-zinc-800 to-stone-700" />
+        <div className="px-4 pb-4">
+          <div className="-mt-8 mb-3 flex items-end justify-between">
+            <Link href={`/members/${userId}`} className="relative">
+              <span className="block w-16 h-16 rounded-2xl overflow-hidden border-[3px] border-white shadow-sm bg-zinc-100 [&_img]:!rounded-none [&_span]:!rounded-none">
+                <AvatarImg person={profile} size={58} />
               </span>
-              <span className="mt-1 block h-1 overflow-hidden rounded-full bg-muted">
-                <span className="block h-full rounded-full bg-primary" style={{ width: `${done}%` }} />
+              <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" title="Online now" />
+            </Link>
+            <Link href="/profile/edit" className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-[#F4F2EE] hover:bg-[#E6E3DC] text-zinc-700 transition-colors">
+              Edit
+            </Link>
+          </div>
+
+          <div>
+            <Link href={`/members/${userId}`} className="block font-display font-bold text-[15px] text-zinc-900 leading-snug hover:underline">
+              {profile.full_name}
+            </Link>
+            <Link href="/profile/edit" className="mt-0.5 block text-left text-xs text-zinc-500 hover:text-blue-600 transition-colors">
+              {profile.headline || "+ Add a headline"}
+            </Link>
+          </div>
+
+          {done < 100 && (
+            <div className="mt-4 p-3 rounded-xl bg-[#F4F2EE]/80 border border-[#E6E3DC]/90">
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="font-medium text-zinc-700">Profile strength</span>
+                <span className="font-display font-bold text-blue-600">{done}%</span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-zinc-200/80 overflow-hidden">
+                <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500" style={{ width: `${done}%` }} />
+              </div>
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-[11px] text-zinc-500">
+                  {missing[0][1]} (+{step}%)
+                </span>
+                <Link href="/profile/edit" className="text-[11px] font-semibold text-blue-600 hover:underline">
+                  Complete →
+                </Link>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-3.5 pt-3.5 border-t border-[#E6E3DC] grid grid-cols-2 divide-x divide-[#E6E3DC]">
+            <Link href="/network" className="pr-3 text-left group">
+              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-800 transition-colors">Connections</span>
+              <span className="flex items-baseline justify-between mt-0.5">
+                <span className="font-display font-bold text-sm text-blue-600">{(connections.data as number | null) ?? 0}</span>
+                <span className="text-[10px] text-zinc-400 group-hover:text-blue-600">Grow</span>
               </span>
             </Link>
-          )}
+            <ComposeLink className="pl-3 text-left group">
+              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-800 transition-colors">Your posts</span>
+              <span className="flex items-baseline justify-between mt-0.5">
+                <span className="font-display font-bold text-sm text-zinc-900">{posts.count ?? 0}</span>
+                <span className="text-[10px] text-zinc-400 group-hover:text-blue-600">+ New</span>
+              </span>
+            </ComposeLink>
+          </div>
         </div>
       </div>
 
-      <div className="panel py-2">
-        <Link href="/network" className={row}>
-          <span>
-            Connections
-            <span className="block font-normal text-muted-foreground">Grow your network</span>
+      <div className="panel p-1.5">
+        <Link href="/messages" className={QUICK_ROW}>
+          <span className="flex items-center gap-2.5">
+            <MessageCircle className="w-4 h-4 text-zinc-400" />
+            <span>Messages</span>
           </span>
-          <span className="text-base text-primary">{connections.count ?? 0}</span>
+          <span className="flex items-center gap-1.5">
+            {unread > 0 && <span className="px-1.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-600">{unread}</span>}
+            <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+          </span>
         </Link>
-        <Link href={`/members/${userId}`} className={row}>
-          <span className="py-1">Your posts</span>
-          <span className="text-base text-primary">{posts.count ?? 0}</span>
+        <Link href="/groups" className={QUICK_ROW}>
+          <span className="flex items-center gap-2.5">
+            <UsersRound className="w-4 h-4 text-zinc-400" />
+            <span>Groups</span>
+          </span>
+          <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
         </Link>
-      </div>
-
-      <div className="panel py-2">
-        {[
-          ["Messages", "/messages"],
-          ["Groups", "/groups"],
-          ["My business listings", "/businesses/mine"],
-        ].map(([label, href]) => (
-          <Link key={href} href={href} className={`${row} py-1.5`}>
-            {label}
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </Link>
-        ))}
+        <Link href="/businesses/mine" className={QUICK_ROW}>
+          <span className="flex items-center gap-2.5">
+            <Store className="w-4 h-4 text-zinc-400" />
+            <span>My business listings</span>
+          </span>
+          <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+        </Link>
+        <Link href="/feed?saved=1" className={QUICK_ROW}>
+          <span className="flex items-center gap-2.5">
+            <Bookmark className="w-4 h-4 text-zinc-400" />
+            <span>Saved bookmarks</span>
+          </span>
+          <span className="text-[11px] font-semibold text-zinc-400">{saved.count ?? 0}</span>
+        </Link>
       </div>
     </>
   );
@@ -107,30 +164,125 @@ export async function ProfileCard() {
 
 export function ArticlesCard() {
   return (
-    <section className={card}>
-      <h2 className={railTitle}>Recent Articles</h2>
-      <ul className="space-y-3">
+    <div className="panel p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-display font-bold text-xs uppercase tracking-wider text-zinc-500">Recent Articles</h3>
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F4F2EE] text-zinc-600">CA Editorial</span>
+      </div>
+      <div className="space-y-2.5">
         {BLOG.slice(0, 6).map((a) => (
-          <li key={a.slug}>
-            <Link href={`/blog/${a.slug}`} className="group flex items-center gap-3">
-              <Thumb src={a.image} className="h-11 w-11 shrink-0 rounded" />
-              <span className="line-clamp-2 text-xs font-semibold leading-snug transition-colors group-hover:text-primary group-hover:underline">{a.title}</span>
-            </Link>
-          </li>
+          <Link key={a.slug} href={`/blog/${a.slug}`} className="w-full flex items-center gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F4F2EE] text-left group transition-colors">
+            <Thumb src={a.image} className="w-10 h-10 rounded-lg shrink-0 border border-[#E6E3DC]" />
+            <span className="min-w-0 flex-1">
+              <span className="text-xs font-medium text-zinc-800 group-hover:text-blue-600 leading-snug line-clamp-2 transition-colors">{a.title}</span>
+              <span className="text-[10px] text-zinc-400 mt-0.5 block">CanadianSME Magazine</span>
+            </span>
+          </Link>
         ))}
-      </ul>
-      <Link href="/blog" className={seeAll}>
-        See all articles <ChevronRight className="h-4 w-4" />
+      </div>
+      <Link href="/blog" className={SHOW_ALL.replace("mt-3.5", "mt-3")}>
+        <span>See all articles</span>
+        <ChevronRight className="w-3.5 h-3.5" />
       </Link>
-    </section>
+    </div>
   );
 }
 
+/** Right rail, top: the newest members, with a link to everyone. */
+export async function ActiveMembersCard() {
+  const { supabase, userId } = await getViewer();
+  const { data } = await supabase.from("profiles").select(AUTHOR_FIELDS).order("created_at", { ascending: false }).limit(11);
+  const members = ((data ?? []) as Author[]).filter((p) => p.id !== userId).slice(0, 10);
+  if (members.length === 0) return null;
+  return (
+    <div className="panel p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          <h3 className="font-display font-bold text-[13px] text-zinc-900">Newest Members</h3>
+        </div>
+        <span className="text-[11px] text-zinc-400">Say hello</span>
+      </div>
+      <div className="grid grid-cols-5 gap-2.5">
+        {members.map((m) => (
+          <Link
+            key={m.id}
+            href={`/members/${m.id}`}
+            title={`${m.full_name}${m.headline ? ` • ${m.headline}` : ""}`}
+            className="relative group focus:outline-none rounded-full [&_img]:ring-1 [&_img]:ring-[#E6E3DC] [&_img]:transition-all group-hover:[&_img]:ring-2 group-hover:[&_img]:ring-blue-600 hover:scale-105 transition-transform"
+          >
+            <AvatarImg person={m} size={40} />
+          </Link>
+        ))}
+      </div>
+      <Link href="/members" className={SHOW_ALL}>
+        <span>Show all</span>
+        <ChevronRight className="w-3.5 h-3.5" />
+      </Link>
+    </div>
+  );
+}
+
+export async function GroupsCard() {
+  const { supabase, userId } = await getViewer();
+  const [{ data }, mine] = await Promise.all([
+    supabase.from("groups").select("id, slug, name, is_private, group_members(count)").order("created_at", { ascending: false }).limit(4),
+    userId ? supabase.from("group_members").select("group_id").eq("user_id", userId) : Promise.resolve({ data: [] as { group_id: string }[] }),
+  ]);
+  const groups = (data ?? []) as unknown as GroupRow[];
+  if (groups.length === 0) return null;
+  const joined = new Set(((mine.data ?? []) as { group_id: string }[]).map((m) => m.group_id));
+  return (
+    <div className="panel p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-display font-bold text-[13px] text-zinc-900">Groups to Explore</h3>
+        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F2EE] text-zinc-600">Canada</span>
+      </div>
+      <div className="space-y-2.5">
+        {groups.map((g) => {
+          const members = g.group_members[0]?.count ?? 0;
+          return (
+            <div key={g.id} className="flex items-center justify-between gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F4F2EE]/70 transition-colors">
+              <Link href={`/groups/${g.slug}`} className="flex items-center gap-2.5 min-w-0">
+                <GroupLogo seed={g.slug} name={g.name} size={36} className="!rounded-xl border border-[#E6E3DC]" />
+                <span className="min-w-0">
+                  <span className="block text-xs font-semibold text-zinc-900 truncate">{g.name}</span>
+                  <span className="block text-[11px] text-zinc-500">
+                    {members} {members === 1 ? "member" : "members"}
+                    {g.is_private ? " • private" : ""}
+                  </span>
+                </span>
+              </Link>
+              {g.is_private ? (
+                <Link href={`/groups/${g.slug}`} className="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-700 hover:text-white transition-all">
+                  View
+                </Link>
+              ) : (
+                <JoinGroupButton groupId={g.id} initial={joined.has(g.id)} signedIn={!!userId} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <Link href="/groups" className={SHOW_ALL}>
+        <span>Show all</span>
+        <ChevronRight className="w-3.5 h-3.5" />
+      </Link>
+    </div>
+  );
+}
+
+/** Right rail, bottom: social links and the small footer. */
 export function SocialCard() {
   return (
-    <section className={card}>
-      <h2 className={railTitle}>Follow Us on Social Media</h2>
-      <div className="flex gap-2">
+    <div className="panel p-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="font-display font-bold text-xs text-zinc-800">Follow SMB Hub</span>
+        <span className="text-[10px] font-medium text-zinc-400">@canadiansme</span>
+      </div>
+      <div className="flex items-center justify-between gap-1.5">
         {SOCIALS.map(({ label, href, icon: Icon }) => (
           <a
             key={label}
@@ -138,64 +290,37 @@ export function SocialCard() {
             target="_blank"
             rel="noreferrer"
             aria-label={label}
-            className="press flex h-10 w-10 items-center justify-center rounded-full border text-foreground/70 transition-colors hover:border-primary hover:bg-primary hover:text-white"
+            className="w-8 h-8 rounded-xl bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"
           >
-            <Icon className="h-[18px] w-[18px]" />
+            <Icon className="w-3.5 h-3.5" />
           </a>
         ))}
       </div>
-    </section>
-  );
-}
-
-export async function ActiveMembersCard() {
-  const { supabase, userId } = await getViewer();
-  const { data } = await supabase.from("profiles").select(AUTHOR_FIELDS).order("created_at", { ascending: false }).limit(11);
-  const members = ((data ?? []) as Author[]).filter((p) => p.id !== userId).slice(0, 10);
-  if (members.length === 0) return null;
-  return (
-    <section className={card}>
-      <h2 className={railTitle}>Recently Active Members</h2>
-      <div className="grid grid-cols-5 gap-2.5">
-        {members.map((m) => (
-          <Link key={m.id} href={`/members/${m.id}`} title={m.full_name} className="transition-transform duration-150 hover:scale-110">
-            <AvatarImg person={m} size={44} />
-          </Link>
-        ))}
+      <div className="pt-2.5 border-t border-[#F4F2EE] flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-zinc-400">
+        <span>SMB Hub © {new Date().getFullYear()}</span>
+        <span>•</span>
+        <Link href="/about" className="hover:text-zinc-700">
+          About
+        </Link>
+        <span>•</span>
+        <Link href="/policies/terms" className="hover:text-zinc-700">
+          Terms
+        </Link>
+        <span>•</span>
+        <Link href="/help" className="hover:text-zinc-700">
+          Help
+        </Link>
       </div>
-      <Link href="/members" className={seeAll}>
-        Show all <ChevronRight className="h-4 w-4" />
-      </Link>
-    </section>
+    </div>
   );
 }
 
-export async function GroupsCard() {
-  const { supabase } = await getViewer();
-  const { data } = await supabase.from("groups").select("slug, name, is_private, group_members(count)").order("created_at", { ascending: false }).limit(4);
-  const groups = (data ?? []) as unknown as GroupRow[];
-  if (groups.length === 0) return null;
-  return (
-    <section className={card}>
-      <h2 className={railTitle}>Groups to Explore</h2>
-      <div className="space-y-3">
-        {groups.map((g) => (
-          <GroupLine key={g.slug} group={{ ...g, members: g.group_members[0]?.count ?? 0 }} />
-        ))}
-      </div>
-      <Link href="/groups" className={seeAll}>
-        Show all <ChevronRight className="h-4 w-4" />
-      </Link>
-    </section>
-  );
-}
-
-/** Profile-style pages: a wide main column and one right column, as on a LinkedIn profile. */
+/** Profile-style pages: a wide main column and one right column. */
 export function TwoCol({ children, aside }: { children: React.ReactNode; aside: React.ReactNode }) {
   return (
-    <div className="mx-auto grid max-w-[1260px] items-start gap-6 px-4 py-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <main className="flex min-w-0 flex-col gap-2">{children}</main>
-      <aside className="rail hidden space-y-2 lg:block">{aside}</aside>
+    <div className="max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      <main className="lg:col-span-9 flex min-w-0 flex-col gap-4">{children}</main>
+      <aside className="lg:col-span-3 hidden space-y-4 lg:block">{aside}</aside>
     </div>
   );
 }

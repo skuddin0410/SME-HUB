@@ -80,6 +80,16 @@ export async function toggleRepost(postId: string, reposted: boolean) {
   fail(error);
 }
 
+/** Bookmarks: saved is the state before the click. */
+export async function toggleSave(postId: string, saved: boolean) {
+  uuid(postId);
+  const { supabase, userId } = await requireUser();
+  const { error } = saved
+    ? await supabase.from("saved_posts").delete().eq("post_id", postId).eq("user_id", userId)
+    : await supabase.from("saved_posts").upsert({ post_id: postId, user_id: userId }, { ignoreDuplicates: true });
+  fail(error);
+}
+
 export async function loadComments(postId: string): Promise<CommentRow[]> {
   uuid(postId);
   const supabase = await createClient();

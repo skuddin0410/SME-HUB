@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Check, Clock, MessageSquareText, Plus, UserPlus, X } from "lucide-react";
+import { Check, Clock, MessageSquareText, UserPlus, X } from "lucide-react";
 import { acceptConnection, removeConnection, requestConnection } from "@/app/(hub)/actions";
 import type { Author, LinkState } from "@/lib/hub";
 import { MEMBER_LABEL } from "@/lib/demo";
@@ -43,21 +43,21 @@ export function ConnectButton({
   };
 
   const base = cx(
-    "press inline-flex items-center justify-center gap-1.5 rounded-full text-sm font-semibold transition-colors duration-150",
-    variant === "block" ? "w-full px-4 py-1.5" : variant === "solid" ? "h-8 px-4 !text-base" : variant === "pill" || variant === "quiet" ? "px-4 py-1.5" : "px-2 py-1",
+    "press inline-flex items-center justify-center gap-1.5 rounded-xl text-xs font-semibold transition-all duration-150 [&_svg]:h-3.5 [&_svg]:w-3.5",
+    variant === "block" ? "w-full px-4 py-2" : variant === "solid" ? "h-8 px-4" : "px-3 py-1.5",
   );
   // "solid" is the main button on a profile; "quiet" is the grey pill in "More profiles for you"
   const connect =
     variant === "solid"
-      ? "bg-primary text-white hover:bg-primary/90"
+      ? "bg-zinc-900 text-white hover:bg-zinc-800"
       : variant === "quiet"
-        ? "border border-foreground/50 text-foreground/70 hover:bg-muted hover:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.5)]"
+        ? "bg-[#F4F2EE] text-zinc-700 hover:bg-zinc-900 hover:text-white"
         : null;
-  const outline = variant === "text" ? "text-primary hover:bg-primary/10" : "border border-primary text-primary hover:bg-primary/10 hover:shadow-[inset_0_0_0_1px_hsl(var(--primary))]";
-  const quiet = variant === "text" ? "text-muted-foreground hover:bg-muted" : "border border-foreground/40 text-muted-foreground hover:bg-muted hover:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.4)]";
+  const outline = variant === "text" ? "text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100" : "border border-blue-200 text-blue-600 bg-white hover:bg-blue-50";
+  const quiet = variant === "text" ? "text-zinc-500 hover:bg-[#F4F2EE]" : "border border-[#E6E3DC] text-zinc-600 bg-white hover:bg-[#F4F2EE]";
 
   if (state === "connected") {
-    if (variant === "text") return null;
+    if (variant === "text") return <span className={cx(base, "bg-emerald-50 text-emerald-700 border border-emerald-200")}>Connected ✓</span>;
     return (
       <Link href={`/messages?with=${otherId}`} className={cx(base, outline)}>
         <MessageSquareText className="h-4 w-4" />
@@ -84,7 +84,7 @@ export function ConnectButton({
   if (state === "received") {
     return (
       <span className={cx("inline-flex gap-2", variant === "block" && "w-full")}>
-        <button type="button" onClick={() => go("none", () => removeConnection(otherId))} className={cx(base, "text-muted-foreground hover:bg-muted", variant === "block" && "!w-auto flex-1")}>
+        <button type="button" onClick={() => go("none", () => removeConnection(otherId))} className={cx(base, "text-zinc-600 hover:bg-[#F4F2EE]", variant === "block" && "!w-auto flex-1")}>
           Ignore
         </button>
         <button type="button" onClick={() => go("connected", () => acceptConnection(otherId))} className={cx(base, variant === "solid" ? connect : outline, variant === "block" && "!w-auto flex-1")}>
@@ -96,8 +96,12 @@ export function ConnectButton({
   }
   return (
     <button type="button" onClick={() => go("sent", () => requestConnection(otherId))} className={cx(base, connect ?? outline)}>
-      {variant === "text" ? <Plus className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
-      Connect
+      {variant === "text" ? "+ Connect" : (
+        <>
+          <UserPlus className="h-4 w-4" />
+          Connect
+        </>
+      )}
     </button>
   );
 }

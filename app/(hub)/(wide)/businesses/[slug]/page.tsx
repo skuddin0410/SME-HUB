@@ -99,13 +99,13 @@ export default async function BusinessPage({ params }: { params: Promise<{ slug:
                   href={site}
                   target="_blank"
                   rel="noreferrer nofollow"
-                  className="press inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
+                  className="press inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
                 >
                   <Globe className="h-4 w-4" /> Visit website
                 </a>
               )}
               {company.owner_id === userId && (
-                <Link href={`/businesses/mine?edit=${company.id}`} className="press rounded-full border border-primary px-4 py-1.5 text-sm font-semibold text-primary hover:bg-primary/10">
+                <Link href={`/businesses/mine?edit=${company.id}`} className="press rounded-xl border border-primary px-4 py-1.5 text-sm font-semibold text-primary hover:bg-primary/10">
                   Edit listing
                 </Link>
               )}

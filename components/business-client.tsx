@@ -125,7 +125,7 @@ export function Reviews({
             type="button"
             onClick={submit}
             disabled={saved}
-            className={cx("press mt-2 inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors", saved ? "bg-emerald-50 text-emerald-700" : "bg-primary text-white hover:bg-primary/90")}
+            className={cx("press mt-2 inline-flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-sm font-semibold transition-colors", saved ? "bg-emerald-50 text-emerald-700" : "bg-primary text-white hover:bg-primary/90")}
           >
             {saved && <Check className="h-4 w-4 animate-pop" />}
             {saved ? "Saved" : mine ? "Update review" : "Post review"}
@@ -190,7 +190,7 @@ export function InvitePanel({ groupId, candidates, invited }: { groupId: string;
             type="button"
             onClick={() => toggle(p.id)}
             className={cx(
-              "press inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors duration-150",
+              "press inline-flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-sm font-semibold transition-colors duration-150",
               sent.has(p.id) ? "border border-foreground/40 text-muted-foreground hover:bg-muted" : "border border-primary text-primary hover:bg-primary/10",
             )}
           >

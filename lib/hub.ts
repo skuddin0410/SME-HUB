@@ -38,6 +38,10 @@ export type Post = {
   myReaction: ReactionKind | null;
   reposts: number;
   reposted: boolean;
+  /** how many of each reaction (Helpful, Insightful, Celebrate) */
+  counts: Partial<Record<ReactionKind, number>>;
+  /** the viewer bookmarked it */
+  saved: boolean;
   link: LinkState;
 };
 
@@ -102,7 +106,7 @@ export async function requireStaff() {
 
 const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
 
-type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link"> & {
+type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link" | "counts" | "saved"> & {
   reactions: { count: number }[];
   comments: { count: number }[];
 };
@@ -111,14 +115,16 @@ type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" 
 export async function fetchPosts(
   supabase: Supabase,
   userId: string | null,
-  opts: { page?: number; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number } = {},
+  opts: { page?: number; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string } = {},
 ): Promise<Post[]> {
   const page = Math.max(1, opts.page ?? 1);
   const size = opts.limit ?? PAGE_SIZE;
 
-  let query = supabase.from("posts").select(POST_SELECT);
+  // bookmarks: only posts this member saved (the table's rules show each member their own)
+  let query = supabase.from("posts").select(opts.savedBy ? `${POST_SELECT}, saved_posts!inner(user_id)` : POST_SELECT);
+  if (opts.savedBy) query = query.eq("saved_posts.user_id", opts.savedBy);
   // pinned posts lead the main feed only
-  if (!opts.authorId && !opts.postId && !opts.search && !opts.kind) {
+  if (!opts.authorId && !opts.postId && !opts.search && !opts.kind && !opts.savedBy) {
     query = query.order("pinned_at", { ascending: false, nullsFirst: false });
   }
   query = query.order("created_at", { ascending: false }).range((page - 1) * size, page * size - 1);
@@ -135,7 +141,7 @@ export async function fetchPosts(
   if (rows.length === 0) return [];
 
   // reaction kinds, the viewer's own reaction and reposts; posts still render if this call fails
-  type Extra = { post_id: string; kinds: ReactionKind[]; my_kind: ReactionKind | null; reposts: number; reposted: boolean };
+  type Extra = { post_id: string; kinds: ReactionKind[]; my_kind: ReactionKind | null; reposts: number; reposted: boolean; counts?: Partial<Record<ReactionKind, number>>; saved?: boolean };
   const { data: extraRows } = await supabase.rpc("post_extras", { ids: rows.map((r) => r.id) });
   const extras = new Map(((extraRows ?? []) as Extra[]).map((e) => [e.post_id, e]));
 
@@ -152,6 +158,8 @@ export async function fetchPosts(
       myReaction: userId ? (e?.my_kind ?? null) : null,
       reposts: e?.reposts ?? 0,
       reposted: !!userId && !!e?.reposted,
+      counts: e?.counts ?? (likes > 0 ? { like: likes } : {}),
+      saved: !!userId && !!e?.saved,
     };
   });
 }

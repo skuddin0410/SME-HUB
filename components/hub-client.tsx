@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageCircle, Megaphone, Heart, PartyPopper, Repeat2, Send, ThumbsUp, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
+import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageSquare, Megaphone, Repeat2, Send, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useImageUpload } from "@/lib/upload";
 import {
@@ -131,10 +131,10 @@ export function PostBody({ text }: { text: string }) {
   const long = text.length > 420 || text.split("\n").length > 7;
   const [open, setOpen] = useState(false);
   return (
-    <div className="px-4 py-2">
-      <p className={cx("whitespace-pre-wrap break-words text-sm leading-5", long && !open && "line-clamp-5")}>{text}</p>
+    <div>
+      <p className={cx("text-[13.5px] text-zinc-800 leading-[1.6] whitespace-pre-line break-words", long && !open && "line-clamp-5")}>{text}</p>
       {long && (
-        <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-sm font-semibold text-primary hover:underline">
+        <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-xs font-semibold text-blue-600 hover:underline">
           {open ? "Show less" : "See more"}
         </button>
       )}
@@ -218,10 +218,10 @@ export function SubmitButton({
 }) {
   const { pending } = useFormStatus();
   const tones = {
-    primary: "bg-primary text-white hover:bg-primary/90",
-    dark: "bg-[hsl(var(--ink))] text-white hover:opacity-90",
-    outline: "border border-input bg-white hover:bg-muted",
-    ghost: "text-muted-foreground hover:bg-muted hover:text-foreground",
+    primary: "bg-blue-600 text-white shadow-sm hover:bg-blue-700",
+    dark: "bg-zinc-900 text-white hover:bg-zinc-800",
+    outline: "border border-[#E6E3DC] bg-white text-zinc-700 hover:bg-[#F4F2EE]",
+    ghost: "text-zinc-600 hover:bg-[#F4F2EE] hover:text-zinc-900",
     danger: "border border-rose-200 text-rose-600 hover:bg-rose-50",
   }[tone];
   return (
@@ -229,7 +229,7 @@ export function SubmitButton({
       type="submit"
       disabled={pending || disabled}
       className={cx(
-        "press inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold disabled:opacity-60",
+        "press inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition-all disabled:opacity-60",
         tones,
         className,
       )}
@@ -240,24 +240,61 @@ export function SubmitButton({
   );
 }
 
-// ---------- composer ----------
+// ---------- composer (design: docs/design/feed.html) ----------
+const KIND_OPTIONS: { value: Kind; label: string }[] = [
+  { value: "update", label: "📝 Share an update" },
+  { value: "win", label: "🏆 Share a Win" },
+  { value: "question", label: "❓ Ask a Question" },
+  { value: "offer", label: "📣 Post an Offer" },
+  { value: "hiring", label: "💼 Hiring / Talent" },
+];
+const QUICK = "flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors";
+const SMALL_SELECT = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F4F2EE] border border-[#E6E3DC] text-zinc-800 focus:outline-none focus:border-blue-600";
+
 export function Composer({
   me,
   groupId,
   placeholder,
+  initialKind,
 }: {
   me: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
   groupId?: string;
   placeholder?: string;
+  /** open on this post type straight away (for example from ?compose=win) */
+  initialKind?: Kind;
 }) {
   const [state, action] = useActionState<FormState, FormData>(createPost, {});
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!!initialKind);
   const photo = useImageUpload("post");
   const clearPhoto = photo.clear;
   const [count, setCount] = useState(0);
-  const [kind, setKind] = useState<Kind>("update");
+  const [kind, setKind] = useState<Kind>(initialKind ?? "update");
   const formRef = useRef<HTMLFormElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const textRef = useRef<HTMLTextAreaElement>(null);
+
+  const expand = (k?: Kind, pickPhoto = false) => {
+    if (k) setKind(k);
+    setOpen(true);
+    setTimeout(() => (pickPhoto ? fileRef.current?.click() : textRef.current?.focus()), 30);
+  };
+  const collapse = () => {
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    if (initialKind) setTimeout(() => textRef.current?.focus(), 60);
+  }, [initialKind]);
+
+  // the header's command palette and the left rail's "+ New" open the composer
+  useEffect(() => {
+    const on = (e: Event) => {
+      const k = (e as CustomEvent<string>).detail;
+      expand(k && k in KINDS ? (k as Kind) : undefined);
+    };
+    window.addEventListener("smbhub:compose", on);
+    return () => window.removeEventListener("smbhub:compose", on);
+  }, []);
 
   useEffect(() => {
     if (state.ok) {
@@ -271,16 +308,16 @@ export function Composer({
 
   if (!me) {
     return (
-      <div className="panel flex flex-wrap items-center justify-between gap-3 p-5">
+      <div className="panel p-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="font-display text-lg font-semibold">Have something to share?</p>
-          <p className="text-sm text-muted-foreground">Join to post, comment and connect with other owners.</p>
+          <p className="font-display font-bold text-sm text-zinc-900">Have something to share?</p>
+          <p className="text-xs text-zinc-500">Join to post, comment and connect with other owners.</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/auth/sign-up" className="press rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700">
+          <Link href="/auth/sign-up" className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all">
             Join free
           </Link>
-          <Link href="/auth/login" className="press rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold">
+          <Link href="/auth/login" className="px-3.5 py-1.5 rounded-xl text-xs font-medium text-zinc-700 border border-[#E6E3DC] hover:bg-[#F4F2EE] transition-all">
             Sign in
           </Link>
         </div>
@@ -289,126 +326,127 @@ export function Composer({
   }
 
   return (
-    <form ref={formRef} action={action} className="panel px-4 pb-1 pt-3">
+    <form ref={formRef} action={action} className="panel p-4" id="composer">
       {groupId && <input type="hidden" name="group_id" value={groupId} />}
-      <div className="flex gap-3">
-        <AvatarImg person={me} size={48} />
-        <textarea
-          name="body"
-          required
-          maxLength={5000}
-          rows={open ? 4 : 1}
-          onFocus={() => setOpen(true)}
-          onChange={(e) => setCount(e.target.value.length)}
-          placeholder={!open ? (placeholder ?? "Start a post") : kind === "update" ? (placeholder ?? KINDS.update.prompt) : KINDS[kind].prompt}
-          className={cx(
-            "field resize-none transition-all duration-200",
-            open ? "!rounded-xl" : "!rounded-full !py-3 font-semibold placeholder:text-foreground/60 hover:bg-muted",
-          )}
-        />
-      </div>
-      {!open && (
-        <div className="mt-2 flex justify-around">
-          {[
-            { label: "Photo", icon: ImagePlus, tone: "text-sky-600", run: () => fileRef.current?.click() },
-            { label: "Ask a question", icon: CircleHelp, tone: "text-blue-700", run: () => setKind("question") },
-            { label: "Share a win", icon: Trophy, tone: "text-amber-600", run: () => setKind("win") },
-            { label: "Post an offer", icon: Megaphone, tone: "text-emerald-600", run: () => setKind("offer") },
-          ].map(({ label, icon: Icon, tone, run }) => (
-            <button
-              key={label}
-              type="button"
-              onClick={() => {
-                setOpen(true);
-                run();
-              }}
-              aria-label={label}
-              className="press inline-flex items-center gap-2 whitespace-nowrap rounded-md px-2 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-muted"
-            >
-              <Icon className={cx("h-5 w-5", tone)} />
-              <span className={label === "Photo" ? "hidden sm:inline" : "hidden sm:inline lg:max-xl:hidden"}>{label}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
       <input type="hidden" name="kind" value={kind} />
-      {open && (
-        <div className="mt-3 flex animate-rise flex-wrap gap-1.5" role="radiogroup" aria-label="What are you sharing?">
-          {(Object.keys(KINDS) as Kind[]).map((k) => (
-            <button
-              key={k}
-              type="button"
-              role="radio"
-              aria-checked={kind === k}
-              onClick={() => setKind(k)}
-              className={cx(
-                "press rounded-full px-3 py-1 text-xs font-semibold transition-colors",
-                kind === k ? "bg-primary text-white" : "bg-muted text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {KINDS[k].label}
-            </button>
-          ))}
-        </div>
-      )}
       <input type="hidden" name="image_url" value={photo.url} />
-      {photo.error && <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{photo.error}</p>}
-      {photo.preview && (
-        <div className="relative mt-3 animate-rise">
-          <img src={photo.preview} alt="Selected image" className={cx("max-h-72 w-full rounded-xl object-cover", photo.busy && "opacity-60")} />
-          <button
-            type="button"
-            aria-label="Remove image"
-            onClick={() => {
-              photo.clear();
-              if (fileRef.current) fileRef.current.value = "";
-            }}
-            className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-      {state.error && <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.error}</p>}
-
-      <div className={cx("mb-2 mt-3 flex flex-wrap items-center justify-between gap-2", !open && "hidden")}>
-        <div className="flex items-center gap-2">
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => photo.pick(e.target.files?.[0])}
-          />
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="press inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <ImagePlus className="h-4 w-4" />
-            {photo.busy ? "Uploading…" : "Photo"}
-          </button>
-          {!groupId && (
-            <select
-              name="visibility"
-              defaultValue="public"
-              aria-label="Who can see this post"
-              className="rounded-full border border-input bg-white px-3 py-2 text-sm"
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => photo.pick(e.target.files?.[0])} />
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 shrink-0 [&_img]:ring-zinc-200">
+          <AvatarImg person={me} size={36} />
+        </span>
+        <div className="flex-1 min-w-0">
+          {!open ? (
+            <button
+              type="button"
+              onClick={() => expand()}
+              className="w-full text-left px-4 py-2.5 rounded-xl bg-[#F4F2EE]/80 hover:bg-[#ECE9E2] border border-[#E6E3DC] text-xs sm:text-[13px] text-zinc-500 transition-colors"
             >
-              <option value="public">Anyone</option>
-              <option value="members">Members only</option>
-              <option value="connections">My connections</option>
-              <option value="private">Only me</option>
-            </select>
+              {placeholder ?? "Start a post, ask a question, or share a win..."}
+            </button>
+          ) : (
+            <div className="space-y-3 fade-in">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-medium text-zinc-500">Post tag:</span>
+                  <select value={kind} onChange={(e) => setKind(e.target.value as Kind)} aria-label="Post tag" className={SMALL_SELECT}>
+                    {KIND_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                  {!groupId && (
+                    <select name="visibility" defaultValue="public" aria-label="Who can see this post" className={SMALL_SELECT}>
+                      <option value="public">🌐 Anyone</option>
+                      <option value="members">👥 Members only</option>
+                      <option value="connections">🤝 My connections</option>
+                      <option value="private">🔒 Only me</option>
+                    </select>
+                  )}
+                </div>
+                <button type="button" onClick={collapse} aria-label="Close" className="text-xs text-zinc-400 hover:text-zinc-700 p-1">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <textarea
+                ref={textRef}
+                name="body"
+                required
+                maxLength={5000}
+                rows={3}
+                onChange={(e) => setCount(e.target.value.length)}
+                placeholder={kind === "update" ? "Share a practical lesson, wholesale milestone, supplier question, or B2B offer with Canadian founders..." : KINDS[kind].prompt}
+                className="w-full p-3 rounded-xl bg-[#F4F2EE]/60 border border-[#E6E3DC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 text-[13px] text-zinc-900 placeholder-zinc-400 resize-none leading-relaxed"
+              />
+
+              {photo.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{photo.error}</p>}
+              {photo.preview && (
+                <div className="relative rounded-xl overflow-hidden border border-[#E6E3DC] bg-zinc-100">
+                  <img src={photo.preview} alt="Selected image" className={cx("w-full max-h-[360px] object-cover", photo.busy && "opacity-60")} />
+                  <button
+                    type="button"
+                    aria-label="Remove image"
+                    onClick={() => {
+                      photo.clear();
+                      if (fileRef.current) fileRef.current.value = "";
+                    }}
+                    className="absolute right-2 top-2 rounded-full bg-zinc-900/70 p-1.5 text-white"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+              {state.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{state.error}</p>}
+
+              <div className="flex items-center justify-between pt-1">
+                <button type="button" onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE] transition-colors">
+                  <ImagePlus className="w-3.5 h-3.5 text-blue-600" />
+                  <span>{photo.busy ? "Uploading…" : photo.preview ? "Change photo" : "Add photo"}</span>
+                </button>
+                <div className="flex items-center gap-2">
+                  <span className={cx("hidden sm:inline text-[11px]", count > 4800 ? "text-rose-600" : "text-zinc-400")}>{count}/5000</span>
+                  <button type="button" onClick={collapse} className="px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE]">
+                    Cancel
+                  </button>
+                  <PublishButton disabled={photo.busy} />
+                </div>
+              </div>
+            </div>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <span className={cx("text-xs", count > 4800 ? "text-rose-600" : "text-muted-foreground")}>{count}/5000</span>
-          <SubmitButton disabled={photo.busy}>Post</SubmitButton>
-        </div>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-[#F4F2EE] grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+        <button type="button" onClick={() => expand(undefined, true)} className={QUICK}>
+          <ImagePlus className="w-3.5 h-3.5 text-blue-600" />
+          <span>Photo</span>
+        </button>
+        <button type="button" onClick={() => expand("question")} className={QUICK}>
+          <CircleHelp className="w-3.5 h-3.5 text-indigo-600" />
+          <span>Ask a question</span>
+        </button>
+        <button type="button" onClick={() => expand("win")} className={QUICK}>
+          <Trophy className="w-3.5 h-3.5 text-amber-500" />
+          <span>Share a win</span>
+        </button>
+        <button type="button" onClick={() => expand("offer")} className={QUICK}>
+          <Megaphone className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Post an offer</span>
+        </button>
       </div>
     </form>
+  );
+}
+
+function PublishButton({ disabled }: { disabled: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending || disabled} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-all disabled:opacity-60">
+      {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+      Publish post
+    </button>
   );
 }
 
@@ -418,7 +456,7 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"menu" | "report" | "done" | "copied">("menu");
   const [gone, setGone] = useState(false);
-  const row = "flex w-full items-center gap-3 rounded px-3 py-2 text-left text-sm font-semibold text-foreground/80 transition-colors hover:bg-muted";
+  const row = "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs text-zinc-700 transition-colors hover:bg-[#F4F2EE] [&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:text-zinc-400";
 
   useEffect(() => {
     if (!open) return;
@@ -433,11 +471,11 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
   if (gone) return null;
   return (
     <div className="relative" onClick={(e) => e.stopPropagation()} role="presentation">
-      <button type="button" aria-label="Post options" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="press rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-        <Ellipsis className="h-5 w-5" />
+      <button type="button" aria-label="Post options" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="p-1.5 rounded-lg text-zinc-400 transition-colors hover:bg-[#F4F2EE] hover:text-zinc-800">
+        <Ellipsis className="h-4 w-4" />
       </button>
       {open && (
-        <div className="panel absolute right-0 z-20 mt-1 w-60 animate-rise p-1.5 shadow-xl">
+        <div className="absolute right-0 z-20 mt-1 w-60 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-2 fade-in">
           {step === "menu" && (
             <>
               <button
@@ -499,19 +537,21 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
   );
 }
 
-// ---------- post actions: like, comment, share, send ----------
-const REACTIONS: Record<ReactionKind, { label: string; icon: typeof ThumbsUp; dot: string; text: string }> = {
-  like: { label: "Like", icon: ThumbsUp, dot: "bg-[#378fe9]", text: "!text-[#0a66c2]" },
-  celebrate: { label: "Celebrate", icon: PartyPopper, dot: "bg-[#6dae4f]", text: "!text-[#44712e]" },
-  love: { label: "Love", icon: Heart, dot: "bg-[#df704d]", text: "!text-[#b24020]" },
-};
-const REACTION_ORDER: ReactionKind[] = ["like", "celebrate", "love"];
+// ---------- post actions (design: docs/design/feed.html) ----------
+// One reaction per member, LinkedIn style. Stored kinds keep their database names:
+// like = Helpful, love = Insightful, celebrate = Celebrate.
+const REACTIONS: { kind: ReactionKind; emoji: string; label: string; on: string }[] = [
+  { kind: "like", emoji: "👍", label: "Helpful", on: "bg-blue-50 text-blue-700 border-blue-200" },
+  { kind: "love", emoji: "💡", label: "Insightful", on: "bg-amber-50 text-amber-800 border-amber-200" },
+  { kind: "celebrate", emoji: "🎉", label: "Celebrate", on: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+];
+const PILL_OFF = "bg-[#F4F2EE]/70 hover:bg-[#F4F2EE] text-zinc-600 border-transparent";
+const ICON_ACTION = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors";
 
 export function PostActions({
   postId,
-  likes,
   comments,
-  kinds,
+  counts,
   myReaction,
   reposts,
   reposted,
@@ -520,22 +560,20 @@ export function PostActions({
   startOpen = false,
 }: {
   postId: string;
-  likes: number;
+  likes?: number;
   comments: number;
-  kinds: ReactionKind[];
+  counts: Partial<Record<ReactionKind, number>>;
+  kinds?: ReactionKind[];
   myReaction: ReactionKind | null;
   reposts: number;
   reposted: boolean;
-  me: (Pick<Profile, "id" | "full_name" | "avatar_url">) | null;
+  me: (Pick<Profile, "id" | "full_name" | "avatar_url"> & { headline?: string | null }) | null;
   isStaff: boolean;
   startOpen?: boolean;
 }) {
   const router = useRouter();
   const [mine, setMine] = useState(myReaction);
-  const [likeCount, setLikeCount] = useState(likes);
-  const [popKey, setPopKey] = useState(0);
-  const [picker, setPicker] = useState(false);
-  const pickerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [tally, setTally] = useState(counts);
   const [didRepost, setDidRepost] = useState(reposted);
   const [repostCount, setRepostCount] = useState(reposts);
   const [open, setOpen] = useState(startOpen);
@@ -544,6 +582,7 @@ export function PostActions({
   const [draft, setDraft] = useState("");
   const [note, setNote] = useState<string | null>(null);
   const [busy, startTransition] = useTransition();
+  const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open && list === null) loadComments(postId).then(setList);
@@ -561,23 +600,20 @@ export function PostActions({
     return true;
   };
 
+  const bump = (t: typeof tally, kind: ReactionKind | null, by: number) => (kind ? { ...t, [kind]: Math.max(0, (t[kind] ?? 0) + by) } : t);
+
   // change the screen first, save after, step back if the save fails
-  const react = (kind: ReactionKind | null) => {
-    setPicker(false);
-    if (needAccount() || kind === mine) return;
+  const react = (kind: ReactionKind) => {
+    if (needAccount()) return;
     const was = mine;
-    setMine(kind);
-    setLikeCount((n) => n + (kind ? 1 : 0) - (was ? 1 : 0));
-    if (kind) setPopKey((k) => k + 1);
-    setReaction(postId, kind).catch(() => {
+    const next = was === kind ? null : kind;
+    setMine(next);
+    setTally((t) => bump(bump(t, was, -1), next, 1));
+    setReaction(postId, next).catch(() => {
       setMine(was);
-      setLikeCount((n) => n - (kind ? 1 : 0) + (was ? 1 : 0));
+      setTally((t) => bump(bump(t, next, -1), was, 1));
       setNote("Could not save your reaction. Try again.");
     });
-  };
-  const hover = (show: boolean) => {
-    if (pickerTimer.current) clearTimeout(pickerTimer.current);
-    pickerTimer.current = setTimeout(() => setPicker(show), show ? 350 : 250);
   };
 
   const repost = () => {
@@ -585,7 +621,7 @@ export function PostActions({
     const was = didRepost;
     setDidRepost(!was);
     setRepostCount((n) => n + (was ? -1 : 1));
-    setNote(was ? "Repost removed" : "Reposted");
+    setNote(was ? "Repost removed" : "Shared to your network");
     toggleRepost(postId, was).catch(() => {
       setDidRepost(was);
       setRepostCount((n) => n + (was ? 1 : -1));
@@ -593,7 +629,8 @@ export function PostActions({
     });
   };
 
-  const send = () => {
+  const send = (e?: React.FormEvent) => {
+    e?.preventDefault();
     const body = draft.trim();
     if (!body || needAccount()) return;
     startTransition(async () => {
@@ -603,109 +640,93 @@ export function PostActions({
         setCommentCount((n) => n + 1);
         setDraft("");
       } catch {
-        setNote("Could not post your comment. Try again.");
+        setNote("Could not post your reply. Try again.");
       }
     });
   };
 
-  const actionClass =
-    "press inline-flex h-10 min-w-[40px] items-center justify-center gap-1.5 rounded-md px-2.5 text-sm font-semibold text-foreground/70 transition-colors duration-100 hover:bg-muted hover:text-foreground";
-  const Mine = mine ? REACTIONS[mine].icon : ThumbsUp;
-  // the viewer's own reaction joins the cluster the moment they react
-  const shown = REACTION_ORDER.filter((k) => (likeCount === 1 && mine ? k === mine : kinds.includes(k) || k === mine));
-
   return (
-    <div>
-      <div className="flex items-center gap-1 px-2 py-1">
-        <div className="relative" onMouseEnter={() => hover(true)} onMouseLeave={() => hover(false)}>
-          {picker && (
-            <div role="menu" aria-label="Reactions" className="absolute bottom-full left-0 z-20 mb-1 flex animate-rise gap-1 rounded-full border bg-white p-1 shadow-lg">
-              {REACTION_ORDER.map((k) => {
-                const Icon = REACTIONS[k].icon;
-                return (
-                  <button
-                    key={k}
-                    type="button"
-                    role="menuitem"
-                    title={REACTIONS[k].label}
-                    aria-label={REACTIONS[k].label}
-                    onClick={() => react(k)}
-                    className={cx("flex h-9 w-9 items-center justify-center rounded-full text-white transition-transform duration-150 hover:-translate-y-1 hover:scale-125", REACTIONS[k].dot)}
-                  >
-                    <Icon className="h-[18px] w-[18px] fill-white/25" />
-                  </button>
-                );
-              })}
-            </div>
+    <>
+      <div className="pt-3 border-t border-[#F4F2EE] flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {REACTIONS.map(({ kind, emoji, label, on }) => (
+            <button
+              key={kind}
+              type="button"
+              onClick={() => react(kind)}
+              aria-pressed={mine === kind}
+              className={cx("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all", mine === kind ? on : PILL_OFF)}
+            >
+              <span aria-hidden="true">{emoji}</span>
+              <span>{label}</span>
+              <span className="font-semibold">{tally[kind] ?? 0}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-1">
+          {note && (
+            <span role="status" className="mr-1 fade-in rounded-full bg-zinc-900 px-2.5 py-1 text-[11px] font-medium text-white">
+              {note}
+            </span>
           )}
           <button
             type="button"
-            onClick={() => react(mine ? null : "like")}
-            aria-pressed={!!mine}
-            aria-label={mine ? `${REACTIONS[mine].label}, remove reaction` : "Like"}
-            className={cx(actionClass, mine && REACTIONS[mine].text)}
+            onClick={() => {
+              setOpen((o) => !o);
+              setTimeout(() => input.current?.focus(), 50);
+            }}
+            aria-expanded={open}
+            aria-label={`Comments, ${commentCount}`}
+            className={ICON_ACTION}
           >
-            <Mine key={popKey} className={cx("h-5 w-5", mine && "fill-current [fill-opacity:0.15]", popKey > 0 && mine && "animate-pop")} />
-            {likeCount > 0 && likeCount}
+            <MessageSquare className="w-3.5 h-3.5" />
+            <span>{commentCount}</span>
+          </button>
+          <button
+            type="button"
+            onClick={repost}
+            aria-pressed={didRepost}
+            aria-label={didRepost ? "Remove repost" : "Repost"}
+            title={didRepost ? "Remove repost" : "Repost"}
+            className={cx(ICON_ACTION, didRepost && "!text-emerald-700")}
+          >
+            <Repeat2 className="w-3.5 h-3.5" />
+            <span>{repostCount}</span>
+          </button>
+          <button
+            type="button"
+            aria-label="Send in a message"
+            title="Send in a message"
+            onClick={() => {
+              if (needAccount()) return;
+              router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`);
+            }}
+            className="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors"
+          >
+            <Send className="w-3.5 h-3.5" />
           </button>
         </div>
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label="Comment" className={actionClass}>
-          <MessageCircle className="h-5 w-5" />
-          {commentCount > 0 && commentCount}
-        </button>
-        <button type="button" onClick={repost} aria-pressed={didRepost} aria-label={didRepost ? "Remove repost" : "Repost"} title={didRepost ? "Remove repost" : "Repost"} className={cx(actionClass, didRepost && "!text-emerald-700")}>
-          <Repeat2 className="h-5 w-5" />
-          {repostCount > 0 && repostCount}
-        </button>
-        <button
-          type="button"
-          aria-label="Send in a message"
-          title="Send in a message"
-          onClick={() => {
-            if (needAccount()) return;
-            router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`);
-          }}
-          className={actionClass}
-        >
-          <Send className="h-5 w-5" />
-        </button>
-        {note && (
-          <span role="status" className="ml-2 animate-rise rounded-full bg-[hsl(var(--ink))] px-3 py-1 text-xs font-medium text-white">
-            {note}
-          </span>
-        )}
-        {likeCount > 0 && shown.length > 0 && (
-          <span className="ml-auto mr-2 flex items-center" title={`${likeCount} ${likeCount === 1 ? "reaction" : "reactions"}`}>
-            {shown.map((k) => {
-              const Icon = REACTIONS[k].icon;
-              return (
-                <span key={k} className={cx("-ml-1 flex h-[18px] w-[18px] items-center justify-center rounded-full ring-2 ring-white first:ml-0", REACTIONS[k].dot)}>
-                  <Icon className="h-2.5 w-2.5 fill-white text-white" />
-                </span>
-              );
-            })}
-          </span>
-        )}
       </div>
 
       {open && (
-        <div className="animate-rise space-y-3 px-4 pb-3 pt-2">
-          {list === null && (
-            <div className="space-y-2">
-              <div className="skeleton h-10 w-3/4" />
-              <div className="skeleton h-10 w-1/2" />
-            </div>
-          )}
-          {list?.map((c) => (
-            <div key={c.id} className="group flex gap-2.5">
-              <Link href={`/members/${c.author.id}`}>
-                <AvatarImg person={c.author} size={32} />
-              </Link>
-              <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-muted px-3.5 py-2">
+        <div className="pt-3 border-t border-[#F4F2EE] space-y-3 fade-in">
+          <div className="space-y-2">
+            {list === null && (
+              <>
+                <div className="skeleton h-14 w-full !rounded-xl" />
+                <div className="skeleton h-14 w-2/3 !rounded-xl" />
+              </>
+            )}
+            {list?.map((c) => (
+              <div key={c.id} className="group p-2.5 rounded-xl bg-[#F4F2EE]/75 border border-[#E6E3DC]/70">
                 <div className="flex items-center justify-between gap-2">
-                  <Link href={`/members/${c.author.id}`} className="truncate text-sm font-semibold hover:underline">
-                    {c.author.full_name || "Member"}
-                  </Link>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <Link href={`/members/${c.author.id}`} className="truncate text-xs font-bold text-zinc-900 hover:underline">
+                      {c.author.full_name || "Member"}
+                    </Link>
+                    {c.author.headline && <span className="truncate text-[10px] text-zinc-500">• {c.author.headline}</span>}
+                  </div>
                   {(c.author.id === me?.id || isStaff) && (
                     <button
                       type="button"
@@ -715,48 +736,41 @@ export function PostActions({
                         setCommentCount((n) => Math.max(0, n - 1));
                         deleteComment(c.id).catch(() => setNote("Could not delete the comment."));
                       }}
-                      className="text-muted-foreground opacity-0 transition-opacity hover:text-rose-600 focus:opacity-100 group-hover:opacity-100"
+                      className="text-zinc-400 opacity-0 transition-opacity hover:text-rose-600 focus:opacity-100 group-hover:opacity-100"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   )}
                 </div>
-                <p className="whitespace-pre-wrap break-words text-sm">{c.body}</p>
+                <p className="text-xs text-zinc-700 mt-1 leading-relaxed whitespace-pre-wrap break-words">{c.body}</p>
               </div>
-            </div>
-          ))}
-          {list?.length === 0 && <p className="text-sm text-muted-foreground">No comments yet. Start the conversation.</p>}
+            ))}
+            {list?.length === 0 && <p className="text-xs text-zinc-500">No replies yet. Start the conversation.</p>}
+          </div>
 
           {me ? (
-            <div className="flex items-center gap-2.5">
-              <AvatarImg person={me} size={32} />
+            <form onSubmit={send} className="flex items-center gap-2">
               <input
+                ref={input}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    send();
-                  }
-                }}
                 maxLength={2000}
-                placeholder="Add a comment"
-                aria-label="Add a comment"
-                className="field !rounded-full !py-2"
+                placeholder="Add a thoughtful reply..."
+                aria-label="Add a reply"
+                className="flex-1 px-3 py-2 rounded-xl bg-[#F4F2EE]/70 border border-[#E6E3DC] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600"
               />
               <button
-                type="button"
-                onClick={send}
+                type="submit"
                 disabled={busy || !draft.trim()}
-                aria-label="Send comment"
-                className="press rounded-full bg-primary p-2.5 text-white disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold transition-colors disabled:opacity-50"
               >
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                Reply
               </button>
-            </div>
+            </form>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              <Link href="/auth/login" className="font-semibold text-primary hover:underline">
+            <p className="text-xs text-zinc-500">
+              <Link href="/auth/login" className="font-semibold text-blue-600 hover:underline">
                 Sign in
               </Link>{" "}
               to join the conversation.
@@ -764,7 +778,7 @@ export function PostActions({
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }
 
@@ -783,7 +797,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     <form action={action} className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
         <AvatarImg person={{ id: profile.id, full_name: profile.full_name, avatar_url: photo.preview }} size={72} />
-        <label className={cx("press cursor-pointer rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold hover:bg-muted", photo.busy && "pointer-events-none opacity-60")}>
+        <label className={cx("press cursor-pointer rounded-xl border border-input bg-white px-4 py-2 text-sm font-semibold hover:bg-muted", photo.busy && "pointer-events-none opacity-60")}>
           {photo.busy ? "Uploading…" : "Change photo"}
           {/* no name: the file itself is never sent with the form, only the uploaded address below */}
           <input type="file" accept="image/*" className="hidden" onChange={(e) => photo.pick(e.target.files?.[0])} />

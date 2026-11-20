@@ -12,10 +12,10 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
       <h1 className="text-2xl font-semibold">That did not work</h1>
       <p className="mt-2 text-sm text-muted-foreground">Nothing was saved. Try again; if it keeps happening, reload the page.</p>
       <div className="mt-5 flex gap-2">
-        <button type="button" onClick={reset} className="press rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90">
+        <button type="button" onClick={reset} className="press rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90">
           Try again
         </button>
-        <a href="/feed" className="press rounded-full border border-primary px-5 py-2 text-sm font-semibold text-primary hover:bg-primary/5">
+        <a href="/feed" className="press rounded-xl border border-primary px-5 py-2 text-sm font-semibold text-primary hover:bg-primary/5">
           Go to the feed
         </a>
       </div>

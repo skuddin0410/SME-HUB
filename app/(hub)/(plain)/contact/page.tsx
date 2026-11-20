@@ -47,7 +47,7 @@ export default function ContactPage() {
       </section>
       <section className={`${card} flex flex-wrap items-center justify-between gap-3`}>
         <p className="text-sm text-muted-foreground">Looking for a quick answer about posting, connections or plans?</p>
-        <Link href="/help" className="press rounded-full border border-primary px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5">
+        <Link href="/help" className="press rounded-xl border border-primary px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5">
           Read the FAQ
         </Link>
       </section>

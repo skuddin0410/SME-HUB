@@ -37,7 +37,7 @@ export default async function GroupsPage() {
           {waiting.map((g) => (
             <Link key={g.id} href={`/groups/${g.slug}`} className="flex items-center justify-between gap-3 border-t px-4 py-3 text-sm transition-colors hover:bg-primary/10">
               <span className="font-semibold">{g.name}</span>
-              <span className="rounded-full bg-primary px-4 py-1.5 font-semibold text-white">View invitation</span>
+              <span className="rounded-xl bg-primary px-4 py-1.5 font-semibold text-white">View invitation</span>
             </Link>
           ))}
         </section>

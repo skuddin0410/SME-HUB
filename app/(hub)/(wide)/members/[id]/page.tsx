@@ -74,8 +74,8 @@ export default async function MemberPage({
   const mutual = typeof mutualRow?.data === "number" ? mutualRow.data : 0;
   const site = member.website && (member.website.startsWith("http") ? member.website : `https://${member.website}`);
 
-  const solid = "press inline-flex h-8 items-center gap-1.5 rounded-full bg-primary px-4 text-base font-semibold text-white transition-colors hover:bg-primary/90";
-  const outline = "press inline-flex h-8 items-center gap-1.5 rounded-full border border-primary px-4 text-base font-semibold text-primary transition-colors hover:bg-primary/10 hover:shadow-[inset_0_0_0_1px_hsl(var(--primary))]";
+  const solid = "press inline-flex h-8 items-center gap-1.5 rounded-xl bg-primary px-4 text-base font-semibold text-white transition-colors hover:bg-primary/90";
+  const outline = "press inline-flex h-8 items-center gap-1.5 rounded-xl border border-primary px-4 text-base font-semibold text-primary transition-colors hover:bg-primary/10 hover:shadow-[inset_0_0_0_1px_hsl(var(--primary))]";
   const round = "press flex h-8 w-8 cursor-pointer list-none items-center justify-center rounded-full border border-foreground/50 text-foreground/70 transition-colors hover:bg-muted hover:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.5)] [&::-webkit-details-marker]:hidden";
   const section = "panel p-6";
 

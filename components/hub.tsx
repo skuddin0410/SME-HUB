@@ -4,19 +4,30 @@ import { Lock, Pin } from "lucide-react";
 import { DEGREE_LABEL, MEMBER_TYPES, timeAgo, type Author, type Degree, type Post, type Profile } from "@/lib/hub";
 import { AvatarImg, GroupLogo, PostActions, PostBody, PostMenu } from "@/components/hub-client";
 import { ConnectButton } from "@/components/network-client";
+import { SaveButton } from "@/components/feed-client";
 import { KINDS } from "@/lib/demo";
 
 export type Viewer = { userId: string | null; profile: Profile | null; isStaff: boolean };
 
-export function TierBadge({ type }: { type: Profile["member_type"] }) {
-  if (type === "owner") return null;
+/** Membership badge, as on posts in the design (docs/design/feed.html). */
+export function TierBadge({ type, always = false }: { type: Profile["member_type"]; always?: boolean }) {
+  if (type === "owner" && !always) return null;
   const tone = {
-    plus: "border border-foreground/20 text-foreground",
-    elite: "bg-[hsl(var(--ink))] text-white",
-    advisor: "bg-amber-100 text-amber-900",
+    owner: "bg-zinc-100 text-zinc-700 border-zinc-200",
+    plus: "bg-white text-zinc-800 border-zinc-300",
+    elite: "bg-blue-950 text-white border-blue-900",
+    advisor: "bg-zinc-100 text-zinc-700 border-zinc-200",
   }[type];
-  return <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${tone}`}>{MEMBER_TYPES[type]}</span>;
+  return <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border ${tone}`}>{MEMBER_TYPES[type]}</span>;
 }
+
+const KIND_CHIP = {
+  win: "bg-amber-50 text-amber-800 border-amber-200/80",
+  question: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
+  offer: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+  hiring: "bg-rose-50 text-rose-700 border-rose-200/80",
+  update: "bg-zinc-100 text-zinc-700 border-zinc-200",
+} as const;
 
 export function PersonLine({ person, extra, size = 44, degree }: { person: Author; extra?: React.ReactNode; size?: number; degree?: Degree }) {
   return (
@@ -38,68 +49,70 @@ export function PersonLine({ person, extra, size = 44, degree }: { person: Autho
   );
 }
 
-const VERB = { update: "posted an update", question: "asked a question", win: "shared a win", offer: "posted an offer", hiring: "is hiring" };
 const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Connections", private: "Only you" };
 
+/** One post in the feed (design: docs/design/feed.html). */
 export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
   const own = post.author.id === viewer.userId;
+  const chip = "px-2 py-0.5 rounded-md text-[10px] font-semibold border";
   return (
-    <article id={`post-${post.id}`} className="panel">
-      {post.pinned_at && (
-        <p className="flex items-center gap-1.5 rounded-t-lg border-b bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900">
-          <Pin className="h-3.5 w-3.5" /> Pinned by SMB Hub
-        </p>
-      )}
-      <div className="flex items-start justify-between gap-2 px-4 pt-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link href={`/members/${post.author.id}`} className="shrink-0">
-            <AvatarImg person={post.author} size={48} />
+    <article id={`post-${post.id}`} className="panel panel-hover p-4 sm:p-5 space-y-3.5 fade-in">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 min-w-0">
+          <Link href={`/members/${post.author.id}`} className="shrink-0 [&_img]:ring-[#E6E3DC]">
+            <AvatarImg person={post.author} size={40} />
           </Link>
           <div className="min-w-0">
-            <p className="text-sm leading-snug">
-              <Link href={`/members/${post.author.id}`} className="font-semibold hover:underline">
+            <div className="flex flex-wrap items-center gap-x-1.5">
+              <Link href={`/members/${post.author.id}`} className="font-display font-bold text-[14px] text-zinc-900 truncate hover:underline">
                 {post.author.full_name || "Member"}
-              </Link>{" "}
-              <span className="text-muted-foreground">{VERB[post.kind]}</span>
+              </Link>
               {post.group && (
-                <>
-                  <span className="text-muted-foreground"> in </span>
-                  <Link href={`/groups/${post.group.slug}`} className="font-semibold hover:underline">
+                <span className="text-xs text-zinc-500">
+                  posted in{" "}
+                  <Link href={`/groups/${post.group.slug}`} className="font-semibold text-zinc-700 hover:underline">
                     {post.group.name}
                   </Link>
-                </>
+                </span>
               )}
-            </p>
-            {post.author.headline && <p className="truncate text-xs text-muted-foreground">{post.author.headline}</p>}
-            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-              <Link href={`/posts/${post.id}`} className="hover:underline">
+            </div>
+            <p className="text-xs text-zinc-500 truncate">{post.author.headline || "SMB Hub member"}</p>
+            <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+              <Link href={`/posts/${post.id}`} className="text-[11px] text-zinc-400 hover:underline">
                 {timeAgo(post.created_at)}
               </Link>
-              <TierBadge type={post.author.member_type} />
-              {post.kind !== "update" && (
-                <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${KINDS[post.kind].chip}`}>{KINDS[post.kind].label}</span>
+              <TierBadge type={post.author.member_type} always />
+              {post.kind !== "update" && <span className={`${chip} ${KIND_CHIP[post.kind]}`}>{KINDS[post.kind].label}</span>}
+              {post.pinned_at && (
+                <span className={`${chip} bg-amber-50 text-amber-800 border-amber-200/80 inline-flex items-center gap-1`}>
+                  <Pin className="h-2.5 w-2.5" /> Pinned
+                </span>
               )}
               {VISIBILITY_LABEL[post.visibility] && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-1.5 text-[11px]">
+                <span className={`${chip} bg-white text-zinc-500 border-zinc-200 inline-flex items-center gap-1`}>
                   <Lock className="h-2.5 w-2.5" />
                   {VISIBILITY_LABEL[post.visibility]}
                 </span>
               )}
-            </p>
+            </div>
           </div>
         </div>
-        <div className="flex shrink-0 items-center">
+        <div className="flex items-center gap-1.5 shrink-0">
           {!own && <ConnectButton otherId={post.author.id} initial={post.link} signedIn={!!viewer.userId} variant="text" />}
+          <SaveButton postId={post.id} initial={post.saved} signedIn={!!viewer.userId} />
           <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} />
         </div>
       </div>
       <PostBody text={post.body} />
-      {post.image_url && <img src={post.image_url} alt="" loading="lazy" className="max-h-[520px] w-full object-cover" />}
+      {post.image_url && (
+        <div className="rounded-xl overflow-hidden border border-[#E6E3DC] bg-zinc-100">
+          <img src={post.image_url} alt="" loading="lazy" className="w-full max-h-[360px] object-cover" />
+        </div>
+      )}
       <PostActions
         postId={post.id}
-        likes={post.likes}
         comments={post.comments}
-        kinds={post.kinds}
+        counts={post.counts}
         myReaction={post.myReaction}
         reposts={post.reposts}
         reposted={post.reposted}
@@ -129,7 +142,7 @@ export function GroupLine({ group }: { group: { slug: string; name: string; is_p
 export function Pager({ page, hasMore, base }: { page: number; hasMore: boolean; base: string }) {
   if (page === 1 && !hasMore) return null;
   const sep = base.includes("?") ? "&" : "?";
-  const cls = "press rounded-full border border-input bg-white px-4 py-2 text-sm font-semibold hover:bg-muted";
+  const cls = "px-3.5 py-2 rounded-xl text-xs font-semibold border border-[#E6E3DC] bg-white text-zinc-700 hover:bg-[#F4F2EE] transition-colors";
   return (
     <div className="flex justify-between">
       {page > 1 ? (
@@ -150,9 +163,9 @@ export function Pager({ page, hasMore, base }: { page: number; hasMore: boolean;
 
 export function Empty({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <div className="panel px-6 py-12 text-center">
-      <p className="text-base font-semibold">{title}</p>
-      {children && <div className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">{children}</div>}
+    <div className="panel p-8 text-center space-y-2">
+      <p className="font-display font-bold text-sm text-zinc-900">{title}</p>
+      {children && <div className="mx-auto max-w-sm text-xs text-zinc-500">{children}</div>}
     </div>
   );
 }
@@ -160,7 +173,7 @@ export function Empty({ title, children }: { title: string; children?: React.Rea
 export function PageTitle({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
-      <h1 className="text-xl font-semibold">{title}</h1>
+      <h1 className="font-display font-bold text-lg text-zinc-900">{title}</h1>
       {children}
     </div>
   );

@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMB HUB — Canada's Small Business Network</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            stonebg: '#F4F2EE',
+            hairline: '#E6E3DC',
+            ink: {
+              900: '#18181B',
+              700: '#3F3F46',
+              500: '#71717A',
+              400: '#A1A1AA',
+            }
+          },
+          boxShadow: {
+            'card': '0 1px 2px rgba(24, 24, 27, 0.04), 0 4px 12px -4px rgba(24, 24, 27, 0.04)',
+            'card-hover': '0 4px 16px -4px rgba(24, 24, 27, 0.08), 0 1px 3px rgba(24, 24, 27, 0.05)',
+            'popover': '0 16px 40px -8px rgba(24, 24, 27, 0.14), 0 2px 6px rgba(24, 24, 27, 0.06)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #F4F2EE;
+      color: #18181B;
+    }
+    .glass-nav {
+      background-color: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .bento-card {
+      background-color: #FFFFFF;
+      border: 1px solid #E6E3DC;
+      border-radius: 16px;
+      box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 4px 12px -4px rgba(24, 24, 27, 0.04);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .bento-card-interactive:hover {
+      border-color: #D6D2C9;
+      box-shadow: 0 4px 16px -4px rgba(24, 24, 27, 0.08), 0 1px 3px rgba(24, 24, 27, 0.05);
+    }
+    .fade-in {
+      animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D6D3CD;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-blue-600/15 selection:text-blue-700">
+
+  <!-- ==================== STICKY GLASSMORPHIC TOP NAVIGATION ==================== -->
+  <header class="sticky top-0 z-40 w-full glass-nav border-b border-[#E6E3DC]">
+    <div class="max-w-[1320px] mx-auto px-4 sm:px-6 h-[62px] flex items-center justify-between gap-3">
+
+      <!-- ZONE 1 (LEFT): Brand Lockup + Compact ⌘K Search Trigger -->
+      <div class="flex items-center gap-3.5 shrink-0">
+        <a href="#home" onclick="switchWorkspaceTab('home', event)" class="flex items-center gap-2.5 shrink-0 whitespace-nowrap group">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 flex items-center justify-center shadow-2xs ring-1 ring-black/5 group-hover:scale-105 transition-transform">
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2L14.2 7.2L19.5 6.4L17.1 11.2L21 14.5L15.6 15.4L16.2 20.5L12 17.6L7.8 20.5L8.4 15.4L3 14.5L6.9 11.2L4.5 6.4L9.8 7.2L12 2Z" />
+            </svg>
+          </div>
+          <span class="font-display font-extrabold text-[16px] tracking-tight text-zinc-900">SMB HUB</span>
+        </a>
+
+        <!-- Compact ⌘K Search Pill (Zero Overlap Guarantee) -->
+        <button type="button" onclick="openCommandPalette()" class="hidden sm:flex items-center justify-between gap-2 w-[180px] lg:w-[220px] xl:w-[250px] h-9 px-3.5 rounded-full bg-[#F6F5F1] hover:bg-[#EFECE6] border border-[#E6E3DC] hover:border-stone-300 text-[13px] text-stone-500 transition-colors shrink-0">
+          <span class="flex items-center gap-2 min-w-0">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-stone-400 shrink-0"></i>
+            <span class="truncate">Search SMB Hub...</span>
+          </span>
+          <kbd class="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium bg-white border border-[#E6E3DC] rounded-md text-stone-500 shadow-2xs">⌘K</kbd>
+        </button>
+
+        <!-- Mobile Search Icon Trigger -->
+        <button type="button" onclick="openCommandPalette()" aria-label="Search SMB Hub" class="sm:hidden w-8 h-8 rounded-full bg-[#F6F5F1] border border-[#E6E3DC] flex items-center justify-center text-stone-600 shrink-0">
+          <i data-lucide="search" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- ZONE 2 (CENTER): Segmented Navigation Capsule -->
+      <nav aria-label="Workspace Navigation" class="flex items-center gap-1 bg-[#F6F5F1]/95 p-1 rounded-full border border-[#E6E3DC]/90 shrink-0">
+        <button type="button" onclick="switchWorkspaceTab('home')" data-nav-tab="home" class="ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 bg-[#18181B] text-white shadow-2xs transition-all">
+          <i data-lucide="home" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="hidden md:inline">Home</span>
+        </button>
+
+        <button type="button" onclick="switchWorkspaceTab('network')" data-nav-tab="network" class="ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all">
+          <i data-lucide="users" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="hidden md:inline">Network</span>
+          <span id="nav-network-badge" class="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80 leading-tight">3</span>
+        </button>
+
+        <button type="button" onclick="switchWorkspaceTab('messaging')" data-nav-tab="messaging" class="ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all">
+          <i data-lucide="message-square" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="hidden md:inline">Messaging</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+        </button>
+
+        <!-- Notifications Popover Trigger inside Capsule -->
+        <div class="relative shrink-0">
+          <button type="button" onclick="toggleDropdown('notif-popover')" class="h-8 px-3 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all">
+            <i data-lucide="bell" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="hidden xl:inline">Notifications</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0"></span>
+          </button>
+
+          <!-- Notifications Popover -->
+          <div id="notif-popover" class="hidden absolute right-0 mt-2.5 w-80 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-3 z-50 fade-in">
+            <div class="flex items-center justify-between px-2 pb-2.5 border-b border-[#E6E3DC]">
+              <span class="font-display font-bold text-xs text-zinc-900">Notifications</span>
+              <button type="button" onclick="markAllRead()" class="text-[11px] font-medium text-blue-600 hover:underline">Mark all read</button>
+            </div>
+            <div class="divide-y divide-[#F4F2EE] max-h-72 overflow-y-auto">
+              <div class="p-2.5 hover:bg-[#F4F2EE]/60 rounded-xl transition-colors cursor-pointer" onclick="closeAllDropdowns(); showToast('Opening Priya Raman’s post')">
+                <p class="text-xs text-zinc-800"><span class="font-semibold">Priya Raman</span> shared a wholesale milestone in <span class="font-medium text-zinc-600">Wins</span>.</p>
+                <span class="text-[10px] text-zinc-400 mt-1 block">2h ago</span>
+              </div>
+              <div class="p-2.5 hover:bg-[#F4F2EE]/60 rounded-xl transition-colors cursor-pointer" onclick="closeAllDropdowns(); switchWorkspaceTab('network')">
+                <p class="text-xs text-zinc-800"><span class="font-semibold">Daniel Okafor</span> is active in <span class="font-medium text-zinc-600">Importers & Exporters</span>.</p>
+                <span class="text-[10px] text-zinc-400 mt-1 block">5h ago</span>
+              </div>
+              <div class="p-2.5 hover:bg-[#F4F2EE]/60 rounded-xl transition-colors cursor-pointer" onclick="closeAllDropdowns(); showToast('Profile strength tips opened')">
+                <p class="text-xs text-zinc-800">Complete your business headline to boost discovery by <span class="font-semibold text-emerald-600">3.2×</span>.</p>
+                <span class="text-[10px] text-zinc-400 mt-1 block">1d ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ZONE 3 (RIGHT): Utility Controls, Profile Pill & Single-Line Upgrade CTA -->
+      <div class="flex items-center gap-2 shrink-0">
+
+        <!-- Focus Mode Toggle (Collapses to icon-only below 1280px) -->
+        <button type="button" id="focus-mode-btn" onclick="toggleFocusMode()" title="Toggle distraction-free Focus Mode" class="hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap text-stone-600 hover:text-stone-900 border border-transparent hover:border-[#E6E3DC] hover:bg-stone-100/70 transition-all shrink-0">
+          <i data-lucide="maximize-2" class="w-3.5 h-3.5 shrink-0"></i>
+          <span class="hidden xl:inline">Focus</span>
+        </button>
+
+        <!-- Explore Dropdown -->
+        <div class="relative hidden sm:block shrink-0">
+          <button type="button" onclick="toggleDropdown('explore-popover')" class="h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-100/80 transition-all">
+            <i data-lucide="layout-grid" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="hidden xl:inline">Explore</span>
+            <i data-lucide="chevron-down" class="w-3 h-3 text-stone-400 shrink-0"></i>
+          </button>
+
+          <div id="explore-popover" class="hidden absolute right-0 mt-2.5 w-60 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-2 z-50 fade-in">
+            <button type="button" onclick="closeAllDropdowns(); showToast('Browsing Canadian Business Directory')" class="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-[#F4F2EE] text-left transition-colors">
+              <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"><i data-lucide="building-2" class="w-4 h-4"></i></span>
+              <div>
+                <p class="text-xs font-semibold text-zinc-900">Business Listings</p>
+                <p class="text-[10px] text-zinc-500">Verified Canadian SMBs</p>
+              </div>
+            </button>
+            <button type="button" onclick="closeAllDropdowns(); showToast('Opening Federal & Provincial Grants')" class="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-[#F4F2EE] text-left transition-colors">
+              <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0"><i data-lucide="landmark" class="w-4 h-4"></i></span>
+              <div>
+                <p class="text-xs font-semibold text-zinc-900">Funding & Grants</p>
+                <p class="text-[10px] text-zinc-500">CDAP, SR&ED & regional funds</p>
+              </div>
+            </button>
+            <button type="button" onclick="closeAllDropdowns(); openArticlesModal()" class="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-[#F4F2EE] text-left transition-colors">
+              <span class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-4 h-4"></i></span>
+              <div>
+                <p class="text-xs font-semibold text-zinc-900">Editorial Insights</p>
+                <p class="text-[10px] text-zinc-500">Founder playbooks & news</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Subtle Vertical Hairline Divider -->
+        <div class="h-4 w-px bg-[#E6E3DC] mx-0.5 hidden sm:block shrink-0"></div>
+
+        <!-- Me Profile Pill -->
+        <div class="relative shrink-0">
+          <button type="button" onclick="toggleDropdown('me-popover')" class="h-8 pl-1 pr-2.5 rounded-full border border-[#E6E3DC] bg-white hover:bg-stone-50 flex items-center gap-1.5 whitespace-nowrap transition-all">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Abdur Rahman Uddin" onerror="this.onerror=null; this.src='https://placehold.co/80x80/18181b/ffffff?text=AR';" class="w-6 h-6 rounded-full object-cover ring-1 ring-zinc-200 shrink-0" />
+            <span class="hidden sm:inline text-[12.5px] font-medium text-zinc-700">Me</span>
+            <i data-lucide="chevron-down" class="w-3 h-3 text-stone-400 shrink-0"></i>
+          </button>
+
+          <div id="me-popover" class="hidden absolute right-0 mt-2.5 w-60 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-2 z-50 fade-in">
+            <div class="px-3 py-2 border-b border-[#F4F2EE] mb-1">
+              <p class="text-xs font-display font-bold text-zinc-900">Abdur Rahman Uddin</p>
+              <p id="menu-headline-preview" class="text-[11px] text-zinc-500 truncate">Founder • Canada</p>
+            </div>
+            <button type="button" onclick="closeAllDropdowns(); openHeadlineEditor()" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-700 hover:bg-[#F4F2EE] text-left">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-zinc-400"></i>
+              <span>Edit profile & headline</span>
+            </button>
+            <button type="button" onclick="closeAllDropdowns(); filterFeedBySaved()" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-700 hover:bg-[#F4F2EE] text-left">
+              <i data-lucide="bookmark" class="w-3.5 h-3.5 text-zinc-400"></i>
+              <span>Saved bookmarks</span>
+            </button>
+            <button type="button" onclick="closeAllDropdowns(); openUpgradeModal()" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-amber-700 hover:bg-amber-50 text-left">
+              <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>Upgrade to SMB Elite</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Single-Line Amber/Gold Upgrade CTA Pill -->
+        <button type="button" onclick="openUpgradeModal()" class="h-8 px-3.5 rounded-full bg-gradient-to-b from-amber-50 to-amber-100/80 border border-amber-300/80 hover:border-amber-400 text-amber-900 text-[12.5px] font-semibold whitespace-nowrap inline-flex items-center gap-1.5 shadow-[0_1px_2px_rgba(180,83,9,0.08)] transition-all shrink-0">
+          <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-600 shrink-0"></i>
+          <span>Upgrade</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE CONTAINER ==================== -->
+  <main class="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-6">
+
+    <!-- ==================== VIEW 1: HOME 3-COLUMN BENTO FEED ==================== -->
+    <div id="view-home" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+      <!-- LEFT SIDEBAR: PROFILE, WORKSPACE LINKS & RECENT ARTICLES (3 Cols / ~275px) -->
+      <aside id="left-sidebar" class="lg:col-span-3 space-y-4">
+
+        <!-- Profile Card -->
+        <div class="bento-card overflow-hidden">
+          <!-- Warm Architectural Cover Banner -->
+          <div class="h-16 bg-gradient-to-r from-stone-800 via-zinc-800 to-stone-700 relative">
+            <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80" alt="Profile cover" onerror="this.style.display='none'" class="w-full h-full object-cover opacity-55 mix-blend-luminosity" />
+          </div>
+
+          <div class="px-4 pb-4">
+            <!-- Avatar + Verified Ring -->
+            <div class="-mt-8 mb-3 flex items-end justify-between">
+              <div class="relative">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80" alt="Abdur Rahman Uddin" onerror="this.onerror=null; this.src='https://placehold.co/120x120/18181b/ffffff?text=AR';" class="w-16 h-16 rounded-2xl object-cover border-[3px] border-white shadow-sm bg-zinc-100" />
+                <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" title="Online now"></span>
+              </div>
+              <button type="button" onclick="openHeadlineEditor()" class="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-[#F4F2EE] hover:bg-[#E6E3DC] text-zinc-700 transition-colors">
+                Edit
+              </button>
+            </div>
+
+            <!-- Name & Interactive Headline -->
+            <div>
+              <h2 class="font-display font-bold text-[15px] text-zinc-900 leading-snug">Abdur Rahman Uddin</h2>
+              <button type="button" id="profile-headline-btn" onclick="openHeadlineEditor()" class="mt-0.5 text-left text-xs text-zinc-500 hover:text-blue-600 transition-colors flex items-center gap-1 group">
+                <span id="profile-headline-text">+ Add a headline</span>
+                <i data-lucide="pencil" class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+              </button>
+            </div>
+
+            <!-- Sleek Segmented Profile Strength Bar -->
+            <div class="mt-4 p-3 rounded-xl bg-[#F4F2EE]/80 border border-[#E6E3DC]/90">
+              <div class="flex items-center justify-between text-xs mb-1.5">
+                <span class="font-medium text-zinc-700">Profile strength</span>
+                <span id="profile-strength-pct" class="font-display font-bold text-blue-600">17%</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-zinc-200/80 overflow-hidden">
+                <div id="profile-strength-bar" class="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500" style="width: 17%"></div>
+              </div>
+              <div id="profile-boost-chip" class="mt-2 flex items-center justify-between">
+                <span class="text-[11px] text-zinc-500">Add headline (+25%)</span>
+                <button type="button" onclick="openHeadlineEditor()" class="text-[11px] font-semibold text-blue-600 hover:underline">Complete →</button>
+              </div>
+            </div>
+
+            <!-- 2-Column Clean Metrics -->
+            <div class="mt-3.5 pt-3.5 border-t border-[#E6E3DC] grid grid-cols-2 divide-x divide-[#E6E3DC]">
+              <button type="button" onclick="switchWorkspaceTab('network')" class="pr-3 text-left group">
+                <span class="block text-[11px] text-zinc-500 group-hover:text-zinc-800 transition-colors">Connections</span>
+                <div class="flex items-baseline justify-between mt-0.5">
+                  <span id="stat-connections" class="font-display font-bold text-sm text-blue-600">0</span>
+                  <span class="text-[10px] text-zinc-400 group-hover:text-blue-600">Grow</span>
+                </div>
+              </button>
+              <button type="button" onclick="focusComposer()" class="pl-3 text-left group">
+                <span class="block text-[11px] text-zinc-500 group-hover:text-zinc-800 transition-colors">Your posts</span>
+                <div class="flex items-baseline justify-between mt-0.5">
+                  <span id="stat-posts" class="font-display font-bold text-sm text-zinc-900">0</span>
+                  <span class="text-[10px] text-zinc-400 group-hover:text-blue-600">+ New</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Workspace Navigation Menu -->
+        <div class="bento-card p-1.5">
+          <button type="button" onclick="switchWorkspaceTab('messaging')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors">
+            <span class="flex items-center gap-2.5">
+              <i data-lucide="message-circle" class="w-4 h-4 text-zinc-400"></i>
+              <span>Messages</span>
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-600">2</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-400"></i>
+            </span>
+          </button>
+
+          <button type="button" onclick="showToast('Viewing your joined Canadian SMB Groups')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors">
+            <span class="flex items-center gap-2.5">
+              <i data-lucide="users-round" class="w-4 h-4 text-zinc-400"></i>
+              <span>Groups</span>
+            </span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-400"></i>
+          </button>
+
+          <button type="button" onclick="showToast('Opening My Business Listings dashboard')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors">
+            <span class="flex items-center gap-2.5">
+              <i data-lucide="store" class="w-4 h-4 text-zinc-400"></i>
+              <span>My business listings</span>
+            </span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-400"></i>
+          </button>
+
+          <button type="button" onclick="filterFeedBySaved()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors">
+            <span class="flex items-center gap-2.5">
+              <i data-lucide="bookmark" class="w-4 h-4 text-zinc-400"></i>
+              <span>Saved bookmarks</span>
+            </span>
+            <span id="saved-count-badge" class="text-[11px] font-semibold text-zinc-400">0</span>
+          </button>
+        </div>
+
+        <!-- Recent Articles Card (Preserving exact articles from screenshot with elevated craft) -->
+        <div class="bento-card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display font-bold text-xs uppercase tracking-wider text-zinc-500">Recent Articles</h3>
+            <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F4F2EE] text-zinc-600">CA Editorial</span>
+          </div>
+
+          <div id="recent-articles-list" class="space-y-2.5">
+            <!-- Rendered dynamically via JS -->
+          </div>
+
+          <button type="button" onclick="openArticlesModal()" class="mt-3 pt-2.5 border-t border-[#E6E3DC] w-full flex items-center justify-between text-xs font-semibold text-zinc-700 hover:text-blue-600 transition-colors">
+            <span>See all articles</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </aside>
+
+      <!-- CENTER MAIN FEED (6 Cols, expands to 8 cols centered in Focus Mode) -->
+      <section id="center-feed-col" class="lg:col-span-6 space-y-4">
+
+        <!-- Expandable Rich Post Composer -->
+        <div class="bento-card p-4">
+          <div class="flex items-start gap-3">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Abdur Rahman Uddin" onerror="this.onerror=null; this.src='https://placehold.co/80x80/18181b/ffffff?text=AR';" class="w-9 h-9 rounded-full object-cover ring-1 ring-zinc-200 shrink-0 mt-0.5" />
+
+            <div class="flex-1">
+              <!-- Compact Trigger State -->
+              <button type="button" id="composer-collapsed-trigger" onclick="expandComposer('Win')" class="w-full text-left px-4 py-2.5 rounded-xl bg-[#F4F2EE]/80 hover:bg-[#ECE9E2] border border-[#E6E3DC] text-xs sm:text-[13px] text-zinc-500 transition-colors">
+                Start a post, ask a question, or share a win...
+              </button>
+
+              <!-- Expanded High-Signal Composer -->
+              <div id="composer-expanded-box" class="hidden space-y-3 fade-in">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[11px] font-medium text-zinc-500">Post tag:</span>
+                    <select id="composer-category" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F4F2EE] border border-[#E6E3DC] text-zinc-800 focus:outline-none focus:border-blue-600">
+                      <option value="Win">🏆 Share a Win</option>
+                      <option value="Question">❓ Ask a Question</option>
+                      <option value="Offer">📣 Post an Offer</option>
+                      <option value="Hiring">💼 Hiring / Talent</option>
+                    </select>
+                  </div>
+                  <button type="button" onclick="collapseComposer()" class="text-xs text-zinc-400 hover:text-zinc-700 p-1">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <textarea id="composer-textarea" rows="3" placeholder="Share a practical lesson, wholesale milestone, supplier question, or B2B offer with Canadian founders..." class="w-full p-3 rounded-xl bg-[#F4F2EE]/60 border border-[#E6E3DC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 text-[13px] text-zinc-900 placeholder-zinc-400 resize-none leading-relaxed"></textarea>
+
+                <div id="composer-image-row" class="hidden">
+                  <input id="composer-image-url" type="url" placeholder="Optional image URL (e.g., https://images.unsplash.com/...)" class="w-full px-3 py-2 rounded-xl bg-[#F4F2EE]/60 border border-[#E6E3DC] text-xs text-zinc-800 focus:outline-none focus:border-blue-600" />
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                  <button type="button" onclick="toggleComposerImageInput()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE] transition-colors">
+                    <i data-lucide="image" class="w-3.5 h-3.5 text-blue-600"></i>
+                    <span>Add photo URL</span>
+                  </button>
+
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="collapseComposer()" class="px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE]">Cancel</button>
+                    <button type="button" onclick="publishNewPost()" class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-all">
+                      Publish post
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Pills (Matching Screenshot's 4 Actions with Crisp Craft) -->
+          <div class="mt-3 pt-3 border-t border-[#F4F2EE] grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+            <button type="button" onclick="expandComposer('Win', true)" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors">
+              <i data-lucide="image" class="w-3.5 h-3.5 text-blue-600"></i>
+              <span>Photo</span>
+            </button>
+            <button type="button" onclick="expandComposer('Question')" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors">
+              <i data-lucide="help-circle" class="w-3.5 h-3.5 text-indigo-600"></i>
+              <span>Ask a question</span>
+            </button>
+            <button type="button" onclick="expandComposer('Win')" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors">
+              <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>Share a win</span>
+            </button>
+            <button type="button" onclick="expandComposer('Offer')" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors">
+              <i data-lucide="megaphone" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>Post an offer</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Filter Pills & Signal Sort Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div id="feed-filter-pills" class="flex flex-wrap items-center gap-1.5">
+            <button type="button" onclick="setFeedFilter('Everything')" data-filter="Everything" class="filter-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-2xs transition-all">
+              Everything
+            </button>
+            <button type="button" onclick="setFeedFilter('Questions')" data-filter="Questions" class="filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all">
+              Questions
+            </button>
+            <button type="button" onclick="setFeedFilter('Wins')" data-filter="Wins" class="filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all">
+              Wins
+            </button>
+            <button type="button" onclick="setFeedFilter('Offers')" data-filter="Offers" class="filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all">
+              Offers
+            </button>
+            <button type="button" onclick="setFeedFilter('Hiring')" data-filter="Hiring" class="filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all">
+              Hiring
+            </button>
+          </div>
+
+          <button type="button" onclick="toggleFeedSort()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-[#E6E3DC] text-[11px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors">
+            <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i>
+            <span id="feed-sort-label">Top Signal</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Feed Stream Container -->
+        <div id="feed-posts-container" class="space-y-4">
+          <!-- Rendered dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- RIGHT SIDEBAR: ACTIVE MEMBERS, GROUPS TO EXPLORE & CLEAN FOOTER (3 Cols / ~300px) -->
+      <aside id="right-sidebar" class="lg:col-span-3 space-y-4">
+
+        <!-- Recently Active Members Card -->
+        <div class="bento-card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <h3 class="font-display font-bold text-[13px] text-zinc-900">Recently Active Members</h3>
+            </div>
+            <span class="text-[11px] text-zinc-400">Live</span>
+          </div>
+
+          <div id="active-members-grid" class="grid grid-cols-5 gap-2.5">
+            <!-- Rendered dynamically via JS -->
+          </div>
+
+          <button type="button" onclick="switchWorkspaceTab('network')" class="mt-3.5 pt-2.5 border-t border-[#E6E3DC] w-full flex items-center justify-between text-xs font-semibold text-zinc-700 hover:text-blue-600 transition-colors">
+            <span>Show all</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Groups to Explore Card -->
+        <div class="bento-card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display font-bold text-[13px] text-zinc-900">Groups to Explore</h3>
+            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F2EE] text-zinc-600">Canada</span>
+          </div>
+
+          <div id="groups-explore-list" class="space-y-2.5">
+            <!-- Rendered dynamically via JS -->
+          </div>
+
+          <button type="button" onclick="showToast('Exploring all 28 Canadian SMB topic circles')" class="mt-3.5 pt-2.5 border-t border-[#E6E3DC] w-full flex items-center justify-between text-xs font-semibold text-zinc-700 hover:text-blue-600 transition-colors">
+            <span>Show all</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Compact Community & Social Links Card (De-cluttered from top of screenshot) -->
+        <div class="bento-card p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="font-display font-bold text-xs text-zinc-800">Follow SMB Hub</span>
+            <span class="text-[10px] font-medium text-zinc-400">@smbhubca</span>
+          </div>
+          <div class="flex items-center justify-between gap-1.5">
+            <a href="#facebook" onclick="showToast('Opening SMB Hub on Facebook')" aria-label="Facebook" class="w-8 h-8 rounded-xl bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors">
+              <i data-lucide="facebook" class="w-3.5 h-3.5"></i>
+            </a>
+            <a href="#twitter" onclick="showToast('Opening SMB Hub on X')" aria-label="X" class="w-8 h-8 rounded-xl bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors">
+              <i data-lucide="twitter" class="w-3.5 h-3.5"></i>
+            </a>
+            <a href="#youtube" onclick="showToast('Opening SMB Hub on YouTube')" aria-label="YouTube" class="w-8 h-8 rounded-xl bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors">
+              <i data-lucide="youtube" class="w-3.5 h-3.5"></i>
+            </a>
+            <a href="#instagram" onclick="showToast('Opening SMB Hub on Instagram')" aria-label="Instagram" class="w-8 h-8 rounded-xl bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors">
+              <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
+            </a>
+            <a href="#linkedin" onclick="showToast('Opening SMB Hub on LinkedIn')" aria-label="LinkedIn" class="w-8 h-8 rounded-xl bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors">
+              <i data-lucide="linkedin" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+          <div class="pt-2.5 border-t border-[#F4F2EE] flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-zinc-400">
+            <span>SMB Hub © 2026</span>
+            <span>•</span>
+            <a href="#about" onclick="showToast('SMB Hub by Cmarketing Inc.')" class="hover:text-zinc-700">About</a>
+            <span>•</span>
+            <a href="#privacy" onclick="showToast('PIPEDA Compliant')" class="hover:text-zinc-700">Privacy</a>
+            <span>•</span>
+            <a href="#help" onclick="showToast('Canadian Member Support')" class="hover:text-zinc-700">Help</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ==================== VIEW 2: NETWORK & FOUNDER DIRECTORY ==================== -->
+    <div id="view-network" class="hidden max-w-4xl mx-auto space-y-5 fade-in">
+      <div class="bento-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="font-display font-bold text-lg text-zinc-900">Your Canadian Founder Network</h2>
+          <p class="text-xs text-zinc-500 mt-0.5">Connect directly with verified small business owners, advisors, and operators across Canada.</p>
+        </div>
+        <button type="button" onclick="switchWorkspaceTab('home')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F4F2EE] hover:bg-[#E6E3DC] text-zinc-800 transition-colors self-start sm:self-auto">
+          ← Back to Feed
+        </button>
+      </div>
+
+      <div id="network-directory-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 3: FOCUSED MESSAGING INBOX ==================== -->
+    <div id="view-messaging" class="hidden max-w-4xl mx-auto bento-card overflow-hidden fade-in">
+      <div class="grid grid-cols-1 md:grid-cols-12 min-h-[480px]">
+        <!-- Thread List -->
+        <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-[#E6E3DC] p-3 space-y-1.5 bg-[#F4F2EE]/40">
+          <div class="flex items-center justify-between px-2 py-1.5">
+            <span class="font-display font-bold text-sm text-zinc-900">Direct Messages</span>
+            <button type="button" onclick="switchWorkspaceTab('home')" class="text-[11px] font-medium text-blue-600 hover:underline">Feed</button>
+          </div>
+          <div id="message-threads-list" class="space-y-1">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Active Conversation -->
+        <div class="md:col-span-8 flex flex-col justify-between p-4 bg-white">
+          <div>
+            <div class="pb-3 border-b border-[#E6E3DC] flex items-center justify-between">
+              <div>
+                <h3 id="chat-partner-name" class="font-display font-bold text-sm text-zinc-900">Priya Raman</h3>
+                <p id="chat-partner-role" class="text-[11px] text-zinc-500">Founder, Maple Bakery • SMB Advisor</p>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Direct Intro</span>
+            </div>
+
+            <div id="chat-messages-box" class="py-4 space-y-3 max-h-72 overflow-y-auto">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <form onsubmit="sendDirectMessage(event)" class="pt-3 border-t border-[#E6E3DC] flex items-center gap-2">
+            <input id="chat-reply-input" type="text" placeholder="Write a direct message..." class="flex-1 px-3.5 py-2 rounded-xl bg-[#F4F2EE]/80 border border-[#E6E3DC] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600" />
+            <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors">Send</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== CMD+K GLOBAL COMMAND PALETTE MODAL ==================== -->
+  <div id="command-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs flex items-start justify-center pt-20 px-4" onclick="if(event.target === this) closeCommandPalette()">
+    <div class="w-full max-w-lg bg-white rounded-2xl border border-[#E6E3DC] shadow-popover overflow-hidden fade-in">
+      <div class="flex items-center gap-3 px-4 py-3.5 border-b border-[#E6E3DC]">
+        <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
+        <input id="cmd-search-input" type="text" oninput="renderCommandResults(this.value)" placeholder="Jump to founders, posts, groups, or actions..." class="flex-1 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none" />
+        <button type="button" onclick="closeCommandPalette()" class="px-2 py-0.5 rounded bg-[#F4F2EE] text-[10px] font-mono text-zinc-500">ESC</button>
+      </div>
+      <div id="cmd-results-list" class="p-2 max-h-80 overflow-y-auto space-y-1"></div>
+    </div>
+  </div>
+
+  <!-- ==================== EDIT HEADLINE MODAL ==================== -->
+  <div id="headline-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs flex items-center justify-center px-4" onclick="if(event.target === this) closeHeadlineEditor()">
+    <div class="w-full max-w-md bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-5 space-y-4 fade-in">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display font-bold text-base text-zinc-900">Boost your Profile Strength</h3>
+        <button type="button" onclick="closeHeadlineEditor()" class="text-zinc-400 hover:text-zinc-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <p class="text-xs text-zinc-500 leading-relaxed">Add your role, company, and province so Canadian founders and buyers can discover you faster.</p>
+      <form onsubmit="saveProfileHeadline(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-zinc-700 mb-1">Business Headline</label>
+          <input id="headline-input" type="text" required placeholder="e.g., Founder at NorthPeak Digital • Toronto, ON" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE]/70 border border-[#E6E3DC] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600" />
+        </div>
+        <div class="flex justify-end gap-2 pt-1">
+          <button type="button" onclick="closeHeadlineEditor()" class="px-3.5 py-2 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE]">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white">Save & Boost (+25%)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== ALL ARTICLES DRAWER / MODAL ==================== -->
+  <div id="articles-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs flex items-center justify-center px-4" onclick="if(event.target === this) closeArticlesModal()">
+    <div class="w-full max-w-xl bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-6 space-y-4 fade-in">
+      <div class="flex items-center justify-between border-b border-[#E6E3DC] pb-3">
+        <div>
+          <h3 class="font-display font-bold text-base text-zinc-900">SMB Hub Canadian Editorial</h3>
+          <p class="text-xs text-zinc-500">Curated founder stories, warehouse tech, and cybersecurity briefings</p>
+        </div>
+        <button type="button" onclick="closeArticlesModal()" class="text-zinc-400 hover:text-zinc-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div id="modal-articles-list" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
+    </div>
+  </div>
+
+  <!-- ==================== UPGRADE PLAN MODAL ==================== -->
+  <div id="upgrade-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs flex items-center justify-center px-4" onclick="if(event.target === this) closeUpgradeModal()">
+    <div class="w-full max-w-lg bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-6 space-y-4 fade-in">
+      <div class="flex items-center justify-between">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+          <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i> SMB Elite Membership
+        </span>
+        <button type="button" onclick="closeUpgradeModal()" class="text-zinc-400 hover:text-zinc-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div>
+        <h3 class="font-display font-bold text-xl text-zinc-900">Unlock Verified B2B Visibility Across Canada</h3>
+        <p class="text-xs text-zinc-500 mt-1">Get the SMB Elite badge, priority placement in Business Listings, and direct warm intros to verified buyers.</p>
+      </div>
+      <div class="p-4 rounded-xl bg-[#F4F2EE] border border-[#E6E3DC] flex items-baseline justify-between">
+        <div>
+          <p class="font-display font-bold text-sm text-zinc-900">SMB Elite Annual</p>
+          <p class="text-[11px] text-zinc-500">Billed in CAD • Cancel anytime</p>
+        </div>
+        <div class="text-right">
+          <span class="font-display font-extrabold text-2xl text-zinc-900">$29</span>
+          <span class="text-xs text-zinc-500">/mo</span>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeUpgradeModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE]">Maybe later</button>
+        <button type="button" onclick="closeUpgradeModal(); showToast('14-day SMB Elite trial activated!')" class="px-5 py-2 rounded-xl text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white">Start 14-day free trial</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    // ==================== STATE & CURATED DATA ====================
+    let activeFeedFilter = 'Everything';
+    let sortByTopSignal = true;
+    let showSavedOnly = false;
+    let isFocusMode = false;
+    let connectionsCount = 0;
+    let userPostsCount = 0;
+    let profileStrength = 17;
+
+    const recentArticles = [
+      {
+        title: 'Be Seen. Be Found. Be Chosen: How SocialEyes...',
+        readTime: '4 min read',
+        category: 'Growth',
+        thumb: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=160&q=80'
+      },
+      {
+        title: "What BVX 2026 Revealed About Canada's Next...",
+        readTime: '5 min read',
+        category: 'Ecosystem',
+        thumb: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=160&q=80'
+      },
+      {
+        title: 'The Toronto Company Flying Drones Inside Warehouses...',
+        readTime: '3 min read',
+        category: 'Logistics',
+        thumb: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=160&q=80'
+      },
+      {
+        title: 'The Table That Costs Nothing',
+        readTime: '4 min read',
+        category: 'Leadership',
+        thumb: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=160&q=80'
+      },
+      {
+        title: 'Teclara Brings Big-Company Security to the Firms That...',
+        readTime: '6 min read',
+        category: 'Cybersecurity',
+        thumb: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=160&q=80'
+      },
+      {
+        title: 'Why More Ontario Businesses Are Treating...',
+        readTime: '5 min read',
+        category: 'Ontario SMB',
+        thumb: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=160&q=80'
+      }
+    ];
+
+    const activeMembers = [
+      { id: 'm1', name: 'Priya Raman', role: 'Founder, Maple Bakery', city: 'Toronto, ON', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm2', name: 'Daniel Okafor', role: 'Owner, Northside Logistics', city: 'Mississauga, ON', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm3', name: 'Claire Tremblay', role: 'CEO, Atelier Nord', city: 'Montréal, QC', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm4', name: 'Hannah MacLeod', role: 'Director, Maritimes Craft', city: 'Halifax, NS', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm5', name: 'Devon Brooks', role: 'Partner, Foothills AgTech', city: 'Calgary, AB', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm6', name: 'Sonia Patel', role: 'Founder, Pacifica CleanTech', city: 'Vancouver, BC', avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm7', name: 'Maya Chen', role: 'Principal, Cedar Tax & SR&ED', city: 'Ottawa, ON', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm8', name: 'Liam Gallagher', role: 'Co-Founder, Prairie Roasts', city: 'Winnipeg, MB', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm9', name: 'Nadia Al-Mansoor', role: 'CEO, BayStreet Legal Ops', city: 'Toronto, ON', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm10', name: 'Marcus Lin', role: 'Founder, Harbourline Supply', city: 'Vancouver, BC', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=140&q=80', connected: false }
+    ];
+
+    const groupsToExplore = [
+      { id: 'g1', name: 'AI for Small Business', members: 5, joined: false, thumb: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=120&q=80' },
+      { id: 'g2', name: 'Importers & Exporters', members: 6, joined: false, thumb: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=120&q=80' },
+      { id: 'g3', name: 'Retail Roundtable', members: 7, joined: false, thumb: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=120&q=80' },
+      { id: 'g4', name: 'Funding & Grants', members: 6, joined: false, thumb: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=120&q=80' }
+    ];
+
+    let feedPosts = [
+      {
+        id: 'p1',
+        author: 'Priya Raman',
+        role: 'Founder, Maple Bakery',
+        time: '2d ago',
+        badge: 'SMB Advisor',
+        badgeStyle: 'bg-zinc-100 text-zinc-700 border-zinc-200',
+        category: 'Win',
+        filterGroup: 'Wins',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=140&q=80',
+        connected: false,
+        saved: false,
+        content: 'We just closed our first wholesale account with a national grocer. It took 14 months and three rejected samples. The thing that finally worked: a one-page sell sheet with shelf-life data up front. Happy to share the structure with anyone going through the same process.',
+        takeaway: 'Key lesson: Lead with landed margin, ambient shelf-life testing, and case-pack dimensions on Page 1.',
+        image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=85',
+        reactions: { helpful: 5, insightful: 3, celebrate: 8 },
+        userReacted: { helpful: false, insightful: false, celebrate: false },
+        reposts: 2,
+        comments: [
+          { author: 'Claire Tremblay', role: 'Atelier Nord', text: 'Huge congrats Priya! Would love to see how you formatted the shelf-life velocity table.' },
+          { author: 'Daniel Okafor', role: 'Northside Logistics', text: 'Well earned. Cold-chain readiness is usually the #1 objection national buyers raise.' }
+        ]
+      },
+      {
+        id: 'p2',
+        author: 'Daniel Okafor',
+        contextGroup: 'Importers & Exporters',
+        role: 'Owner, Northside Logistics',
+        time: '2d ago',
+        badge: 'SMB Elite',
+        badgeStyle: 'bg-blue-950 text-white border-blue-900',
+        category: 'Question',
+        filterGroup: 'Questions',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=140&q=80',
+        connected: false,
+        saved: false,
+        content: 'Tariff changes pushed our inbound freight costs up 11% this quarter. We renegotiated with two carriers and moved to consolidated shipments, which clawed back about half. If you import from the US, re-check your HS codes. Two of ours were wrong.\n\nHow are other Ontario & BC importers offsetting LTL surcharges right now?',
+        reactions: { helpful: 9, insightful: 6, celebrate: 1 },
+        userReacted: { helpful: false, insightful: false, celebrate: false },
+        reposts: 4,
+        comments: [
+          { author: 'Marcus Lin', role: 'Harbourline Supply', text: 'Auditing our 10-digit HS subheadings saved us 4.2% duty on stainless packaging components last month.' }
+        ]
+      },
+      {
+        id: 'p3',
+        author: 'Sonia Patel',
+        role: 'Founder, Pacifica CleanTech • Vancouver, BC',
+        time: '5h ago',
+        badge: 'Verified SMB',
+        badgeStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        category: 'Offer',
+        filterGroup: 'Offers',
+        avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=140&q=80',
+        connected: false,
+        saved: false,
+        content: 'Offering free 30-minute energy & commercial rebate audits for Canadian light-manufacturing shops (10–75 staff) ahead of the Q4 CleanBC & federal green industrial intake. No pitch—just a checklist of programs you actually qualify for.',
+        reactions: { helpful: 11, insightful: 4, celebrate: 3 },
+        userReacted: { helpful: false, insightful: false, celebrate: false },
+        reposts: 3,
+        comments: []
+      }
+    ];
+
+    const directThreads = [
+      {
+        id: 't1',
+        name: 'Priya Raman',
+        role: 'Founder, Maple Bakery • SMB Advisor',
+        unread: true,
+        messages: [
+          { sender: 'them', text: 'Hey Abdur! Saw you joined SMB Hub. Let me know if you ever want that 1-page wholesale sell sheet template.' }
+        ]
+      },
+      {
+        id: 't2',
+        name: 'Daniel Okafor',
+        role: 'Owner, Northside Logistics • SMB Elite',
+        unread: true,
+        messages: [
+          { sender: 'them', text: 'Welcome to the Importers & Exporters circle! Happy to intro you to our customs broker in Mississauga.' }
+        ]
+      }
+    ];
+    let activeThreadId = 't1';
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRecentArticles();
+      renderActiveMembers();
+      renderGroupsToExplore();
+      renderFeedPosts();
+      renderNetworkDirectory();
+      renderMessagingThreads();
+      setupKeyboardShortcuts();
+      lucide.createIcons();
+    });
+
+    // ==================== RENDER LEFT & RIGHT SIDEBARS ====================
+    function renderRecentArticles() {
+      const container = document.getElementById('recent-articles-list');
+      const modalList = document.getElementById('modal-articles-list');
+
+      container.innerHTML = recentArticles.map(art => `
+        <button type="button" onclick="openArticlesModal()" class="w-full flex items-center gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F4F2EE] text-left group transition-colors">
+          <img src="${art.thumb}" alt="" onerror="this.onerror=null; this.src='https://placehold.co/80x80/e4e4e7/52525b?text=CA';" class="w-10 h-10 rounded-lg object-cover shrink-0 border border-[#E6E3DC]" />
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-medium text-zinc-800 group-hover:text-blue-600 leading-snug line-clamp-2 transition-colors">${art.title}</p>
+            <span class="text-[10px] text-zinc-400 mt-0.5 block">${art.category} • ${art.readTime}</span>
+          </div>
+        </button>
+      `).join('');
+
+      modalList.innerHTML = recentArticles.map(art => `
+        <div class="flex items-center gap-3.5 p-3 rounded-xl border border-[#E6E3DC] hover:bg-[#F4F2EE]/50 transition-colors">
+          <img src="${art.thumb}" alt="" onerror="this.onerror=null; this.src='https://placehold.co/100x100/e4e4e7/52525b?text=CA';" class="w-14 h-14 rounded-xl object-cover shrink-0" />
+          <div class="flex-1 min-w-0">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-blue-600">${art.category} • ${art.readTime}</span>
+            <h4 class="font-display font-bold text-sm text-zinc-900 mt-0.5">${art.title}</h4>
+          </div>
+          <button type="button" onclick="closeArticlesModal(); showToast('Opening full article reader...')" class="px-3 py-1.5 rounded-lg bg-[#F4F2EE] hover:bg-zinc-900 hover:text-white text-xs font-medium text-zinc-700 transition-colors shrink-0">Read</button>
+        </div>
+      `).join('');
+    }
+
+    function renderActiveMembers() {
+      const grid = document.getElementById('active-members-grid');
+      grid.innerHTML = activeMembers.map(member => `
+        <button type="button" onclick="showToast('${member.name} — ${member.role} (${member.city})')" title="${member.name} • ${member.role}" class="relative group focus:outline-none">
+          <img src="${member.avatar}" alt="${member.name}" onerror="this.onerror=null; this.src='https://placehold.co/80x80/e4e4e7/18181b?text=${member.name[0]}';" class="w-10 h-10 rounded-full object-cover ring-1 ring-[#E6E3DC] group-hover:ring-2 group-hover:ring-blue-600 group-hover:scale-105 transition-all" />
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white"></span>
+        </button>
+      `).join('');
+    }
+
+    function renderGroupsToExplore() {
+      const container = document.getElementById('groups-explore-list');
+      container.innerHTML = groupsToExplore.map(g => `
+        <div class="flex items-center justify-between gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F4F2EE]/70 transition-colors">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <img src="${g.thumb}" alt="${g.name}" onerror="this.onerror=null; this.src='https://placehold.co/80x80/e4e4e7/18181b?text=G';" class="w-9 h-9 rounded-xl object-cover border border-[#E6E3DC] shrink-0" />
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-zinc-900 truncate">${g.name}</p>
+              <p class="text-[11px] text-zinc-500">${g.members} members</p>
+            </div>
+          </div>
+          <button type="button" onclick="toggleJoinGroup('${g.id}')" class="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+            g.joined
+              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+              : 'bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-700 hover:text-white'
+          }">
+            ${g.joined ? 'Joined ✓' : 'Join'}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function toggleJoinGroup(groupId) {
+      const grp = groupsToExplore.find(g => g.id === groupId);
+      if (!grp) return;
+      grp.joined = !grp.joined;
+      grp.members += grp.joined ? 1 : -1;
+      renderGroupsToExplore();
+      showToast(grp.joined ? `Joined "${grp.name}"` : `Left "${grp.name}"`);
+    }
+
+    // ==================== RENDER FEED POSTS & INTERACTIONS ====================
+    function renderFeedPosts() {
+      const container = document.getElementById('feed-posts-container');
+      let list = [...feedPosts];
+
+      if (showSavedOnly) {
+        list = list.filter(p => p.saved);
+      } else if (activeFeedFilter !== 'Everything') {
+        list = list.filter(p => p.filterGroup === activeFeedFilter);
+      }
+
+      if (sortByTopSignal) {
+        list.sort((a, b) => {
+          const scoreA = a.reactions.helpful + a.reactions.insightful + a.reactions.celebrate + a.comments.length * 2;
+          const scoreB = b.reactions.helpful + b.reactions.insightful + b.reactions.celebrate + b.comments.length * 2;
+          return scoreB - scoreA;
+        });
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="bento-card p-8 text-center space-y-2">
+            <p class="font-display font-bold text-sm text-zinc-900">${showSavedOnly ? 'No saved bookmarks yet' : 'No posts in this filter yet'}</p>
+            <p class="text-xs text-zinc-500">Switch back to Everything or share the first update with Canadian founders.</p>
+            <button type="button" onclick="showSavedOnly = false; setFeedFilter('Everything')" class="mt-2 px-3.5 py-1.5 rounded-xl bg-zinc-900 text-white text-xs font-semibold">Reset filter</button>
+          </div>
+        `;
+        return;
+      }
+
+      const categoryPillColors = {
+        Win: 'bg-amber-50 text-amber-800 border-amber-200/80',
+        Question: 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
+        Offer: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
+        Hiring: 'bg-rose-50 text-rose-700 border-rose-200/80'
+      };
+
+      container.innerHTML = list.map(post => `
+        <article class="bento-card bento-card-interactive p-4 sm:p-5 space-y-3.5 fade-in">
+          <!-- Post Header -->
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3 min-w-0">
+              <img src="${post.avatar}" alt="${post.author}" onerror="this.onerror=null; this.src='https://placehold.co/96x96/18181b/ffffff?text=${post.author[0]}';" class="w-10 h-10 rounded-full object-cover ring-1 ring-[#E6E3DC] shrink-0" />
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <h3 class="font-display font-bold text-[14px] text-zinc-900 truncate">${post.author}</h3>
+                  ${post.contextGroup ? `<span class="text-xs text-zinc-500">posted in <span class="font-semibold text-zinc-700">${post.contextGroup}</span></span>` : ''}
+                </div>
+                <p class="text-xs text-zinc-500 truncate">${post.role}</p>
+                <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                  <span class="text-[11px] text-zinc-400">${post.time}</span>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border ${post.badgeStyle}">${post.badge}</span>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border ${categoryPillColors[post.category] || 'bg-zinc-100 text-zinc-700 border-zinc-200'}">${post.category}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Connect & Bookmark Actions -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" onclick="togglePostConnect('${post.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                post.connected
+                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                  : 'text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100'
+              }">
+                ${post.connected ? 'Connected ✓' : '+ Connect'}
+              </button>
+
+              <button type="button" onclick="togglePostSave('${post.id}')" title="Bookmark post" class="p-1.5 rounded-lg hover:bg-[#F4F2EE] text-zinc-400 hover:text-zinc-800 transition-colors">
+                <i data-lucide="bookmark" class="w-4 h-4 ${post.saved ? 'fill-zinc-900 text-zinc-900' : ''}"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Post Copy -->
+          <div class="text-[13.5px] text-zinc-800 leading-[1.6] whitespace-pre-line">${post.content}</div>
+
+          ${post.takeaway ? `
+            <div class="p-3 rounded-xl bg-[#F4F2EE]/85 border border-[#E6E3DC] flex items-start gap-2.5">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+              <p class="text-xs font-medium text-zinc-700 leading-relaxed">${post.takeaway}</p>
+            </div>
+          ` : ''}
+
+          ${post.image ? `
+            <div class="rounded-xl overflow-hidden border border-[#E6E3DC] bg-zinc-100">
+              <img src="${post.image}" alt="Post attachment" onerror="this.style.display='none'" class="w-full max-h-[360px] object-cover" />
+            </div>
+          ` : ''}
+
+          <!-- High-Signal Thoughtful Reaction Pills + Action Footer -->
+          <div class="pt-3 border-t border-[#F4F2EE] flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button type="button" onclick="toggleReaction('${post.id}', 'helpful')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+                post.userReacted.helpful
+                  ? 'bg-blue-50 text-blue-700 border-blue-200'
+                  : 'bg-[#F4F2EE]/70 hover:bg-[#F4F2EE] text-zinc-600 border-transparent'
+              }">
+                <span>👍</span>
+                <span>Helpful</span>
+                <span class="font-semibold">${post.reactions.helpful}</span>
+              </button>
+
+              <button type="button" onclick="toggleReaction('${post.id}', 'insightful')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+                post.userReacted.insightful
+                  ? 'bg-amber-50 text-amber-800 border-amber-200'
+                  : 'bg-[#F4F2EE]/70 hover:bg-[#F4F2EE] text-zinc-600 border-transparent'
+              }">
+                <span>💡</span>
+                <span>Insightful</span>
+                <span class="font-semibold">${post.reactions.insightful}</span>
+              </button>
+
+              <button type="button" onclick="toggleReaction('${post.id}', 'celebrate')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+                post.userReacted.celebrate
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  : 'bg-[#F4F2EE]/70 hover:bg-[#F4F2EE] text-zinc-600 border-transparent'
+              }">
+                <span>🎉</span>
+                <span>Celebrate</span>
+                <span class="font-semibold">${post.reactions.celebrate}</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="toggleCommentsDrawer('${post.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors">
+                <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                <span>${post.comments.length}</span>
+              </button>
+
+              <button type="button" onclick="repostItem('${post.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors">
+                <i data-lucide="repeat-2" class="w-3.5 h-3.5"></i>
+                <span>${post.reposts}</span>
+              </button>
+
+              <button type="button" onclick="copyPostLink('${post.author}')" class="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors" title="Copy post link">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Inline Expandable Comments Drawer -->
+          <div id="comments-drawer-${post.id}" class="hidden pt-3 border-t border-[#F4F2EE] space-y-3 fade-in">
+            <div class="space-y-2">
+              ${post.comments.map(c => `
+                <div class="p-2.5 rounded-xl bg-[#F4F2EE]/75 border border-[#E6E3DC]/70">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-zinc-900">${c.author}</span>
+                    <span class="text-[10px] text-zinc-500">• ${c.role}</span>
+                  </div>
+                  <p class="text-xs text-zinc-700 mt-1 leading-relaxed">${c.text}</p>
+                </div>
+              `).join('')}
+            </div>
+
+            <form onsubmit="submitPostComment(event, '${post.id}')" class="flex items-center gap-2">
+              <input id="comment-input-${post.id}" type="text" required placeholder="Add a thoughtful reply..." class="flex-1 px-3 py-2 rounded-xl bg-[#F4F2EE]/70 border border-[#E6E3DC] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600" />
+              <button type="submit" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold transition-colors">Reply</button>
+            </form>
+          </div>
+        </article>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function toggleReaction(postId, type) {
+      const post = feedPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.userReacted[type] = !post.userReacted[type];
+      post.reactions[type] += post.userReacted[type] ? 1 : -1;
+      renderFeedPosts();
+    }
+
+    function toggleCommentsDrawer(postId) {
+      const drawer = document.getElementById(`comments-drawer-${postId}`);
+      if (!drawer) return;
+      drawer.classList.toggle('hidden');
+      if (!drawer.classList.contains('hidden')) {
+        document.getElementById(`comment-input-${postId}`)?.focus();
+      }
+    }
+
+    function submitPostComment(e, postId) {
+      e.preventDefault();
+      const input = document.getElementById(`comment-input-${postId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      const post = feedPosts.find(p => p.id === postId);
+      post.comments.push({
+        author: 'Abdur Rahman Uddin',
+        role: document.getElementById('profile-headline-text').textContent === '+ Add a headline' ? 'Canadian SMB Member' : document.getElementById('profile-headline-text').textContent,
+        text
+      });
+      renderFeedPosts();
+      document.getElementById(`comments-drawer-${postId}`)?.classList.remove('hidden');
+      showToast('Reply posted');
+    }
+
+    function togglePostConnect(postId) {
+      const post = feedPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.connected = !post.connected;
+      connectionsCount += post.connected ? 1 : -1;
+      document.getElementById('stat-connections').textContent = Math.max(0, connectionsCount);
+      renderFeedPosts();
+      showToast(post.connected ? `Connected with ${post.author}` : `Removed connection with ${post.author}`);
+    }
+
+    function togglePostSave(postId) {
+      const post = feedPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.saved = !post.saved;
+      const savedTotal = feedPosts.filter(p => p.saved).length;
+      document.getElementById('saved-count-badge').textContent = savedTotal;
+      renderFeedPosts();
+      showToast(post.saved ? 'Saved to your bookmarks' : 'Removed from bookmarks');
+    }
+
+    function repostItem(postId) {
+      const post = feedPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.reposts += 1;
+      renderFeedPosts();
+      showToast(`Shared ${post.author}'s insight to your network`);
+    }
+
+    function copyPostLink(author) {
+      const temp = document.createElement('input');
+      temp.value = window.location.href;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      showToast(`Link to ${author}'s post copied`);
+    }
+
+    // ==================== COMPOSER & FILTERING ====================
+    function focusComposer() {
+      switchWorkspaceTab('home');
+      expandComposer('Win');
+    }
+
+    function expandComposer(category = 'Win', showPhoto = false) {
+      document.getElementById('composer-collapsed-trigger').classList.add('hidden');
+      document.getElementById('composer-expanded-box').classList.remove('hidden');
+      document.getElementById('composer-category').value = category;
+      if (showPhoto) {
+        document.getElementById('composer-image-row').classList.remove('hidden');
+      }
+      document.getElementById('composer-textarea').focus();
+      lucide.createIcons();
+    }
+
+    function collapseComposer() {
+      document.getElementById('composer-expanded-box').classList.add('hidden');
+      document.getElementById('composer-collapsed-trigger').classList.remove('hidden');
+    }
+
+    function toggleComposerImageInput() {
+      document.getElementById('composer-image-row').classList.toggle('hidden');
+    }
+
+    function publishNewPost() {
+      const text = document.getElementById('composer-textarea').value.trim();
+      if (!text) {
+        showToast('Write a quick update before publishing');
+        return;
+      }
+      const category = document.getElementById('composer-category').value;
+      const imageUrl = document.getElementById('composer-image-url').value.trim();
+      const filterMap = { Win: 'Wins', Question: 'Questions', Offer: 'Offers', Hiring: 'Hiring' };
+
+      const headline = document.getElementById('profile-headline-text').textContent;
+      feedPosts.unshift({
+        id: 'p' + Date.now(),
+        author: 'Abdur Rahman Uddin',
+        role: headline === '+ Add a headline' ? 'Founder • Canada' : headline,
+        time: 'Just now',
+        badge: 'Member',
+        badgeStyle: 'bg-zinc-100 text-zinc-700 border-zinc-200',
+        category,
+        filterGroup: filterMap[category] || 'Everything',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=140&q=80',
+        connected: true,
+        saved: false,
+        content: text,
+        image: imageUrl || '',
+        reactions: { helpful: 1, insightful: 0, celebrate: 1 },
+        userReacted: { helpful: true, insightful: false, celebrate: false },
+        reposts: 0,
+        comments: []
+      });
+
+      userPostsCount += 1;
+      document.getElementById('stat-posts').textContent = userPostsCount;
+      document.getElementById('composer-textarea').value = '';
+      document.getElementById('composer-image-url').value = '';
+      collapseComposer();
+      showSavedOnly = false;
+      setFeedFilter('Everything');
+      showToast('Published to the Canadian SMB feed!');
+    }
+
+    function setFeedFilter(filterName) {
+      activeFeedFilter = filterName;
+      showSavedOnly = false;
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        const isActive = btn.getAttribute('data-filter') === filterName;
+        btn.className = isActive
+          ? 'filter-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-2xs transition-all'
+          : 'filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all';
+      });
+      renderFeedPosts();
+    }
+
+    function filterFeedBySaved() {
+      switchWorkspaceTab('home');
+      showSavedOnly = !showSavedOnly;
+      renderFeedPosts();
+      showToast(showSavedOnly ? 'Showing your saved bookmarks' : 'Showing all feed posts');
+    }
+
+    function toggleFeedSort() {
+      sortByTopSignal = !sortByTopSignal;
+      document.getElementById('feed-sort-label').textContent = sortByTopSignal ? 'Top Signal' : 'Latest';
+      renderFeedPosts();
+    }
+
+    // ==================== FOCUS MODE & WORKSPACE TABS ====================
+    function toggleFocusMode() {
+      isFocusMode = !isFocusMode;
+      const left = document.getElementById('left-sidebar');
+      const right = document.getElementById('right-sidebar');
+      const center = document.getElementById('center-feed-col');
+      const btn = document.getElementById('focus-mode-btn');
+
+      left.classList.toggle('hidden', isFocusMode);
+      right.classList.toggle('hidden', isFocusMode);
+      center.className = isFocusMode ? 'lg:col-span-8 lg:col-start-3 space-y-4' : 'lg:col-span-6 space-y-4';
+      btn.className = isFocusMode
+        ? 'hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap bg-blue-50 text-blue-700 border border-blue-200 transition-all shrink-0'
+        : 'hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap text-stone-600 hover:text-stone-900 border border-transparent hover:border-[#E6E3DC] hover:bg-stone-100/70 transition-all shrink-0';
+
+      showToast(isFocusMode ? 'Focus Mode enabled — distraction-free reading' : 'Standard 3-column workspace restored');
+    }
+
+    function switchWorkspaceTab(tabName, e) {
+      if (e) e.preventDefault();
+      ['home', 'network', 'messaging'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.toggle('hidden', v !== tabName);
+      });
+
+      document.querySelectorAll('.ws-nav-btn').forEach(btn => {
+        const active = btn.getAttribute('data-nav-tab') === tabName;
+        btn.className = active
+          ? 'ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 bg-[#18181B] text-white shadow-2xs transition-all'
+          : 'ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all';
+      });
+      lucide.createIcons();
+    }
+
+    // ==================== NETWORK & MESSAGING RENDERERS ====================
+    function renderNetworkDirectory() {
+      const grid = document.getElementById('network-directory-grid');
+      grid.innerHTML = activeMembers.map(m => `
+        <div class="bento-card p-4 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${m.avatar}" alt="${m.name}" onerror="this.onerror=null; this.src='https://placehold.co/80x80/e4e4e7/18181b?text=${m.name[0]}';" class="w-11 h-11 rounded-full object-cover ring-1 ring-[#E6E3DC] shrink-0" />
+            <div class="min-w-0">
+              <h4 class="font-display font-bold text-sm text-zinc-900 truncate">${m.name}</h4>
+              <p class="text-xs text-zinc-500 truncate">${m.role}</p>
+              <span class="text-[11px] text-zinc-400">${m.city}</span>
+            </div>
+          </div>
+          <button type="button" onclick="toggleMemberConnect('${m.id}')" class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            m.connected
+              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+              : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+          }">
+            ${m.connected ? 'Connected ✓' : '+ Connect'}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function toggleMemberConnect(memberId) {
+      const member = activeMembers.find(m => m.id === memberId);
+      if (!member) return;
+      member.connected = !member.connected;
+      connectionsCount += member.connected ? 1 : -1;
+      document.getElementById('stat-connections').textContent = Math.max(0, connectionsCount);
+      renderNetworkDirectory();
+      showToast(member.connected ? `Connected with ${member.name}` : `Disconnected from ${member.name}`);
+    }
+
+    function renderMessagingThreads() {
+      const list = document.getElementById('message-threads-list');
+      list.innerHTML = directThreads.map(t => `
+        <button type="button" onclick="selectChatThread('${t.id}')" class="w-full p-2.5 rounded-xl text-left transition-colors ${
+          t.id === activeThreadId ? 'bg-white border border-[#E6E3DC] shadow-2xs' : 'hover:bg-white/60'
+        }">
+          <div class="flex items-center justify-between">
+            <span class="font-display font-bold text-xs text-zinc-900">${t.name}</span>
+            ${t.unread ? '<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>' : ''}
+          </div>
+          <p class="text-[11px] text-zinc-500 truncate mt-0.5">${t.messages[t.messages.length - 1].text}</p>
+        </button>
+      `).join('');
+
+      const active = directThreads.find(t => t.id === activeThreadId);
+      if (!active) return;
+      document.getElementById('chat-partner-name').textContent = active.name;
+      document.getElementById('chat-partner-role').textContent = active.role;
+      document.getElementById('chat-messages-box').innerHTML = active.messages.map(msg => `
+        <div class="flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
+          <div class="max-w-xs sm:max-w-md px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${
+            msg.sender === 'me'
+              ? 'bg-zinc-900 text-white rounded-br-sm'
+              : 'bg-[#F4F2EE] text-zinc-800 border border-[#E6E3DC] rounded-bl-sm'
+          }">
+            ${msg.text}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectChatThread(threadId) {
+      activeThreadId = threadId;
+      const t = directThreads.find(item => item.id === threadId);
+      if (t) t.unread = false;
+      renderMessagingThreads();
+    }
+
+    function sendDirectMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-reply-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const active = directThreads.find(t => t.id === activeThreadId);
+      active.messages.push({ sender: 'me', text });
+      input.value = '';
+      renderMessagingThreads();
+    }
+
+    // ==================== PROFILE HEADLINE & MODALS ====================
+    function openHeadlineEditor() {
+      document.getElementById('headline-modal').classList.remove('hidden');
+      const current = document.getElementById('profile-headline-text').textContent;
+      document.getElementById('headline-input').value = current === '+ Add a headline' ? '' : current;
+      setTimeout(() => document.getElementById('headline-input').focus(), 40);
+      lucide.createIcons();
+    }
+
+    function closeHeadlineEditor() {
+      document.getElementById('headline-modal').classList.add('hidden');
+    }
+
+    function saveProfileHeadline(e) {
+      e.preventDefault();
+      const val = document.getElementById('headline-input').value.trim();
+      if (!val) return;
+      document.getElementById('profile-headline-text').textContent = val;
+      document.getElementById('menu-headline-preview').textContent = val;
+
+      if (profileStrength < 42) {
+        profileStrength = 42;
+        document.getElementById('profile-strength-pct').textContent = '42%';
+        document.getElementById('profile-strength-bar').style.width = '42%';
+        document.getElementById('profile-boost-chip').innerHTML = '<span class="text-[11px] text-emerald-700 font-medium">✓ Headline added! Next: Join 2 groups</span>';
+      }
+      closeHeadlineEditor();
+      showToast('Profile headline updated (+25% strength)');
+    }
+
+    function openArticlesModal() {
+      document.getElementById('articles-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeArticlesModal() {
+      document.getElementById('articles-modal').classList.add('hidden');
+    }
+
+    function openUpgradeModal() {
+      document.getElementById('upgrade-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+    function closeUpgradeModal() {
+      document.getElementById('upgrade-modal').classList.add('hidden');
+    }
+
+    function toggleDropdown(id) {
+      const target = document.getElementById(id);
+      const isHidden = target.classList.contains('hidden');
+      closeAllDropdowns();
+      if (isHidden) target.classList.remove('hidden');
+    }
+
+    function closeAllDropdowns() {
+      ['notif-popover', 'explore-popover', 'me-popover'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+      });
+    }
+
+    function markAllRead() {
+      closeAllDropdowns();
+      showToast('All notifications marked as read');
+    }
+
+    // ==================== CMD+K COMMAND PALETTE ====================
+    function openCommandPalette() {
+      document.getElementById('command-modal').classList.remove('hidden');
+      const input = document.getElementById('cmd-search-input');
+      input.value = '';
+      renderCommandResults('');
+      setTimeout(() => input.focus(), 40);
+      lucide.createIcons();
+    }
+
+    function closeCommandPalette() {
+      document.getElementById('command-modal').classList.add('hidden');
+    }
+
+    function renderCommandResults(query) {
+      const q = query.toLowerCase().trim();
+      const items = [
+        { type: 'Action', label: 'Create a new post or share a win', action: () => { closeCommandPalette(); focusComposer(); } },
+        { type: 'Action', label: 'Toggle Focus Mode (collapse sidebars)', action: () => { closeCommandPalette(); toggleFocusMode(); } },
+        ...activeMembers.slice(0, 5).map(m => ({
+          type: 'Founder',
+          label: `${m.name} — ${m.role} (${m.city})`,
+          action: () => { closeCommandPalette(); switchWorkspaceTab('network'); }
+        })),
+        ...groupsToExplore.map(g => ({
+          type: 'Group',
+          label: `${g.name} (${g.members} members)`,
+          action: () => { closeCommandPalette(); toggleJoinGroup(g.id); }
+        }))
+      ];
+
+      const filtered = q ? items.filter(i => i.label.toLowerCase().includes(q) || i.type.toLowerCase().includes(q)) : items;
+      document.getElementById('cmd-results-list').innerHTML = filtered.length === 0
+        ? '<p class="p-4 text-xs text-center text-zinc-400">No matching founders, groups, or actions.</p>'
+        : filtered.map((item, idx) => `
+            <button type="button" data-cmd-idx="${idx}" class="cmd-result-row w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-[#F4F2EE] transition-colors">
+              <span class="text-xs font-medium text-zinc-800 truncate">${item.label}</span>
+              <span class="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded bg-[#F4F2EE] text-zinc-500">${item.type}</span>
+            </button>
+          `).join('');
+
+      document.querySelectorAll('.cmd-result-row').forEach((btn, i) => {
+        btn.onclick = filtered[i].action;
+      });
+    }
+
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          const modal = document.getElementById('command-modal');
+          modal.classList.contains('hidden') ? openCommandPalette() : closeCommandPalette();
+        } else if (e.key === 'Escape') {
+          closeCommandPalette();
+          closeHeadlineEditor();
+          closeArticlesModal();
+          closeUpgradeModal();
+          closeAllDropdowns();
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.relative')) {
+          closeAllDropdowns();
+        }
+      });
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-xs font-medium shadow-popover fade-in';
+      toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.2s ease';
+        setTimeout(() => toast.remove(), 220);
+      }, 2600);
+    }
+  </script>
+</body>
+</html>

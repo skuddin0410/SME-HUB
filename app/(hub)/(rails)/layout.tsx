@@ -1,19 +1,25 @@
 import { ActiveMembersCard, ArticlesCard, GroupsCard, ProfileCard, SocialCard } from "@/components/rails";
 
-/** Feed-style pages: fixed left and right rails, the centre column scrolls. */
+/**
+ * Feed-style pages: three columns of 3 / 6 / 3 on a 12-column grid (design: docs/design/feed.html).
+ * Focus mode (header button on the feed) hides both rails and widens the centre to 8 columns.
+ * On phones and tablets the rails step aside so the feed comes first.
+ */
 export default function RailsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto grid max-w-[1260px] items-start gap-6 px-4 py-6 lg:grid-cols-[240px_minmax(0,1fr)_320px]">
-      <aside className="rail hidden space-y-2 lg:block">
-        <ProfileCard />
-        <ArticlesCard />
-      </aside>
-      <main className="flex min-w-0 flex-col gap-2">{children}</main>
-      <aside className="rail hidden space-y-2 lg:block">
-        <SocialCard />
-        <ActiveMembersCard />
-        <GroupsCard />
-      </aside>
+    <div className="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <aside className="focus-hide lg:col-span-3 hidden space-y-4 lg:block">
+          <ProfileCard />
+          <ArticlesCard />
+        </aside>
+        <main className="focus-center lg:col-span-6 flex min-w-0 flex-col gap-4">{children}</main>
+        <aside className="focus-hide lg:col-span-3 hidden space-y-4 lg:block">
+          <ActiveMembersCard />
+          <GroupsCard />
+          <SocialCard />
+        </aside>
+      </div>
     </div>
   );
 }

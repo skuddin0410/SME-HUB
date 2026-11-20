@@ -86,7 +86,7 @@ export function StoryPage({ section, slug }: { section: SectionKey; slug: string
             {section === "podcast" && <Headphones className="mt-0.5 h-4 w-4 shrink-0" />}
             {section === "podcast" ? "The recording for this episode has not been added here yet." : "The full text of this piece has not been added here yet."}
           </p>
-          <Link href="/feed" className="press mt-4 inline-flex rounded-full border border-primary px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5">
+          <Link href="/feed" className="press mt-4 inline-flex rounded-xl border border-primary px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/5">
             Talk about it in the feed
           </Link>
         </div>

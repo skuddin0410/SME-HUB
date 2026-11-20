@@ -67,7 +67,7 @@ export default async function MyBusinessesPage({ searchParams }: { searchParams:
             {limit === 0 ? "Business listings come with the paid plans" : `Your plan includes ${limit} ${limit === 1 ? "listing" : "listings"}`}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">Upgrade to put {limit === 0 ? "your business" : "more businesses"} in the directory.</p>
-          <Link href="/membership-plans" className="press mt-4 inline-block rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white">
+          <Link href="/membership-plans" className="press mt-4 inline-block rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-white">
             See plans
           </Link>
         </section>

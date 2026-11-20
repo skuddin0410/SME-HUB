@@ -1,5 +1,5 @@
 {
-  "checked": "2026-11-20 00:29 UTC",
+  "checked": "2026-11-20 00:47 UTC",
   "rows": [
     {
       "area": "Accounts",
@@ -245,9 +245,33 @@
       "area": "Feed",
       "feature": "Save posts for later",
       "linkedin": "Saved items",
-      "status": "Not started",
-      "when": "Next",
-      "evidence": "missing: database /create table saved_posts/"
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: database /create table saved_posts/; ok: code /toggleSave/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Top Signal / Latest ordering",
+      "linkedin": "Relevance-ranked feed with a recent toggle",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: file lib/feed.ts; ok: code /topSignal/"
+    },
+    {
+      "area": "Feed",
+      "feature": "Focus mode (hide the side rails)",
+      "linkedin": "Distraction-free reading",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /data-focus|dataset\\.focus/"
+    },
+    {
+      "area": "Platform",
+      "feature": "Command palette (Ctrl/Cmd+K)",
+      "linkedin": "Quick search and jump",
+      "status": "Built",
+      "when": "",
+      "evidence": "ok: code /function CommandPalette/"
     },
     {
       "area": "Feed",
