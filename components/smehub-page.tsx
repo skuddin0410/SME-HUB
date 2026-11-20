@@ -1,26 +1,29 @@
 /* eslint-disable @next/next/no-img-element */
-import { Facebook, Instagram, Linkedin, Minus, Plus, Twitter } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, ArrowUpRight, Facebook, Instagram, Linkedin, Plus, Twitter } from "lucide-react";
 import type { FullPage, Org } from "@/lib/smehub";
+import { SectionAside } from "@/components/section-aside";
 
-// The resource-centre and business-guide pages, laid out as they are on smehub.ca:
-// pale blue hero, two columns of accordions, a pale blue heading band, then one card per organisation.
-// Measurements and colours are taken from the live pages at desktop width.
+// The resource-centre and business-guide pages from smehub.ca, with the same content, laid out in the
+// hub's design: a white hero card, the key points as accordions, then one card per organisation,
+// with the other pages of the same menu group in a sticky side card.
 
-const BLUE = "#0463f1";
 const ICONS = { facebook: Facebook, twitter: Twitter, instagram: Instagram, linkedin: Linkedin };
+const CARD = "rounded-3xl border border-[#E6E3DC] bg-white shadow-card";
 
 function Accordion({ items, group }: { items: [string, string][]; group: string }) {
   return (
-    <div>
+    <div className={`${CARD} divide-y divide-[#F0EEE9] overflow-hidden`}>
       {items.map(([title, body], i) => (
-        // same `name` = only one open per column, like the original; the first starts open
-        <details key={title} name={group} open={i === 0} className="group mb-[25px] rounded-[20px] border border-[#e5e5e5]">
-          <summary className="flex cursor-pointer list-none items-start gap-1.5 px-5 py-[15px] text-[18px] font-bold leading-[30px] text-[#0a033c] [&::-webkit-details-marker]:hidden">
-            <Plus strokeWidth={3.5} className="mt-[8px] h-[14px] w-[14px] shrink-0 group-open:hidden" />
-            <Minus strokeWidth={3.5} className="mt-[8px] hidden h-[14px] w-[14px] shrink-0 group-open:block" />
+        // same `name` = only one open per column; the first starts open
+        <details key={title} name={group} open={i === 0} className="group">
+          <summary className="flex cursor-pointer list-none items-start gap-3 px-5 py-4 text-[14px] font-semibold leading-snug text-zinc-900 hover:bg-[#FAF9F7] [&::-webkit-details-marker]:hidden">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#F4F2EE] text-zinc-500 transition-transform group-open:rotate-45 group-open:bg-blue-50 group-open:text-blue-600">
+              <Plus className="h-3 w-3" strokeWidth={3} />
+            </span>
             {title}
           </summary>
-          <p className="whitespace-pre-line px-5 pb-[15px] text-[14px] leading-[27px] text-[#6c688a]">{body}</p>
+          <p className="whitespace-pre-line px-5 pb-5 pl-[52px] text-[13px] leading-relaxed text-zinc-600">{body}</p>
         </details>
       ))}
     </div>
@@ -29,26 +32,39 @@ function Accordion({ items, group }: { items: [string, string][]; group: string 
 
 function OrgCard({ org }: { org: Org }) {
   return (
-    <article className="flex flex-col gap-5 rounded-[10px] border border-[#e7e6ec] bg-white p-5 sm:flex-row">
-      <img src={org.logo} alt={`${org.name} logo`} loading="lazy" className="h-[180px] w-full shrink-0 rounded-[10px] bg-[#fafafa] object-contain sm:w-[260px] sm:object-cover" />
+    <article className={`${CARD} flex flex-col gap-5 p-5 sm:flex-row`}>
+      <div className="flex h-[132px] w-full shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#F0EEE9] bg-[#FAF9F7] sm:w-[180px]">
+        <img src={org.logo} alt={`${org.name} logo`} loading="lazy" className="max-h-full max-w-full object-contain p-3" />
+      </div>
       <div className="flex min-w-0 flex-1 flex-col">
-        <h3 className="text-[24px] font-bold leading-[1.15] text-[#0a0606]">{org.name}</h3>
-        <p className="mt-[26px] text-[14px] leading-[26px] text-[#0a0a0a]">{org.text}</p>
-        <div className="mt-[18px] flex flex-wrap items-center justify-between gap-3">
-          <ul className="flex gap-[10px]">
+        <h3 className="font-display text-[16px] font-bold leading-snug text-zinc-950">{org.name}</h3>
+        <p className="mt-2 text-[13px] leading-relaxed text-zinc-600">{org.text}</p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <ul className="flex gap-1.5">
             {org.socials.map((s) => {
               const Icon = ICONS[s.kind];
               return (
                 <li key={s.kind}>
-                  <a href={s.url} target="_blank" rel="noreferrer" aria-label={`${org.name} on ${s.kind}`} className="flex h-[33px] w-[33px] items-center justify-center rounded-full bg-[#bfdbff] transition-opacity hover:opacity-80" style={{ color: BLUE }}>
-                    <Icon className="h-[15px] w-[15px]" fill={s.kind === "instagram" ? "none" : "currentColor"} strokeWidth={s.kind === "instagram" ? 2 : 0} />
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${org.name} on ${s.kind}`}
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E6E3DC] text-zinc-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    <Icon className="h-3.5 w-3.5" />
                   </a>
                 </li>
               );
             })}
           </ul>
-          <a href={org.website} target="_blank" rel="noreferrer" className="ml-auto rounded-lg px-5 py-[10px] text-[15px] font-semibold leading-5 text-white transition-opacity hover:opacity-90" style={{ backgroundColor: BLUE }}>
-            Learn More
+          <a
+            href={org.website}
+            target="_blank"
+            rel="noreferrer"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-blue-600 px-4 py-2 text-[12.5px] font-semibold text-white transition-colors hover:bg-blue-700"
+          >
+            Visit website <ArrowUpRight className="h-3.5 w-3.5" />
           </a>
         </div>
       </div>
@@ -58,44 +74,51 @@ function OrgCard({ org }: { org: Org }) {
 
 export function SmehubPage({ page }: { page: FullPage }) {
   const [first, second] = page.heads;
+  const guide = page.path.startsWith("/guides/");
   return (
-    <main className="bg-white">
-      <section className="bg-[#edf8fe] px-5 py-[60px] lg:py-[100px]">
-        <div className="mx-auto grid max-w-[1120px] items-center gap-10 lg:grid-cols-[548px_minmax(0,1fr)]">
-          <div>
-            <h1 className="text-[28px] font-extrabold leading-[1.3] lg:text-[32px] lg:leading-[42px]" style={{ color: BLUE }}>
-              {first}
-            </h1>
-            {second && <p className="text-[20px] font-bold leading-[1.35] text-black lg:text-[24px] lg:leading-[32px]">{second}</p>}
-            <p className="mt-[10px] text-[14px] leading-[28px] text-[#0a0a0a]">{page.intro}</p>
-          </div>
-          <img src={page.img} alt="" className="mx-auto h-[445px] w-[343px] max-w-full rounded-[20px] object-cover" />
-        </div>
-      </section>
+    <div className="flex-1 mx-auto w-full max-w-[1360px] px-4 py-6 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
+        <main className="flex min-w-0 flex-col gap-5 lg:col-span-8">
+          <section className={`${CARD} relative grid items-center gap-6 overflow-hidden p-6 sm:p-8 md:grid-cols-[minmax(0,1fr)_240px]`}>
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-600 via-red-500 to-blue-600" />
+            <div>
+              <Link href={guide ? "/guides" : "/resources"} className="mb-4 inline-flex items-center gap-1 text-xs font-semibold text-zinc-500 hover:text-zinc-900">
+                <ArrowLeft className="h-3.5 w-3.5" />
+                {guide ? "All province guides" : "All SMB resources"}
+              </Link>
+              <p className="mb-3 flex w-fit items-center gap-2 rounded-full border border-[#E6E3DC] bg-[#F6F5F1] px-3 py-1 text-[11.5px] font-semibold text-zinc-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-600" />
+                {guide ? "Province-wide resources" : "SMB resources"}
+              </p>
+              <h1 className="font-jakarta text-[26px] font-extrabold leading-[1.15] tracking-tight text-zinc-950 sm:text-[32px]">{first.replace(/:$/, "")}</h1>
+              {second && <p className="mt-2 font-display text-[16px] font-semibold leading-snug text-zinc-700">{second}</p>}
+              <p className="mt-3 text-[13.5px] leading-relaxed text-zinc-600">{page.intro}</p>
+            </div>
+            <img src={page.img} alt="" className="h-[260px] w-full rounded-2xl bg-[#F4F2EE] object-cover md:h-[300px]" />
+          </section>
 
-      <section className="bg-[#fafbfd] px-5 pb-[35px] pt-[60px]">
-        <div className="mx-auto grid max-w-[1100px] gap-x-5 md:grid-cols-2">
-          <Accordion items={page.left} group={`${page.slug}-left`} />
-          <Accordion items={page.right} group={`${page.slug}-right`} />
-        </div>
-      </section>
+          <section>
+            <h2 className="mb-3 px-1 font-display text-[15px] font-bold text-zinc-950">{guide ? "What to know before you start" : "How the centre helps"}</h2>
+            <div className="grid items-start gap-4 md:grid-cols-2">
+              <Accordion items={page.left} group={`${page.slug}-left`} />
+              <Accordion items={page.right} group={`${page.slug}-right`} />
+            </div>
+          </section>
 
-      <section className="bg-[#edf8fe] px-5 py-[50px]">
-        <div className="mx-auto max-w-[1120px]">
-          <h2 className="text-[24px] font-bold leading-[1.4] sm:text-[28px] sm:leading-[42px]" style={{ color: BLUE }}>
-            Explore the Best Available Resources for
-          </h2>
-          <p className="mt-[6px] text-[24px] font-bold leading-[1.4] text-black sm:text-[28px] sm:leading-[42px]">{page.band}</p>
-        </div>
-      </section>
-
-      <section className="px-5 py-[50px]">
-        <div className="mx-auto flex max-w-[1140px] flex-col gap-[50px]">
-          {page.orgs.map((org) => (
-            <OrgCard key={org.name + org.logo} org={org} />
-          ))}
-        </div>
-      </section>
-    </main>
+          <section className="flex flex-col gap-4">
+            <div className="px-1">
+              <h2 className="font-display text-[15px] font-bold text-zinc-950">Explore the best available resources for {page.band}</h2>
+              <p className="mt-0.5 text-[12.5px] text-zinc-500">{page.orgs.length} organisations, programs and networks</p>
+            </div>
+            {page.orgs.map((org) => (
+              <OrgCard key={org.name + org.logo} org={org} />
+            ))}
+          </section>
+        </main>
+        <aside className="sticky top-[78px] hidden lg:col-span-4 lg:block">
+          <SectionAside />
+        </aside>
+      </div>
+    </div>
   );
 }

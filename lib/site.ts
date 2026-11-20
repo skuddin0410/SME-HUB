@@ -22,12 +22,29 @@ export const EXPLORE_MENU: NavItem[] = [
   { label: "Groups", href: "/groups" },
   { label: "Members", href: "/members" },
   { label: "Explore businesses", href: "/businesses" },
-  { label: "SMB Advisors", href: "/members?type=advisor" },
+  { label: "SMB Advisors", href: "/smb-advisor" },
   { label: "Membership plans", href: "/membership-plans" },
   { label: "Blog", href: "/blog" },
   { label: "News", href: "/news" },
   { label: "Courses", href: "/courses" },
   { label: "Small Business Podcast", href: "/podcast" },
+];
+
+/** One small business guide per province and territory (pages built from lib/smehub). */
+export const PROVINCE_MENU: NavItem[] = [
+  { label: "Alberta", href: "/guides/alberta" },
+  { label: "British Columbia", href: "/guides/british-columbia" },
+  { label: "Manitoba", href: "/guides/manitoba" },
+  { label: "New Brunswick", href: "/guides/new-brunswick" },
+  { label: "Newfoundland and Labrador", href: "/guides/newfoundland-and-labrador" },
+  { label: "Northwest Territories", href: "/guides/northwest-territories" },
+  { label: "Nova Scotia", href: "/guides/nova-scotia" },
+  { label: "Nunavut", href: "/guides/nunavut" },
+  { label: "Ontario", href: "/guides/ontario" },
+  { label: "Prince Edward Island", href: "/guides/prince-edward-island" },
+  { label: "Quebec", href: "/guides/quebec" },
+  { label: "Saskatchewan", href: "/guides/saskatchewan" },
+  { label: "Yukon", href: "/guides/yukon" },
 ];
 
 export const POLICY_MENU: NavItem[] = [

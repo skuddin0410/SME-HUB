@@ -1,3 +1,4 @@
+import { Hero } from "@/components/content";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { CONTACT } from "@/lib/site";
 import { pageMeta } from "@/lib/seo";
@@ -16,7 +17,7 @@ const FAQ = [
 export default function HelpPage() {
   return (
     <>
-      <h1 className="text-2xl font-bold">Help</h1>
+      <Hero eyebrow="Policies & help" title="Help and frequently asked questions" text="Quick answers about accounts, posting, privacy, connections and plans. Still stuck? Email the team and we will help." />
       <section className="panel divide-y">
         {FAQ.map((f) => (
           <details key={f.q} className="group px-5 py-4">

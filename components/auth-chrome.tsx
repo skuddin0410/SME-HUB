@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { ToastProvider } from "@/components/auth-toast";
 import { CommandPalette } from "@/components/site-nav";
-import { MAPLE_STAR } from "@/lib/brand";
 
 const NAV = [
   { href: "/auth/login", label: "Home" },
@@ -50,14 +49,9 @@ export function AuthChrome({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col justify-between auth-grid-bg text-slate-900 font-inter text-base leading-normal antialiased selection:bg-blue-600/15 selection:text-blue-700">
       <header className="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-md border-b border-slate-200/80">
         <div className="max-w-[1280px] mx-auto px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-          <Link href="/auth/login" className="flex items-center gap-2.5 shrink-0 group">
-            <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 flex items-center justify-center ring-1 ring-black/5 group-hover:scale-105 transition-transform">
-              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d={MAPLE_STAR} />
-              </svg>
-            </span>
-            <span className="font-jakarta font-extrabold text-[17px] tracking-tight text-slate-950">SMB HUB</span>
-            <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold tracking-wider bg-slate-100 text-slate-600 border border-slate-200/80">CA</span>
+          <Link href="/auth/login" aria-label="SMB Hub home" className="flex items-center shrink-0 group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/smb-hub-logo.png" alt="SMB Hub" width={874} height={224} className="h-8 w-auto group-hover:opacity-90 transition-opacity" />
           </Link>
 
           <nav aria-label="Primary Marketing Navigation" className="hidden lg:flex items-center gap-1">

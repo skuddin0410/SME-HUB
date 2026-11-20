@@ -27,6 +27,17 @@ const nextConfig: NextConfig = {
     return [
       ...OLD_GUIDES.map((g) => ({ source: `/business-guide-${g}`, destination: `/guides/${g}`, permanent: true })),
       ...OLD_RESOURCES.map(([from, to]) => ({ source: `/${from}`, destination: `/resources/${to}`, permanent: true })),
+      // the rest of smehub.ca's menu, so old links and bookmarks keep working
+      ...[
+        ["/frequently-asked-questions", "/help"],
+        ["/general-terms-conditions", "/policies/terms"],
+        ["/small-business-hub-community-guidelines", "/policies/community-guidelines"],
+        ["/smb-hub-discrimination-policy", "/policies/discrimination-policy"],
+        ["/explore-businesses", "/businesses"],
+        ["/small-business-podcast", "/podcast"],
+        ["/login", "/auth/login"],
+        ["/register", "/auth/sign-up"],
+      ].map(([source, destination]) => ({ source, destination, permanent: true })),
     ];
   },
   async headers() {

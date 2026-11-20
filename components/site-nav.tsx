@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Bell,
   Bookmark,
@@ -11,14 +11,12 @@ import {
   Crown,
   Edit3,
   HelpCircle,
+  Info,
   Home,
-  Landmark,
   LayoutGrid,
   LogOut,
-  Maximize2,
   Menu,
   MessageSquare,
-  Newspaper,
   Search,
   Shield,
   Store,
@@ -26,21 +24,28 @@ import {
   X,
 } from "lucide-react";
 import { markNotificationsRead } from "@/app/(hub)/actions";
-import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, RESOURCES_MENU, type NavItem } from "@/lib/site";
+import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, PROVINCE_MENU, RESOURCES_MENU, type NavItem } from "@/lib/site";
 import { AvatarImg, SignOutButton } from "@/components/hub-client";
-import { MAPLE_STAR } from "@/lib/brand";
 
 
-/** The SMB Hub mark: red maple-star tile and wordmark (design: docs/design/feed.html). */
-export function Logo({ href = "/feed" }: { onDark?: boolean; href?: string; large?: boolean }) {
+/**
+ * The SMB Hub logo from smehub.ca: the red maple roundel and the SMB HUB wordmark
+ * (public/brand, transparent PNGs at twice the size they are shown, so they stay sharp on retina screens).
+ * On small phones only the roundel shows; onDark swaps in the white-lettered version.
+ */
+export function Logo({ href = "/feed", onDark = false }: { onDark?: boolean; href?: string; large?: boolean }) {
   return (
-    <Link href={href} aria-label="SMB Hub home" className="flex items-center gap-2.5 shrink-0 whitespace-nowrap group">
-      <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 flex items-center justify-center ring-1 ring-black/5 group-hover:scale-105 transition-transform">
-        <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d={MAPLE_STAR} />
-        </svg>
-      </span>
-      <span className="hidden sm:inline font-display font-extrabold text-[16px] tracking-tight text-zinc-900">SMB HUB</span>
+    <Link href={href} aria-label="SMB Hub home" className="flex items-center shrink-0 group">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={onDark ? "/brand/smb-hub-logo-on-dark.png" : "/brand/smb-hub-logo.png"}
+        alt="SMB Hub"
+        width={874}
+        height={224}
+        className="hidden sm:block h-8 w-auto group-hover:opacity-90 transition-opacity"
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/smb-hub-mark.png" alt="SMB Hub" width={226} height={224} className="sm:hidden h-8 w-8" />
     </Link>
   );
 }
@@ -51,8 +56,9 @@ type Me = { id: string; full_name: string; avatar_url: string | null; headline?:
 const TAB_ON = "h-8 px-2.5 sm:px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 bg-[#18181B] text-white transition-all";
 const TAB_OFF = "h-8 px-2.5 sm:px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all";
 const POPOVER = "absolute right-0 mt-2.5 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover z-50 fade-in";
+const MENU_BTN = "h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-100/80 transition-all";
+const MENU_BTN_ON = "h-8 px-2.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap flex items-center gap-1.5 bg-stone-100 text-stone-900 transition-all";
 const MENU_ROW = "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-700 hover:bg-[#F4F2EE] text-left";
-const FOCUS_KEY = "smbhub-focus";
 
 /** Opens the command palette from anywhere (the left rail's quick links use it too). */
 export const PALETTE_EVENT = "smbhub:palette";
@@ -76,10 +82,9 @@ export function SiteNav({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [open, setOpen] = useState<null | "notes" | "explore" | "me">(null);
+  const [open, setOpen] = useState<null | "notes" | "about" | "explore" | "me">(null);
   const [mobile, setMobile] = useState(false);
   const [palette, setPalette] = useState(false);
-  const [focus, setFocus] = useState(false);
   const [unreadNow, setUnreadNow] = useState(unread);
   const bar = useRef<HTMLDivElement>(null);
   useEffect(() => setUnreadNow(unread), [unread]);
@@ -88,26 +93,6 @@ export function SiteNav({
     setOpen(null);
     setMobile(false);
   }, [pathname]);
-
-  // focus mode survives reloads
-  useEffect(() => {
-    let on = false;
-    try {
-      on = localStorage.getItem(FOCUS_KEY) === "on";
-    } catch {}
-    setFocus(on);
-    document.documentElement.dataset.focus = on ? "on" : "off";
-  }, []);
-  const toggleFocus = useCallback(() => {
-    setFocus((f) => {
-      const on = !f;
-      document.documentElement.dataset.focus = on ? "on" : "off";
-      try {
-        localStorage.setItem(FOCUS_KEY, on ? "on" : "off");
-      } catch {}
-      return on;
-    });
-  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -134,7 +119,7 @@ export function SiteNav({
     };
   }, []);
 
-  const toggle = (name: "notes" | "explore" | "me") => setOpen((o) => (o === name ? null : name));
+  const toggle = (name: "notes" | "about" | "explore" | "me") => setOpen((o) => (o === name ? null : name));
   const onFeed = pathname === "/feed";
 
   const tabs = [
@@ -195,19 +180,92 @@ export function SiteNav({
                 {extra}
               </Link>
             ))}
+          </nav>
+        ) : (
+          <nav aria-label="Browse" className="hidden md:flex items-center gap-1 bg-[#F6F5F1]/95 p-1 rounded-full border border-[#E6E3DC]/90 shrink-0">
+            {[
+              { href: "/feed", label: "Home", icon: Home },
+              { href: "/members", label: "People", icon: Users },
+              { href: "/businesses", label: "Businesses", icon: Building2 },
+            ].map(({ href, label, icon: Icon }) => (
+              <Link key={href} href={href} className={pathname === href ? TAB_ON : TAB_OFF}>
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <span>{label}</span>
+              </Link>
+            ))}
+          </nav>
+        )}
+
+        {/* right: the smehub.ca menus (About, Explore, Help), then notifications, me, upgrade */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          <div className="relative hidden md:block shrink-0">
+            <button type="button" onClick={() => toggle("about")} aria-expanded={open === "about"} className={open === "about" ? MENU_BTN_ON : MENU_BTN}>
+              <Info className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden xl:inline">About</span>
+              <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "about" ? "rotate-180" : ""}`} />
+            </button>
+            {open === "about" && (
+              <div className={`${POPOVER} w-[min(680px,calc(100vw-2rem))] p-4 grid grid-cols-[1fr_1fr_1.35fr] gap-4`}>
+                <MegaColumn title="About SMB Hub" items={ABOUT_MENU} />
+                <MegaColumn title="SMB resources" items={RESOURCES_MENU} />
+                <MegaColumn title="Province-wide resources" items={PROVINCE_MENU} dense />
+              </div>
+            )}
+          </div>
+
+          <div className="relative hidden md:block shrink-0">
+            <button type="button" onClick={() => toggle("explore")} aria-expanded={open === "explore"} className={open === "explore" ? MENU_BTN_ON : MENU_BTN}>
+              <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden xl:inline">Explore</span>
+              <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "explore" ? "rotate-180" : ""}`} />
+            </button>
+            {open === "explore" && (
+              <div className={`${POPOVER} w-[min(520px,calc(100vw-2rem))] p-4 grid grid-cols-[1.2fr_1fr] gap-4`}>
+                <MegaColumn title="Explore the Hub" items={EXPLORE_MENU} />
+                <div className="flex flex-col gap-4">
+                  <MegaColumn title="Policies & help" items={POLICY_MENU} />
+                  <Link href="/membership-plans" className="mt-auto rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-3 hover:border-amber-300 transition-colors">
+                    <span className="flex items-center gap-1.5 text-xs font-display font-bold text-amber-900">
+                      <Crown className="w-3.5 h-3.5 text-amber-600" /> Membership plans
+                    </span>
+                    <span className="mt-0.5 block text-[11px] leading-snug text-amber-800/80">More connections, company pages and featured offers.</span>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Link href="/help" className={`hidden md:inline-flex ${pathname.startsWith("/help") ? MENU_BTN_ON : MENU_BTN}`}>
+            <HelpCircle className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden 2xl:inline">Help</span>
+          </Link>
+
+          <div className="h-4 w-px bg-[#E6E3DC] mx-0.5 hidden sm:block shrink-0" />
+
+          {me ? (
+            <>
             <div className="relative shrink-0">
               <button
                 type="button"
                 onClick={() => toggle("notes")}
                 aria-expanded={open === "notes"}
-                className={pathname.startsWith("/notifications") ? TAB_ON.replace("sm:px-3.5", "sm:px-3") : TAB_OFF.replace("sm:px-3.5", "sm:px-3")}
+                aria-label={unreadNow > 0 ? `Notifications, ${unreadNow} unread` : "Notifications"}
+                title="Notifications"
+                className={`relative w-8 h-8 rounded-full flex items-center justify-center border transition-all ${
+                  pathname.startsWith("/notifications") || open === "notes"
+                    ? "bg-[#18181B] text-white border-[#18181B]"
+                    : "bg-white text-stone-600 hover:text-stone-900 border-[#E6E3DC] hover:bg-stone-50"
+                }`}
               >
-                <Bell className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden xl:inline">Notifications</span>
-                {unreadNow > 0 && <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" aria-label={`${unreadNow} unread`} />}
+                <Bell className="w-4 h-4" />
+                {unreadNow > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white text-[9px] font-bold leading-4 text-center ring-2 ring-white">
+                    {unreadNow > 9 ? "9+" : unreadNow}
+                  </span>
+                )}
               </button>
               {open === "notes" && (
-                <div className={`${POPOVER} w-80 p-3`}>
+                <div className={`${POPOVER} w-80 p-3 -right-24 sm:right-0`}>
                   <div className="flex items-center justify-between px-2 pb-2.5 border-b border-[#E6E3DC]">
                     <span className="font-display font-bold text-xs text-zinc-900">Notifications</span>
                     {unreadNow > 0 && (
@@ -242,84 +300,6 @@ export function SiteNav({
                 </div>
               )}
             </div>
-          </nav>
-        ) : (
-          <nav aria-label="Browse" className="hidden md:flex items-center gap-1 bg-[#F6F5F1]/95 p-1 rounded-full border border-[#E6E3DC]/90 shrink-0">
-            {[
-              { href: "/feed", label: "Home", icon: Home },
-              { href: "/members", label: "People", icon: Users },
-              { href: "/businesses", label: "Businesses", icon: Building2 },
-            ].map(({ href, label, icon: Icon }) => (
-              <Link key={href} href={href} className={pathname === href ? TAB_ON : TAB_OFF}>
-                <Icon className="w-3.5 h-3.5 shrink-0" />
-                <span>{label}</span>
-              </Link>
-            ))}
-          </nav>
-        )}
-
-        {/* right: focus, explore, me, upgrade */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {onFeed && (
-            <button
-              type="button"
-              onClick={toggleFocus}
-              aria-pressed={focus}
-              title="Toggle distraction-free Focus Mode"
-              className={
-                focus
-                  ? "hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap bg-blue-50 text-blue-700 border border-blue-200 transition-all shrink-0"
-                  : "hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap text-stone-600 hover:text-stone-900 border border-transparent hover:border-[#E6E3DC] hover:bg-stone-100/70 transition-all shrink-0"
-              }
-            >
-              <Maximize2 className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden 2xl:inline">Focus</span>
-            </button>
-          )}
-
-          <div className="relative hidden sm:block shrink-0">
-            <button
-              type="button"
-              onClick={() => toggle("explore")}
-              aria-expanded={open === "explore"}
-              className="h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-100/80 transition-all"
-            >
-              <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden 2xl:inline">Explore</span>
-              <ChevronDown className="w-3 h-3 text-stone-400 shrink-0" />
-            </button>
-            {open === "explore" && (
-              <div className={`${POPOVER} w-60 p-2`}>
-                {[
-                  { href: "/businesses", icon: Building2, tone: "bg-blue-50 text-blue-600", title: "Business Listings", sub: "Canadian small businesses" },
-                  { href: "/resources", icon: Landmark, tone: "bg-emerald-50 text-emerald-600", title: "Funding & Grants", sub: "Programs and resources for founders" },
-                  { href: "/blog", icon: Newspaper, tone: "bg-rose-50 text-rose-600", title: "Editorial Insights", sub: "Founder playbooks & news" },
-                ].map(({ href, icon: Icon, tone, title, sub }) => (
-                  <Link key={href} href={href} className="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-[#F4F2EE] text-left transition-colors">
-                    <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${tone}`}>
-                      <Icon className="w-4 h-4" />
-                    </span>
-                    <span>
-                      <span className="block text-xs font-semibold text-zinc-900">{title}</span>
-                      <span className="block text-[10px] text-zinc-500">{sub}</span>
-                    </span>
-                  </Link>
-                ))}
-                <div className="mt-1 pt-2 px-2.5 pb-1 border-t border-[#F4F2EE] flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-zinc-500">
-                  {[...EXPLORE_MENU.filter((i) => !["/businesses", "/blog"].includes(i.href)), ...ABOUT_MENU].map((i) => (
-                    <Link key={i.href} href={i.href} className="hover:text-zinc-900">
-                      {i.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="h-4 w-px bg-[#E6E3DC] mx-0.5 hidden sm:block shrink-0" />
-
-          {me ? (
-            <>
               <div className="relative shrink-0">
                 <button
                   type="button"
@@ -435,6 +415,7 @@ export function SiteNav({
             { title: "Explore", items: EXPLORE_MENU },
             { title: "About", items: ABOUT_MENU },
             { title: "Resources for founders", items: RESOURCES_MENU },
+            { title: "Province-wide resources", items: PROVINCE_MENU },
             { title: "Good to know", items: POLICY_MENU },
           ].map((col) => (
             <MenuColumn key={col.title} title={col.title} items={col.items} />
@@ -442,8 +423,29 @@ export function SiteNav({
         </div>
       )}
 
-      {palette && <CommandPalette onClose={() => setPalette(false)} onFocus={onFeed ? toggleFocus : undefined} signedIn={!!me} />}
+      {palette && <CommandPalette onClose={() => setPalette(false)} signedIn={!!me} />}
     </header>
+  );
+}
+
+/** One titled column of links inside the About and Explore menus. */
+function MegaColumn({ title, items, dense = false }: { title: string; items: NavItem[]; dense?: boolean }) {
+  return (
+    <div className="min-w-0">
+      <p className="px-2 pb-1.5 text-[10.5px] font-bold uppercase tracking-wider text-stone-400">{title}</p>
+      <ul className={dense ? "grid grid-cols-1 gap-px" : "grid gap-0.5"}>
+        {items.map((i) => (
+          <li key={i.href}>
+            <Link
+              href={i.href}
+              className={`block rounded-lg px-2 ${dense ? "py-1 text-[12px]" : "py-1.5 text-[12.5px]"} text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-950 truncate transition-colors`}
+            >
+              {i.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -463,7 +465,7 @@ function MenuColumn({ title, items }: { title: string; items: NavItem[] }) {
 type Command = { type: string; label: string; run: () => void };
 
 /** ⌘K: search everything, or jump straight to a page or an action. */
-export function CommandPalette({ onClose, onFocus, signedIn }: { onClose: () => void; onFocus?: () => void; signedIn: boolean }) {
+export function CommandPalette({ onClose, signedIn }: { onClose: () => void; signedIn: boolean }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const input = useRef<HTMLInputElement>(null);
@@ -490,7 +492,6 @@ export function CommandPalette({ onClose, onFocus, signedIn }: { onClose: () => 
           },
         ]
       : []),
-    ...(onFocus ? [{ type: "Action", label: "Toggle Focus Mode (collapse sidebars)", run: () => (onClose(), onFocus()) }] : []),
     { type: "Page", label: "People: find members and SMB advisors", run: go("/members") },
     { type: "Page", label: "Groups: topic circles for Canadian owners", run: go("/groups") },
     { type: "Page", label: "Business listings", run: go("/businesses") },

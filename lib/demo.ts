@@ -3,7 +3,23 @@
 // avatars fall back to initials and covers to the plain blue gradient.
 export const DEMO_IMAGES = true;
 
-export const demoAvatar = (id: string) => `https://i.pravatar.cc/200?u=${encodeURIComponent(id)}`;
+/**
+ * Fixed portraits for the sample members only (accounts on demo.invalid). Real members without a
+ * photo get their initials: a random stranger's face in someone's own header looks like their photo
+ * was replaced, and pravatar's ?u= lookup could change the face over time. ?img=N is a fixed picture.
+ */
+const SAMPLE_PORTRAITS: Record<string, number> = {
+  "93978524-f266-41e8-8ecf-c27e48e29664": 12, // Kwame Asante
+  "ce12503e-8ae8-4979-ba84-3695bcd441ca": 47, // Chloe Tremblay
+  "34e49c44-262a-4fe8-a5e2-fb1167615f2f": 15, // Arjun Mehta
+  "c692d5c9-b93b-4140-a608-cfc035330f9d": 45, // Sara Haddad
+  "7084150a-347b-4f9b-907d-fadca083632a": 59, // Luc Bouchard
+  "522aa7b4-d449-4d9e-8d43-5b474e1d61a8": 49, // Mei Tanaka
+  "5f370475-d294-4826-9833-a16e51f31ddf": 68, // Daniel Okafor
+  "eb9c78f6-7d0d-4426-b281-19148ff08f59": 44, // Priya Raman
+};
+export const demoAvatar = (id: string): string | null =>
+  SAMPLE_PORTRAITS[id] ? `https://i.pravatar.cc/300?img=${SAMPLE_PORTRAITS[id]}` : null;
 export const demoCover = (id: string) => `https://picsum.photos/seed/${encodeURIComponent(id)}/900/300`;
 
 export const KINDS = {

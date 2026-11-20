@@ -1,3 +1,4 @@
+import { Hero } from "@/components/content";
 import Link from "next/link";
 import { Handshake, Lightbulb, Megaphone, UsersRound } from "lucide-react";
 import { pageMeta } from "@/lib/seo";
@@ -14,13 +15,7 @@ const POINTS = [
 export default function AboutPage() {
   return (
     <>
-      <div className="cover rounded-2xl p-7 text-white shadow-xl shadow-blue-900/20">
-        <h1 className="text-3xl font-bold">About SMB Hub</h1>
-        <p className="mt-2 max-w-xl text-white/85">
-          SMB Hub is the community from CanadianSME where small business owners and entrepreneurs connect and trade
-          experience, tools and advice, from financing to expansion.
-        </p>
-      </div>
+      <Hero eyebrow="CanadianSME Small Business Hub" title="About SMB Hub" text="SMB Hub is the community from CanadianSME where small business owners and entrepreneurs connect and trade experience, tools and advice, from financing to expansion." />
       <div className="grid gap-4 sm:grid-cols-2">
         {POINTS.map(({ icon: Icon, title, text }) => (
           <section key={title} className="panel p-5">

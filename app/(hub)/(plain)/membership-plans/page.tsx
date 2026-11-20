@@ -1,3 +1,4 @@
+import { Hero } from "@/components/content";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { PLANS } from "@/lib/site";
@@ -12,12 +13,7 @@ export default async function PlansPage() {
 
   return (
     <>
-      <div className="cover rounded-2xl p-7 text-white shadow-xl shadow-blue-900/20">
-        <h1 className="text-3xl font-bold">Membership plans</h1>
-        <p className="mt-2 max-w-xl text-white/85">
-          Start free. Upgrade when you want a company page, a wider network and a louder voice in the community.
-        </p>
-      </div>
+      <Hero eyebrow="Start free, upgrade any time" title="Membership plans" text="Start free. Upgrade when you want a company page, a wider network and a louder voice in the community." />
 
       <div className="grid gap-4 sm:grid-cols-2">
         {PLANS.map((plan) => {
