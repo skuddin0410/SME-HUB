@@ -160,14 +160,14 @@ export function SiteNav({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/[0.92] backdrop-blur-[16px] border-b border-[#E6E3DC]">
-      <div ref={bar} className="max-w-[1280px] mx-auto px-3 sm:px-6 lg:px-8 h-[62px] flex items-center justify-between gap-2 sm:gap-3">
+      <div ref={bar} className="max-w-[1360px] mx-auto px-3 sm:px-6 lg:px-8 h-[62px] flex items-center justify-between gap-2 sm:gap-3">
         {/* left: brand and search */}
         <div className="flex items-center gap-3.5 shrink-0">
           <Logo />
           <button
             type="button"
             onClick={() => setPalette(true)}
-            className="hidden sm:flex items-center justify-between gap-2 w-[180px] lg:w-[220px] xl:w-[250px] h-9 px-3.5 rounded-full bg-[#F6F5F1] hover:bg-[#EFECE6] border border-[#E6E3DC] hover:border-stone-300 text-[13px] text-stone-500 transition-colors shrink-0"
+            className="hidden sm:flex items-center justify-between gap-2 w-[180px] lg:w-[200px] 2xl:w-[210px] h-9 px-3.5 rounded-full bg-[#F6F5F1] hover:bg-[#EFECE6] border border-[#E6E3DC] hover:border-stone-300 text-[13px] text-stone-500 transition-colors shrink-0"
           >
             <span className="flex items-center gap-2 min-w-0">
               <Search className="w-3.5 h-3.5 text-stone-400 shrink-0" />
@@ -191,7 +191,7 @@ export function SiteNav({
             {tabs.map(({ href, label, icon: Icon, active, extra }) => (
               <Link key={href} href={href} aria-label={label} aria-current={active ? "page" : undefined} className={active ? TAB_ON : TAB_OFF}>
                 <Icon className="w-3.5 h-3.5 shrink-0" />
-                <span className="hidden md:inline">{label}</span>
+                <span className="hidden xl:inline">{label}</span>
                 {extra}
               </Link>
             ))}
@@ -273,7 +273,7 @@ export function SiteNav({
               }
             >
               <Maximize2 className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden xl:inline">Focus</span>
+              <span className="hidden 2xl:inline">Focus</span>
             </button>
           )}
 
@@ -285,7 +285,7 @@ export function SiteNav({
               className="h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-100/80 transition-all"
             >
               <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden xl:inline">Explore</span>
+              <span className="hidden 2xl:inline">Explore</span>
               <ChevronDown className="w-3 h-3 text-stone-400 shrink-0" />
             </button>
             {open === "explore" && (
@@ -373,10 +373,13 @@ export function SiteNav({
               </div>
               <Link
                 href="/membership-plans"
-                className="hidden sm:inline-flex h-8 px-3.5 rounded-full bg-gradient-to-b from-amber-50 to-amber-100/80 border border-amber-300/80 hover:border-amber-400 text-amber-900 text-[12.5px] font-semibold whitespace-nowrap items-center gap-1.5 shadow-[0_1px_2px_rgba(180,83,9,0.08)] transition-all shrink-0"
+                aria-label="Upgrade plan"
+                className="hidden sm:inline-flex h-8 px-2.5 xl:px-3.5 rounded-full bg-gradient-to-b from-amber-50 to-amber-100/80 border border-amber-300/80 hover:border-amber-400 text-amber-900 text-[12.5px] font-semibold whitespace-nowrap items-center gap-1.5 shadow-[0_1px_2px_rgba(180,83,9,0.08)] transition-all shrink-0"
               >
                 <Crown className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>Upgrade plan</span>
+                <span className="hidden xl:inline">
+                  Upgrade<span className="hidden 2xl:inline"> plan</span>
+                </span>
               </Link>
             </>
           ) : (

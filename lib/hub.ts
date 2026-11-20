@@ -56,7 +56,7 @@ export const MEMBER_TYPES: Record<Profile["member_type"], string> = {
 };
 
 export const AUTHOR_FIELDS = "id, full_name, headline, avatar_url, member_type";
-export const PAGE_SIZE = 12;
+export const PAGE_SIZE = 20;
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
