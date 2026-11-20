@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SMB HUB — Canada's Small Business Network</title>
+  <title>SMB HUB — Canada's Professional Network</title>
 
   <!-- Google Fonts: Plus Jakarta Sans & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,24 +25,12 @@
             sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
             display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
           },
-          colors: {
-            brand: {
-              50: '#eef4ff',
-              100: '#d9e6ff',
-              500: '#2563eb',
-              600: '#1d4ed8',
-              700: '#1e40af',
-              900: '#0f172a',
-            },
-            maple: {
-              500: '#e11d48',
-              600: '#be123c',
-            }
-          },
           boxShadow: {
-            'subtle': '0 1px 2px 0 rgba(15, 23, 42, 0.04)',
-            'elevated': '0 20px 45px -15px rgba(15, 23, 42, 0.12)',
-            'glass': '0 8px 32px 0 rgba(15, 23, 42, 0.14)',
+            'auth-card': '0 12px 36px -12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.03)',
+            'daylight-stage': '0 12px 36px -12px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03)',
+            'card': '0 1px 2px rgba(24, 24, 27, 0.04), 0 4px 12px -4px rgba(24, 24, 27, 0.04)',
+            'card-hover': '0 4px 16px -4px rgba(24, 24, 27, 0.08), 0 1px 3px rgba(24, 24, 27, 0.05)',
+            'popover': '0 16px 40px -8px rgba(24, 24, 27, 0.14), 0 2px 6px rgba(24, 24, 27, 0.06)',
           }
         }
       }
@@ -50,863 +38,2011 @@
   </script>
 
   <style>
-    .glass-header {
+    /* Subtle architectural dot grid for the Auth Landing Page */
+    .auth-grid-bg {
+      background-color: #F8FAFC;
+      background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* Daylight Canvas Soft Atmospheric Glow */
+    .daylight-canvas-glow {
+      background-color: #FAF9F6;
+      background-image:
+        radial-gradient(circle at 20% 15%, rgba(37, 99, 235, 0.06), transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(244, 63, 94, 0.05), transparent 45%),
+        radial-gradient(#CBD5E1 0.85px, transparent 0.85px);
+      background-size: 100% 100%, 100% 100%, 20px 20px;
+    }
+
+    /* Founder Reel Ken Burns Motion & Waveform Visualizer */
+    @keyframes reelKenBurns {
+      0% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.06) translate(-1%, -1.2%); }
+      100% { transform: scale(1) translate(0, 0); }
+    }
+    .reel-photo-motion {
+      animation: reelKenBurns 14s ease-in-out infinite;
+    }
+
+    @keyframes eqBar {
+      0%, 100% { transform: scaleY(0.35); }
+      50% { transform: scaleY(1); }
+    }
+    .eq-bar-1 { animation: eqBar 0.7s ease-in-out infinite; }
+    .eq-bar-2 { animation: eqBar 0.55s ease-in-out 0.15s infinite; }
+    .eq-bar-3 { animation: eqBar 0.8s ease-in-out 0.3s infinite; }
+    .eq-bar-4 { animation: eqBar 0.6s ease-in-out 0.1s infinite; }
+
+    /* Floating Reaction Burst */
+    @keyframes emojiFloatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.75) rotate(0deg); }
+      60% { opacity: 1; transform: translateY(-48px) scale(1.25) rotate(-8deg); }
+      100% { opacity: 0; transform: translateY(-88px) scale(0.95) rotate(10deg); }
+    }
+    .emoji-burst {
+      animation: emojiFloatUp 1.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Workspace Warm Stone Cards */
+    .glass-nav-feed {
+      background-color: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
-    .glass-card {
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+    .bento-card {
+      background-color: #FFFFFF;
+      border: 1px solid #E6E3DC;
+      border-radius: 16px;
+      box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 4px 12px -4px rgba(24, 24, 27, 0.04);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
     }
-    .grid-pattern {
-      background-image: radial-gradient(rgba(148, 163, 184, 0.22) 1px, transparent 1px);
-      background-size: 22px 22px;
+    .bento-card-interactive:hover {
+      border-color: #D6D2C9;
+      box-shadow: 0 4px 16px -4px rgba(24, 24, 27, 0.08), 0 1px 3px rgba(24, 24, 27, 0.05);
     }
-    .dark .grid-pattern {
-      background-image: radial-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px);
-    }
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
-    }
-    @keyframes floatDelayed {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-5px); }
-    }
-    .animate-float-slow {
-      animation: floatSlow 6s ease-in-out infinite;
-    }
-    .animate-float-delayed {
-      animation: floatDelayed 7s ease-in-out 1.5s infinite;
-    }
+
     .fade-in {
       animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(5px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#070B14] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-blue-600/15 selection:text-blue-700 dark:selection:text-blue-300 transition-colors duration-200 grid-pattern">
+<body class="min-h-screen font-sans antialiased selection:bg-blue-600/15 selection:text-blue-700">
 
-  <!-- ==================== STICKY GLASSMORPHIC HEADER ==================== -->
-  <header class="sticky top-0 z-40 w-full border-b border-slate-200/75 dark:border-slate-800/80 bg-white/80 dark:bg-[#0B1120]/80 glass-header transition-colors">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+  <!-- =========================================================================
+       SCREEN 1: AUTH & COMMUNITY LANDING PAGE (DEFAULT VIEW)
+       ========================================================================= -->
+  <div id="auth-landing-surface" class="min-h-screen flex flex-col justify-between auth-grid-bg text-slate-900">
 
-      <!-- Left: SMB HUB Brand Emblem -->
-      <a href="#home" onclick="resetToAuthView(event)" class="flex items-center gap-2.5 group focus:outline-none">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 flex items-center justify-center shadow-sm ring-1 ring-black/5 group-hover:scale-105 transition-transform">
-          <!-- Custom Crisp Maple-Star Crest SVG -->
-          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2L14.2 7.2L19.5 6.4L17.1 11.2L21 14.5L15.6 15.4L16.2 20.5L12 17.6L7.8 20.5L8.4 15.4L3 14.5L6.9 11.2L4.5 6.4L9.8 7.2L12 2Z" />
-          </svg>
-        </div>
-        <div class="flex items-baseline gap-1.5">
-          <span class="font-display font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">SMB HUB</span>
-          <span class="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">CA</span>
-        </div>
-      </a>
+    <!-- Sticky Glassmorphic Auth Header (Unified max-w-[1280px] mx-auto px-6 lg:px-8) -->
+    <header class="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-md border-b border-slate-200/80">
+      <div class="max-w-[1280px] mx-auto px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
 
-      <!-- Center: Minimalist Navigation Links -->
-      <nav aria-label="Primary Navigation" class="hidden lg:flex items-center gap-1">
-        <button onclick="selectNav(this, 'Home')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 transition-all">
-          Home
-        </button>
-        <button onclick="selectNav(this, 'Top Posts')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
-          Top Posts
-        </button>
-        <button onclick="selectNav(this, 'People')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
-          People
-        </button>
-        <button onclick="selectNav(this, 'Groups')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
-          Groups
-        </button>
-        <button onclick="selectNav(this, 'Businesses')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
-          Businesses
-        </button>
-        <button onclick="selectNav(this, 'Plans')" class="nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all">
-          Plans
-        </button>
-      </nav>
-
-      <!-- Right: Quick Search, Theme Toggle & Auth Actions -->
-      <div class="flex items-center gap-2 sm:gap-2.5">
-        <button onclick="openSearchModal()" aria-label="Quick Search" class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 hover:border-slate-300 dark:hover:border-slate-700 text-slate-500 dark:text-slate-400 text-xs transition-all">
-          <i data-lucide="search" class="w-3.5 h-3.5"></i>
-          <span class="hidden xl:inline">Search</span>
-          <kbd class="hidden md:inline-block px-1.5 py-0.2 text-[10px] font-mono bg-slate-100 dark:bg-slate-800 rounded text-slate-500">⌘K</kbd>
-        </button>
-
-        <button onclick="toggleTheme()" aria-label="Toggle Dark Mode" class="p-2 rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
-          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
-          <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400"></i>
-        </button>
-
-        <div class="h-4 w-px bg-slate-200 dark:bg-slate-800 hidden sm:block"></div>
-
-        <button onclick="setAuthMode('signin', true)" id="header-signin-btn" class="px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 transition-all">
-          Sign in
-        </button>
-
-        <button onclick="setAuthMode('signup', true)" id="header-join-btn" class="px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all active:scale-[0.98]">
-          Join now
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- ==================== MAIN ASYMMETRIC TWO-COLUMN HERO & AUTH ==================== -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 flex items-center">
-    <div id="auth-main-grid" class="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-
-      <!-- LEFT COLUMN: EDITORIAL HERO + HIGH-CRAFT AUTH FORM (5 Cols) -->
-      <div class="lg:col-span-5 space-y-6 fade-in">
-        
-        <!-- Canadian Community Badge -->
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-subtle">
-          <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
-            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+        <!-- Left: Brand Logo + CA Pill -->
+        <a href="#top" onclick="setAuthMode('signin'); return false;" class="flex items-center gap-2.5 shrink-0 group">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 flex items-center justify-center shadow-xs ring-1 ring-black/5 group-hover:scale-105 transition-transform">
+            <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 2L14.2 7.2L19.5 6.4L17.1 11.2L21 14.5L15.6 15.4L16.2 20.5L12 17.6L7.8 20.5L8.4 15.4L3 14.5L6.9 11.2L4.5 6.4L9.8 7.2L12 2Z" />
             </svg>
-          </span>
-          <span class="text-xs font-semibold tracking-tight text-slate-700 dark:text-slate-200">
-            <span class="text-slate-400 dark:text-slate-500 font-bold mr-1">CA</span> Canada's Small Business Network
-          </span>
-        </div>
+          </div>
+          <span class="font-display font-extrabold text-[17px] tracking-tight text-slate-950">SMB HUB</span>
+          <span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold tracking-wider bg-slate-100 text-slate-600 border border-slate-200/80">CA</span>
+        </a>
 
-        <!-- Editorial Headline & Subcopy -->
-        <div class="space-y-3">
-          <h1 class="font-display font-extrabold text-3xl sm:text-4xl lg:text-[42px] leading-[1.12] tracking-tight text-slate-900 dark:text-white">
-            Welcome to your small business community
+        <!-- Center: Clean Navigation Links -->
+        <nav aria-label="Primary Marketing Navigation" class="hidden lg:flex items-center gap-1">
+          <button type="button" onclick="setAuthMode('signin')" class="px-3.5 py-1.5 rounded-full text-[13px] font-semibold bg-blue-50 text-blue-700">Home</button>
+          <button type="button" onclick="enterWorkspace('home')" class="px-3.5 py-1.5 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors">Top Posts</button>
+          <button type="button" onclick="enterWorkspace('network')" class="px-3.5 py-1.5 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors">People</button>
+          <button type="button" onclick="enterWorkspace('home')" class="px-3.5 py-1.5 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors">Groups</button>
+          <button type="button" onclick="showToast('Verified Canadian Business Directory — Sign in to explore')" class="px-3.5 py-1.5 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors">Businesses</button>
+          <button type="button" onclick="openUpgradeModal()" class="px-3.5 py-1.5 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors">Plans</button>
+        </nav>
+
+        <!-- Right: Search Pill (Cmd+K) & Auth Buttons -->
+        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <button type="button" onclick="openCommandPalette()" class="hidden sm:flex items-center justify-between gap-2 w-40 md:w-44 h-9 px-3 rounded-full bg-slate-100/90 hover:bg-slate-200/70 border border-slate-200/90 text-xs text-slate-500 transition-colors">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400"></i>
+              <span>Search</span>
+            </span>
+            <kbd class="px-1.5 py-0.5 text-[10px] font-mono bg-white border border-slate-200 rounded text-slate-500">⌘K</kbd>
+          </button>
+
+          <button type="button" onclick="setAuthMode('signin')" class="h-9 px-4 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-[13px] font-semibold text-slate-800 whitespace-nowrap transition-colors">
+            Sign in
+          </button>
+
+          <button type="button" onclick="setAuthMode('join')" class="h-9 px-4 rounded-full bg-blue-600 hover:bg-blue-700 text-[13px] font-semibold text-white whitespace-nowrap shadow-xs transition-all">
+            Join now
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main 2-Column Equal-Height Grid (Unified max-w-[1280px] mx-auto px-6 lg:px-8) -->
+    <main class="flex-1 max-w-[1280px] w-full mx-auto px-6 lg:px-8 py-8 lg:py-9 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+
+      <!-- LEFT COLUMN: Badge + Single-Line Heading + Tight Subheading + Equal-Height Auth Card -->
+      <div class="flex flex-col justify-between h-full w-full">
+
+        <!-- Hero Heading Block (Zero Extra Vertical Gap) -->
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#E6E3DC] shadow-2xs mb-3">
+            <span class="w-2 h-2 rounded-full bg-rose-600"></span>
+            <span class="text-xs font-bold text-slate-800">CA</span>
+            <span class="text-xs font-medium text-slate-600">Canada's Professional Network</span>
+          </div>
+
+          <h1 class="font-display font-extrabold text-4xl xl:text-[44px] leading-[1.08] tracking-tight text-slate-900 whitespace-nowrap">
+            Build with Canada.
           </h1>
-          <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+
+          <p class="mt-2 mb-5 text-[14.5px] leading-relaxed text-slate-600">
             Connect, learn, and grow with entrepreneurs, professionals, and business leaders across Canada.
           </p>
         </div>
 
-        <!-- Elevated Auth Card Container -->
-        <div class="bg-white dark:bg-[#0E1526] rounded-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-elevated p-5 sm:p-6 space-y-5">
+        <!-- Auth Card (Stretches to match exact height of right column) -->
+        <div class="flex-1 bg-white border border-[#E6E3DC] rounded-3xl p-6 sm:p-7 shadow-auth-card flex flex-col justify-between">
 
-          <!-- Tactile Segmented Mode Switcher -->
-          <div role="tablist" aria-label="Authentication Mode" class="relative grid grid-cols-2 p-1 rounded-xl bg-slate-100/90 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
-            <div id="tab-pill-indicator" class="absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-white dark:bg-slate-800 shadow-sm border border-slate-200/60 dark:border-slate-700 transition-transform duration-200 ease-out"></div>
-            <button type="button" role="tab" id="tab-signin" onclick="setAuthMode('signin')" class="relative z-10 py-2 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white transition-colors">
-              Sign in
-            </button>
-            <button type="button" role="tab" id="tab-signup" onclick="setAuthMode('signup')" class="relative z-10 py-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors">
-              Join now
-            </button>
-          </div>
-
-          <!-- Single-Click Enterprise / Social SSO Buttons -->
-          <div class="grid grid-cols-2 gap-2.5">
-            <button type="button" onclick="handleSSO('Google')" class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/70 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-200 transition-all active:scale-[0.99]">
-              <!-- Google G SVG -->
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
-                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/>
-                <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/>
-                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/>
-              </svg>
-              <span>Google</span>
-            </button>
-
-            <button type="button" onclick="handleSSO('Microsoft')" class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/70 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-200 transition-all active:scale-[0.99]">
-              <!-- Microsoft 4-square SVG -->
-              <svg class="w-4 h-4 shrink-0" viewBox="0 0 21 21">
-                <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-                <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-                <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-                <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
-              </svg>
-              <span>Microsoft 365</span>
-            </button>
-          </div>
-
-          <!-- Hairline Divider -->
-          <div class="relative flex items-center py-0.5">
-            <div class="flex-grow border-t border-slate-200/80 dark:border-slate-800"></div>
-            <span class="shrink mx-3 text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">or continue with email</span>
-            <div class="flex-grow border-t border-slate-200/80 dark:border-slate-800"></div>
-          </div>
-
-          <!-- Authentication Form -->
-          <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5" novalidate>
-            
-            <!-- Sign Up Only: Full Name & Province/Role -->
-            <div id="signup-fields" class="hidden space-y-3.5 fade-in">
-              <div>
-                <label for="full-name" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Full name</label>
-                <div class="relative">
-                  <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                  <input id="full-name" type="text" placeholder="Claire Tremblay" class="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder-slate-400 transition-all" />
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label for="business-name" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Business / Venture</label>
-                  <div class="relative">
-                    <i data-lucide="building-2" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                    <input id="business-name" type="text" placeholder="NorthStar Roasters" class="w-full pl-10 pr-3 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder-slate-400 transition-all" />
-                  </div>
-                </div>
-
-                <div>
-                  <label for="province-select" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Province / Territory</label>
-                  <select id="province-select" class="w-full px-3 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white transition-all">
-                    <option value="ON">Ontario (ON)</option>
-                    <option value="BC">British Columbia (BC)</option>
-                    <option value="QC">Québec (QC)</option>
-                    <option value="AB">Alberta (AB)</option>
-                    <option value="NS">Nova Scotia (NS)</option>
-                    <option value="MB">Manitoba (MB)</option>
-                    <option value="SK">Saskatchewan (SK)</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- Email Input -->
-            <div>
-              <label for="email-input" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Work or business email</label>
-              <div class="relative">
-                <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                <input id="email-input" type="email" required placeholder="you@company.ca" class="w-full pl-10 pr-3.5 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder-slate-400 transition-all" />
-              </div>
-              <p id="email-error" class="hidden text-[11px] text-rose-600 dark:text-rose-400 mt-1">Please enter a valid business or personal email address.</p>
-            </div>
-
-            <!-- Password Input -->
-            <div>
-              <div class="flex items-center justify-between mb-1.5">
-                <label for="password-input" class="block text-xs font-medium text-slate-700 dark:text-slate-300">Password</label>
-                <button type="button" id="forgot-password-link" onclick="openForgotModal()" class="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                  Forgot password?
-                </button>
-              </div>
-              <div class="relative">
-                <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-                <input id="password-input" type="password" required oninput="updatePasswordStrength(this.value)" placeholder="••••••••••••" class="w-full pl-10 pr-10 py-2.5 rounded-xl text-sm bg-slate-50/70 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 text-slate-900 dark:text-white placeholder-slate-400 transition-all" />
-                <button type="button" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
-                  <i id="eye-icon" data-lucide="eye" class="w-4 h-4"></i>
-                </button>
-              </div>
-
-              <!-- Live Password Strength Meter (Shown in Join Now mode) -->
-              <div id="strength-meter-wrap" class="hidden mt-2 space-y-1">
-                <div class="grid grid-cols-4 gap-1.5">
-                  <div id="str-bar-1" class="h-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors"></div>
-                  <div id="str-bar-2" class="h-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors"></div>
-                  <div id="str-bar-3" class="h-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors"></div>
-                  <div id="str-bar-4" class="h-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors"></div>
-                </div>
-                <p id="str-label" class="text-[11px] text-slate-400">Use 8+ characters with a number & symbol</p>
-              </div>
-              <p id="password-error" class="hidden text-[11px] text-rose-600 dark:text-rose-400 mt-1">Password must be at least 6 characters.</p>
-            </div>
-
-            <!-- Primary Submit CTA -->
-            <button type="submit" id="auth-submit-btn" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 group active:scale-[0.99]">
-              <span id="auth-submit-text">Sign in</span>
-              <i id="auth-submit-icon" data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-0.5 transition-transform"></i>
-            </button>
-          </form>
-
-          <!-- Terms & Bottom Switch Link -->
-          <div class="pt-1 space-y-3 text-center">
-            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-              By continuing, you agree to the SMB Hub <a href="#terms" onclick="showToast('Viewing SMB Hub Terms of Service')" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Terms</a> and <a href="#guidelines" onclick="showToast('Viewing Community Guidelines')" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Community Guidelines</a>.
-            </p>
-
-            <div class="pt-2.5 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-600 dark:text-slate-400">
-              <span id="bottom-prompt-text">New to SMB Hub?</span>
-              <button type="button" id="bottom-prompt-btn" onclick="setAuthMode('signup')" class="ml-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+          <div class="space-y-4">
+            <!-- Segmented Pill Switcher with Sliding Active Background -->
+            <div class="relative grid grid-cols-2 p-1 rounded-full bg-slate-100/90 border border-slate-200/70">
+              <div id="auth-slider-bg" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-white shadow-2xs transition-transform duration-200 ease-out"></div>
+              <button type="button" id="tab-signin" onclick="setAuthMode('signin')" class="relative z-10 py-2 rounded-full text-[13px] font-semibold text-slate-950 transition-colors">
+                Sign in
+              </button>
+              <button type="button" id="tab-join" onclick="setAuthMode('join')" class="relative z-10 py-2 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-900 transition-colors">
                 Join now
               </button>
             </div>
+
+            <!-- Two SSO Buttons Side-by-Side -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <button type="button" onclick="handleSsoSignIn('Google')" class="h-10 px-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 flex items-center justify-center gap-2 transition-colors shadow-2xs">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
+                  <path fill="#34A853" d="M12 24c3.3 0 6.08-1.09 8.1-2.96l-3.88-3.05c-1.1.74-2.51 1.18-4.22 1.18-3.25 0-6-2.19-6.98-5.14H1.01v3.14C3.05 21.2 7.24 24 12 24Z"/>
+                  <path fill="#FBBC05" d="M5.02 14.03c-.25-.74-.39-1.54-.39-2.36 0-.82.14-1.62.39-2.36V6.17H1.01C.37 7.45 0 8.89 0 10.42s.37 2.97 1.01 4.25l4.01-3.14Z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.79 0 3.41.62 4.68 1.82l3.51-3.51C18.07 1.19 15.3 0 12 0 7.24 0 3.05 2.8 1.01 6.83l4.01 3.14c.98-2.95 3.73-5.22 6.98-5.22Z"/>
+                </svg>
+                <span>Google</span>
+              </button>
+
+              <button type="button" onclick="handleSsoSignIn('Microsoft 365')" class="h-10 px-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 flex items-center justify-center gap-2 transition-colors shadow-2xs">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 21 21" aria-hidden="true">
+                  <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+                  <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+                  <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+                  <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+                </svg>
+                <span class="truncate">Microsoft 365</span>
+              </button>
+            </div>
+
+            <!-- Divider -->
+            <div class="relative flex items-center py-0.5">
+              <div class="flex-grow border-t border-slate-200/80"></div>
+              <span class="shrink mx-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Or continue with email</span>
+              <div class="flex-grow border-t border-slate-200/80"></div>
+            </div>
+
+            <!-- Form -->
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+
+              <!-- Join Now Extra Fields -->
+              <div id="join-extra-fields" class="hidden space-y-3 fade-in">
+                <div>
+                  <label for="auth-fullname" class="block text-xs font-semibold text-slate-700 mb-1">Full name</label>
+                  <div class="relative">
+                    <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input id="auth-fullname" type="text" placeholder="Abdur Rahman Uddin" class="w-full h-10 pl-10 pr-4 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 transition-all" />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-2.5">
+                  <div class="col-span-8">
+                    <label for="auth-company" class="block text-xs font-semibold text-slate-700 mb-1">Business / Company</label>
+                    <input id="auth-company" type="text" placeholder="NorthPeak Solutions Inc." class="w-full h-10 px-4 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 transition-all" />
+                  </div>
+                  <div class="col-span-4">
+                    <label for="auth-province" class="block text-xs font-semibold text-slate-700 mb-1">Province</label>
+                    <select id="auth-province" class="w-full h-10 px-3 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600">
+                      <option value="ON">ON</option>
+                      <option value="BC">BC</option>
+                      <option value="QC">QC</option>
+                      <option value="AB">AB</option>
+                      <option value="NS">NS</option>
+                      <option value="MB">MB</option>
+                      <option value="SK">SK</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email Input -->
+              <div>
+                <label for="auth-email" class="block text-xs font-semibold text-slate-700 mb-1">Work or business email</label>
+                <div class="relative">
+                  <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                  <input id="auth-email" type="email" required value="rahman@canadiansme.ca" placeholder="you@company.ca" class="w-full h-11 pl-10 pr-4 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 transition-all" />
+                </div>
+              </div>
+
+              <!-- Password Input -->
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="auth-password" class="block text-xs font-semibold text-slate-700">Password</label>
+                  <button type="button" id="forgot-pwd-link" onclick="openForgotModal()" class="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline">Forgot password?</button>
+                </div>
+                <div class="relative">
+                  <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                  <input id="auth-password" type="password" required value="••••••••••••" oninput="updatePasswordStrength(this.value)" placeholder="Enter password" class="w-full h-11 pl-10 pr-10 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 transition-all" />
+                  <button type="button" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700">
+                    <i id="pwd-eye-icon" data-lucide="eye" class="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                <!-- Live 4-Segment Password Strength Bar (Visible in Join Now Mode) -->
+                <div id="pwd-strength-row" class="hidden mt-2 space-y-1 fade-in">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-slate-500">Password strength</span>
+                    <span id="pwd-strength-text" class="font-semibold text-emerald-600">Strong • 12+ chars</span>
+                  </div>
+                  <div class="grid grid-cols-4 gap-1.5 h-1">
+                    <div id="pwd-bar-1" class="rounded-full bg-emerald-500 transition-colors"></div>
+                    <div id="pwd-bar-2" class="rounded-full bg-emerald-500 transition-colors"></div>
+                    <div id="pwd-bar-3" class="rounded-full bg-emerald-500 transition-colors"></div>
+                    <div id="pwd-bar-4" class="rounded-full bg-emerald-500 transition-colors"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="w-full h-11 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-display font-bold text-[13.5px] shadow-[0_8px_20px_-6px_rgba(37,99,235,0.55)] flex items-center justify-center gap-2 transition-all">
+                <span id="auth-submit-label">Sign in</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </form>
+          </div>
+
+          <!-- Card Footer Terms & Mode Switch -->
+          <div class="pt-4 mt-4 border-t border-slate-100 text-center space-y-2">
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+              By continuing, you agree to the SMB Hub <a href="#terms" onclick="showToast('Viewing SMB Hub Terms of Service'); return false;" class="underline hover:text-slate-800">Terms</a> and <a href="#guidelines" onclick="showToast('Viewing Canadian Community Guidelines'); return false;" class="underline hover:text-slate-800">Community Guidelines</a>.
+            </p>
+            <p id="auth-bottom-switch" class="text-xs text-slate-600">
+              New to SMB Hub? <button type="button" onclick="setAuthMode('join')" class="font-semibold text-blue-600 hover:underline">Join now</button>
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- RIGHT COLUMN: ARCHITECTURAL CANADIAN SKYLINE & LIVE COMMUNITY SHOWCASE (7 Cols) -->
-      <div class="lg:col-span-7">
-        <div class="relative rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-elevated bg-slate-950 min-h-[520px] sm:min-h-[580px] flex flex-col justify-between p-5 sm:p-8">
+      <!-- RIGHT COLUMN: BRIGHT DAYLIGHT FOUNDER REELS & HUB SHOWCASE (MATCHED HEIGHT) -->
+      <div class="flex flex-col h-full w-full">
+        <div id="kinetic-showcase" onmouseenter="pauseShowcaseAuto()" onmouseleave="resumeShowcaseAuto()" class="h-full bg-[#FAF9F6] daylight-canvas-glow border border-[#E6E3DC] rounded-3xl p-5 flex flex-col gap-4 shadow-daylight-stage select-none overflow-hidden">
 
-          <!-- Rich Custom Twilight Toronto / Canadian Waterfront Skyline Backdrop SVG -->
-          <svg class="absolute inset-0 w-full h-full object-cover" viewBox="0 0 900 680" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <defs>
-              <!-- Dusk Sky Gradient -->
-              <linearGradient id="skyTwilight" x1="0" y1="0" x2="0.8" y2="1">
-                <stop offset="0%" stop-color="#090D1C"/>
-                <stop offset="45%" stop-color="#172554"/>
-                <stop offset="72%" stop-color="#312E81"/>
-                <stop offset="88%" stop-color="#9A3412"/>
-                <stop offset="100%" stop-color="#F59E0B"/>
-              </linearGradient>
-
-              <!-- Lake Ontario Reflection Gradient -->
-              <linearGradient id="waterSurface" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#1E1B4B" stop-opacity="0.95"/>
-                <stop offset="45%" stop-color="#0F172A" stop-opacity="0.98"/>
-                <stop offset="100%" stop-color="#050811"/>
-              </linearGradient>
-
-              <!-- Warm Sunset Horizon Glow -->
-              <radialGradient id="horizonGlow" cx="72%" cy="66%" r="55%">
-                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.45"/>
-                <stop offset="45%" stop-color="#EC4899" stop-opacity="0.18"/>
-                <stop offset="100%" stop-color="#0F172A" stop-opacity="0"/>
-              </radialGradient>
-
-              <!-- SkyPod Illumination -->
-              <radialGradient id="towerGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
-              </radialGradient>
-            </defs>
-
-            <!-- Sky Fill -->
-            <rect width="900" height="470" fill="url(#skyTwilight)"/>
-            <rect width="900" height="470" fill="url(#horizonGlow)"/>
-
-            <!-- Crisp Twilight Stars -->
-            <g fill="#FFFFFF" opacity="0.65">
-              <circle cx="140" cy="70" r="1.3"/>
-              <circle cx="290" cy="48" r="1.1"/>
-              <circle cx="430" cy="95" r="1.5"/>
-              <circle cx="540" cy="52" r="1"/>
-              <circle cx="810" cy="85" r="1.4"/>
-              <circle cx="210" cy="145" r="0.9"/>
-              <circle cx="620" cy="130" r="1.2"/>
-            </g>
-
-            <!-- Distant Skyline Silhouettes -->
-            <g fill="#0B1120" opacity="0.72">
-              <rect x="80" y="340" width="44" height="130" rx="2"/>
-              <rect x="132" y="310" width="52" height="160" rx="2"/>
-              <rect x="195" y="355" width="38" height="115" rx="2"/>
-              <rect x="330" y="325" width="48" height="145" rx="2"/>
-              <rect x="390" y="295" width="56" height="175" rx="2"/>
-              <rect x="460" y="335" width="42" height="135" rx="2"/>
-              <rect x="515" y="280" width="60" height="190" rx="2"/>
-              <rect x="590" y="315" width="46" height="155" rx="2"/>
-              <rect x="735" y="330" width="50" height="140" rx="2"/>
-              <rect x="795" y="350" width="58" height="120" rx="2"/>
-            </g>
-
-            <!-- Midground Financial District Towers with Warm Window Grids -->
-            <g fill="#070B14">
-              <rect x="245" y="290" width="44" height="180" rx="2"/>
-              <rect x="425" y="265" width="54" height="205" rx="2"/>
-              <rect x="550" y="255" width="50" height="215" rx="2"/>
-              <rect x="615" y="305" width="45" height="165" rx="2"/>
-            </g>
-
-            <!-- Illuminated Office Windows -->
-            <g fill="#FBBF24" opacity="0.55">
-              <rect x="255" y="305" width="4" height="6"/>
-              <rect x="267" y="305" width="4" height="6"/>
-              <rect x="255" y="320" width="4" height="6"/>
-              <rect x="275" y="335" width="4" height="6"/>
-              <rect x="438" y="282" width="5" height="7"/>
-              <rect x="452" y="282" width="5" height="7"/>
-              <rect x="465" y="298" width="5" height="7"/>
-              <rect x="438" y="315" width="5" height="7"/>
-              <rect x="562" y="272" width="5" height="7"/>
-              <rect x="578" y="272" width="5" height="7"/>
-              <rect x="562" y="292" width="5" height="7"/>
-              <rect x="578" y="312" width="5" height="7"/>
-            </g>
-
-            <!-- Rogers Centre Inspired Illuminated Dome -->
-            <path d="M475 470 C475 415, 575 415, 575 470 Z" fill="#1E293B"/>
-            <path d="M482 470 C482 424, 568 424, 568 470 Z" fill="none" stroke="#60A5FA" stroke-width="2.5" opacity="0.85"/>
-
-            <!-- Iconic CN Tower Silhouette & Illuminated SkyPod -->
-            <circle cx="690" cy="212" r="46" fill="url(#towerGlow)"/>
-            <!-- Spire & Shaft -->
-            <line x1="690" y1="68" x2="690" y2="195" stroke="#CBD5E1" stroke-width="2.2"/>
-            <polygon points="682,470 687,225 693,225 698,470" fill="#0F172A"/>
-            <polygon points="686,225 689,195 691,195 694,225" fill="#1E293B"/>
-            <!-- Main Observation Pod -->
-            <ellipse cx="690" cy="212" rx="22" ry="7" fill="#1E293B" stroke="#93C5FD" stroke-width="1.5"/>
-            <rect x="672" y="209" width="36" height="4" rx="2" fill="#60A5FA"/>
-            <!-- SkyPod Upper -->
-            <ellipse cx="690" cy="152" rx="8" ry="3.5" fill="#93C5FD"/>
-
-            <!-- Waterfront Lake Ontario -->
-            <rect x="0" y="470" width="900" height="210" fill="url(#waterSurface)"/>
-            <!-- Horizon Rim Light -->
-            <line x1="0" y1="470" x2="900" y2="470" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.45"/>
-
-            <!-- Shimmering Water Reflections -->
-            <g stroke-linecap="round" opacity="0.45">
-              <line x1="684" y1="485" x2="696" y2="485" stroke="#60A5FA" stroke-width="2"/>
-              <line x1="680" y1="505" x2="700" y2="505" stroke="#60A5FA" stroke-width="1.8"/>
-              <line x1="683" y1="528" x2="697" y2="528" stroke="#93C5FD" stroke-width="1.4"/>
-              <line x1="505" y1="488" x2="545" y2="488" stroke="#818CF8" stroke-width="2"/>
-              <line x1="512" y1="508" x2="538" y2="508" stroke="#818CF8" stroke-width="1.5"/>
-              <line x1="435" y1="492" x2="465" y2="492" stroke="#FBBF24" stroke-width="1.6"/>
-              <line x1="560" y1="496" x2="585" y2="496" stroke="#FBBF24" stroke-width="1.6"/>
-            </g>
-          </svg>
-
-          <!-- Subtle Architectural Glass Edge Highlight (Echoing the graceful curve in the reference) -->
-          <div class="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-gradient-to-tr from-blue-500/20 via-indigo-400/10 to-transparent blur-2xl"></div>
-
-          <!-- Top Floating Bar inside Showcase -->
-          <div class="relative z-10 flex flex-wrap items-center justify-between gap-3">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/75 border border-white/15 glass-card text-white text-xs">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span class="font-medium">4,820+ Verified Canadian Founders Active</span>
+          <!-- Top Bar Inside Right Container -->
+          <div class="flex flex-wrap items-center justify-between gap-2 shrink-0">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#E6E3DC] shadow-2xs">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span class="text-[11.5px] font-semibold text-slate-800 whitespace-nowrap">142 Canadian founders active now</span>
             </div>
 
-            <!-- Interactive City Spotlight Switcher -->
-            <div class="inline-flex items-center gap-1 p-1 rounded-xl bg-slate-900/75 border border-white/15 glass-card">
-              <button type="button" onclick="switchSpotlightCity('Toronto')" class="city-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-900 transition-all">Toronto</button>
-              <button type="button" onclick="switchSpotlightCity('Vancouver')" class="city-pill px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all">Vancouver</button>
-              <button type="button" onclick="switchSpotlightCity('Montréal')" class="city-pill px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all">Montréal</button>
-              <button type="button" onclick="switchSpotlightCity('Calgary')" class="city-pill px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all">Calgary</button>
+            <!-- Interactive City Selector Pills -->
+            <div class="inline-flex items-center p-1 rounded-full bg-white border border-[#E6E3DC] shadow-2xs">
+              <button type="button" onclick="selectShowcaseCity('Toronto')" data-city-btn="Toronto" class="city-pill px-2.5 py-1 rounded-full text-[11.5px] font-semibold bg-slate-900 text-white shadow-2xs whitespace-nowrap transition-all">Toronto</button>
+              <button type="button" onclick="selectShowcaseCity('Vancouver')" data-city-btn="Vancouver" class="city-pill px-2.5 py-1 rounded-full text-[11.5px] font-medium text-slate-600 hover:text-slate-950 whitespace-nowrap transition-all">Vancouver</button>
+              <button type="button" onclick="selectShowcaseCity('Montréal')" data-city-btn="Montréal" class="city-pill px-2.5 py-1 rounded-full text-[11.5px] font-medium text-slate-600 hover:text-slate-950 whitespace-nowrap transition-all">Montréal</button>
+              <button type="button" onclick="selectShowcaseCity('Calgary')" data-city-btn="Calgary" class="city-pill px-2.5 py-1 rounded-full text-[11.5px] font-medium text-slate-600 hover:text-slate-950 whitespace-nowrap transition-all">Calgary</button>
             </div>
           </div>
 
-          <!-- Center/Bottom Floating Glassmorphic Community Cards -->
-          <div class="relative z-10 space-y-4 mt-16 sm:mt-24">
-            
-            <!-- Card 1: Dynamic City Member Pulse Card -->
-            <div id="spotlight-card" class="max-w-md rounded-2xl bg-slate-900/80 border border-white/15 glass-card p-4 text-white shadow-glass animate-float-slow">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex items-center gap-3">
-                  <div id="spot-avatar" class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 font-display font-bold text-xs flex items-center justify-center shrink-0 ring-1 ring-white/20">
-                    ML
-                  </div>
-                  <div>
-                    <div class="flex items-center gap-1.5">
-                      <h3 id="spot-name" class="text-sm font-semibold text-white">Marcus Lin</h3>
-                      <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-500/25 text-blue-300 border border-blue-400/30">Verified SMB</span>
+          <!-- Visual Bento Grid (Fills full remaining height to bottom of container, NO LIVE ticker bar) -->
+          <div class="flex-1 grid grid-cols-12 gap-4 min-h-[460px]">
+
+            <!-- LEFT 7 COLUMNS: Vertical Founder Reel Card -->
+            <div class="col-span-12 sm:col-span-7 relative rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-[#E6E3DC] bg-stone-200 flex flex-col justify-between min-h-[420px]">
+
+              <!-- Real High-Resolution Founder Portrait -->
+              <img id="reel-main-photo" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=85" alt="Priya Raman" onerror="this.onerror=null; this.src='https://placehold.co/600x760/e7e5e4/18181b?text=Canadian+Founder';" class="absolute inset-0 w-full h-full object-cover object-center reel-photo-motion transition-opacity duration-300" />
+
+              <!-- Left & Right Click Zones for Prev/Next Story -->
+              <button type="button" onclick="cyclePrevShowcaseCity()" aria-label="Previous founder story" class="absolute inset-y-12 left-0 w-1/3 z-10 cursor-pointer focus:outline-none"></button>
+              <button type="button" onclick="cycleNextShowcaseCity()" aria-label="Next founder story" class="absolute inset-y-12 right-0 w-1/3 z-10 cursor-pointer focus:outline-none"></button>
+
+              <!-- Top Gradient Scrim -->
+              <div class="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/50 via-black/15 to-transparent"></div>
+
+              <!-- Bottom Dark-Gradient Legibility Overlay -->
+              <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-black/85 via-black/45 to-transparent"></div>
+
+              <!-- Top Story Progress Segments & Waveform Pill -->
+              <div class="relative z-20 p-3.5 space-y-2.5">
+                <div class="grid grid-cols-4 gap-1.5">
+                  <div class="h-1 rounded-full bg-white/35 overflow-hidden"><div id="reel-prog-0" class="h-full bg-white rounded-full transition-all duration-100" style="width: 100%"></div></div>
+                  <div class="h-1 rounded-full bg-white/35 overflow-hidden"><div id="reel-prog-1" class="h-full bg-white rounded-full transition-all duration-100" style="width: 0%"></div></div>
+                  <div class="h-1 rounded-full bg-white/35 overflow-hidden"><div id="reel-prog-2" class="h-full bg-white rounded-full transition-all duration-100" style="width: 0%"></div></div>
+                  <div class="h-1 rounded-full bg-white/35 overflow-hidden"><div id="reel-prog-3" class="h-full bg-white rounded-full transition-all duration-100" style="width: 0%"></div></div>
+                </div>
+
+                <div class="flex items-center justify-between gap-2">
+                  <button type="button" onclick="toggleReelAudio()" class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold tracking-wide hover:bg-black/60 transition-colors">
+                    <span class="flex items-end gap-0.5 h-3" aria-hidden="true">
+                      <span class="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-1"></span>
+                      <span class="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-2"></span>
+                      <span class="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-3"></span>
+                      <span class="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-4"></span>
+                      <span class="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-2"></span>
+                    </span>
+                    <span id="reel-sound-label">MUTED • TAP FOR STORY</span>
+                    <i id="reel-vol-icon" data-lucide="volume-x" class="w-3 h-3 text-white/90"></i>
+                  </button>
+
+                  <button type="button" onclick="cycleNextShowcaseCity()" aria-label="Next story" class="w-7 h-7 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/60 flex items-center justify-center transition-colors">
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Floating Emoji Reaction Burst Layer -->
+              <div id="reel-emoji-burst-layer" class="pointer-events-none absolute right-4 bottom-24 w-12 h-32 overflow-visible z-20"></div>
+
+              <!-- Bottom Founder Profile, Quote & Interactive Clap/Reaction Button -->
+              <div class="relative z-20 p-4 flex items-end justify-between gap-2.5">
+                <div class="min-w-0 flex-1 text-white">
+                  <div class="flex items-center gap-2.5">
+                    <div class="relative shrink-0">
+                      <img id="spot-avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=140&q=80" alt="Priya Raman" onerror="this.onerror=null; this.src='https://placehold.co/96x96/18181b/ffffff?text=PR';" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/90" />
+                      <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-black/60"></span>
                     </div>
-                    <p id="spot-role" class="text-xs text-slate-300">Founder, Harbourline Logistics • Toronto, ON</p>
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <h3 id="spot-author" class="font-display font-bold text-[14.5px] text-white truncate">Priya Raman</h3>
+                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9.5px] font-semibold bg-white/20 backdrop-blur-md text-white border border-white/25 shrink-0">
+                          <i data-lucide="badge-check" class="w-2.5 h-2.5 text-emerald-300"></i>
+                          <span id="spot-badge">SMB Advisor</span>
+                        </span>
+                      </div>
+                      <p id="spot-subtitle" class="text-[11.5px] text-white/85 truncate">Founder, Maple Bakery • Toronto, ON</p>
+                    </div>
+                  </div>
+
+                  <p id="spot-quote" class="mt-2 text-[12px] font-medium text-white/95 line-clamp-2 leading-snug">
+                    "Closed our first national grocer deal with a 1-page shelf-life sell sheet."
+                  </p>
+                </div>
+
+                <!-- Interactive Floating Reaction Button -->
+                <div class="flex flex-col items-center gap-1 shrink-0">
+                  <button type="button" onclick="triggerReelBurst()" aria-label="Applaud founder story" class="w-10 h-10 rounded-full bg-white/20 hover:bg-rose-500/90 active:scale-90 backdrop-blur-md border border-white/30 text-white flex items-center justify-center shadow-sm transition-all">
+                    <span class="text-sm leading-none">👏</span>
+                  </button>
+                  <span id="reel-like-count" class="text-[10.5px] font-bold text-white drop-shadow">142</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT 5 COLUMNS: Stacked Featured Hub & Open Coffee Circle Cards -->
+            <div class="col-span-12 sm:col-span-5 flex flex-col gap-4 h-full">
+
+              <!-- Top Card: Full-Bleed Spotlighted Hub & Verified B2B Deal -->
+              <div onclick="enterWorkspace('home')" class="flex-1 relative rounded-2xl overflow-hidden group cursor-pointer border border-[#E6E3DC] shadow-sm flex flex-col justify-between p-3.5 min-h-[210px]">
+                <img id="hub-deal-photo" src="https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=800&q=85" alt="Toronto Supply & Retail Hub" onerror="this.onerror=null; this.src='https://placehold.co/500x340/e7e5e4/18181b?text=Featured+Hub';" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20"></div>
+
+                <!-- Top Badge & Explore Pill -->
+                <div class="relative z-10 flex items-center justify-between gap-1.5">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-[9.5px] font-bold uppercase tracking-wider border border-white/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                    <span>FEATURED HUB</span>
+                  </span>
+                  <span class="px-2.5 py-1 rounded-full bg-white/95 group-hover:bg-white text-slate-950 text-[10.5px] font-bold shadow-2xs transition-all whitespace-nowrap">
+                    Explore ↗
+                  </span>
+                </div>
+
+                <!-- Bottom Stacked Avatars, Hub Title & Verified Milestone -->
+                <div class="relative z-10 space-y-1">
+                  <div class="flex items-center gap-2">
+                    <div class="flex -space-x-1.5">
+                      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=64&q=80" alt="" onerror="this.style.display='none'" class="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
+                      <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&q=80" alt="" onerror="this.style.display='none'" class="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
+                      <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=64&q=80" alt="" onerror="this.style.display='none'" class="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
+                    </div>
+                    <span id="hub-deal-title" class="text-[11px] font-bold text-white truncate">Toronto Supply & Retail Hub</span>
+                  </div>
+                  <p id="hub-deal-caption" class="font-display font-bold text-[12.5px] text-white/95 leading-snug line-clamp-2">
+                    $2.4M in local B2B contracts closed this quarter
+                  </p>
+                </div>
+              </div>
+
+              <!-- Bottom Card: Candid Open Coffee Circle Meetup -->
+              <div class="h-[176px] relative rounded-2xl overflow-hidden group border border-[#E6E3DC] shadow-sm flex flex-col justify-between p-3.5 shrink-0">
+                <img id="mini-reel-photo" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=700&q=80" alt="Open Coffee Circle Meetup" onerror="this.onerror=null; this.src='https://placehold.co/500x300/e7e5e4/18181b?text=Coffee+Circle';" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/20"></div>
+
+                <!-- Top Pill -->
+                <div class="relative z-10 flex items-center justify-between gap-1.5">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-[10px] font-semibold border border-white/15 truncate">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                    <span class="truncate">Open Coffee Circle • Friday 9 AM</span>
+                  </span>
+                </div>
+
+                <!-- Bottom Row: Attendee Avatars, Title & Wave / Going Toggle -->
+                <div class="relative z-10 flex items-end justify-between gap-2">
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 mb-1">
+                      <div class="flex -space-x-1.5">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=64&q=80" alt="" onerror="this.style.display='none'" class="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80" alt="" onerror="this.style.display='none'" class="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=64&q=80" alt="" onerror="this.style.display='none'" class="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
+                      </div>
+                      <span id="mini-reel-attendees" class="text-[10px] font-semibold text-white/90">+17 going</span>
+                    </div>
+                    <h4 id="mini-reel-title" class="font-display font-bold text-[13px] text-white leading-tight truncate">Toronto Founders Circle</h4>
+                  </div>
+
+                  <button type="button" id="mini-rsvp-btn" onclick="toggleCoffeeRsvp()" class="shrink-0 px-3 py-1.5 rounded-full bg-white hover:bg-blue-50 text-slate-950 text-[10.5px] font-bold shadow-xs transition-all whitespace-nowrap">
+                    Wave 👋
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer (Strictly Left-Aligned Links Only, No Data Hosted Chip) -->
+    <footer class="w-full border-t border-slate-200/70 bg-white/60 backdrop-blur-xs">
+      <div class="max-w-[1280px] mx-auto px-6 lg:px-8 py-4 flex items-center justify-start gap-x-3 gap-y-1 flex-wrap text-xs text-slate-500">
+        <span>SMB Hub, by Cmarketing Inc. © 2026</span>
+        <span class="text-slate-300">|</span>
+        <a href="#about" onclick="showToast('About SMB Hub Canada'); return false;" class="hover:text-slate-900">About</a>
+        <span class="text-slate-300">|</span>
+        <a href="#help" onclick="showToast('Canadian Member Support'); return false;" class="hover:text-slate-900">Help</a>
+        <span class="text-slate-300">|</span>
+        <a href="#privacy" onclick="showToast('PIPEDA & Canadian Privacy Standards'); return false;" class="hover:text-slate-900">Privacy</a>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- =========================================================================
+       SCREEN 2: INSIDE SMB HUB COMMUNITY FEED WORKSPACE (#F4F2EE)
+       ========================================================================= -->
+  <div id="workspace-feed-surface" class="hidden min-h-screen flex flex-col bg-[#F4F2EE] text-[#18181B]">
+
+    <!-- STICKY 3-ZONE NON-OVERLAPPING TOP NAVIGATION -->
+    <header class="sticky top-0 z-40 w-full glass-nav-feed border-b border-[#E6E3DC]">
+      <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-[62px] flex items-center justify-between gap-3">
+
+        <!-- ZONE 1 (LEFT): Brand Lockup + Compact ⌘K Search Trigger -->
+        <div class="flex items-center gap-3.5 shrink-0">
+          <a href="#home" onclick="switchWorkspaceTab('home', event)" class="flex items-center gap-2.5 shrink-0 whitespace-nowrap group">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 flex items-center justify-center shadow-2xs ring-1 ring-black/5 group-hover:scale-105 transition-transform">
+              <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2L14.2 7.2L19.5 6.4L17.1 11.2L21 14.5L15.6 15.4L16.2 20.5L12 17.6L7.8 20.5L8.4 15.4L3 14.5L6.9 11.2L4.5 6.4L9.8 7.2L12 2Z" />
+              </svg>
+            </div>
+            <span class="font-display font-extrabold text-[16px] tracking-tight text-zinc-900">SMB HUB</span>
+          </a>
+
+          <button type="button" onclick="openCommandPalette()" class="hidden sm:flex items-center justify-between gap-2 w-[180px] lg:w-[220px] xl:w-[245px] h-9 px-3.5 rounded-full bg-[#F6F5F1] hover:bg-[#EFECE6] border border-[#E6E3DC] hover:border-stone-300 text-[13px] text-stone-500 transition-colors shrink-0">
+            <span class="flex items-center gap-2 min-w-0">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-stone-400 shrink-0"></i>
+              <span class="truncate">Search SMB Hub...</span>
+            </span>
+            <kbd class="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium bg-white border border-[#E6E3DC] rounded-md text-stone-500 shadow-2xs">⌘K</kbd>
+          </button>
+
+          <button type="button" onclick="openCommandPalette()" aria-label="Search SMB Hub" class="sm:hidden w-8 h-8 rounded-full bg-[#F6F5F1] border border-[#E6E3DC] flex items-center justify-center text-stone-600 shrink-0">
+            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- ZONE 2 (CENTER): Segmented Navigation Capsule -->
+        <nav aria-label="Workspace Navigation" class="flex items-center gap-1 bg-[#F6F5F1]/95 p-1 rounded-full border border-[#E6E3DC]/90 shrink-0">
+          <button type="button" onclick="switchWorkspaceTab('home')" data-nav-tab="home" class="ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 bg-[#18181B] text-white shadow-2xs transition-all">
+            <i data-lucide="home" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="hidden md:inline">Home</span>
+          </button>
+
+          <button type="button" onclick="switchWorkspaceTab('network')" data-nav-tab="network" class="ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all">
+            <i data-lucide="users" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="hidden md:inline">Network</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80 leading-tight">3</span>
+          </button>
+
+          <button type="button" onclick="switchWorkspaceTab('messaging')" data-nav-tab="messaging" class="ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all">
+            <i data-lucide="message-square" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="hidden md:inline">Messaging</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0"></span>
+          </button>
+
+          <!-- Notifications Popover -->
+          <div class="relative shrink-0">
+            <button type="button" onclick="toggleDropdown('notif-popover')" class="h-8 px-3 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all">
+              <i data-lucide="bell" class="w-3.5 h-3.5 shrink-0"></i>
+              <span class="hidden xl:inline">Notifications</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0"></span>
+            </button>
+
+            <div id="notif-popover" class="hidden absolute right-0 mt-2.5 w-80 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-3 z-50 fade-in">
+              <div class="flex items-center justify-between px-2 pb-2.5 border-b border-[#E6E3DC]">
+                <span class="font-display font-bold text-xs text-zinc-900">Notifications</span>
+                <button type="button" onclick="markAllRead()" class="text-[11px] font-medium text-blue-600 hover:underline">Mark all read</button>
+              </div>
+              <div class="divide-y divide-[#F4F2EE] max-h-72 overflow-y-auto">
+                <div class="p-2.5 hover:bg-[#F4F2EE]/60 rounded-xl transition-colors cursor-pointer" onclick="closeAllDropdowns(); showToast('Opening Priya Raman’s post')">
+                  <p class="text-xs text-zinc-800"><span class="font-semibold">Priya Raman</span> shared a wholesale milestone in <span class="font-medium text-zinc-600">Wins</span>.</p>
+                  <span class="text-[10px] text-zinc-400 mt-1 block">2h ago</span>
+                </div>
+                <div class="p-2.5 hover:bg-[#F4F2EE]/60 rounded-xl transition-colors cursor-pointer" onclick="closeAllDropdowns(); switchWorkspaceTab('network')">
+                  <p class="text-xs text-zinc-800"><span class="font-semibold">Daniel Okafor</span> is active in <span class="font-medium text-zinc-600">Importers & Exporters</span>.</p>
+                  <span class="text-[10px] text-zinc-400 mt-1 block">5h ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <!-- ZONE 3 (RIGHT): Focus, Explore, Me (with Sign Out) & Upgrade Plan Pill -->
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" id="focus-mode-btn" onclick="toggleFocusMode()" title="Toggle distraction-free Focus Mode" class="hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap text-stone-600 hover:text-stone-900 border border-transparent hover:border-[#E6E3DC] hover:bg-stone-100/70 transition-all shrink-0">
+            <i data-lucide="maximize-2" class="w-3.5 h-3.5 shrink-0"></i>
+            <span class="hidden xl:inline">Focus</span>
+          </button>
+
+          <div class="relative hidden sm:block shrink-0">
+            <button type="button" onclick="toggleDropdown('explore-popover')" class="h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-stone-100/80 transition-all">
+              <i data-lucide="layout-grid" class="w-3.5 h-3.5 shrink-0"></i>
+              <span class="hidden xl:inline">Explore</span>
+              <i data-lucide="chevron-down" class="w-3 h-3 text-stone-400 shrink-0"></i>
+            </button>
+
+            <div id="explore-popover" class="hidden absolute right-0 mt-2.5 w-60 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-2 z-50 fade-in">
+              <button type="button" onclick="closeAllDropdowns(); showToast('Browsing Canadian Business Directory')" class="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-[#F4F2EE] text-left transition-colors">
+                <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"><i data-lucide="building-2" class="w-4 h-4"></i></span>
+                <div>
+                  <p class="text-xs font-semibold text-zinc-900">Business Listings</p>
+                  <p class="text-[10px] text-zinc-500">Verified Canadian SMBs</p>
+                </div>
+              </button>
+              <button type="button" onclick="closeAllDropdowns(); showToast('Opening Federal & Provincial Grants')" class="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-[#F4F2EE] text-left transition-colors">
+                <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0"><i data-lucide="landmark" class="w-4 h-4"></i></span>
+                <div>
+                  <p class="text-xs font-semibold text-zinc-900">Funding & Grants</p>
+                  <p class="text-[10px] text-zinc-500">CDAP, SR&ED & regional funds</p>
+                </div>
+              </button>
+              <button type="button" onclick="closeAllDropdowns(); openArticlesModal()" class="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-[#F4F2EE] text-left transition-colors">
+                <span class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0"><i data-lucide="newspaper" class="w-4 h-4"></i></span>
+                <div>
+                  <p class="text-xs font-semibold text-zinc-900">Editorial Insights</p>
+                  <p class="text-[10px] text-zinc-500">Founder playbooks & news</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="h-4 w-px bg-[#E6E3DC] mx-0.5 hidden sm:block shrink-0"></div>
+
+          <!-- Me Dropdown (Includes Sign Out back to Auth Landing) -->
+          <div class="relative shrink-0">
+            <button type="button" onclick="toggleDropdown('me-popover')" class="h-8 pl-1 pr-2.5 rounded-full border border-[#E6E3DC] bg-white hover:bg-stone-50 flex items-center gap-1.5 whitespace-nowrap transition-all">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Abdur Rahman Uddin" onerror="this.onerror=null; this.src='https://placehold.co/80x80/18181b/ffffff?text=AR';" class="w-6 h-6 rounded-full object-cover ring-1 ring-zinc-200 shrink-0" />
+              <span class="hidden sm:inline text-[12.5px] font-medium text-zinc-700">Me</span>
+              <i data-lucide="chevron-down" class="w-3 h-3 text-stone-400 shrink-0"></i>
+            </button>
+
+            <div id="me-popover" class="hidden absolute right-0 mt-2.5 w-60 bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-2 z-50 fade-in">
+              <div class="px-3 py-2 border-b border-[#F4F2EE] mb-1">
+                <p id="me-popover-name" class="text-xs font-display font-bold text-zinc-900">Abdur Rahman Uddin</p>
+                <p id="menu-headline-preview" class="text-[11px] text-zinc-500 truncate">Founder • Canada</p>
+              </div>
+              <button type="button" onclick="closeAllDropdowns(); openHeadlineEditor()" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-700 hover:bg-[#F4F2EE] text-left">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-zinc-400"></i>
+                <span>Edit profile & headline</span>
+              </button>
+              <button type="button" onclick="closeAllDropdowns(); filterFeedBySaved()" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-700 hover:bg-[#F4F2EE] text-left">
+                <i data-lucide="bookmark" class="w-3.5 h-3.5 text-zinc-400"></i>
+                <span>Saved bookmarks</span>
+              </button>
+              <button type="button" onclick="closeAllDropdowns(); openUpgradeModal()" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-amber-700 hover:bg-amber-50 text-left">
+                <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>Upgrade to SMB Elite</span>
+              </button>
+              <div class="my-1 border-t border-[#F4F2EE]"></div>
+              <button type="button" onclick="closeAllDropdowns(); signOutToLanding()" class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-rose-600 hover:bg-rose-50 text-left">
+                <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-500"></i>
+                <span>Sign out</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="button" onclick="openUpgradeModal()" class="h-8 px-3.5 rounded-full bg-gradient-to-b from-amber-50 to-amber-100/80 border border-amber-300/80 hover:border-amber-400 text-amber-900 text-[12.5px] font-semibold whitespace-nowrap inline-flex items-center gap-1.5 shadow-[0_1px_2px_rgba(180,83,9,0.08)] transition-all shrink-0">
+            <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-600 shrink-0"></i>
+            <span>Upgrade plan</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN 3-COLUMN WORKSPACE -->
+    <main class="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+      <!-- VIEW 1: HOME FEED -->
+      <div id="view-home" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+        <!-- LEFT SIDEBAR: Abdur Rahman Uddin Profile + Recent Articles -->
+        <aside id="left-sidebar" class="lg:col-span-3 space-y-4">
+          <div class="bento-card overflow-hidden">
+            <div class="h-16 bg-gradient-to-r from-stone-800 via-zinc-800 to-stone-700 relative">
+              <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80" alt="Cover" onerror="this.style.display='none'" class="w-full h-full object-cover opacity-55 mix-blend-luminosity" />
+            </div>
+
+            <div class="px-4 pb-4">
+              <div class="-mt-8 mb-3 flex items-end justify-between">
+                <div class="relative">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80" alt="Abdur Rahman Uddin" onerror="this.onerror=null; this.src='https://placehold.co/120x120/18181b/ffffff?text=AR';" class="w-16 h-16 rounded-2xl object-cover border-[3px] border-white shadow-sm bg-zinc-100" />
+                  <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" title="Online now"></span>
+                </div>
+                <button type="button" onclick="openHeadlineEditor()" class="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-[#F4F2EE] hover:bg-[#E6E3DC] text-zinc-700 transition-colors">Edit</button>
+              </div>
+
+              <div>
+                <h2 id="sidebar-profile-name" class="font-display font-bold text-[15px] text-zinc-900 leading-snug">Abdur Rahman Uddin</h2>
+                <button type="button" onclick="openHeadlineEditor()" class="mt-0.5 text-left text-xs text-zinc-500 hover:text-blue-600 transition-colors flex items-center gap-1 group">
+                  <span id="profile-headline-text">+ Add a headline</span>
+                  <i data-lucide="pencil" class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </button>
+              </div>
+
+              <div class="mt-4 p-3 rounded-xl bg-[#F4F2EE]/80 border border-[#E6E3DC]/90">
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                  <span class="font-medium text-zinc-700">Profile strength</span>
+                  <span id="profile-strength-pct" class="font-display font-bold text-blue-600">17%</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-zinc-200/80 overflow-hidden">
+                  <div id="profile-strength-bar" class="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500" style="width: 17%"></div>
+                </div>
+                <div id="profile-boost-chip" class="mt-2 flex items-center justify-between">
+                  <span class="text-[11px] text-zinc-500">Add headline (+25%)</span>
+                  <button type="button" onclick="openHeadlineEditor()" class="text-[11px] font-semibold text-blue-600 hover:underline">Complete →</button>
+                </div>
+              </div>
+
+              <div class="mt-3.5 pt-3.5 border-t border-[#E6E3DC] grid grid-cols-2 divide-x divide-[#E6E3DC]">
+                <button type="button" onclick="switchWorkspaceTab('network')" class="pr-3 text-left group">
+                  <span class="block text-[11px] text-zinc-500 group-hover:text-zinc-800 transition-colors">Connections</span>
+                  <div class="flex items-baseline justify-between mt-0.5">
+                    <span id="stat-connections" class="font-display font-bold text-sm text-blue-600">0</span>
+                    <span class="text-[10px] text-zinc-400 group-hover:text-blue-600">Grow</span>
+                  </div>
+                </button>
+                <button type="button" onclick="focusComposer()" class="pl-3 text-left group">
+                  <span class="block text-[11px] text-zinc-500 group-hover:text-zinc-800 transition-colors">Your posts</span>
+                  <div class="flex items-baseline justify-between mt-0.5">
+                    <span id="stat-posts" class="font-display font-bold text-sm text-zinc-900">0</span>
+                    <span class="text-[10px] text-zinc-400 group-hover:text-blue-600">+ New</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Workspace Menu -->
+          <div class="bento-card p-1.5">
+            <button type="button" onclick="switchWorkspaceTab('messaging')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors">
+              <span class="flex items-center gap-2.5"><i data-lucide="message-circle" class="w-4 h-4 text-zinc-400"></i><span>Messages</span></span>
+              <span class="flex items-center gap-1.5"><span class="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-600">2</span><i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-400"></i></span>
+            </button>
+            <button type="button" onclick="showToast('Viewing your joined Canadian SMB Groups')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors">
+              <span class="flex items-center gap-2.5"><i data-lucide="users-round" class="w-4 h-4 text-zinc-400"></i><span>Groups</span></span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-400"></i>
+            </button>
+            <button type="button" onclick="showToast('Opening My Business Listings dashboard')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors">
+              <span class="flex items-center gap-2.5"><i data-lucide="store" class="w-4 h-4 text-zinc-400"></i><span>My business listings</span></span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-zinc-400"></i>
+            </button>
+            <button type="button" onclick="filterFeedBySaved()" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-700 hover:bg-[#F4F2EE] hover:text-zinc-900 transition-colors">
+              <span class="flex items-center gap-2.5"><i data-lucide="bookmark" class="w-4 h-4 text-zinc-400"></i><span>Saved bookmarks</span></span>
+              <span id="saved-count-badge" class="text-[11px] font-semibold text-zinc-400">0</span>
+            </button>
+          </div>
+
+          <!-- Recent Articles -->
+          <div class="bento-card p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-display font-bold text-xs uppercase tracking-wider text-zinc-500">Recent Articles</h3>
+              <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F4F2EE] text-zinc-600">CA Editorial</span>
+            </div>
+            <div id="recent-articles-list" class="space-y-2.5"></div>
+            <button type="button" onclick="openArticlesModal()" class="mt-3 pt-2.5 border-t border-[#E6E3DC] w-full flex items-center justify-between text-xs font-semibold text-zinc-700 hover:text-blue-600 transition-colors">
+              <span>See all articles</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </aside>
+
+        <!-- CENTER FEED -->
+        <section id="center-feed-col" class="lg:col-span-6 space-y-4">
+          <div class="bento-card p-4">
+            <div class="flex items-start gap-3">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Abdur Rahman Uddin" onerror="this.onerror=null; this.src='https://placehold.co/80x80/18181b/ffffff?text=AR';" class="w-9 h-9 rounded-full object-cover ring-1 ring-zinc-200 shrink-0 mt-0.5" />
+              <div class="flex-1">
+                <button type="button" id="composer-collapsed-trigger" onclick="expandComposer('Win')" class="w-full text-left px-4 py-2.5 rounded-xl bg-[#F4F2EE]/80 hover:bg-[#ECE9E2] border border-[#E6E3DC] text-xs sm:text-[13px] text-zinc-500 transition-colors">
+                  Start a post, ask a question, or share a win...
+                </button>
+
+                <div id="composer-expanded-box" class="hidden space-y-3 fade-in">
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-[11px] font-medium text-zinc-500">Post tag:</span>
+                      <select id="composer-category" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F4F2EE] border border-[#E6E3DC] text-zinc-800 focus:outline-none focus:border-blue-600">
+                        <option value="Win">🏆 Share a Win</option>
+                        <option value="Question">❓ Ask a Question</option>
+                        <option value="Offer">📣 Post an Offer</option>
+                        <option value="Hiring">💼 Hiring / Talent</option>
+                      </select>
+                    </div>
+                    <button type="button" onclick="collapseComposer()" class="text-xs text-zinc-400 hover:text-zinc-700 p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+                  </div>
+
+                  <textarea id="composer-textarea" rows="3" placeholder="Share a practical lesson, wholesale milestone, supplier question, or B2B offer with Canadian founders..." class="w-full p-3 rounded-xl bg-[#F4F2EE]/60 border border-[#E6E3DC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 text-[13px] text-zinc-900 placeholder-zinc-400 resize-none leading-relaxed"></textarea>
+
+                  <div id="composer-image-row" class="hidden">
+                    <input id="composer-image-url" type="url" placeholder="Optional image URL (e.g., https://images.unsplash.com/...)" class="w-full px-3 py-2 rounded-xl bg-[#F4F2EE]/60 border border-[#E6E3DC] text-xs text-zinc-800 focus:outline-none focus:border-blue-600" />
+                  </div>
+
+                  <div class="flex items-center justify-between pt-1">
+                    <button type="button" onclick="toggleComposerImageInput()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE] transition-colors">
+                      <i data-lucide="image" class="w-3.5 h-3.5 text-blue-600"></i>
+                      <span>Add photo URL</span>
+                    </button>
+                    <div class="flex items-center gap-2">
+                      <button type="button" onclick="collapseComposer()" class="px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE]">Cancel</button>
+                      <button type="button" onclick="publishNewPost()" class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-all">Publish post</button>
+                    </div>
                   </div>
                 </div>
-                <span class="text-[11px] text-slate-400">2m ago</span>
               </div>
+            </div>
 
-              <p id="spot-quote" class="mt-3 text-xs sm:text-[13px] text-slate-200 leading-relaxed">
-                "Found two Ontario-based cold-chain packaging suppliers and an SR&ED tax advisor within 48 hours of joining SMB Hub."
-              </p>
+            <div class="mt-3 pt-3 border-t border-[#F4F2EE] grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              <button type="button" onclick="expandComposer('Win', true)" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors"><i data-lucide="image" class="w-3.5 h-3.5 text-blue-600"></i><span>Photo</span></button>
+              <button type="button" onclick="expandComposer('Question')" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-indigo-600"></i><span>Ask a question</span></button>
+              <button type="button" onclick="expandComposer('Win')" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors"><i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-500"></i><span>Share a win</span></button>
+              <button type="button" onclick="expandComposer('Offer')" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors"><i data-lucide="megaphone" class="w-3.5 h-3.5 text-emerald-600"></i><span>Post an offer</span></button>
+            </div>
+          </div>
 
-              <div class="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
-                <span id="spot-tag" class="text-amber-300 font-medium">#SupplyChainON • B2B Partnership</span>
-                <span class="inline-flex items-center gap-1 text-emerald-300">
-                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Direct Intro Ready
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div id="feed-filter-pills" class="flex flex-wrap items-center gap-1.5">
+              <button type="button" onclick="setFeedFilter('Everything')" data-filter="Everything" class="filter-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-2xs transition-all">Everything</button>
+              <button type="button" onclick="setFeedFilter('Questions')" data-filter="Questions" class="filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all">Questions</button>
+              <button type="button" onclick="setFeedFilter('Wins')" data-filter="Wins" class="filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all">Wins</button>
+              <button type="button" onclick="setFeedFilter('Offers')" data-filter="Offers" class="filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all">Offers</button>
+              <button type="button" onclick="setFeedFilter('Hiring')" data-filter="Hiring" class="filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all">Hiring</button>
+            </div>
+            <button type="button" onclick="toggleFeedSort()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-[#E6E3DC] text-[11px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors">
+              <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i>
+              <span id="feed-sort-label">Top Signal</span>
+            </button>
+          </div>
+
+          <div id="feed-posts-container" class="space-y-4"></div>
+        </section>
+
+        <!-- RIGHT SIDEBAR: Social Media Links, Recently Active Members, Groups to Explore -->
+        <aside id="right-sidebar" class="lg:col-span-3 space-y-4">
+          <div class="bento-card p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-display font-bold text-[13px] text-zinc-900">Follow Us on Social Media</span>
+              <span class="text-[10px] font-medium text-zinc-400">@smbhubca</span>
+            </div>
+            <div class="flex items-center justify-between gap-1.5">
+              <a href="#facebook" onclick="showToast('Opening SMB Hub on Facebook'); return false;" aria-label="Facebook" class="w-9 h-9 rounded-full bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"><i data-lucide="facebook" class="w-4 h-4"></i></a>
+              <a href="#twitter" onclick="showToast('Opening SMB Hub on X'); return false;" aria-label="X" class="w-9 h-9 rounded-full bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+              <a href="#youtube" onclick="showToast('Opening SMB Hub on YouTube'); return false;" aria-label="YouTube" class="w-9 h-9 rounded-full bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+              <a href="#instagram" onclick="showToast('Opening SMB Hub on Instagram'); return false;" aria-label="Instagram" class="w-9 h-9 rounded-full bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+              <a href="#linkedin" onclick="showToast('Opening SMB Hub on LinkedIn'); return false;" aria-label="LinkedIn" class="w-9 h-9 rounded-full bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+            </div>
+          </div>
+
+          <div class="bento-card p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
+                <h3 class="font-display font-bold text-[13px] text-zinc-900">Recently Active Members</h3>
               </div>
+              <span class="text-[11px] text-zinc-400">Live</span>
+            </div>
+            <div id="active-members-grid" class="grid grid-cols-5 gap-2.5"></div>
+            <button type="button" onclick="switchWorkspaceTab('network')" class="mt-3.5 pt-2.5 border-t border-[#E6E3DC] w-full flex items-center justify-between text-xs font-semibold text-zinc-700 hover:text-blue-600 transition-colors">
+              <span>Show all</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div class="bento-card p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-display font-bold text-[13px] text-zinc-900">Groups to Explore</h3>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F2EE] text-zinc-600">Canada</span>
+            </div>
+            <div id="groups-explore-list" class="space-y-2.5"></div>
+            <button type="button" onclick="showToast('Exploring all 28 Canadian SMB topic circles')" class="mt-3.5 pt-2.5 border-t border-[#E6E3DC] w-full flex items-center justify-between text-xs font-semibold text-zinc-700 hover:text-blue-600 transition-colors">
+              <span>Show all</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </aside>
+      </div>
+
+      <!-- VIEW 2: NETWORK DIRECTORY -->
+      <div id="view-network" class="hidden max-w-4xl mx-auto space-y-5 fade-in">
+        <div class="bento-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="font-display font-bold text-lg text-zinc-900">Your Canadian Founder Network</h2>
+            <p class="text-xs text-zinc-500 mt-0.5">Connect directly with verified small business owners, advisors, and operators across Canada.</p>
+          </div>
+          <button type="button" onclick="switchWorkspaceTab('home')" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#F4F2EE] hover:bg-[#E6E3DC] text-zinc-800 transition-colors self-start sm:self-auto">← Back to Feed</button>
+        </div>
+        <div id="network-directory-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- VIEW 3: MESSAGING INBOX -->
+      <div id="view-messaging" class="hidden max-w-4xl mx-auto bento-card overflow-hidden fade-in">
+        <div class="grid grid-cols-1 md:grid-cols-12 min-h-[480px]">
+          <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-[#E6E3DC] p-3 space-y-1.5 bg-[#F4F2EE]/40">
+            <div class="flex items-center justify-between px-2 py-1.5">
+              <span class="font-display font-bold text-sm text-zinc-900">Direct Messages</span>
+              <button type="button" onclick="switchWorkspaceTab('home')" class="text-[11px] font-medium text-blue-600 hover:underline">Feed</button>
+            </div>
+            <div id="message-threads-list" class="space-y-1"></div>
+          </div>
+
+          <div class="md:col-span-8 flex flex-col justify-between p-4 bg-white">
+            <div>
+              <div class="pb-3 border-b border-[#E6E3DC] flex items-center justify-between">
+                <div>
+                  <h3 id="chat-partner-name" class="font-display font-bold text-sm text-zinc-900">Priya Raman</h3>
+                  <p id="chat-partner-role" class="text-[11px] text-zinc-500">Founder, Maple Bakery • SMB Advisor</p>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Direct Intro</span>
+              </div>
+              <div id="chat-messages-box" class="py-4 space-y-3 max-h-72 overflow-y-auto"></div>
             </div>
 
-            <!-- Bottom Twin Cards: Funding / Grants & Verified Ecosystem Stats -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <div class="rounded-2xl bg-white/95 dark:bg-slate-900/90 border border-white/40 dark:border-slate-700/80 glass-card p-4 shadow-glass animate-float-delayed">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                    FEDERAL & PROVINCIAL GRANTS
-                  </span>
-                  <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400"></i>
-                </div>
-                <p class="text-xs font-semibold text-slate-900 dark:text-white">CDAP & Regional Innovation Funding</p>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">18 active non-dilutive programs curated for Q4 2026.</p>
-              </div>
-
-              <div class="rounded-2xl bg-slate-900/85 border border-white/15 glass-card p-4 text-white shadow-glass">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="text-[11px] font-semibold text-teal-300">COAST-TO-COAST REACH</span>
-                  <span class="text-[11px] font-mono text-slate-400">10 PROV • 3 TERR</span>
-                </div>
-                <div class="flex items-baseline gap-2">
-                  <span class="font-display font-bold text-xl text-white">$140M+</span>
-                  <span class="text-[11px] text-slate-300">member-to-member B2B deals</span>
-                </div>
-                <p class="text-[11px] text-slate-400 mt-1">Zero cold-spam guarantee • Verified BN registry</p>
-              </div>
-            </div>
-
+            <form onsubmit="sendDirectMessage(event)" class="pt-3 border-t border-[#E6E3DC] flex items-center gap-2">
+              <input id="chat-reply-input" type="text" placeholder="Write a direct message..." class="flex-1 px-3.5 py-2 rounded-xl bg-[#F4F2EE]/80 border border-[#E6E3DC] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors">Send</button>
+            </form>
           </div>
         </div>
       </div>
+    </main>
+  </div>
 
-    </div>
 
-    <!-- ==================== INTERACTIVE POST-LOGIN PREVIEW STATE ==================== -->
-    <div id="authenticated-preview" class="hidden w-full max-w-2xl mx-auto bg-white dark:bg-[#0E1526] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-elevated p-8 text-center space-y-5 fade-in">
-      <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-200/70 dark:border-emerald-800/60">
-        <i data-lucide="check-circle-2" class="w-7 h-7"></i>
-      </div>
-      <div class="space-y-2">
-        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300">
-          Authenticated Session Active
-        </span>
-        <h2 id="welcome-user-heading" class="font-display font-bold text-2xl text-slate-900 dark:text-white">
-          Welcome to SMB HUB
-        </h2>
-        <p id="welcome-user-sub" class="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-          Your Canadian small business workspace is ready. Explore local founder circles, grant opportunities, and verified B2B partners.
-        </p>
-      </div>
-      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-        <button onclick="resetToAuthView()" class="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-          ← Back to Sign in / Join now
-        </button>
-        <button onclick="showToast('Launching SMB HUB Community Feed...')" class="px-5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors">
-          Enter Community Feed
-        </button>
-      </div>
-    </div>
-  </main>
+  <!-- =========================================================================
+       SHARED MODALS & TOAST NOTIFICATIONS
+       ========================================================================= -->
 
-  <!-- ==================== MINIMALIST BALANCED FOOTER ==================== -->
-  <footer class="w-full border-t border-slate-200/70 dark:border-slate-800/70 bg-white/60 dark:bg-[#0B1120]/60 py-4 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
-      <div class="flex items-center gap-2">
-        <span>SMB Hub, by Cmarketing Inc. © 2026</span>
-        <span class="hidden sm:inline text-slate-300 dark:text-slate-700">|</span>
-        <a href="#about" onclick="showToast('About SMB Hub by Cmarketing Inc.')" class="hover:text-slate-900 dark:hover:text-white transition-colors">About</a>
-        <span class="text-slate-300 dark:text-slate-700">|</span>
-        <a href="#help" onclick="showToast('Opening Canadian Member Support')" class="hover:text-slate-900 dark:hover:text-white transition-colors">Help</a>
-        <span class="text-slate-300 dark:text-slate-700">|</span>
-        <a href="#privacy" onclick="showToast('PIPEDA & Canadian Privacy Compliant')" class="hover:text-slate-900 dark:hover:text-white transition-colors">Privacy</a>
+  <!-- Forgot Password Modal -->
+  <div id="forgot-modal" class="hidden fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-xs flex items-center justify-center px-4" onclick="if(event.target === this) closeForgotModal()">
+    <div class="w-full max-w-md bg-white rounded-3xl border border-slate-200 shadow-popover p-6 space-y-4 fade-in">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display font-bold text-base text-slate-950">Reset your password</h3>
+        <button type="button" onclick="closeForgotModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
-
-      <div class="flex items-center gap-2 text-[11px]">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-medium">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          Hosted in Canada (ca-central-1)
-        </span>
-      </div>
-    </div>
-  </footer>
-
-  <!-- ==================== FORGOT PASSWORD MODAL ==================== -->
-  <div id="forgot-modal" class="hidden fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-sm flex items-center justify-center px-4" onclick="if(event.target === this) closeForgotModal()">
-    <div class="w-full max-w-md bg-white dark:bg-[#0E1526] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-elevated p-6 fade-in">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="font-display font-bold text-base text-slate-900 dark:text-white">Reset your password</h3>
-        <button onclick="closeForgotModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-      <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
-        Enter the email associated with your SMB Hub account and we will send a secure password reset link.
-      </p>
-      <form onsubmit="submitForgotPassword(event)" class="space-y-4">
-        <input id="reset-email-input" type="email" required placeholder="you@company.ca" class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-blue-600 text-slate-900 dark:text-white" />
-        <div class="flex items-center justify-end gap-2">
-          <button type="button" onclick="closeForgotModal()" class="px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
-          <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white">Send Reset Link</button>
+      <p class="text-xs text-slate-500 leading-relaxed">Enter your Canadian business email and we will send a secure password recovery link.</p>
+      <form onsubmit="handleForgotSubmit(event)" class="space-y-3">
+        <input type="email" required value="rahman@canadiansme.ca" placeholder="you@company.ca" class="w-full h-11 px-4 rounded-full bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-blue-600" />
+        <div class="flex justify-end gap-2 pt-1">
+          <button type="button" onclick="closeForgotModal()" class="px-4 py-2 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-full text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white">Send reset link</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ==================== CMD+K QUICK DIRECTORY SEARCH MODAL ==================== -->
-  <div id="search-modal" class="hidden fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-sm flex items-start justify-center pt-20 px-4" onclick="if(event.target === this) closeSearchModal()">
-    <div class="w-full max-w-lg bg-white dark:bg-[#0E1526] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-elevated overflow-hidden fade-in">
-      <div class="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100 dark:border-slate-800">
+  <!-- Cmd+K Command Palette -->
+  <div id="command-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs flex items-start justify-center pt-20 px-4" onclick="if(event.target === this) closeCommandPalette()">
+    <div class="w-full max-w-lg bg-white rounded-2xl border border-[#E6E3DC] shadow-popover overflow-hidden fade-in">
+      <div class="flex items-center gap-3 px-4 py-3.5 border-b border-[#E6E3DC]">
         <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-        <input id="quick-search-input" type="text" oninput="filterQuickSearch(this.value)" placeholder="Search Canadian businesses, groups, or plans..." class="flex-1 bg-transparent text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none" />
-        <button onclick="closeSearchModal()" class="text-[11px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">ESC</button>
+        <input id="cmd-search-input" type="text" oninput="renderCommandResults(this.value)" placeholder="Jump to founders, posts, groups, or actions..." class="flex-1 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none" />
+        <button type="button" onclick="closeCommandPalette()" class="px-2 py-0.5 rounded bg-[#F4F2EE] text-[10px] font-mono text-zinc-500">ESC</button>
       </div>
-      <div id="quick-search-results" class="p-2 max-h-72 overflow-y-auto space-y-1"></div>
+      <div id="cmd-results-list" class="p-2 max-h-80 overflow-y-auto space-y-1"></div>
     </div>
   </div>
 
-  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <!-- Edit Headline Modal -->
+  <div id="headline-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs flex items-center justify-center px-4" onclick="if(event.target === this) closeHeadlineEditor()">
+    <div class="w-full max-w-md bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-5 space-y-4 fade-in">
+      <div class="flex items-center justify-between">
+        <h3 class="font-display font-bold text-base text-zinc-900">Boost your Profile Strength</h3>
+        <button type="button" onclick="closeHeadlineEditor()" class="text-zinc-400 hover:text-zinc-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <p class="text-xs text-zinc-500 leading-relaxed">Add your role, company, and province so Canadian founders and buyers can discover you faster.</p>
+      <form onsubmit="saveProfileHeadline(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-zinc-700 mb-1">Business Headline</label>
+          <input id="headline-input" type="text" required placeholder="e.g., Founder at NorthPeak Digital • Toronto, ON" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE]/70 border border-[#E6E3DC] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600" />
+        </div>
+        <div class="flex justify-end gap-2 pt-1">
+          <button type="button" onclick="closeHeadlineEditor()" class="px-3.5 py-2 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE]">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white">Save & Boost (+25%)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- All Articles Modal -->
+  <div id="articles-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs flex items-center justify-center px-4" onclick="if(event.target === this) closeArticlesModal()">
+    <div class="w-full max-w-xl bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-6 space-y-4 fade-in">
+      <div class="flex items-center justify-between border-b border-[#E6E3DC] pb-3">
+        <div>
+          <h3 class="font-display font-bold text-base text-zinc-900">SMB Hub Canadian Editorial</h3>
+          <p class="text-xs text-zinc-500">Curated founder stories, warehouse tech, and cybersecurity briefings</p>
+        </div>
+        <button type="button" onclick="closeArticlesModal()" class="text-zinc-400 hover:text-zinc-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div id="modal-articles-list" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
+    </div>
+  </div>
+
+  <!-- Upgrade Plan Modal -->
+  <div id="upgrade-modal" class="hidden fixed inset-0 z-50 bg-zinc-950/40 backdrop-blur-xs flex items-center justify-center px-4" onclick="if(event.target === this) closeUpgradeModal()">
+    <div class="w-full max-w-lg bg-white rounded-2xl border border-[#E6E3DC] shadow-popover p-6 space-y-4 fade-in">
+      <div class="flex items-center justify-between">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+          <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i> SMB Elite Membership
+        </span>
+        <button type="button" onclick="closeUpgradeModal()" class="text-zinc-400 hover:text-zinc-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div>
+        <h3 class="font-display font-bold text-xl text-zinc-900">Unlock Verified B2B Visibility Across Canada</h3>
+        <p class="text-xs text-zinc-500 mt-1">Get the SMB Elite badge, priority placement in Business Listings, and direct warm intros to verified buyers.</p>
+      </div>
+      <div class="p-4 rounded-xl bg-[#F4F2EE] border border-[#E6E3DC] flex items-baseline justify-between">
+        <div>
+          <p class="font-display font-bold text-sm text-zinc-900">SMB Elite Annual</p>
+          <p class="text-[11px] text-zinc-500">Billed in CAD • Cancel anytime</p>
+        </div>
+        <div class="text-right">
+          <span class="font-display font-extrabold text-2xl text-zinc-900">$29</span>
+          <span class="text-xs text-zinc-500">/mo</span>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="closeUpgradeModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F4F2EE]">Maybe later</button>
+        <button type="button" onclick="closeUpgradeModal(); showToast('14-day SMB Elite trial activated!')" class="px-5 py-2 rounded-xl text-xs font-semibold bg-zinc-900 hover:bg-zinc-800 text-white">Start 14-day free trial</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
-    // --- APPLICATION STATE ---
-    let currentAuthMode = 'signin'; // 'signin' | 'signup'
-
-    const citySpotlights = {
+    // ==================== SCREEN 1: AUTH SHOWCASE REELS & CITY DATA ====================
+    const showcaseCities = {
       Toronto: {
-        initials: 'ML',
-        name: 'Marcus Lin',
-        role: 'Founder, Harbourline Logistics • Toronto, ON',
-        quote: '"Found two Ontario-based cold-chain packaging suppliers and an SR&ED tax advisor within 48 hours of joining SMB Hub."',
-        tag: '#SupplyChainON • B2B Partnership'
+        author: 'Priya Raman',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=140&q=80',
+        reelPhoto: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=85',
+        badge: 'SMB Advisor',
+        subtitle: 'Founder, Maple Bakery • Toronto, ON',
+        quote: '"Closed our first national grocer deal with a 1-page shelf-life sell sheet."',
+        likes: 142,
+        hubPhoto: 'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=800&q=85',
+        hubTitle: 'Toronto Supply & Retail Hub',
+        hubCaption: '$2.4M in local B2B contracts closed this quarter',
+        miniPhoto: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=700&q=80',
+        miniTitle: 'Toronto Founders Circle',
+        miniAttendees: '+17 going'
       },
       Vancouver: {
-        initials: 'SP',
-        name: 'Sonia Patel',
-        role: 'CEO, Pacifica CleanTech • Vancouver, BC',
-        quote: '"Connected with 14 BC manufacturing founders and secured a joint export grant through the Western Canada group."',
-        tag: '#CleanTechBC • Export Growth'
+        author: 'Liam Chen',
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=140&q=80',
+        reelPhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=85',
+        badge: 'SMB Elite',
+        subtitle: 'Founder, Harbourline Supply • Vancouver, BC',
+        quote: '"Found 2 Lower Mainland freight partners in under 24 hours on SMB Hub."',
+        likes: 97,
+        hubPhoto: 'https://images.unsplash.com/photo-1559511260-66a654ae982a?auto=format&fit=crop&w=800&q=85',
+        hubTitle: 'Vancouver Waterfront Trade Hub',
+        hubCaption: '19 BC operators secured CleanBC & port freight partnerships',
+        miniPhoto: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=700&q=80',
+        miniTitle: 'Vancouver Port & CleanBC Meetup',
+        miniAttendees: '+19 going'
       },
-      'Montréal': {
-        initials: 'ÉB',
-        name: 'Élodie Bouchard',
-        role: 'Co-Founder, Atelier Nord • Montréal, QC',
-        quote: '"Bilingual community discussions helped us expand our retail distribution from Québec into Ontario seamlessly."',
-        tag: '#CommerceQC • Retail Expansion'
+      Montréal: {
+        author: 'Camille Laurent',
+        avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=140&q=80',
+        reelPhoto: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=900&q=85',
+        badge: 'SMB Advisor',
+        subtitle: 'CEO, Atelier Nord • Montréal, QC',
+        quote: '"Matched with a bilingual packaging studio & RS&DE advisor fast."',
+        likes: 129,
+        hubPhoto: 'https://images.unsplash.com/photo-1519178614-68673b201f36?auto=format&fit=crop&w=800&q=85',
+        hubTitle: 'Montréal Old Port Design Hub',
+        hubCaption: '34 Québec studios paired on packaging & export distribution',
+        miniPhoto: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=700&q=80',
+        miniTitle: 'Montréal Design & Export Circle',
+        miniAttendees: '+31 going'
       },
       Calgary: {
-        initials: 'DK',
-        name: 'Devon Kowalski',
-        role: 'Managing Partner, Foothills AgTech • Calgary, AB',
-        quote: '"High-signal advice from operators who actually run payroll in Canada—zero fluff, real commercial intros."',
-        tag: '#AgTechAB • Operator Circle'
+        author: 'David Okafor',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=140&q=80',
+        reelPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=85',
+        badge: 'SMB Elite',
+        subtitle: 'Partner, Foothills Logistics • Calgary, AB',
+        quote: '"Peer HS-code audit saved us 4.2% duty on inbound parts this quarter."',
+        likes: 105,
+        hubPhoto: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=85',
+        hubTitle: 'Calgary Innovation & Ops Hub',
+        hubCaption: '22 Alberta manufacturers cut freight & customs costs by 14%',
+        miniPhoto: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=700&q=80',
+        miniTitle: 'Calgary AgTech & Supply Ops',
+        miniAttendees: '+17 going'
       }
     };
 
-    const quickDirectoryItems = [
-      { category: 'Group', label: 'Ontario Founders & Small Business Owners (1,940 members)' },
-      { category: 'Group', label: 'Canadian E-Commerce & Cross-Border Shipping' },
-      { category: 'Business', label: 'Harbourline Logistics Inc. — Toronto, ON' },
-      { category: 'Business', label: 'Atelier Nord Design Studio — Montréal, QC' },
-      { category: 'Plans', label: 'SMB Hub Verified Business Membership ($0 Starter / $29 Pro)' },
-      { category: 'Top Posts', label: '2026 Guide: Navigating Federal & Provincial Digital Grants' }
-    ];
+    const cityOrder = ['Toronto', 'Vancouver', 'Montréal', 'Calgary'];
+    let currentCityIdx = 0;
+    let activeShowcaseCity = 'Toronto';
+    let reelProgress = 0;
+    let reelTickInterval = null;
+    let reelPaused = false;
+    let reelAudioOn = false;
+    let coffeeWaved = false;
+    let authMode = 'signin';
 
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      setupKeyboardShortcuts();
-    });
+    function selectShowcaseCity(cityName) {
+      const data = showcaseCities[cityName];
+      if (!data) return;
+      activeShowcaseCity = cityName;
+      currentCityIdx = cityOrder.indexOf(cityName);
+      reelProgress = 0;
 
-    // --- AUTH MODE SWITCHING ('signin' vs 'signup') ---
-    function setAuthMode(mode, scrollToForm = false) {
-      currentAuthMode = mode;
-      const isSignup = mode === 'signup';
+      // Update City Filter Pills
+      document.querySelectorAll('.city-pill').forEach(btn => {
+        const isActive = btn.getAttribute('data-city-btn') === cityName;
+        btn.className = isActive
+          ? 'city-pill px-2.5 py-1 rounded-full text-[11.5px] font-semibold bg-slate-900 text-white shadow-2xs whitespace-nowrap transition-all'
+          : 'city-pill px-2.5 py-1 rounded-full text-[11.5px] font-medium text-slate-600 hover:text-slate-950 whitespace-nowrap transition-all';
+      });
 
-      // Slide segmented indicator pill
-      const pill = document.getElementById('tab-pill-indicator');
-      const tabSignin = document.getElementById('tab-signin');
-      const tabSignup = document.getElementById('tab-signup');
+      // Update 4 Story Progress Bars
+      cityOrder.forEach((_, idx) => {
+        const bar = document.getElementById(`reel-prog-${idx}`);
+        if (!bar) return;
+        bar.style.width = idx < currentCityIdx ? '100%' : '0%';
+      });
 
-      if (isSignup) {
-        pill.style.transform = 'translateX(100%)';
-        tabSignup.classList.replace('text-slate-500', 'text-slate-900');
-        tabSignup.classList.replace('dark:text-slate-400', 'dark:text-white');
-        tabSignup.classList.replace('font-medium', 'font-semibold');
+      const photoEl = document.getElementById('reel-main-photo');
+      if (photoEl) photoEl.style.opacity = '0.5';
 
-        tabSignin.classList.replace('text-slate-900', 'text-slate-500');
-        tabSignin.classList.replace('dark:text-white', 'dark:text-slate-400');
-        tabSignin.classList.replace('font-semibold', 'font-medium');
-      } else {
-        pill.style.transform = 'translateX(0%)';
-        tabSignin.classList.replace('text-slate-500', 'text-slate-900');
-        tabSignin.classList.replace('dark:text-slate-400', 'dark:text-white');
-        tabSignin.classList.replace('font-medium', 'font-semibold');
+      setTimeout(() => {
+        if (photoEl) {
+          photoEl.src = data.reelPhoto;
+          photoEl.alt = data.author;
+          photoEl.style.opacity = '1';
+        }
+        document.getElementById('spot-author').textContent = data.author;
+        document.getElementById('spot-avatar').src = data.avatar;
+        document.getElementById('spot-avatar').alt = data.author;
+        document.getElementById('spot-badge').textContent = data.badge;
+        document.getElementById('spot-subtitle').textContent = data.subtitle;
+        document.getElementById('spot-quote').textContent = data.quote;
+        document.getElementById('reel-like-count').textContent = data.likes;
 
-        tabSignup.classList.replace('text-slate-900', 'text-slate-500');
-        tabSignup.classList.replace('dark:text-white', 'dark:text-slate-400');
-        tabSignup.classList.replace('font-semibold', 'font-medium');
+        document.getElementById('hub-deal-photo').src = data.hubPhoto;
+        document.getElementById('hub-deal-title').textContent = data.hubTitle;
+        document.getElementById('hub-deal-caption').textContent = data.hubCaption;
+
+        document.getElementById('mini-reel-photo').src = data.miniPhoto;
+        document.getElementById('mini-reel-title').textContent = data.miniTitle;
+        document.getElementById('mini-reel-attendees').textContent = data.miniAttendees;
+        lucide.createIcons();
+      }, 140);
+    }
+
+    function toggleCoffeeRsvp() {
+      coffeeWaved = !coffeeWaved;
+      const btn = document.getElementById('mini-rsvp-btn');
+      if (!btn) return;
+      btn.textContent = coffeeWaved ? 'Going ✓' : 'Wave 👋';
+      btn.className = coffeeWaved
+        ? 'shrink-0 px-3 py-1.5 rounded-full bg-emerald-500 text-white text-[10.5px] font-bold shadow-xs transition-all whitespace-nowrap'
+        : 'shrink-0 px-3 py-1.5 rounded-full bg-white hover:bg-blue-50 text-slate-950 text-[10.5px] font-bold shadow-xs transition-all whitespace-nowrap';
+      showToast(coffeeWaved ? 'Waved to Open Coffee Circle! RSVP saved.' : 'RSVP cancelled');
+    }
+
+    function triggerReelBurst() {
+      const data = showcaseCities[activeShowcaseCity];
+      if (data) {
+        data.likes += 1;
+        document.getElementById('reel-like-count').textContent = data.likes;
       }
-
-      // Toggle extra signup fields & password strength meter
-      document.getElementById('signup-fields').classList.toggle('hidden', !isSignup);
-      document.getElementById('strength-meter-wrap').classList.toggle('hidden', !isSignup);
-      document.getElementById('forgot-password-link').classList.toggle('hidden', isSignup);
-
-      // Update Submit CTA & Bottom Prompt
-      document.getElementById('auth-submit-text').textContent = isSignup ? 'Create your SMB Hub account' : 'Sign in';
-      document.getElementById('bottom-prompt-text').textContent = isSignup ? 'Already have an SMB Hub account?' : 'New to SMB Hub?';
-      const bottomBtn = document.getElementById('bottom-prompt-btn');
-      bottomBtn.textContent = isSignup ? 'Sign in' : 'Join now';
-      bottomBtn.onclick = () => setAuthMode(isSignup ? 'signin' : 'signup');
-
-      // Clear validation messages
-      document.getElementById('email-error').classList.add('hidden');
-      document.getElementById('password-error').classList.add('hidden');
-
-      if (scrollToForm) {
-        resetToAuthView();
-        document.getElementById('email-input').focus();
+      const layer = document.getElementById('reel-emoji-burst-layer');
+      if (!layer) return;
+      const emojis = ['👏', '🔥', '💡', '🍁', '❤️'];
+      for (let i = 0; i < 4; i++) {
+        const span = document.createElement('span');
+        span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        span.className = 'emoji-burst absolute bottom-0 text-lg select-none';
+        span.style.left = `${Math.floor(Math.random() * 28)}px`;
+        span.style.animationDelay = `${i * 85}ms`;
+        layer.appendChild(span);
+        setTimeout(() => span.remove(), 1200);
       }
     }
 
-    // --- PASSWORD VISIBILITY & STRENGTH ---
-    function togglePasswordVisibility() {
-      const input = document.getElementById('password-input');
-      const icon = document.getElementById('eye-icon');
-      const isPassword = input.type === 'password';
-      input.type = isPassword ? 'text' : 'password';
-      icon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
-      lucide.createIcons();
+    function toggleReelAudio() {
+      reelAudioOn = !reelAudioOn;
+      document.getElementById('reel-sound-label').textContent = reelAudioOn ? 'SOUND ON • 0:42' : 'MUTED • TAP FOR STORY';
+      const icon = document.getElementById('reel-vol-icon');
+      if (icon) {
+        icon.setAttribute('data-lucide', reelAudioOn ? 'volume-2' : 'volume-x');
+        lucide.createIcons();
+      }
+    }
+
+    function cyclePrevShowcaseCity() {
+      currentCityIdx = (currentCityIdx - 1 + cityOrder.length) % cityOrder.length;
+      selectShowcaseCity(cityOrder[currentCityIdx]);
+    }
+
+    function cycleNextShowcaseCity() {
+      currentCityIdx = (currentCityIdx + 1) % cityOrder.length;
+      selectShowcaseCity(cityOrder[currentCityIdx]);
+    }
+
+    function startShowcaseAuto() {
+      if (reelTickInterval) clearInterval(reelTickInterval);
+      reelTickInterval = setInterval(() => {
+        if (reelPaused) return;
+        reelProgress += 1.67; // 6s per story
+        const activeBar = document.getElementById(`reel-prog-${currentCityIdx}`);
+        if (activeBar) activeBar.style.width = `${Math.min(100, reelProgress)}%`;
+        if (reelProgress >= 100) {
+          cycleNextShowcaseCity();
+        }
+      }, 100);
+    }
+    function pauseShowcaseAuto() { reelPaused = true; }
+    function resumeShowcaseAuto() { reelPaused = false; }
+
+    // ==================== AUTH MODE & SCREEN TRANSITIONS ====================
+    function setAuthMode(mode) {
+      authMode = mode;
+      const isJoin = mode === 'join';
+      const slider = document.getElementById('auth-slider-bg');
+      const tabSignIn = document.getElementById('tab-signin');
+      const tabJoin = document.getElementById('tab-join');
+      const joinFields = document.getElementById('join-extra-fields');
+      const strengthRow = document.getElementById('pwd-strength-row');
+      const submitLabel = document.getElementById('auth-submit-label');
+      const bottomSwitch = document.getElementById('auth-bottom-switch');
+
+      if (slider) {
+        slider.style.transform = isJoin ? 'translateX(100%)' : 'translateX(0%)';
+      }
+
+      tabSignIn.className = !isJoin
+        ? 'relative z-10 py-2 rounded-full text-[13px] font-semibold text-slate-950 transition-colors'
+        : 'relative z-10 py-2 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-900 transition-colors';
+
+      tabJoin.className = isJoin
+        ? 'relative z-10 py-2 rounded-full text-[13px] font-semibold text-slate-950 transition-colors'
+        : 'relative z-10 py-2 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-900 transition-colors';
+
+      if (isJoin) {
+        joinFields.classList.remove('hidden');
+        strengthRow.classList.remove('hidden');
+        submitLabel.textContent = 'Create free account';
+        bottomSwitch.innerHTML = 'Already have an account? <button type="button" onclick="setAuthMode(\'signin\')" class="font-semibold text-blue-600 hover:underline">Sign in</button>';
+      } else {
+        joinFields.classList.add('hidden');
+        strengthRow.classList.add('hidden');
+        submitLabel.textContent = 'Sign in';
+        bottomSwitch.innerHTML = 'New to SMB Hub? <button type="button" onclick="setAuthMode(\'join\')" class="font-semibold text-blue-600 hover:underline">Join now</button>';
+      }
     }
 
     function updatePasswordStrength(val) {
-      if (currentAuthMode !== 'signup') return;
-      let score = 0;
-      if (val.length >= 6) score++;
-      if (val.length >= 10) score++;
-      if (/[0-9]/.test(val)) score++;
-      if (/[^A-Za-z0-9]/.test(val)) score++;
+      const len = val.length;
+      const level = len === 0 ? 0 : len < 6 ? 1 : len < 9 ? 2 : len < 12 ? 3 : 4;
+      const labels = ['Enter password', 'Weak', 'Fair', 'Good', 'Strong • 12+ chars'];
+      const colors = ['bg-slate-200', 'bg-rose-500', 'bg-amber-500', 'bg-blue-500', 'bg-emerald-500'];
+      const textColors = ['text-slate-400', 'text-rose-600', 'text-amber-600', 'text-blue-600', 'text-emerald-600'];
 
-      const colors = ['bg-rose-500', 'bg-amber-500', 'bg-blue-500', 'bg-emerald-500'];
-      const labels = ['Weak password', 'Fair — add numbers or symbols', 'Good business password', 'Strong security'];
-
+      const txt = document.getElementById('pwd-strength-text');
+      if (txt) {
+        txt.textContent = labels[level];
+        txt.className = `font-semibold ${textColors[level]}`;
+      }
       for (let i = 1; i <= 4; i++) {
-        const bar = document.getElementById(`str-bar-${i}`);
-        bar.className = `h-1 rounded-full transition-colors ${i <= score ? colors[Math.max(0, score - 1)] : 'bg-slate-200 dark:bg-slate-800'}`;
-      }
-      document.getElementById('str-label').textContent = val.length === 0
-        ? 'Use 8+ characters with a number & symbol'
-        : labels[Math.max(0, score - 1)];
-    }
-
-    // --- FORM SUBMISSION & SSO ---
-    function handleAuthSubmit(event) {
-      event.preventDefault();
-      const email = document.getElementById('email-input').value.trim();
-      const password = document.getElementById('password-input').value;
-      const fullName = document.getElementById('full-name').value.trim();
-
-      const emailErr = document.getElementById('email-error');
-      const passErr = document.getElementById('password-error');
-
-      const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      emailErr.classList.toggle('hidden', validEmail);
-      passErr.classList.toggle('hidden', password.length >= 6);
-
-      if (!validEmail || password.length < 6) return;
-
-      const btn = document.getElementById('auth-submit-btn');
-      const btnText = document.getElementById('auth-submit-text');
-      const originalText = btnText.textContent;
-      btn.disabled = true;
-      btnText.textContent = currentAuthMode === 'signup' ? 'Creating workspace...' : 'Signing in...';
-
-      setTimeout(() => {
-        btn.disabled = false;
-        btnText.textContent = originalText;
-
-        const displayName = currentAuthMode === 'signup' && fullName ? fullName : email.split('@')[0];
-        document.getElementById('auth-main-grid').classList.add('hidden');
-        document.getElementById('authenticated-preview').classList.remove('hidden');
-        document.getElementById('welcome-user-heading').textContent = `Welcome to SMB HUB, ${displayName}`;
-        lucide.createIcons();
-        showToast(currentAuthMode === 'signup' ? 'Account created! Welcome to Canada’s SMB network.' : 'Signed in successfully.');
-      }, 550);
-    }
-
-    function handleSSO(provider) {
-      showToast(`Connecting securely with ${provider}...`);
-      setTimeout(() => {
-        document.getElementById('auth-main-grid').classList.add('hidden');
-        document.getElementById('authenticated-preview').classList.remove('hidden');
-        document.getElementById('welcome-user-heading').textContent = `Welcome back via ${provider}`;
-        lucide.createIcons();
-      }, 600);
-    }
-
-    function resetToAuthView(e) {
-      if (e) e.preventDefault();
-      document.getElementById('authenticated-preview').classList.add('hidden');
-      document.getElementById('auth-main-grid').classList.remove('hidden');
-    }
-
-    // --- CITY SPOTLIGHT SWITCHER ---
-    function switchSpotlightCity(city) {
-      const data = citySpotlights[city];
-      if (!data) return;
-
-      document.querySelectorAll('.city-pill').forEach(btn => {
-        const active = btn.textContent.trim() === city;
-        btn.className = active
-          ? 'city-pill px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-900 transition-all'
-          : 'city-pill px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all';
-      });
-
-      document.getElementById('spot-avatar').textContent = data.initials;
-      document.getElementById('spot-name').textContent = data.name;
-      document.getElementById('spot-role').textContent = data.role;
-      document.getElementById('spot-quote').textContent = data.quote;
-      document.getElementById('spot-tag').textContent = data.tag;
-    }
-
-    // --- HEADER NAV & THEME ---
-    function selectNav(btn, label) {
-      document.querySelectorAll('.nav-link').forEach(el => {
-        el.className = 'nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/70 dark:hover:bg-slate-800/50 transition-all';
-      });
-      btn.className = 'nav-link px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50/90 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 transition-all';
-      if (label !== 'Home') {
-        showToast(`Sign in or join free to explore ${label}`);
+        const bar = document.getElementById(`pwd-bar-${i}`);
+        if (bar) bar.className = `rounded-full transition-colors ${i <= level ? colors[level] : 'bg-slate-200'}`;
       }
     }
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('dark');
-    }
-
-    // --- MODALS & SEARCH ---
-    function openForgotModal() {
-      document.getElementById('forgot-modal').classList.remove('hidden');
-      document.getElementById('reset-email-input').value = document.getElementById('email-input').value;
-      setTimeout(() => document.getElementById('reset-email-input').focus(), 40);
+    function togglePasswordVisibility() {
+      const pwd = document.getElementById('auth-password');
+      const icon = document.getElementById('pwd-eye-icon');
+      const isHidden = pwd.type === 'password';
+      pwd.type = isHidden ? 'text' : 'password';
+      icon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
       lucide.createIcons();
     }
 
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      if (authMode === 'join') {
+        const fullName = document.getElementById('auth-fullname').value.trim();
+        const company = document.getElementById('auth-company').value.trim();
+        const prov = document.getElementById('auth-province').value;
+        if (fullName) {
+          document.getElementById('sidebar-profile-name').textContent = fullName;
+          document.getElementById('me-popover-name').textContent = fullName;
+        }
+        document.getElementById('menu-headline-preview').textContent = company ? `${company} • ${prov}` : `Founder • ${prov}, Canada`;
+      }
+      enterWorkspace('home');
+      showToast(authMode === 'join' ? 'Welcome to SMB HUB Canada!' : 'Signed in to SMB HUB');
+    }
+
+    function handleSsoSignIn(provider) {
+      enterWorkspace('home');
+      showToast(`Authenticated with ${provider}`);
+    }
+
+    function enterWorkspace(initialTab = 'home') {
+      document.getElementById('auth-landing-surface').classList.add('hidden');
+      document.getElementById('workspace-feed-surface').classList.remove('hidden');
+      switchWorkspaceTab(initialTab);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    function signOutToLanding() {
+      document.getElementById('workspace-feed-surface').classList.add('hidden');
+      document.getElementById('auth-landing-surface').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Signed out securely');
+      lucide.createIcons();
+    }
+
+    function openForgotModal() {
+      document.getElementById('forgot-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
     function closeForgotModal() {
       document.getElementById('forgot-modal').classList.add('hidden');
     }
-
-    function submitForgotPassword(e) {
+    function handleForgotSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById('reset-email-input').value.trim();
       closeForgotModal();
-      showToast(`Password reset link sent to ${email}`);
+      showToast('Password recovery link sent to your email');
     }
 
-    function openSearchModal() {
-      document.getElementById('search-modal').classList.remove('hidden');
-      const input = document.getElementById('quick-search-input');
-      input.value = '';
-      filterQuickSearch('');
-      setTimeout(() => input.focus(), 40);
+    // ==================== SCREEN 2: FEED WORKSPACE STATE & DATA ====================
+    let activeFeedFilter = 'Everything';
+    let sortByTopSignal = true;
+    let showSavedOnly = false;
+    let isFocusMode = false;
+    let connectionsCount = 0;
+    let userPostsCount = 0;
+    let profileStrength = 17;
+
+    const recentArticles = [
+      { title: 'Be Seen. Be Found. Be Chosen: How SocialEyes...', readTime: '4 min read', category: 'Growth', thumb: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=160&q=80' },
+      { title: "What BVX 2026 Revealed About Canada's Next...", readTime: '5 min read', category: 'Ecosystem', thumb: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=160&q=80' },
+      { title: 'The Toronto Company Flying Drones Inside Warehouses...', readTime: '3 min read', category: 'Logistics', thumb: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=160&q=80' },
+      { title: 'The Table That Costs Nothing', readTime: '4 min read', category: 'Leadership', thumb: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=160&q=80' },
+      { title: 'Teclara Brings Big-Company Security to the Firms That...', readTime: '6 min read', category: 'Cybersecurity', thumb: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=160&q=80' },
+      { title: 'Why More Ontario Businesses Are Treating...', readTime: '5 min read', category: 'Ontario SMB', thumb: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=160&q=80' }
+    ];
+
+    const activeMembers = [
+      { id: 'm1', name: 'Priya Raman', role: 'Founder, Maple Bakery', city: 'Toronto, ON', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm2', name: 'Daniel Okafor', role: 'Owner, Northside Logistics', city: 'Mississauga, ON', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm3', name: 'Claire Tremblay', role: 'CEO, Atelier Nord', city: 'Montréal, QC', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm4', name: 'Hannah MacLeod', role: 'Director, Maritimes Craft', city: 'Halifax, NS', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm5', name: 'Devon Brooks', role: 'Partner, Foothills AgTech', city: 'Calgary, AB', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm6', name: 'Sonia Patel', role: 'Founder, Pacifica CleanTech', city: 'Vancouver, BC', avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm7', name: 'Maya Chen', role: 'Principal, Cedar Tax & SR&ED', city: 'Ottawa, ON', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm8', name: 'Liam Gallagher', role: 'Co-Founder, Prairie Roasts', city: 'Winnipeg, MB', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm9', name: 'Nadia Al-Mansoor', role: 'CEO, BayStreet Legal Ops', city: 'Toronto, ON', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=140&q=80', connected: false },
+      { id: 'm10', name: 'Marcus Lin', role: 'Founder, Harbourline Supply', city: 'Vancouver, BC', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=140&q=80', connected: false }
+    ];
+
+    const groupsToExplore = [
+      { id: 'g1', name: 'AI for Small Business', members: 5, joined: false, thumb: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=120&q=80' },
+      { id: 'g2', name: 'Importers & Exporters', members: 6, joined: false, thumb: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=120&q=80' },
+      { id: 'g3', name: 'Retail Roundtable', members: 7, joined: false, thumb: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=120&q=80' },
+      { id: 'g4', name: 'Funding & Grants', members: 6, joined: false, thumb: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=120&q=80' }
+    ];
+
+    let feedPosts = [
+      {
+        id: 'p1',
+        author: 'Priya Raman',
+        role: 'Founder, Maple Bakery',
+        time: '2d ago',
+        badge: 'SMB Advisor',
+        badgeStyle: 'bg-zinc-100 text-zinc-700 border-zinc-200',
+        category: 'Win',
+        filterGroup: 'Wins',
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=140&q=80',
+        connected: false,
+        saved: false,
+        content: 'We just closed our first wholesale account with a national grocer. It took 14 months and three rejected samples. The thing that finally worked: a one-page sell sheet with shelf-life data up front. Happy to share the structure with anyone going through the same process.',
+        takeaway: 'Key lesson: Lead with landed margin, ambient shelf-life testing, and case-pack dimensions on Page 1.',
+        image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=85',
+        reactions: { helpful: 5, insightful: 3, celebrate: 8 },
+        userReacted: { helpful: false, insightful: false, celebrate: false },
+        reposts: 2,
+        comments: [
+          { author: 'Claire Tremblay', role: 'Atelier Nord', text: 'Huge congrats Priya! Would love to see how you formatted the shelf-life velocity table.' },
+          { author: 'Daniel Okafor', role: 'Northside Logistics', text: 'Well earned. Cold-chain readiness is usually the #1 objection national buyers raise.' }
+        ]
+      },
+      {
+        id: 'p2',
+        author: 'Daniel Okafor',
+        contextGroup: 'Importers & Exporters',
+        role: 'Owner, Northside Logistics',
+        time: '2d ago',
+        badge: 'SMB Elite',
+        badgeStyle: 'bg-blue-950 text-white border-blue-900',
+        category: 'Question',
+        filterGroup: 'Questions',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=140&q=80',
+        connected: false,
+        saved: false,
+        content: 'Tariff changes pushed our inbound freight costs up 11% this quarter. We renegotiated with two carriers and moved to consolidated shipments, which clawed back about half. If you import from the US, re-check your HS codes. Two of ours were wrong.\n\nHow are other Ontario & BC importers offsetting LTL surcharges right now?',
+        reactions: { helpful: 9, insightful: 6, celebrate: 1 },
+        userReacted: { helpful: false, insightful: false, celebrate: false },
+        reposts: 4,
+        comments: [
+          { author: 'Marcus Lin', role: 'Harbourline Supply', text: 'Auditing our 10-digit HS subheadings saved us 4.2% duty on stainless packaging components last month.' }
+        ]
+      },
+      {
+        id: 'p3',
+        author: 'Sonia Patel',
+        role: 'Founder, Pacifica CleanTech • Vancouver, BC',
+        time: '5h ago',
+        badge: 'Verified SMB',
+        badgeStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        category: 'Offer',
+        filterGroup: 'Offers',
+        avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=140&q=80',
+        connected: false,
+        saved: false,
+        content: 'Offering free 30-minute energy & commercial rebate audits for Canadian light-manufacturing shops (10–75 staff) ahead of the Q4 CleanBC & federal green industrial intake. No pitch—just a checklist of programs you actually qualify for.',
+        reactions: { helpful: 11, insightful: 4, celebrate: 3 },
+        userReacted: { helpful: false, insightful: false, celebrate: false },
+        reposts: 3,
+        comments: []
+      }
+    ];
+
+    const directThreads = [
+      { id: 't1', name: 'Priya Raman', role: 'Founder, Maple Bakery • SMB Advisor', unread: true, messages: [{ sender: 'them', text: 'Hey Abdur! Saw you joined SMB Hub. Let me know if you ever want that 1-page wholesale sell sheet template.' }] },
+      { id: 't2', name: 'Daniel Okafor', role: 'Owner, Northside Logistics • SMB Elite', unread: true, messages: [{ sender: 'them', text: 'Welcome to the Importers & Exporters circle! Happy to intro you to our customs broker in Mississauga.' }] }
+    ];
+    let activeThreadId = 't1';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      startShowcaseAuto();
+      renderRecentArticles();
+      renderActiveMembers();
+      renderGroupsToExplore();
+      renderFeedPosts();
+      renderNetworkDirectory();
+      renderMessagingThreads();
+      setupKeyboardShortcuts();
+      lucide.createIcons();
+    });
+
+    function renderRecentArticles() {
+      const container = document.getElementById('recent-articles-list');
+      const modalList = document.getElementById('modal-articles-list');
+
+      container.innerHTML = recentArticles.map(art => `
+        <button type="button" onclick="openArticlesModal()" class="w-full flex items-center gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F4F2EE] text-left group transition-colors">
+          <img src="${art.thumb}" alt="" onerror="this.onerror=null; this.src='https://placehold.co/80x80/e4e4e7/52525b?text=CA';" class="w-10 h-10 rounded-lg object-cover shrink-0 border border-[#E6E3DC]" />
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-medium text-zinc-800 group-hover:text-blue-600 leading-snug line-clamp-2 transition-colors">${art.title}</p>
+            <span class="text-[10px] text-zinc-400 mt-0.5 block">${art.category} • ${art.readTime}</span>
+          </div>
+        </button>
+      `).join('');
+
+      modalList.innerHTML = recentArticles.map(art => `
+        <div class="flex items-center gap-3.5 p-3 rounded-xl border border-[#E6E3DC] hover:bg-[#F4F2EE]/50 transition-colors">
+          <img src="${art.thumb}" alt="" onerror="this.onerror=null; this.src='https://placehold.co/100x100/e4e4e7/52525b?text=CA';" class="w-14 h-14 rounded-xl object-cover shrink-0" />
+          <div class="flex-1 min-w-0">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-blue-600">${art.category} • ${art.readTime}</span>
+            <h4 class="font-display font-bold text-sm text-zinc-900 mt-0.5">${art.title}</h4>
+          </div>
+          <button type="button" onclick="closeArticlesModal(); showToast('Opening full article reader...')" class="px-3 py-1.5 rounded-lg bg-[#F4F2EE] hover:bg-zinc-900 hover:text-white text-xs font-medium text-zinc-700 transition-colors shrink-0">Read</button>
+        </div>
+      `).join('');
+    }
+
+    function renderActiveMembers() {
+      document.getElementById('active-members-grid').innerHTML = activeMembers.map(member => `
+        <button type="button" onclick="showToast('${member.name} — ${member.role} (${member.city})')" title="${member.name} • ${member.role}" class="relative group focus:outline-none">
+          <img src="${member.avatar}" alt="${member.name}" onerror="this.onerror=null; this.src='https://placehold.co/80x80/e4e4e7/18181b?text=${member.name[0]}';" class="w-10 h-10 rounded-full object-cover ring-1 ring-[#E6E3DC] group-hover:ring-2 group-hover:ring-blue-600 group-hover:scale-105 transition-all" />
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white"></span>
+        </button>
+      `).join('');
+    }
+
+    function renderGroupsToExplore() {
+      document.getElementById('groups-explore-list').innerHTML = groupsToExplore.map(g => `
+        <div class="flex items-center justify-between gap-2.5 p-1.5 -mx-1.5 rounded-xl hover:bg-[#F4F2EE]/70 transition-colors">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <img src="${g.thumb}" alt="${g.name}" onerror="this.onerror=null; this.src='https://placehold.co/80x80/e4e4e7/18181b?text=G';" class="w-9 h-9 rounded-xl object-cover border border-[#E6E3DC] shrink-0" />
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-zinc-900 truncate">${g.name}</p>
+              <p class="text-[11px] text-zinc-500">${g.members} members</p>
+            </div>
+          </div>
+          <button type="button" onclick="toggleJoinGroup('${g.id}')" class="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+            g.joined ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-700 hover:text-white'
+          }">
+            ${g.joined ? 'Joined ✓' : 'Join'}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function toggleJoinGroup(groupId) {
+      const grp = groupsToExplore.find(g => g.id === groupId);
+      if (!grp) return;
+      grp.joined = !grp.joined;
+      grp.members += grp.joined ? 1 : -1;
+      renderGroupsToExplore();
+      showToast(grp.joined ? `Joined "${grp.name}"` : `Left "${grp.name}"`);
+    }
+
+    function renderFeedPosts() {
+      const container = document.getElementById('feed-posts-container');
+      let list = [...feedPosts];
+
+      if (showSavedOnly) {
+        list = list.filter(p => p.saved);
+      } else if (activeFeedFilter !== 'Everything') {
+        list = list.filter(p => p.filterGroup === activeFeedFilter);
+      }
+
+      if (sortByTopSignal) {
+        list.sort((a, b) => (b.reactions.helpful + b.reactions.insightful + b.reactions.celebrate + b.comments.length * 2) - (a.reactions.helpful + a.reactions.insightful + a.reactions.celebrate + a.comments.length * 2));
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="bento-card p-8 text-center space-y-2">
+            <p class="font-display font-bold text-sm text-zinc-900">${showSavedOnly ? 'No saved bookmarks yet' : 'No posts in this filter yet'}</p>
+            <p class="text-xs text-zinc-500">Switch back to Everything or share the first update with Canadian founders.</p>
+            <button type="button" onclick="showSavedOnly = false; setFeedFilter('Everything')" class="mt-2 px-3.5 py-1.5 rounded-xl bg-zinc-900 text-white text-xs font-semibold">Reset filter</button>
+          </div>
+        `;
+        return;
+      }
+
+      const categoryPillColors = {
+        Win: 'bg-amber-50 text-amber-800 border-amber-200/80',
+        Question: 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
+        Offer: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
+        Hiring: 'bg-rose-50 text-rose-700 border-rose-200/80'
+      };
+
+      container.innerHTML = list.map(post => `
+        <article class="bento-card bento-card-interactive p-4 sm:p-5 space-y-3.5 fade-in">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3 min-w-0">
+              <img src="${post.avatar}" alt="${post.author}" onerror="this.onerror=null; this.src='https://placehold.co/96x96/18181b/ffffff?text=${post.author[0]}';" class="w-10 h-10 rounded-full object-cover ring-1 ring-[#E6E3DC] shrink-0" />
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <h3 class="font-display font-bold text-[14px] text-zinc-900 truncate">${post.author}</h3>
+                  ${post.contextGroup ? `<span class="text-xs text-zinc-500">posted in <span class="font-semibold text-zinc-700">${post.contextGroup}</span></span>` : ''}
+                </div>
+                <p class="text-xs text-zinc-500 truncate">${post.role}</p>
+                <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                  <span class="text-[11px] text-zinc-400">${post.time}</span>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border ${post.badgeStyle}">${post.badge}</span>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border ${categoryPillColors[post.category] || 'bg-zinc-100 text-zinc-700 border-zinc-200'}">${post.category}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" onclick="togglePostConnect('${post.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                post.connected ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100'
+              }">
+                ${post.connected ? 'Connected ✓' : '+ Connect'}
+              </button>
+              <button type="button" onclick="togglePostSave('${post.id}')" title="Bookmark post" class="p-1.5 rounded-lg hover:bg-[#F4F2EE] text-zinc-400 hover:text-zinc-800 transition-colors">
+                <i data-lucide="bookmark" class="w-4 h-4 ${post.saved ? 'fill-zinc-900 text-zinc-900' : ''}"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="text-[13.5px] text-zinc-800 leading-[1.6] whitespace-pre-line">${post.content}</div>
+
+          ${post.takeaway ? `
+            <div class="p-3 rounded-xl bg-[#F4F2EE]/85 border border-[#E6E3DC] flex items-start gap-2.5">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+              <p class="text-xs font-medium text-zinc-700 leading-relaxed">${post.takeaway}</p>
+            </div>
+          ` : ''}
+
+          ${post.image ? `
+            <div class="rounded-xl overflow-hidden border border-[#E6E3DC] bg-zinc-100">
+              <img src="${post.image}" alt="Post attachment" onerror="this.style.display='none'" class="w-full max-h-[360px] object-cover" />
+            </div>
+          ` : ''}
+
+          <div class="pt-3 border-t border-[#F4F2EE] flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button type="button" onclick="toggleReaction('${post.id}', 'helpful')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${post.userReacted.helpful ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-[#F4F2EE]/70 hover:bg-[#F4F2EE] text-zinc-600 border-transparent'}">
+                <span>👍</span><span>Helpful</span><span class="font-semibold">${post.reactions.helpful}</span>
+              </button>
+              <button type="button" onclick="toggleReaction('${post.id}', 'insightful')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${post.userReacted.insightful ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-[#F4F2EE]/70 hover:bg-[#F4F2EE] text-zinc-600 border-transparent'}">
+                <span>💡</span><span>Insightful</span><span class="font-semibold">${post.reactions.insightful}</span>
+              </button>
+              <button type="button" onclick="toggleReaction('${post.id}', 'celebrate')" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${post.userReacted.celebrate ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-[#F4F2EE]/70 hover:bg-[#F4F2EE] text-zinc-600 border-transparent'}">
+                <span>🎉</span><span>Celebrate</span><span class="font-semibold">${post.reactions.celebrate}</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="toggleCommentsDrawer('${post.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors">
+                <i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>${post.comments.length}</span>
+              </button>
+              <button type="button" onclick="repostItem('${post.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors">
+                <i data-lucide="repeat-2" class="w-3.5 h-3.5"></i><span>${post.reposts}</span>
+              </button>
+              <button type="button" onclick="copyPostLink('${post.author}')" class="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 hover:bg-[#F4F2EE] transition-colors" title="Copy post link">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="comments-drawer-${post.id}" class="hidden pt-3 border-t border-[#F4F2EE] space-y-3 fade-in">
+            <div class="space-y-2">
+              ${post.comments.map(c => `
+                <div class="p-2.5 rounded-xl bg-[#F4F2EE]/75 border border-[#E6E3DC]/70">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-zinc-900">${c.author}</span>
+                    <span class="text-[10px] text-zinc-500">• ${c.role}</span>
+                  </div>
+                  <p class="text-xs text-zinc-700 mt-1 leading-relaxed">${c.text}</p>
+                </div>
+              `).join('')}
+            </div>
+
+            <form onsubmit="submitPostComment(event, '${post.id}')" class="flex items-center gap-2">
+              <input id="comment-input-${post.id}" type="text" required placeholder="Add a thoughtful reply..." class="flex-1 px-3 py-2 rounded-xl bg-[#F4F2EE]/70 border border-[#E6E3DC] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600" />
+              <button type="submit" class="px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold transition-colors">Reply</button>
+            </form>
+          </div>
+        </article>
+      `).join('');
+
       lucide.createIcons();
     }
 
-    function closeSearchModal() {
-      document.getElementById('search-modal').classList.add('hidden');
+    function toggleReaction(postId, type) {
+      const post = feedPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.userReacted[type] = !post.userReacted[type];
+      post.reactions[type] += post.userReacted[type] ? 1 : -1;
+      renderFeedPosts();
     }
 
-    function filterQuickSearch(query) {
-      const q = query.toLowerCase().trim();
-      const filtered = q
-        ? quickDirectoryItems.filter(i => i.label.toLowerCase().includes(q) || i.category.toLowerCase().includes(q))
-        : quickDirectoryItems;
+    function toggleCommentsDrawer(postId) {
+      const drawer = document.getElementById(`comments-drawer-${postId}`);
+      if (!drawer) return;
+      drawer.classList.toggle('hidden');
+      if (!drawer.classList.contains('hidden')) document.getElementById(`comment-input-${postId}`)?.focus();
+    }
 
-      const container = document.getElementById('quick-search-results');
-      container.innerHTML = filtered.length === 0
-        ? '<p class="p-4 text-xs text-center text-slate-400">No matching Canadian businesses or groups found.</p>'
-        : filtered.map(item => `
-            <button type="button" onclick="closeSearchModal(); showToast('Sign in to view: ${item.label.replace(/'/g, '')}')" class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors">
-              <span class="text-xs font-medium text-slate-800 dark:text-slate-200 truncate">${item.label}</span>
-              <span class="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">${item.category}</span>
+    function submitPostComment(e, postId) {
+      e.preventDefault();
+      const input = document.getElementById(`comment-input-${postId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      const post = feedPosts.find(p => p.id === postId);
+      post.comments.push({
+        author: document.getElementById('sidebar-profile-name').textContent,
+        role: document.getElementById('profile-headline-text').textContent === '+ Add a headline' ? 'Canadian SMB Member' : document.getElementById('profile-headline-text').textContent,
+        text
+      });
+      renderFeedPosts();
+      document.getElementById(`comments-drawer-${postId}`)?.classList.remove('hidden');
+      showToast('Reply posted');
+    }
+
+    function togglePostConnect(postId) {
+      const post = feedPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.connected = !post.connected;
+      connectionsCount += post.connected ? 1 : -1;
+      document.getElementById('stat-connections').textContent = Math.max(0, connectionsCount);
+      renderFeedPosts();
+      showToast(post.connected ? `Connected with ${post.author}` : `Removed connection with ${post.author}`);
+    }
+
+    function togglePostSave(postId) {
+      const post = feedPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.saved = !post.saved;
+      document.getElementById('saved-count-badge').textContent = feedPosts.filter(p => p.saved).length;
+      renderFeedPosts();
+      showToast(post.saved ? 'Saved to your bookmarks' : 'Removed from bookmarks');
+    }
+
+    function repostItem(postId) {
+      const post = feedPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.reposts += 1;
+      renderFeedPosts();
+      showToast(`Shared ${post.author}'s insight to your network`);
+    }
+
+    function copyPostLink(author) {
+      const temp = document.createElement('input');
+      temp.value = window.location.href;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      showToast(`Link to ${author}'s post copied`);
+    }
+
+    function focusComposer() {
+      switchWorkspaceTab('home');
+      expandComposer('Win');
+    }
+
+    function expandComposer(category = 'Win', showPhoto = false) {
+      document.getElementById('composer-collapsed-trigger').classList.add('hidden');
+      document.getElementById('composer-expanded-box').classList.remove('hidden');
+      document.getElementById('composer-category').value = category;
+      if (showPhoto) document.getElementById('composer-image-row').classList.remove('hidden');
+      document.getElementById('composer-textarea').focus();
+      lucide.createIcons();
+    }
+
+    function collapseComposer() {
+      document.getElementById('composer-expanded-box').classList.add('hidden');
+      document.getElementById('composer-collapsed-trigger').classList.remove('hidden');
+    }
+
+    function toggleComposerImageInput() {
+      document.getElementById('composer-image-row').classList.toggle('hidden');
+    }
+
+    function publishNewPost() {
+      const text = document.getElementById('composer-textarea').value.trim();
+      if (!text) {
+        showToast('Write a quick update before publishing');
+        return;
+      }
+      const category = document.getElementById('composer-category').value;
+      const imageUrl = document.getElementById('composer-image-url').value.trim();
+      const filterMap = { Win: 'Wins', Question: 'Questions', Offer: 'Offers', Hiring: 'Hiring' };
+      const headline = document.getElementById('profile-headline-text').textContent;
+
+      feedPosts.unshift({
+        id: 'p' + Date.now(),
+        author: document.getElementById('sidebar-profile-name').textContent,
+        role: headline === '+ Add a headline' ? 'Founder • Canada' : headline,
+        time: 'Just now',
+        badge: 'Member',
+        badgeStyle: 'bg-zinc-100 text-zinc-700 border-zinc-200',
+        category,
+        filterGroup: filterMap[category] || 'Everything',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=140&q=80',
+        connected: true,
+        saved: false,
+        content: text,
+        image: imageUrl || '',
+        reactions: { helpful: 1, insightful: 0, celebrate: 1 },
+        userReacted: { helpful: true, insightful: false, celebrate: false },
+        reposts: 0,
+        comments: []
+      });
+
+      userPostsCount += 1;
+      document.getElementById('stat-posts').textContent = userPostsCount;
+      document.getElementById('composer-textarea').value = '';
+      document.getElementById('composer-image-url').value = '';
+      collapseComposer();
+      showSavedOnly = false;
+      setFeedFilter('Everything');
+      showToast('Published to the Canadian SMB feed!');
+    }
+
+    function setFeedFilter(filterName) {
+      activeFeedFilter = filterName;
+      showSavedOnly = false;
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        const isActive = btn.getAttribute('data-filter') === filterName;
+        btn.className = isActive
+          ? 'filter-pill px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white shadow-2xs transition-all'
+          : 'filter-pill px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-700 border border-[#E6E3DC] transition-all';
+      });
+      renderFeedPosts();
+    }
+
+    function filterFeedBySaved() {
+      switchWorkspaceTab('home');
+      showSavedOnly = !showSavedOnly;
+      renderFeedPosts();
+      showToast(showSavedOnly ? 'Showing your saved bookmarks' : 'Showing all feed posts');
+    }
+
+    function toggleFeedSort() {
+      sortByTopSignal = !sortByTopSignal;
+      document.getElementById('feed-sort-label').textContent = sortByTopSignal ? 'Top Signal' : 'Latest';
+      renderFeedPosts();
+    }
+
+    function toggleFocusMode() {
+      isFocusMode = !isFocusMode;
+      const left = document.getElementById('left-sidebar');
+      const right = document.getElementById('right-sidebar');
+      const center = document.getElementById('center-feed-col');
+      const btn = document.getElementById('focus-mode-btn');
+
+      left.classList.toggle('hidden', isFocusMode);
+      right.classList.toggle('hidden', isFocusMode);
+      center.className = isFocusMode ? 'lg:col-span-8 lg:col-start-3 space-y-4' : 'lg:col-span-6 space-y-4';
+      btn.className = isFocusMode
+        ? 'hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap bg-blue-50 text-blue-700 border border-blue-200 transition-all shrink-0'
+        : 'hidden lg:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap text-stone-600 hover:text-stone-900 border border-transparent hover:border-[#E6E3DC] hover:bg-stone-100/70 transition-all shrink-0';
+
+      showToast(isFocusMode ? 'Focus Mode enabled — distraction-free reading' : 'Standard 3-column workspace restored');
+    }
+
+    function switchWorkspaceTab(tabName, e) {
+      if (e) e.preventDefault();
+      ['home', 'network', 'messaging'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.toggle('hidden', v !== tabName);
+      });
+
+      document.querySelectorAll('.ws-nav-btn').forEach(btn => {
+        const active = btn.getAttribute('data-nav-tab') === tabName;
+        btn.className = active
+          ? 'ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 bg-[#18181B] text-white shadow-2xs transition-all'
+          : 'ws-nav-btn h-8 px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-stone-600 hover:text-stone-900 hover:bg-white/70 transition-all';
+      });
+      lucide.createIcons();
+    }
+
+    function renderNetworkDirectory() {
+      document.getElementById('network-directory-grid').innerHTML = activeMembers.map(m => `
+        <div class="bento-card p-4 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${m.avatar}" alt="${m.name}" onerror="this.onerror=null; this.src='https://placehold.co/80x80/e4e4e7/18181b?text=${m.name[0]}';" class="w-11 h-11 rounded-full object-cover ring-1 ring-[#E6E3DC] shrink-0" />
+            <div class="min-w-0">
+              <h4 class="font-display font-bold text-sm text-zinc-900 truncate">${m.name}</h4>
+              <p class="text-xs text-zinc-500 truncate">${m.role}</p>
+              <span class="text-[11px] text-zinc-400">${m.city}</span>
+            </div>
+          </div>
+          <button type="button" onclick="toggleMemberConnect('${m.id}')" class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            m.connected ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+          }">
+            ${m.connected ? 'Connected ✓' : '+ Connect'}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function toggleMemberConnect(memberId) {
+      const member = activeMembers.find(m => m.id === memberId);
+      if (!member) return;
+      member.connected = !member.connected;
+      connectionsCount += member.connected ? 1 : -1;
+      document.getElementById('stat-connections').textContent = Math.max(0, connectionsCount);
+      renderNetworkDirectory();
+      showToast(member.connected ? `Connected with ${member.name}` : `Disconnected from ${member.name}`);
+    }
+
+    function renderMessagingThreads() {
+      document.getElementById('message-threads-list').innerHTML = directThreads.map(t => `
+        <button type="button" onclick="selectChatThread('${t.id}')" class="w-full p-2.5 rounded-xl text-left transition-colors ${
+          t.id === activeThreadId ? 'bg-white border border-[#E6E3DC] shadow-2xs' : 'hover:bg-white/60'
+        }">
+          <div class="flex items-center justify-between">
+            <span class="font-display font-bold text-xs text-zinc-900">${t.name}</span>
+            ${t.unread ? '<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>' : ''}
+          </div>
+          <p class="text-[11px] text-zinc-500 truncate mt-0.5">${t.messages[t.messages.length - 1].text}</p>
+        </button>
+      `).join('');
+
+      const active = directThreads.find(t => t.id === activeThreadId);
+      if (!active) return;
+      document.getElementById('chat-partner-name').textContent = active.name;
+      document.getElementById('chat-partner-role').textContent = active.role;
+      document.getElementById('chat-messages-box').innerHTML = active.messages.map(msg => `
+        <div class="flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}">
+          <div class="max-w-xs sm:max-w-md px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${
+            msg.sender === 'me' ? 'bg-zinc-900 text-white rounded-br-sm' : 'bg-[#F4F2EE] text-zinc-800 border border-[#E6E3DC] rounded-bl-sm'
+          }">
+            ${msg.text}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectChatThread(threadId) {
+      activeThreadId = threadId;
+      const t = directThreads.find(item => item.id === threadId);
+      if (t) t.unread = false;
+      renderMessagingThreads();
+    }
+
+    function sendDirectMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-reply-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const active = directThreads.find(t => t.id === activeThreadId);
+      active.messages.push({ sender: 'me', text });
+      input.value = '';
+      renderMessagingThreads();
+    }
+
+    function openHeadlineEditor() {
+      document.getElementById('headline-modal').classList.remove('hidden');
+      const current = document.getElementById('profile-headline-text').textContent;
+      document.getElementById('headline-input').value = current === '+ Add a headline' ? '' : current;
+      setTimeout(() => document.getElementById('headline-input').focus(), 40);
+      lucide.createIcons();
+    }
+    function closeHeadlineEditor() { document.getElementById('headline-modal').classList.add('hidden'); }
+
+    function saveProfileHeadline(e) {
+      e.preventDefault();
+      const val = document.getElementById('headline-input').value.trim();
+      if (!val) return;
+      document.getElementById('profile-headline-text').textContent = val;
+      document.getElementById('menu-headline-preview').textContent = val;
+      if (profileStrength < 42) {
+        profileStrength = 42;
+        document.getElementById('profile-strength-pct').textContent = '42%';
+        document.getElementById('profile-strength-bar').style.width = '42%';
+        document.getElementById('profile-boost-chip').innerHTML = '<span class="text-[11px] text-emerald-700 font-medium">✓ Headline added! Next: Join 2 groups</span>';
+      }
+      closeHeadlineEditor();
+      showToast('Profile headline updated (+25% strength)');
+    }
+
+    function openArticlesModal() { document.getElementById('articles-modal').classList.remove('hidden'); lucide.createIcons(); }
+    function closeArticlesModal() { document.getElementById('articles-modal').classList.add('hidden'); }
+    function openUpgradeModal() { document.getElementById('upgrade-modal').classList.remove('hidden'); lucide.createIcons(); }
+    function closeUpgradeModal() { document.getElementById('upgrade-modal').classList.add('hidden'); }
+
+    function toggleDropdown(id) {
+      const target = document.getElementById(id);
+      const isHidden = target.classList.contains('hidden');
+      closeAllDropdowns();
+      if (isHidden) target.classList.remove('hidden');
+    }
+
+    function closeAllDropdowns() {
+      ['notif-popover', 'explore-popover', 'me-popover'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+    }
+
+    function markAllRead() {
+      closeAllDropdowns();
+      showToast('All notifications marked as read');
+    }
+
+    function openCommandPalette() {
+      document.getElementById('command-modal').classList.remove('hidden');
+      const input = document.getElementById('cmd-search-input');
+      input.value = '';
+      renderCommandResults('');
+      setTimeout(() => input.focus(), 40);
+      lucide.createIcons();
+    }
+    function closeCommandPalette() { document.getElementById('command-modal').classList.add('hidden'); }
+
+    function renderCommandResults(query) {
+      const q = query.toLowerCase().trim();
+      const items = [
+        { type: 'Action', label: 'Enter SMB HUB Live Feed Workspace', action: () => { closeCommandPalette(); enterWorkspace('home'); } },
+        { type: 'Action', label: 'Create a new post or share a win', action: () => { closeCommandPalette(); enterWorkspace('home'); focusComposer(); } },
+        ...activeMembers.slice(0, 5).map(m => ({
+          type: 'Founder',
+          label: `${m.name} — ${m.role} (${m.city})`,
+          action: () => { closeCommandPalette(); enterWorkspace('network'); }
+        })),
+        ...groupsToExplore.map(g => ({
+          type: 'Group',
+          label: `${g.name} (${g.members} members)`,
+          action: () => { closeCommandPalette(); enterWorkspace('home'); toggleJoinGroup(g.id); }
+        }))
+      ];
+
+      const filtered = q ? items.filter(i => i.label.toLowerCase().includes(q) || i.type.toLowerCase().includes(q)) : items;
+      document.getElementById('cmd-results-list').innerHTML = filtered.length === 0
+        ? '<p class="p-4 text-xs text-center text-zinc-400">No matching founders, groups, or actions.</p>'
+        : filtered.map((item, idx) => `
+            <button type="button" data-cmd-idx="${idx}" class="cmd-result-row w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-[#F4F2EE] transition-colors">
+              <span class="text-xs font-medium text-zinc-800 truncate">${item.label}</span>
+              <span class="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded bg-[#F4F2EE] text-zinc-500">${item.type}</span>
             </button>
           `).join('');
+
+      document.querySelectorAll('.cmd-result-row').forEach((btn, i) => { btn.onclick = filtered[i].action; });
     }
 
     function setupKeyboardShortcuts() {
       document.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
           e.preventDefault();
-          const modal = document.getElementById('search-modal');
-          modal.classList.contains('hidden') ? openSearchModal() : closeSearchModal();
+          const modal = document.getElementById('command-modal');
+          modal.classList.contains('hidden') ? openCommandPalette() : closeCommandPalette();
         } else if (e.key === 'Escape') {
-          closeSearchModal();
+          closeCommandPalette();
+          closeHeadlineEditor();
+          closeArticlesModal();
+          closeUpgradeModal();
           closeForgotModal();
+          closeAllDropdowns();
         }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.relative')) closeAllDropdowns();
       });
     }
 
     function showToast(message) {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
-      toast.className = 'pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-medium shadow-elevated fade-in';
-      toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-blue-400 dark:bg-blue-600"></span><span>${message}</span>`;
+      toast.className = 'pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-xs font-medium shadow-popover fade-in';
+      toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>${message}</span>`;
       container.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';

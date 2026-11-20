@@ -274,12 +274,12 @@ export async function GroupsCard() {
   );
 }
 
-/** Right rail, bottom: social links and the small footer. */
+/** Right rail, top: SMB Hub's social accounts. */
 export function SocialCard() {
   return (
     <div className="panel p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <span className="font-display font-bold text-xs text-zinc-800">Follow SMB Hub</span>
+        <span className="font-display font-bold text-[13px] text-zinc-900">Follow Us on Social Media</span>
         <span className="text-[10px] font-medium text-zinc-400">@canadiansme</span>
       </div>
       <div className="flex items-center justify-between gap-1.5">
@@ -290,26 +290,11 @@ export function SocialCard() {
             target="_blank"
             rel="noreferrer"
             aria-label={label}
-            className="w-8 h-8 rounded-xl bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"
+            className="w-9 h-9 rounded-full bg-[#F4F2EE] hover:bg-zinc-900 text-zinc-600 hover:text-white flex items-center justify-center transition-colors"
           >
-            <Icon className="w-3.5 h-3.5" />
+            <Icon className="w-4 h-4" />
           </a>
         ))}
-      </div>
-      <div className="pt-2.5 border-t border-[#F4F2EE] flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-zinc-400">
-        <span>SMB Hub © {new Date().getFullYear()}</span>
-        <span>•</span>
-        <Link href="/about" className="hover:text-zinc-700">
-          About
-        </Link>
-        <span>•</span>
-        <Link href="/policies/terms" className="hover:text-zinc-700">
-          Terms
-        </Link>
-        <span>•</span>
-        <Link href="/help" className="hover:text-zinc-700">
-          Help
-        </Link>
       </div>
     </div>
   );

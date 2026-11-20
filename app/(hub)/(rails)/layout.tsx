@@ -7,7 +7,7 @@ import { ActiveMembersCard, ArticlesCard, GroupsCard, ProfileCard, SocialCard } 
  */
 export default function RailsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-6">
+    <div className="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         <aside className="focus-hide lg:col-span-3 hidden space-y-4 lg:block">
           <ProfileCard />
@@ -15,9 +15,9 @@ export default function RailsLayout({ children }: { children: React.ReactNode })
         </aside>
         <main className="focus-center lg:col-span-6 flex min-w-0 flex-col gap-4">{children}</main>
         <aside className="focus-hide lg:col-span-3 hidden space-y-4 lg:block">
+          <SocialCard />
           <ActiveMembersCard />
           <GroupsCard />
-          <SocialCard />
         </aside>
       </div>
     </div>

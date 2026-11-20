@@ -28,7 +28,7 @@ import {
 import { markNotificationsRead } from "@/app/(hub)/actions";
 import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, RESOURCES_MENU, type NavItem } from "@/lib/site";
 import { AvatarImg, SignOutButton } from "@/components/hub-client";
-import { MAPLE_STAR } from "@/components/auth-chrome";
+import { MAPLE_STAR } from "@/lib/brand";
 
 
 /** The SMB Hub mark: red maple-star tile and wordmark (design: docs/design/feed.html). */
@@ -160,7 +160,7 @@ export function SiteNav({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/[0.92] backdrop-blur-[16px] border-b border-[#E6E3DC]">
-      <div ref={bar} className="max-w-[1320px] mx-auto px-3 sm:px-6 h-[62px] flex items-center justify-between gap-2 sm:gap-3">
+      <div ref={bar} className="max-w-[1280px] mx-auto px-3 sm:px-6 lg:px-8 h-[62px] flex items-center justify-between gap-2 sm:gap-3">
         {/* left: brand and search */}
         <div className="flex items-center gap-3.5 shrink-0">
           <Logo />
@@ -364,8 +364,8 @@ export function SiteNav({
                       <span>Upgrade to SMB Elite</span>
                     </Link>
                     <div className="my-1 border-t border-[#F4F2EE]" />
-                    <span className="flex items-center gap-2 px-3 rounded-xl text-xs text-zinc-700 hover:bg-[#F4F2EE]">
-                      <LogOut className="w-3.5 h-3.5 text-zinc-400" />
+                    <span className="flex items-center gap-2 px-3 rounded-xl text-xs font-medium text-rose-600 hover:bg-rose-50">
+                      <LogOut className="w-3.5 h-3.5 text-rose-500" />
                       <SignOutButton className="flex-1 py-2 text-left" />
                     </span>
                   </div>
@@ -376,7 +376,7 @@ export function SiteNav({
                 className="hidden sm:inline-flex h-8 px-3.5 rounded-full bg-gradient-to-b from-amber-50 to-amber-100/80 border border-amber-300/80 hover:border-amber-400 text-amber-900 text-[12.5px] font-semibold whitespace-nowrap items-center gap-1.5 shadow-[0_1px_2px_rgba(180,83,9,0.08)] transition-all shrink-0"
               >
                 <Crown className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>Upgrade</span>
+                <span>Upgrade plan</span>
               </Link>
             </>
           ) : (
@@ -460,7 +460,7 @@ function MenuColumn({ title, items }: { title: string; items: NavItem[] }) {
 type Command = { type: string; label: string; run: () => void };
 
 /** ⌘K: search everything, or jump straight to a page or an action. */
-function CommandPalette({ onClose, onFocus, signedIn }: { onClose: () => void; onFocus?: () => void; signedIn: boolean }) {
+export function CommandPalette({ onClose, onFocus, signedIn }: { onClose: () => void; onFocus?: () => void; signedIn: boolean }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const input = useRef<HTMLInputElement>(null);

@@ -1,238 +1,289 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
-import { useState } from "react";
-import { ArrowUpRight, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { BadgeCheck, ChevronRight, Pause, Play } from "lucide-react";
 
 /**
- * Right-hand panel of the sign-in page: the twilight Toronto skyline with city cards.
- * Copy describes what SMB Hub offers; it makes no claims about member numbers or results.
- * Swap in real figures and real, approved member quotes once we have them.
+ * Right-hand panel of the sign-in page: city stories that play like reels (design: docs/design/auth.html).
+ * Photos are stock images for atmosphere. The copy describes what SMB Hub offers in each city and makes
+ * no claims about named members, member counts, deals or events. Swap in real stories once members agree.
  */
-const CITIES = {
-  Toronto: {
-    initials: "TO",
-    name: "Toronto Circle",
-    role: "Founders & owners • Toronto, ON",
-    quote: "Ask for a supplier, a co-packer or a tax advisor and get answers from people who run businesses in the GTA.",
-    tag: "#TorontoFounders • Local network",
-  },
-  Vancouver: {
-    initials: "VA",
-    name: "Vancouver Circle",
-    role: "Founders & owners • Vancouver, BC",
-    quote: "Meet BC founders in clean tech, food and manufacturing, and find partners for export and growth.",
-    tag: "#VancouverFounders • Export growth",
-  },
-  "Montréal": {
-    initials: "MT",
-    name: "Montréal Circle",
-    role: "Founders & owners • Montréal, QC",
-    quote: "Talk with Québec entrepreneurs in English or French and expand from one province to the next.",
-    tag: "#MontrealFounders • Bilingual",
-  },
-  Calgary: {
-    initials: "CA",
-    name: "Calgary Circle",
-    role: "Founders & owners • Calgary, AB",
-    quote: "Practical advice from operators who run payroll in Canada, and introductions that lead to real work.",
-    tag: "#CalgaryFounders • Operator circle",
-  },
-} as const;
-type City = keyof typeof CITIES;
+const UNSPLASH = (id: string, w: number) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=85`;
 
-export function AuthShowcase() {
-  const [city, setCity] = useState<City>("Toronto");
-  const data = CITIES[city];
+const CITIES = [
+  {
+    city: "Toronto",
+    region: "Toronto, ON",
+    person: "1573496359142-b8d87734a5a2",
+    quote: "Find suppliers, buyers and advisors who run businesses across the GTA.",
+    hub: "1517935706615-2717063c2225",
+    hubTitle: "Toronto Business Hub",
+    hubCaption: "Retail, supply chain and services owners trading what works",
+    mini: "1522071820081-009f0129c71c",
+  },
+  {
+    city: "Vancouver",
+    region: "Vancouver, BC",
+    person: "1506794778202-cad84cf45f1d",
+    quote: "Meet BC founders in clean tech, food and trade, and find partners for export.",
+    hub: "1559511260-66a654ae982a",
+    hubTitle: "Vancouver Trade Hub",
+    hubCaption: "Port, freight and CleanBC questions answered by local operators",
+    mini: "1517245386807-bb43f82c33c4",
+  },
+  {
+    city: "Montréal",
+    region: "Montréal, QC",
+    person: "1580489944761-15a19d654956",
+    quote: "Talk with Québec entrepreneurs in English or French and grow across provinces.",
+    hub: "1519178614-68673b201f36",
+    hubTitle: "Montréal Design Hub",
+    hubCaption: "Studios, makers and exporters sharing packaging and distribution tips",
+    mini: "1521737711867-e3b97375f902",
+  },
+  {
+    city: "Calgary",
+    region: "Calgary, AB",
+    person: "1507003211169-0a1dd7228f2d",
+    quote: "Practical advice from operators who run payroll in Canada, and real introductions.",
+    hub: "1581091226825-a6a2a5aee158",
+    hubTitle: "Calgary Operations Hub",
+    hubCaption: "Manufacturers and AgTech owners comparing freight and customs costs",
+    mini: "1552664730-d307ca884978",
+  },
+] as const;
+
+const STORY_MS = 6000;
+const TICK_MS = 100;
+const EMOJIS = ["👏", "🔥", "💡", "🍁", "❤️"];
+
+export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
+  const [index, setIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [hovering, setHovering] = useState(false);
+  const [stopped, setStopped] = useState(false);
+  const [fading, setFading] = useState(false);
+  const [bursts, setBursts] = useState<{ id: number; emoji: string; left: number; delay: number }[]>([]);
+  const burstId = useRef(0);
+  const story = CITIES[index];
+  const paused = hovering || stopped;
+
+  const go = useCallback((next: number) => {
+    setFading(true);
+    setTimeout(() => {
+      setIndex(((next % CITIES.length) + CITIES.length) % CITIES.length);
+      setProgress(0);
+      setFading(false);
+    }, 140);
+  }, []);
+
+  useEffect(() => {
+    if (paused) return;
+    const t = setInterval(() => setProgress((p) => p + (TICK_MS / STORY_MS) * 100), TICK_MS);
+    return () => clearInterval(t);
+  }, [paused]);
+
+  useEffect(() => {
+    if (progress >= 100) go(index + 1);
+  }, [progress, index, go]);
+
+  const clap = () => {
+    const now = Array.from({ length: 4 }, (_, i) => ({
+      id: ++burstId.current,
+      emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+      left: Math.floor(Math.random() * 28),
+      delay: i * 85,
+    }));
+    setBursts((b) => [...b, ...now]);
+    setTimeout(() => setBursts((b) => b.filter((x) => !now.some((n) => n.id === x.id))), 1300);
+  };
 
   return (
-    <div className="relative rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-elevated bg-slate-950 min-h-[520px] sm:min-h-[580px] flex flex-col justify-between p-5 sm:p-8">
-      <Skyline />
-
-      <div className="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-gradient-to-tr from-blue-500/20 via-indigo-400/10 to-transparent blur-2xl" />
-
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/75 border border-white/15 backdrop-blur-[14px] text-white text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-medium">For Canadian founders & business owners</span>
+    <div
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      className="h-full bg-[#FAF9F6] daylight-canvas-glow border border-[#E6E3DC] rounded-3xl p-5 flex flex-col gap-4 shadow-daylight-stage select-none overflow-hidden"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#E6E3DC]">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          <span className="text-[11.5px] font-semibold text-slate-800 whitespace-nowrap">Built for Canadian founders &amp; owners</span>
         </div>
-
-        <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-slate-900/75 border border-white/15 backdrop-blur-[14px]" role="tablist" aria-label="City">
-          {(Object.keys(CITIES) as City[]).map((c) => (
+        <div className="inline-flex items-center p-1 rounded-full bg-white border border-[#E6E3DC]" role="tablist" aria-label="City">
+          {CITIES.map((c, i) => (
             <button
-              key={c}
+              key={c.city}
               type="button"
               role="tab"
-              aria-selected={c === city}
-              onClick={() => setCity(c)}
+              aria-selected={i === index}
+              onClick={() => go(i)}
               className={
-                c === city
-                  ? "px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white text-slate-900 transition-all"
-                  : "px-2.5 py-1 rounded-lg text-[11px] font-medium text-slate-300 hover:text-white transition-all"
+                i === index
+                  ? "px-2.5 py-1 rounded-full text-[11.5px] font-semibold bg-slate-900 text-white whitespace-nowrap transition-all"
+                  : "px-2.5 py-1 rounded-full text-[11.5px] font-medium text-slate-600 hover:text-slate-950 whitespace-nowrap transition-all"
               }
             >
-              {c}
+              {c.city}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="relative z-10 space-y-4 mt-16 sm:mt-24">
-        <div className="max-w-md rounded-2xl bg-slate-900/80 border border-white/15 backdrop-blur-[14px] p-4 text-white shadow-glass auth-float-slow">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 font-jakarta font-bold text-xs flex items-center justify-center shrink-0 ring-1 ring-white/20">
-                {data.initials}
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-sm font-semibold text-white">{data.name}</h3>
-                  <span className="px-1.5 rounded text-[10px] font-semibold bg-blue-500/25 text-blue-300 border border-blue-400/30">Open group</span>
+      <div className="flex-1 grid grid-cols-12 gap-4 min-h-[460px]">
+        {/* the reel */}
+        <div className="col-span-12 sm:col-span-7 relative rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-[#E6E3DC] bg-stone-200 flex flex-col justify-between min-h-[420px]">
+          <img
+            src={UNSPLASH(story.person, 900)}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover object-center reel-photo-motion transition-opacity duration-300"
+            style={{ opacity: fading ? 0.5 : 1 }}
+          />
+          <button type="button" onClick={() => go(index - 1)} aria-label="Previous city story" className="absolute inset-y-12 left-0 w-1/3 z-10 cursor-pointer focus:outline-none" />
+          <button type="button" onClick={() => go(index + 1)} aria-label="Next city story" className="absolute inset-y-12 right-0 w-1/3 z-10 cursor-pointer focus:outline-none" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/50 via-black/15 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
+
+          <div className="relative z-20 p-3.5 space-y-2.5">
+            <div className="grid grid-cols-4 gap-1.5">
+              {CITIES.map((c, i) => (
+                <div key={c.city} className="h-1 rounded-full bg-white/35 overflow-hidden">
+                  <div className="h-full bg-white rounded-full transition-all duration-100" style={{ width: i < index ? "100%" : i === index ? `${Math.min(100, progress)}%` : "0%" }} />
                 </div>
-                <p className="text-xs text-slate-300">{data.role}</p>
-              </div>
+              ))}
             </div>
-            <span className="text-[11px] text-slate-400">Free</span>
+            <div className="flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => setStopped((s) => !s)}
+                className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold tracking-wide hover:bg-black/60 transition-colors"
+              >
+                <span className={`flex items-end gap-0.5 h-3 ${paused ? "eq-paused" : ""}`} aria-hidden="true">
+                  <span className="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-1" />
+                  <span className="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-2" />
+                  <span className="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-3" />
+                  <span className="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-4" />
+                  <span className="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-2" />
+                </span>
+                <span>{stopped ? "PAUSED • TAP TO PLAY" : "PLAYING • TAP TO PAUSE"}</span>
+                {stopped ? <Play className="w-3 h-3 text-white/90" /> : <Pause className="w-3 h-3 text-white/90" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => go(index + 1)}
+                aria-label="Next story"
+                className="w-7 h-7 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white hover:bg-black/60 flex items-center justify-center transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          <p className="mt-3 text-xs sm:text-[13px] text-slate-200 leading-relaxed">{data.quote}</p>
+          <div className="pointer-events-none absolute right-4 bottom-24 w-12 h-32 overflow-visible z-20">
+            {bursts.map((b) => (
+              <span key={b.id} className="emoji-burst absolute bottom-0 text-lg select-none" style={{ left: b.left, animationDelay: `${b.delay}ms` }}>
+                {b.emoji}
+              </span>
+            ))}
+          </div>
 
-          <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
-            <span className="text-amber-300 font-medium">{data.tag}</span>
-            <span className="inline-flex items-center gap-1 text-emerald-300">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Direct messages
-            </span>
+          <div className="relative z-20 p-4 flex items-end justify-between gap-2.5">
+            <div className="min-w-0 flex-1 text-white">
+              <div className="flex items-center gap-2.5">
+                <div className="relative shrink-0">
+                  <img src={UNSPLASH(story.person, 140)} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-white/90" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-black/60" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="font-jakarta font-bold text-[14.5px] text-white truncate">{story.city} founders</h3>
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9.5px] font-semibold bg-white/20 backdrop-blur-md text-white border border-white/25 shrink-0">
+                      <BadgeCheck className="w-2.5 h-2.5 text-emerald-300" />
+                      <span>Open circle</span>
+                    </span>
+                  </div>
+                  <p className="text-[11.5px] text-white/85 truncate">Founders &amp; owners • {story.region}</p>
+                </div>
+              </div>
+              <p className="mt-2 text-[12px] font-medium text-white/95 line-clamp-2 leading-snug">&ldquo;{story.quote}&rdquo;</p>
+            </div>
+            <div className="flex flex-col items-center gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={clap}
+                aria-label="Applaud"
+                className="w-10 h-10 rounded-full bg-white/20 hover:bg-rose-500/90 active:scale-90 backdrop-blur-md border border-white/30 text-white flex items-center justify-center shadow-sm transition-all"
+              >
+                <span className="text-sm leading-none">👏</span>
+              </button>
+              <span className="text-[10.5px] font-bold text-white drop-shadow">Clap</span>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div className="rounded-2xl bg-white/95 dark:bg-slate-900/90 border border-white/40 dark:border-slate-700/80 backdrop-blur-[14px] p-4 shadow-glass auth-float-delayed">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                FEDERAL &amp; PROVINCIAL GRANTS
+        {/* featured hub and city circle */}
+        <div className="col-span-12 sm:col-span-5 flex flex-col gap-4 h-full">
+          <Link href="/groups" className="flex-1 relative rounded-2xl overflow-hidden group cursor-pointer border border-[#E6E3DC] shadow-sm flex flex-col justify-between p-3.5 min-h-[210px]">
+            <img src={UNSPLASH(story.hub, 800)} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20" />
+            <div className="relative z-10 flex items-center justify-between gap-1.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-[9.5px] font-bold uppercase tracking-wider border border-white/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span>FEATURED HUB</span>
               </span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+              <span className="px-2.5 py-1 rounded-full bg-white/95 group-hover:bg-white text-slate-950 text-[10.5px] font-bold transition-all whitespace-nowrap">Explore ↗</span>
             </div>
-            <p className="text-xs font-semibold text-slate-900 dark:text-white">Grants &amp; Funding Programs</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Federal and provincial programs, discussed by the owners who apply for them.</p>
-          </div>
+            <div className="relative z-10 space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-1.5">
+                  {CITIES.filter((c) => c.city !== story.city)
+                    .slice(0, 3)
+                    .map((c) => (
+                      <img key={c.city} src={UNSPLASH(c.person, 64)} alt="" className="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
+                    ))}
+                </div>
+                <span className="text-[11px] font-bold text-white truncate">{story.hubTitle}</span>
+              </div>
+              <p className="font-jakarta font-bold text-[12.5px] text-white/95 leading-snug line-clamp-2">{story.hubCaption}</p>
+            </div>
+          </Link>
 
-          <div className="rounded-2xl bg-slate-900/85 border border-white/15 backdrop-blur-[14px] p-4 text-white shadow-glass">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-semibold text-teal-300">COAST-TO-COAST REACH</span>
-              <span className="text-[11px] font-mono text-slate-400">10 PROV • 3 TERR</span>
+          <div className="h-[176px] relative rounded-2xl overflow-hidden group border border-[#E6E3DC] shadow-sm flex flex-col justify-between p-3.5 shrink-0">
+            <img src={UNSPLASH(story.mini, 700)} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/20" />
+            <div className="relative z-10 flex items-center justify-between gap-1.5">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-[10px] font-semibold border border-white/15 truncate">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="truncate">City circle • Open to all</span>
+              </span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="font-jakarta font-bold text-xl text-white">13</span>
-              <span className="text-[11px] text-slate-300">provinces and territories, one network</span>
+            <div className="relative z-10 flex items-end justify-between gap-2">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <div className="flex -space-x-1.5">
+                    {CITIES.slice(0, 3).map((c) => (
+                      <img key={c.city} src={UNSPLASH(c.person, 64)} alt="" className="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
+                    ))}
+                  </div>
+                  <span className="text-[10px] font-semibold text-white/90">Free to join</span>
+                </div>
+                <h4 className="font-jakarta font-bold text-[13px] text-white leading-tight truncate">{story.city} Founders Circle</h4>
+              </div>
+              <button
+                type="button"
+                onClick={onJoin}
+                className="shrink-0 px-3 py-1.5 rounded-full bg-white hover:bg-blue-50 text-slate-950 text-[10.5px] font-bold transition-all whitespace-nowrap"
+              >
+                Join 👋
+              </button>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">Business listings • Groups • Direct messages</p>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-/** The design's twilight waterfront: sky, towers, dome, CN Tower and Lake Ontario. */
-function Skyline() {
-  return (
-    <svg className="absolute inset-0 w-full h-full object-cover" viewBox="0 0 900 680" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs>
-        <linearGradient id="skyTwilight" x1="0" y1="0" x2="0.8" y2="1">
-          <stop offset="0%" stopColor="#090D1C" />
-          <stop offset="45%" stopColor="#172554" />
-          <stop offset="72%" stopColor="#312E81" />
-          <stop offset="88%" stopColor="#9A3412" />
-          <stop offset="100%" stopColor="#F59E0B" />
-        </linearGradient>
-        <linearGradient id="waterSurface" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1E1B4B" stopOpacity="0.95" />
-          <stop offset="45%" stopColor="#0F172A" stopOpacity="0.98" />
-          <stop offset="100%" stopColor="#050811" />
-        </linearGradient>
-        <radialGradient id="horizonGlow" cx="72%" cy="66%" r="55%">
-          <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.45" />
-          <stop offset="45%" stopColor="#EC4899" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#0F172A" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="towerGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-
-      <rect width="900" height="470" fill="url(#skyTwilight)" />
-      <rect width="900" height="470" fill="url(#horizonGlow)" />
-
-      <g fill="#FFFFFF" opacity="0.65">
-        <circle cx="140" cy="70" r="1.3" />
-        <circle cx="290" cy="48" r="1.1" />
-        <circle cx="430" cy="95" r="1.5" />
-        <circle cx="540" cy="52" r="1" />
-        <circle cx="810" cy="85" r="1.4" />
-        <circle cx="210" cy="145" r="0.9" />
-        <circle cx="620" cy="130" r="1.2" />
-      </g>
-
-      <g fill="#0B1120" opacity="0.72">
-        <rect x="80" y="340" width="44" height="130" rx="2" />
-        <rect x="132" y="310" width="52" height="160" rx="2" />
-        <rect x="195" y="355" width="38" height="115" rx="2" />
-        <rect x="330" y="325" width="48" height="145" rx="2" />
-        <rect x="390" y="295" width="56" height="175" rx="2" />
-        <rect x="460" y="335" width="42" height="135" rx="2" />
-        <rect x="515" y="280" width="60" height="190" rx="2" />
-        <rect x="590" y="315" width="46" height="155" rx="2" />
-        <rect x="735" y="330" width="50" height="140" rx="2" />
-        <rect x="795" y="350" width="58" height="120" rx="2" />
-      </g>
-
-      <g fill="#070B14">
-        <rect x="245" y="290" width="44" height="180" rx="2" />
-        <rect x="425" y="265" width="54" height="205" rx="2" />
-        <rect x="550" y="255" width="50" height="215" rx="2" />
-        <rect x="615" y="305" width="45" height="165" rx="2" />
-      </g>
-
-      <g fill="#FBBF24" opacity="0.55">
-        <rect x="255" y="305" width="4" height="6" />
-        <rect x="267" y="305" width="4" height="6" />
-        <rect x="255" y="320" width="4" height="6" />
-        <rect x="275" y="335" width="4" height="6" />
-        <rect x="438" y="282" width="5" height="7" />
-        <rect x="452" y="282" width="5" height="7" />
-        <rect x="465" y="298" width="5" height="7" />
-        <rect x="438" y="315" width="5" height="7" />
-        <rect x="562" y="272" width="5" height="7" />
-        <rect x="578" y="272" width="5" height="7" />
-        <rect x="562" y="292" width="5" height="7" />
-        <rect x="578" y="312" width="5" height="7" />
-      </g>
-
-      <path d="M475 470 C475 415, 575 415, 575 470 Z" fill="#1E293B" />
-      <path d="M482 470 C482 424, 568 424, 568 470 Z" fill="none" stroke="#60A5FA" strokeWidth="2.5" opacity="0.85" />
-
-      <circle cx="690" cy="212" r="46" fill="url(#towerGlow)" />
-      <line x1="690" y1="68" x2="690" y2="195" stroke="#CBD5E1" strokeWidth="2.2" />
-      <polygon points="682,470 687,225 693,225 698,470" fill="#0F172A" />
-      <polygon points="686,225 689,195 691,195 694,225" fill="#1E293B" />
-      <ellipse cx="690" cy="212" rx="22" ry="7" fill="#1E293B" stroke="#93C5FD" strokeWidth="1.5" />
-      <rect x="672" y="209" width="36" height="4" rx="2" fill="#60A5FA" />
-      <ellipse cx="690" cy="152" rx="8" ry="3.5" fill="#93C5FD" />
-
-      <rect x="0" y="470" width="900" height="210" fill="url(#waterSurface)" />
-      <line x1="0" y1="470" x2="900" y2="470" stroke="#F59E0B" strokeWidth="1.5" strokeOpacity="0.45" />
-
-      <g strokeLinecap="round" opacity="0.45">
-        <line x1="684" y1="485" x2="696" y2="485" stroke="#60A5FA" strokeWidth="2" />
-        <line x1="680" y1="505" x2="700" y2="505" stroke="#60A5FA" strokeWidth="1.8" />
-        <line x1="683" y1="528" x2="697" y2="528" stroke="#93C5FD" strokeWidth="1.4" />
-        <line x1="505" y1="488" x2="545" y2="488" stroke="#818CF8" strokeWidth="2" />
-        <line x1="512" y1="508" x2="538" y2="508" stroke="#818CF8" strokeWidth="1.5" />
-        <line x1="435" y1="492" x2="465" y2="492" stroke="#FBBF24" strokeWidth="1.6" />
-        <line x1="560" y1="496" x2="585" y2="496" stroke="#FBBF24" strokeWidth="1.6" />
-      </g>
-    </svg>
   );
 }

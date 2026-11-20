@@ -21,6 +21,8 @@ export default {
         subtle: "0 1px 2px 0 rgba(15, 23, 42, 0.04)",
         elevated: "0 20px 45px -15px rgba(15, 23, 42, 0.12)",
         glass: "0 8px 32px 0 rgba(15, 23, 42, 0.14)",
+        "auth-card": "0 12px 36px -12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.03)",
+        "daylight-stage": "0 12px 36px -12px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03)",
         card: "0 1px 2px rgba(24, 24, 27, 0.04), 0 4px 12px -4px rgba(24, 24, 27, 0.04)",
         "card-hover": "0 4px 16px -4px rgba(24, 24, 27, 0.08), 0 1px 3px rgba(24, 24, 27, 0.05)",
         popover: "0 16px 40px -8px rgba(24, 24, 27, 0.14), 0 2px 6px rgba(24, 24, 27, 0.06)",

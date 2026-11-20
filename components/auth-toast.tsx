@@ -21,10 +21,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-medium shadow-elevated auth-fade-in transition-opacity duration-200"
+            className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 text-white text-xs font-medium shadow-popover auth-fade-in transition-opacity duration-200"
             style={{ opacity: t.leaving ? 0 : 1 }}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 dark:bg-blue-600" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             <span>{t.message}</span>
           </div>
         ))}
