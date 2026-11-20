@@ -1,8 +1,17 @@
 import { updateSession } from "@/lib/supabase/middleware";
-import { type NextRequest } from "next/server";
+import { cmsRewrite } from "@/lib/cms-format";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const response = await updateSession(request);
+  // cms.smbhub.ca serves the CMS (app/cms) at its root; the session cookies refreshed above carry over
+  const target = cmsRewrite(request.headers.get("host"), request.nextUrl.pathname);
+  if (!target || response.headers.get("location")) return response;
+  const url = request.nextUrl.clone();
+  url.pathname = target;
+  const rewritten = NextResponse.rewrite(url, { request });
+  response.cookies.getAll().forEach((c) => rewritten.cookies.set(c));
+  return rewritten;
 }
 
 export const config = {

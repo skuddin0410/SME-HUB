@@ -185,3 +185,36 @@ select t.expect('another viewer does not see the post as saved', (select count(*
 set role anon; set request.jwt.claim.sub = '';
 select t.expect_denied('visitors cannot save posts', $$insert into saved_posts (user_id, post_id) select '00000000-0000-0000-0000-00000000000b', id from posts where body = 'pub'$$);
 reset role;
+
+-- ===== CMS (0011) =====
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+insert into messages (sender_id, recipient_id, body)
+  select auth.uid(), '00000000-0000-0000-0000-00000000000a', 'secret words'
+  where exists (select 1 from connections where status = 'accepted' and '00000000-0000-0000-0000-00000000000b' in (requester_id, addressee_id));
+select t.expect('members cannot read the CMS activity log', (select count(*) = 0 from cms_events));
+select t.expect_denied('members cannot write to the activity log', $$insert into cms_events (action, entity) values ('x','y')$$);
+select t.expect_denied('members cannot list accounts and emails', $$select * from cms_users()$$);
+select t.expect_denied('members cannot read the CMS overview', $$select cms_overview()$$);
+select t.expect_denied('members cannot list conversations', $$select * from cms_conversations()$$);
+select t.expect_denied('members cannot log CMS actions', $$select cms_log('x','y','z')$$);
+select t.expect_denied('members cannot delete accounts', $$select cms_delete_account('00000000-0000-0000-0000-00000000000c')$$);
+set role anon; set request.jwt.claim.sub = '';
+select t.expect_denied('visitors cannot list accounts', $$select * from cms_users()$$);
+select t.expect('visitors cannot read the activity log', (select count(*) = 0 from cms_events));
+
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+select t.expect('admin sees hub changes in the activity log', (select count(*) > 0 from cms_events where entity = 'posts' and action = 'insert'));
+select t.expect('activity log never stores message text', (select count(*) = 0 from cms_events where entity = 'messages' and (data ? 'body' or data::text like '%secret words%')));
+select t.expect('admin lists accounts with emails', (select count(*) = 4 and bool_and(email like '%@x.ca') from cms_users(p_limit => 50)));
+select t.expect('admin search finds a member by email', (select count(*) = 1 from cms_users(p_search => 'carol@')));
+select t.expect('admin filters accounts whose email is not confirmed', (select count(*) = 4 from cms_users(p_confirmed => 'no', p_limit => 50)));
+select t.expect('admin overview counts members', (select (cms_overview() ->> 'members')::int = 4));
+select t.expect('admin can read connections', (select count(*) > 0 from connections));
+select t.expect('admin still cannot read message text', (select count(*) = 0 from messages));
+select cms_log('member.note', 'profiles', '00000000-0000-0000-0000-00000000000b', '{"note":"checked"}');
+select t.expect('CMS actions are logged with the admin as actor', (select count(*) = 1 from cms_events where source = 'cms' and action = 'member.note' and actor_id = auth.uid()));
+select t.expect_denied('admin cannot delete own account from the CMS', $$select cms_delete_account('00000000-0000-0000-0000-00000000000d')$$);
+select cms_delete_account('00000000-0000-0000-0000-00000000000c');
+reset role;
+select t.expect('deleting an account removes the login and profile', (select count(*) = 0 from auth.users where id = '00000000-0000-0000-0000-00000000000c') and (select count(*) = 0 from profiles where id = '00000000-0000-0000-0000-00000000000c'));
+select t.expect('the deletion is in the activity log', (select count(*) = 1 from cms_events where action = 'member.delete'));
