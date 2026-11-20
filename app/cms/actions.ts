@@ -126,7 +126,7 @@ export async function cmsCreateGroup(form: FormData) {
     .select("id")
     .single();
   fail(error);
-  await supabase.from("group_members").insert({ group_id: data!.id, user_id: userId, role: "member" });
+  // the add_group_creator trigger makes the admin the group's first member
   await done(supabase, "group.create", "groups", data!.id, { name });
   redirect(`/cms/groups/${data!.id}`);
 }
