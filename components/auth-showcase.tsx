@@ -104,7 +104,7 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
     <div
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
-      className="h-full bg-[#FAF9F6] daylight-canvas-glow border border-[#E6E3DC] rounded-3xl p-5 flex flex-col gap-4 shadow-daylight-stage select-none overflow-hidden"
+      className="h-full bg-white border border-[#E6E3DC] rounded-3xl p-5 flex flex-col gap-4 shadow-auth-card select-none overflow-hidden"
     >
       <div className="flex flex-wrap items-center justify-between gap-2 shrink-0">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[#E6E3DC]">

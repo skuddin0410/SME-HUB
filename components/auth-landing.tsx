@@ -169,6 +169,226 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
     }
   };
 
+  /** The email form for one mode. The ghost copy is invisible and only holds the Join form's height. */
+  const renderForm = (isJoin: boolean, ghost: boolean) => (
+    <form onSubmit={submit} className="space-y-3.5" noValidate>
+      {isJoin && (
+        <div className="space-y-3 auth-fade-in">
+          <div>
+            <label htmlFor="auth-fullname" className={LABEL}>
+              Full name
+            </label>
+            <div className="relative">
+              <User className={ICON} />
+              <input
+                id="auth-fullname"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Abdur Rahman Uddin"
+                autoComplete="name"
+                maxLength={80}
+                className={INPUT.replace("h-11", "h-10")}
+              />
+            </div>
+            {errors.name && <p className={FIELD_ERROR}>{errors.name}</p>}
+          </div>
+          <div className="grid grid-cols-12 gap-2.5">
+            <div className="col-span-8">
+              <label htmlFor="auth-company" className={LABEL}>
+                Business / Company
+              </label>
+              <input
+                id="auth-company"
+                type="text"
+                value={business}
+                onChange={(e) => setBusiness(e.target.value)}
+                placeholder="NorthPeak Solutions Inc."
+                autoComplete="organization"
+                maxLength={120}
+                className={INPUT_PLAIN}
+              />
+            </div>
+            <div className="col-span-4">
+              <label htmlFor="auth-province" className={LABEL}>
+                Province
+              </label>
+              <select
+                id="auth-province"
+                value={province}
+                onChange={(e) => setProvince(e.target.value)}
+                className="w-full h-10 px-3 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600"
+              >
+                {PROVINCES.map(([code, label]) => (
+                  <option key={code} value={code} title={label}>
+                    {code}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="auth-email" className={LABEL}>
+          Work or business email
+        </label>
+        <div className="relative">
+          <Mail className={ICON} />
+          <input
+            ref={ghost ? undefined : emailRef}
+            id="auth-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@company.ca"
+            autoComplete="email"
+            className={INPUT}
+          />
+        </div>
+        {errors.email && <p className={FIELD_ERROR}>{errors.email}</p>}
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <label htmlFor="auth-password" className="block text-xs font-semibold text-slate-700">
+            Password
+          </label>
+          {!isJoin && (
+            <button type="button" onClick={() => setForgotOpen(true)} className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline">
+              Forgot password?
+            </button>
+          )}
+        </div>
+        <div className="relative">
+          <Lock className={ICON} />
+          <input
+            id="auth-password"
+            type={show ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter password"
+            autoComplete={isJoin ? "new-password" : "current-password"}
+            maxLength={72}
+            className={INPUT.replace("pr-4", "pr-10")}
+          />
+          <button
+            type="button"
+            onClick={() => setShow((s) => !s)}
+            aria-label="Toggle password visibility"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+          >
+            {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
+
+        {isJoin && (
+          <div className="mt-2 space-y-1 auth-fade-in">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-slate-500">Password strength</span>
+              <span className={`font-semibold ${STRENGTH[level].text}`}>{STRENGTH[level].label}</span>
+            </div>
+            <div className="grid grid-cols-4 gap-1.5 h-1">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className={`rounded-full transition-colors ${i <= level ? STRENGTH[level].bar : "bg-slate-200"}`} />
+              ))}
+            </div>
+          </div>
+        )}
+        {errors.password && <p className={FIELD_ERROR}>{errors.password}</p>}
+      </div>
+
+      {errors.form && (
+        <p role="alert" className={FORM_ERROR}>
+          {errors.form}
+        </p>
+      )}
+
+      <button type="submit" disabled={busy} className={PRIMARY}>
+        {busy && <Loader2 className="w-4 h-4 animate-spin" />}
+        <span>{busy ? (isJoin ? "Creating your account..." : "Signing in...") : isJoin ? "Create free account" : "Sign in"}</span>
+        {!busy && <ArrowRight className="w-4 h-4" />}
+      </button>
+    </form>
+  );
+
+  /** Tabs, sign-in buttons, the form and the card footer for one mode. */
+  const renderCard = (isJoin: boolean, ghost: boolean) => (
+    <>
+      <div className="space-y-4">
+        <div role="tablist" aria-label="Sign in or join" className="relative grid grid-cols-2 p-1 rounded-full bg-slate-100/90 border border-slate-200/70">
+          <div
+            className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-white transition-transform duration-200 ease-out"
+            style={{ transform: isJoin ? "translateX(100%)" : "translateX(0%)" }}
+          />
+          <button type="button" role="tab" aria-selected={!isJoin} onClick={() => setMode("signin")} className={isJoin ? TAB_OFF : TAB_ON}>
+            Sign in
+          </button>
+          <button type="button" role="tab" aria-selected={isJoin} onClick={() => setMode("signup")} className={isJoin ? TAB_ON : TAB_OFF}>
+            Join now
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <button type="button" disabled={sso !== null} onClick={() => startSso("google", "Google")} className={SSO}>
+            {sso === "google" ? <Loader2 className="w-4 h-4 animate-spin" /> : <GoogleMark />}
+            <span>Google</span>
+          </button>
+          <button type="button" disabled={sso !== null} onClick={() => startSso("azure", "Microsoft 365")} className={SSO}>
+            {sso === "azure" ? <Loader2 className="w-4 h-4 animate-spin" /> : <MicrosoftMark />}
+            <span className="truncate">Microsoft 365</span>
+          </button>
+        </div>
+
+        <div className="relative flex items-center py-0.5">
+          <div className="flex-grow border-t border-slate-200/80" />
+          <span className="shrink mx-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Or continue with email</span>
+          <div className="flex-grow border-t border-slate-200/80" />
+        </div>
+
+        {renderForm(isJoin, ghost)}
+      </div>
+
+      <div className="pt-4 mt-4 border-t border-slate-100 text-center space-y-2">
+        <p className="text-[11px] text-slate-500 leading-relaxed">
+          By continuing, you agree to the SMB Hub{" "}
+          <Link href="/policies/terms" className="underline hover:text-slate-800">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/policies/community-guidelines" className="underline hover:text-slate-800">
+            Community Guidelines
+          </Link>
+          .
+        </p>
+        <p className="text-xs text-slate-600">
+          {isJoin ? "Already have an account? " : "New to SMB Hub? "}
+          <button type="button" onClick={() => setMode(isJoin ? "signin" : "signup")} className={LINK}>
+            {isJoin ? "Sign in" : "Join now"}
+          </button>
+        </p>
+      </div>
+    </>
+  );
+
+  const renderInbox = (to: string) => (
+    <div className="my-auto text-center space-y-3 py-6 auth-fade-in">
+      <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200/70">
+        <MailCheck className="w-7 h-7" />
+      </div>
+      <h2 className="font-jakarta font-bold text-xl text-slate-950">Check your inbox</h2>
+      <p className="text-sm text-slate-600">
+        We sent a confirmation link to <span className="font-semibold text-slate-900">{to}</span> from accounts@smbhub.ca. One click confirms your email and
+        signs you in.
+      </p>
+      <ResendLink email={to} />
+      <button type="button" onClick={() => setMode("signin")} className="text-xs font-semibold text-blue-600 hover:underline">
+        Back to sign in
+      </button>
+    </div>
+  );
+
   return (
     <main className="flex-1 max-w-[1280px] w-full mx-auto px-6 lg:px-8 py-8 lg:py-9 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
       {/* left: badge, heading and the sign-in / join card */}
@@ -179,223 +399,22 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
             <span className="text-xs font-bold text-slate-800">CA</span>
             <span className="text-xs font-medium text-slate-600">Canada&apos;s Professional Network</span>
           </div>
-          <h1 className="font-jakarta font-extrabold text-4xl xl:text-[44px] leading-[1.08] tracking-tight text-slate-900 whitespace-nowrap">Build with Canada.</h1>
+          <h1 className="font-jakarta font-extrabold text-4xl xl:text-[44px] leading-[1.08] tracking-tight text-slate-900 whitespace-nowrap">
+            Build with Canada.
+          </h1>
           <p className="mt-2 mb-5 text-[14.5px] leading-relaxed text-slate-600">
             Connect, learn, and grow with entrepreneurs, professionals, and business leaders across Canada.
           </p>
         </div>
 
-        <div className="flex-1 bg-white border border-[#E6E3DC] rounded-3xl p-6 sm:p-7 shadow-auth-card flex flex-col justify-between">
-          {sentTo ? (
-            <div className="my-auto text-center space-y-3 py-6 auth-fade-in">
-              <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200/70">
-                <MailCheck className="w-7 h-7" />
-              </div>
-              <h2 className="font-jakarta font-bold text-xl text-slate-950">Check your inbox</h2>
-              <p className="text-sm text-slate-600">
-                We sent a confirmation link to <span className="font-semibold text-slate-900">{sentTo}</span> from accounts@smbhub.ca. One click confirms your
-                email and signs you in.
-              </p>
-              <ResendLink email={sentTo} />
-              <button type="button" onClick={() => setMode("signin")} className="text-xs font-semibold text-blue-600 hover:underline">
-                Back to sign in
-              </button>
+        {/* One fixed-size card: an invisible copy of the Join layout holds its height, so switching
+            between Sign in, Join now and "Check your inbox" never changes the card or the page */}
+        <div className="flex-1 bg-white border border-[#E6E3DC] rounded-3xl p-6 sm:p-7 shadow-auth-card grid">
+          <div className="row-start-1 col-start-1 flex flex-col justify-between">{sentTo ? renderInbox(sentTo) : renderCard(signup, false)}</div>
+          {(sentTo || !signup) && (
+            <div className="row-start-1 col-start-1 invisible flex flex-col justify-between" aria-hidden="true" inert>
+              {renderCard(true, true)}
             </div>
-          ) : (
-            <>
-              <div className="space-y-4">
-                <div role="tablist" aria-label="Sign in or join" className="relative grid grid-cols-2 p-1 rounded-full bg-slate-100/90 border border-slate-200/70">
-                  <div
-                    className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-white transition-transform duration-200 ease-out"
-                    style={{ transform: signup ? "translateX(100%)" : "translateX(0%)" }}
-                  />
-                  <button type="button" role="tab" aria-selected={!signup} onClick={() => setMode("signin")} className={signup ? TAB_OFF : TAB_ON}>
-                    Sign in
-                  </button>
-                  <button type="button" role="tab" aria-selected={signup} onClick={() => setMode("signup")} className={signup ? TAB_ON : TAB_OFF}>
-                    Join now
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5">
-                  <button type="button" disabled={sso !== null} onClick={() => startSso("google", "Google")} className={SSO}>
-                    {sso === "google" ? <Loader2 className="w-4 h-4 animate-spin" /> : <GoogleMark />}
-                    <span>Google</span>
-                  </button>
-                  <button type="button" disabled={sso !== null} onClick={() => startSso("azure", "Microsoft 365")} className={SSO}>
-                    {sso === "azure" ? <Loader2 className="w-4 h-4 animate-spin" /> : <MicrosoftMark />}
-                    <span className="truncate">Microsoft 365</span>
-                  </button>
-                </div>
-
-                <div className="relative flex items-center py-0.5">
-                  <div className="flex-grow border-t border-slate-200/80" />
-                  <span className="shrink mx-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Or continue with email</span>
-                  <div className="flex-grow border-t border-slate-200/80" />
-                </div>
-
-                <form onSubmit={submit} className="space-y-3.5" noValidate>
-                  {signup && (
-                    <div className="space-y-3 auth-fade-in">
-                      <div>
-                        <label htmlFor="auth-fullname" className={LABEL}>
-                          Full name
-                        </label>
-                        <div className="relative">
-                          <User className={ICON} />
-                          <input
-                            id="auth-fullname"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Abdur Rahman Uddin"
-                            autoComplete="name"
-                            maxLength={80}
-                            className={INPUT.replace("h-11", "h-10")}
-                          />
-                        </div>
-                        {errors.name && <p className={FIELD_ERROR}>{errors.name}</p>}
-                      </div>
-                      <div className="grid grid-cols-12 gap-2.5">
-                        <div className="col-span-8">
-                          <label htmlFor="auth-company" className={LABEL}>
-                            Business / Company
-                          </label>
-                          <input
-                            id="auth-company"
-                            type="text"
-                            value={business}
-                            onChange={(e) => setBusiness(e.target.value)}
-                            placeholder="NorthPeak Solutions Inc."
-                            autoComplete="organization"
-                            maxLength={120}
-                            className={INPUT_PLAIN}
-                          />
-                        </div>
-                        <div className="col-span-4">
-                          <label htmlFor="auth-province" className={LABEL}>
-                            Province
-                          </label>
-                          <select
-                            id="auth-province"
-                            value={province}
-                            onChange={(e) => setProvince(e.target.value)}
-                            className="w-full h-10 px-3 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600"
-                          >
-                            {PROVINCES.map(([code, label]) => (
-                              <option key={code} value={code} title={label}>
-                                {code}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <label htmlFor="auth-email" className={LABEL}>
-                      Work or business email
-                    </label>
-                    <div className="relative">
-                      <Mail className={ICON} />
-                      <input
-                        ref={emailRef}
-                        id="auth-email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@company.ca"
-                        autoComplete="email"
-                        className={INPUT}
-                      />
-                    </div>
-                    {errors.email && <p className={FIELD_ERROR}>{errors.email}</p>}
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label htmlFor="auth-password" className="block text-xs font-semibold text-slate-700">
-                        Password
-                      </label>
-                      {!signup && (
-                        <button type="button" onClick={() => setForgotOpen(true)} className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline">
-                          Forgot password?
-                        </button>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <Lock className={ICON} />
-                      <input
-                        id="auth-password"
-                        type={show ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter password"
-                        autoComplete={signup ? "new-password" : "current-password"}
-                        maxLength={72}
-                        className={INPUT.replace("pr-4", "pr-10")}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShow((s) => !s)}
-                        aria-label="Toggle password visibility"
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
-                      >
-                        {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-
-                    {signup && (
-                      <div className="mt-2 space-y-1 auth-fade-in">
-                        <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-slate-500">Password strength</span>
-                          <span className={`font-semibold ${STRENGTH[level].text}`}>{STRENGTH[level].label}</span>
-                        </div>
-                        <div className="grid grid-cols-4 gap-1.5 h-1">
-                          {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className={`rounded-full transition-colors ${i <= level ? STRENGTH[level].bar : "bg-slate-200"}`} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {errors.password && <p className={FIELD_ERROR}>{errors.password}</p>}
-                  </div>
-
-                  {errors.form && (
-                    <p role="alert" className={FORM_ERROR}>
-                      {errors.form}
-                    </p>
-                  )}
-
-                  <button type="submit" disabled={busy} className={PRIMARY}>
-                    {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-                    <span>{busy ? (signup ? "Creating your account..." : "Signing in...") : signup ? "Create free account" : "Sign in"}</span>
-                    {!busy && <ArrowRight className="w-4 h-4" />}
-                  </button>
-                </form>
-              </div>
-
-              <div className="pt-4 mt-4 border-t border-slate-100 text-center space-y-2">
-                <p className="text-[11px] text-slate-500 leading-relaxed">
-                  By continuing, you agree to the SMB Hub{" "}
-                  <Link href="/policies/terms" className="underline hover:text-slate-800">
-                    Terms
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/policies/community-guidelines" className="underline hover:text-slate-800">
-                    Community Guidelines
-                  </Link>
-                  .
-                </p>
-                <p className="text-xs text-slate-600">
-                  {signup ? "Already have an account? " : "New to SMB Hub? "}
-                  <button type="button" onClick={() => setMode(signup ? "signin" : "signup")} className={LINK}>
-                    {signup ? "Sign in" : "Join now"}
-                  </button>
-                </p>
-              </div>
-            </>
           )}
         </div>
       </div>
@@ -438,9 +457,15 @@ function GoogleMark() {
   return (
     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
       <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z" />
-      <path fill="#34A853" d="M12 24c3.3 0 6.08-1.09 8.1-2.96l-3.88-3.05c-1.1.74-2.51 1.18-4.22 1.18-3.25 0-6-2.19-6.98-5.14H1.01v3.14C3.05 21.2 7.24 24 12 24Z" />
+      <path
+        fill="#34A853"
+        d="M12 24c3.3 0 6.08-1.09 8.1-2.96l-3.88-3.05c-1.1.74-2.51 1.18-4.22 1.18-3.25 0-6-2.19-6.98-5.14H1.01v3.14C3.05 21.2 7.24 24 12 24Z"
+      />
       <path fill="#FBBC05" d="M5.02 14.03c-.25-.74-.39-1.54-.39-2.36 0-.82.14-1.62.39-2.36V6.17H1.01C.37 7.45 0 8.89 0 10.42s.37 2.97 1.01 4.25l4.01-3.14Z" />
-      <path fill="#EA4335" d="M12 4.75c1.79 0 3.41.62 4.68 1.82l3.51-3.51C18.07 1.19 15.3 0 12 0 7.24 0 3.05 2.8 1.01 6.83l4.01 3.14c.98-2.95 3.73-5.22 6.98-5.22Z" />
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.79 0 3.41.62 4.68 1.82l3.51-3.51C18.07 1.19 15.3 0 12 0 7.24 0 3.05 2.8 1.01 6.83l4.01 3.14c.98-2.95 3.73-5.22 6.98-5.22Z"
+      />
     </svg>
   );
 }
