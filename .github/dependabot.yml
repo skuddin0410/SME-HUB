@@ -1,3 +1,6 @@
+# Weekly dependency updates. Minor and patch versions come as one grouped pull request.
+# Major versions (Next 16, Tailwind 4, ESLint 10, Vitest 5, ...) change how the app works,
+# so they are not proposed automatically; we upgrade those on purpose, one at a time.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -5,6 +8,9 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       minor-and-patch:
         update-types: [minor, patch]
@@ -12,3 +18,6 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
