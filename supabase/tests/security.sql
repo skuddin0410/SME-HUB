@@ -273,7 +273,7 @@ select t.expect('the clock is real time otherwise', abs(extract(epoch from app_n
 
 set role anon; set request.jwt.claim.sub = '';
 select t.expect_denied('visitors cannot call can()', $$select can('cms.access')$$);
-select t.expect('visitors can read plan limits', (select count(*) = 18 from plan_limits));
+select t.expect('visitors can read plan limits', (select count(*) = 21 from plan_limits));
 reset role;
 
 -- ===== Permission matrix, generated from plan_limits: every plan x every limited action =====
@@ -302,4 +302,150 @@ begin
   end loop;
 end $$;
 select * from t.plan_matrix();
+set request.jwt.claim.sub = '';
+
+-- ===== Phase 2: profiles and network =====
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email) values
+ ('00000000-0000-0000-0000-0000000001e1','eve@x.ca'), ('00000000-0000-0000-0000-0000000001e2','fay@x.ca'),
+ ('00000000-0000-0000-0000-0000000001e3','gus@x.ca'), ('00000000-0000-0000-0000-0000000001e4','hal@x.ca'),
+ ('00000000-0000-0000-0000-0000000001e5','ida@x.ca'), ('00000000-0000-0000-0000-0000000001e6','jon@x.ca');
+\set e1 '''00000000-0000-0000-0000-0000000001e1'''
+\set e2 '''00000000-0000-0000-0000-0000000001e2'''
+\set e3 '''00000000-0000-0000-0000-0000000001e3'''
+\set e4 '''00000000-0000-0000-0000-0000000001e4'''
+\set e5 '''00000000-0000-0000-0000-0000000001e5'''
+\set e6 '''00000000-0000-0000-0000-0000000001e6'''
+
+-- eve fills in her profile
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
+update profiles set full_name = 'Zoë Tremblay', location = 'Montréal, QC', profile_type = 'advisor' where id = auth.uid();
+select t.expect('member cannot make themselves an advisor', (select profile_type = 'owner' from profiles where id = auth.uid()));
+update profiles set profile_type = 'maker' where id = auth.uid();
+select t.expect('member can choose maker', (select profile_type = 'maker' from profiles where id = auth.uid()));
+insert into profile_details (user_id, helps_with, needs, social_links, visibility)
+  values (auth.uid(), '{Wholesale,Packaging}', '{Suppliers}', '{"linkedin":"https://linkedin.com/in/eve"}', '{"helps_with":"conn","needs":"only"}');
+select t.expect_denied('social link must be https', $$update profile_details set social_links = '{"x":"javascript:alert(1)"}' where user_id = auth.uid()$$);
+select t.expect_denied('visibility value must be known', $$update profile_details set visibility = '{"bio":"everyone"}' where user_id = auth.uid()$$);
+select t.expect_denied('visibility field must be known', $$update profile_details set visibility = '{"password":"public"}' where user_id = auth.uid()$$);
+select t.expect_denied('too many tags', $$update profile_details set helps_with = array(select 'tag' || g from generate_series(1,13) g) where user_id = auth.uid()$$);
+select t.expect('owner sees all own fields', (select helps_with = '{Wholesale,Packaging}' and needs = '{Suppliers}' from get_profile_details(array[auth.uid()])));
+
+-- a stranger and a visitor see only what is public
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('stranger cannot read details table directly', (select count(*) = 0 from profile_details));
+select t.expect('connections-only field hidden from a stranger', (select helps_with = '{}' and needs = '{}' from get_profile_details(array['00000000-0000-0000-0000-0000000001e1'::uuid])));
+select t.expect('public field shown to a stranger', (select social_links ? 'linkedin' from get_profile_details(array['00000000-0000-0000-0000-0000000001e1'::uuid])));
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('visitor sees public fields only', (select helps_with = '{}' and social_links ? 'linkedin' from get_profile_details(array['00000000-0000-0000-0000-0000000001e1'::uuid])));
+select t.expect_denied('visitor cannot record a view', $$select record_profile_view('00000000-0000-0000-0000-0000000001e1')$$);
+
+-- connect fay (e2) and eve (e1)
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+insert into connections (requester_id, addressee_id) values (auth.uid(), :e1);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
+select t.expect_denied('no second connection row for the same pair', $$insert into connections (requester_id, addressee_id) values (auth.uid(), '00000000-0000-0000-0000-0000000001e2')$$);
+update connections set status = 'accepted' where addressee_id = auth.uid() and requester_id = :e2;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('a connection sees connections-only fields, not only-me fields', (select helps_with = '{Wholesale,Packaging}' and needs = '{}' from get_profile_details(array['00000000-0000-0000-0000-0000000001e1'::uuid])));
+
+-- follows
+insert into follows (follower_id, followee_id) values (auth.uid(), :e1);
+select t.expect_denied('cannot follow yourself', $$insert into follows (follower_id, followee_id) values (auth.uid(), auth.uid())$$);
+select t.expect_denied('cannot follow as someone else', $$insert into follows (follower_id, followee_id) values ('00000000-0000-0000-0000-0000000001e3', '00000000-0000-0000-0000-0000000001e1')$$);
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('follower count is public', (select follower_count('00000000-0000-0000-0000-0000000001e1') = 1));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e3';
+select t.expect('a stranger cannot list who follows whom', (select count(*) = 0 from follows));
+
+-- recommendations
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e4';
+select t.expect_denied('cannot recommend someone you are not connected to', $$insert into recommendations (author_id, subject_id, relationship, body) values (auth.uid(), '00000000-0000-0000-0000-0000000001e1', 'client', 'Great to work with, delivered on time.')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect_denied('recommendation must have real words', $$insert into recommendations (author_id, subject_id, relationship, body) values (auth.uid(), '00000000-0000-0000-0000-0000000001e1', 'client', 'nice')$$);
+select t.expect_denied('relationship must be known', $$insert into recommendations (author_id, subject_id, relationship, body) values (auth.uid(), '00000000-0000-0000-0000-0000000001e1', 'boss', 'Great to work with, delivered on time.')$$);
+insert into recommendations (author_id, subject_id, relationship, body) values (auth.uid(), :e1, 'client', 'Great to work with, delivered on time.');
+select t.expect_denied('one recommendation per pair', $$insert into recommendations (author_id, subject_id, relationship, body) values (auth.uid(), '00000000-0000-0000-0000-0000000001e1', 'colleague', 'A second one that should be refused.')$$);
+update recommendations set hidden = true where author_id = auth.uid();
+select t.expect('author cannot hide it on the subject''s behalf', (select not hidden from recommendations where author_id = auth.uid()));
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('visitors can read published recommendations', (select count(*) = 1 from recommendations));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
+update recommendations set body = 'Edited by the person recommended, which is not allowed.' where subject_id = auth.uid();
+select t.expect('subject cannot rewrite the words', (select body = 'Great to work with, delivered on time.' from recommendations where subject_id = auth.uid()));
+update recommendations set hidden = true where subject_id = auth.uid();
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('a hidden recommendation disappears for visitors', (select count(*) = 0 from recommendations));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+update recommendations set hidden = false where author_id = auth.uid();
+select t.expect('author cannot unhide it', (select count(*) = 1 from recommendations where hidden));
+
+-- warm introductions: fay (e2) asks eve (e1) to introduce her to hal (e4)
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e4';
+insert into connections (requester_id, addressee_id) values (auth.uid(), :e1);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
+update connections set status = 'accepted' where addressee_id = auth.uid() and requester_id = :e4;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect_denied('intro must go through someone you are connected to', $$insert into intro_requests (requester_id, via_id, target_id, note) values (auth.uid(), '00000000-0000-0000-0000-0000000001e4', '00000000-0000-0000-0000-0000000001e1', 'hi')$$);
+insert into intro_requests (requester_id, via_id, target_id, note) values (auth.uid(), :e1, :e4, 'Could you introduce me?');
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e4';
+update intro_requests set status = 'accepted';
+select t.expect('only the go-between can answer an intro', (select count(*) = 0 from intro_requests));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
+update intro_requests set status = 'accepted', note = 'changed' where via_id = auth.uid();
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('accepting an intro sends the connection request, note unchanged', (select (select count(*) from connections where requester_id = :e2 and addressee_id = :e4 and status = 'pending') = 1 and note = 'Could you introduce me?' from intro_requests));
+
+-- who viewed my profile: free plan sees 2 names of 3
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2'; select record_profile_view(:e1);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e4'; select record_profile_view(:e1); select record_profile_view(:e1);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e5'; select record_profile_view(:e1);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e6';
+insert into profile_details (user_id, private_browsing) values (auth.uid(), true);
+select record_profile_view(:e1);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1'; select record_profile_view(:e1);
+select t.expect('three real viewers; self, private browser and repeat visits not counted', (select count(*) = 3 from my_profile_viewers()));
+select t.expect('free plan sees 2 names, the rest hidden', (select count(*) filter (where shown) = 2 and count(*) filter (where not shown and viewer_id is null) = 1 from my_profile_viewers()));
+select t.expect('30-day chart totals the views', (select sum(views) = 3 and count(*) = 30 from my_profile_view_days()));
+select t.expect_denied('views table is not readable directly', $$select 1/(select count(*)::int from profile_views)$$);
+reset role; set request.jwt.claim.sub = ''; update profiles set plan = 'plus' where id = :e1; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
+select t.expect('paid plan sees every name', (select count(*) filter (where shown) = 3 from my_profile_viewers()));
+
+-- search ignores accents and respects hidden fields
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('Montreal finds Montréal', (select count(*) = 1 from search_members('montreal') where id = :e1));
+select t.expect('accent-free name search', (select count(*) = 1 from search_members('zoe') where id = :e1));
+select t.expect('filter by province and type', (select count(*) = 1 from search_members('', 'maker', 'QC') where id = :e1));
+select t.expect('filter by what they help with (visible to a connection)', (select count(*) = 1 from search_members('', null, null, 'Wholesale') where id = :e1));
+select t.expect('search treats % as plain text', (select count(*) = 0 from search_members('%')));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
+update profile_details set visibility = visibility || '{"location":"only"}' where user_id = auth.uid();
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('a hidden city is not searchable', (select count(*) = 0 from search_members('montreal') where id = :e1));
+
+-- blocks work both ways and cut the ties
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e3';
+insert into connections (requester_id, addressee_id) values (auth.uid(), :e1);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
+insert into blocks (blocker_id, blocked_id) values (auth.uid(), :e3);
+select t.expect('blocking removes the connection', (select count(*) = 0 from connections where :e3 in (requester_id, addressee_id) and :e1 in (requester_id, addressee_id)));
+select t.expect('the blocker no longer finds the blocked member', (select count(*) = 0 from search_members('') where id = :e3));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e3';
+select t.expect_denied('the blocked member cannot connect', $$insert into connections (requester_id, addressee_id) values (auth.uid(), '00000000-0000-0000-0000-0000000001e1')$$);
+select t.expect_denied('the blocked member cannot follow', $$insert into follows (follower_id, followee_id) values (auth.uid(), '00000000-0000-0000-0000-0000000001e1')$$);
+select t.expect('the blocked member no longer finds the blocker', (select count(*) = 0 from search_members('') where id = :e1));
+select t.expect('the blocked member sees no details', (select count(*) = 0 or bool_and(helps_with = '{}' and social_links = '{}') from get_profile_details(array['00000000-0000-0000-0000-0000000001e1'::uuid])));
+select record_profile_view(:e1);
+select t.expect('a blocked member''s view is not recorded', (select count(*) = 0 from my_profile_viewers() where false) );
+
+-- export and delete
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('export holds only my own profile', (select export_my_data() -> 'profile' ->> 'id' = '00000000-0000-0000-0000-0000000001e2'));
+select t.expect('export has no search index column', (select not (export_my_data() -> 'profile' ? 'fts')));
+reset role; set request.jwt.claim.sub = '';
+select t.expect_denied('visitor cannot export', $$set role anon; select export_my_data()$$);
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e6';
+select delete_my_account();
+reset role;
+select t.expect('deleting an account removes the profile and its details', (select count(*) = 0 from profiles where id = :e6) and (select count(*) = 0 from profile_details where user_id = :e6));
 set request.jwt.claim.sub = '';
