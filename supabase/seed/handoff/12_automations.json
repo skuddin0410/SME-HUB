@@ -1,0 +1,221 @@
+{
+ "AUTPL": [
+  {
+   "name": "Welcome new members",
+   "why": "A warm first day sets the tone and gets the first post.",
+   "trigger": 2,
+   "aud": 1,
+   "steps": [
+    [
+     "action",
+     0
+    ],
+    [
+     "delay",
+     1
+    ],
+    [
+     "refine",
+     1
+    ],
+    [
+     "action",
+     2
+    ]
+   ]
+  },
+  {
+   "name": "Nudge invited people who never joined",
+   "why": "Turns your invite list into real members.",
+   "trigger": 0,
+   "aud": 0,
+   "steps": [
+    [
+     "action",
+     0
+    ],
+    [
+     "delay",
+     2
+    ],
+    [
+     "refine",
+     0
+    ],
+    [
+     "action",
+     1
+    ]
+   ]
+  },
+  {
+   "name": "Finish your profile",
+   "why": "Complete profiles get better matches and more replies.",
+   "trigger": 0,
+   "aud": 2,
+   "steps": [
+    [
+     "action",
+     2
+    ],
+    [
+     "delay",
+     2
+    ],
+    [
+     "refine",
+     1
+    ],
+    [
+     "action",
+     1
+    ]
+   ]
+  },
+  {
+   "name": "Win back quiet members",
+   "why": "Brings people back before they forget the Hub.",
+   "trigger": 1,
+   "aud": 3,
+   "steps": [
+    [
+     "action",
+     3
+    ],
+    [
+     "delay",
+     3
+    ],
+    [
+     "refine",
+     2
+    ],
+    [
+     "action",
+     7
+    ]
+   ]
+  },
+  {
+   "name": "Rescue unanswered questions",
+   "why": "No question should sit without a reply.",
+   "trigger": 3,
+   "aud": 4,
+   "steps": [
+    [
+     "action",
+     6
+    ],
+    [
+     "delay",
+     0
+    ],
+    [
+     "refine",
+     3
+    ],
+    [
+     "action",
+     7
+    ]
+   ]
+  },
+  {
+   "name": "Monthly matchmaking invite",
+   "why": "Fills each matchmaking round without manual emails.",
+   "trigger": 5,
+   "aud": 6,
+   "steps": [
+    [
+     "action",
+     4
+    ],
+    [
+     "delay",
+     1
+    ],
+    [
+     "refine",
+     5
+    ],
+    [
+     "action",
+     1
+    ]
+   ]
+  },
+  {
+   "name": "Upgrade nudge at the free limit",
+   "why": "Offers Plus at the moment a member wants more.",
+   "trigger": 4,
+   "aud": 5,
+   "steps": [
+    [
+     "action",
+     5
+    ]
+   ]
+  }
+ ],
+ "AUOPT": {
+  "trigger": [
+   "Every day at 9:00 am ET",
+   "Every Monday at 9:00 am ET",
+   "When a member joins",
+   "When a question gets no reply for 24 hours",
+   "When a member reaches a free plan limit",
+   "On the 1st of each month"
+  ],
+  "aud": [
+   "Unactivated users|Invited exactly 30 days ago and never activated their account",
+   "New members|Joined in the last 24 hours",
+   "Incomplete profiles|Joined 3 or more days ago with no introduction",
+   "Quiet members|No visit in the last 30 days",
+   "Members who can help|Skills match the unanswered question",
+   "Free members at a limit|Used all free AI questions or introductions",
+   "All active members|Visited in the last 60 days"
+  ],
+  "action": [
+   "Email: Welcome to the community",
+   "Email: Friendly reminder",
+   "Email: Finish your profile with AI",
+   "Email: Here is what you missed",
+   "Email: Your matchmaking round is open",
+   "Email: See what Plus includes",
+   "Notification: A member needs your help",
+   "Notify the Hub team"
+  ],
+  "delay": [
+   "Wait 1 day",
+   "Wait 3 days",
+   "Wait 7 days",
+   "Wait 14 days",
+   "Wait 30 days"
+  ],
+  "refine": [
+   "If user is still unactivated",
+   "If profile is still incomplete",
+   "If still no visit",
+   "If no reply yet",
+   "If on the Free plan",
+   "If not opted in yet"
+  ]
+ },
+ "AUKIND": {
+  "action": [
+   "Action",
+   "Send email, notify, etc.",
+   "mail"
+  ],
+  "refine": [
+   "Refine audience",
+   "Branch on member criteria",
+   "filter"
+  ],
+  "delay": [
+   "Delay",
+   "Wait before the next step",
+   "clock"
+  ]
+ }
+}

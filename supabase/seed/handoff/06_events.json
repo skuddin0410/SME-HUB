@@ -1,0 +1,25 @@
+{
+ "EVENTS": [
+  {
+   "id": "welcome",
+   "when": "Tue, Jan 12, 2027 · 12:00 pm ET",
+   "title": "Founding members welcome call",
+   "where": "Online",
+   "note": "Meet the team and the first members."
+  },
+  {
+   "id": "expert1",
+   "when": "Wed, Jan 13, 2027 · 12:00 pm ET",
+   "title": "Ask an expert: landing your first wholesale account",
+   "where": "Online · with Priya Raman",
+   "note": "Bring one question. Sessions run every Wednesday."
+  },
+  {
+   "id": "show",
+   "when": "Date to be announced",
+   "title": "Small Business Show 2027",
+   "where": "In person",
+   "note": "Members get early access and a discount."
+  }
+ ]
+}

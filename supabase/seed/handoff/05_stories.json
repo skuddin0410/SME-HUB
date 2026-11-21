@@ -1,0 +1,264 @@
+{
+ "STORIES": [
+  {
+   "id": "s1",
+   "by": "priya",
+   "t": 1795277575966,
+   "caption": "New this week: Maple Oat Sourdough. Wholesale samples go out Friday.",
+   "aud": "members",
+   "status": "published",
+   "items": [
+    {
+     "id": "i1",
+     "type": "image",
+     "src": "img/story-bakery.jpg",
+     "poster": "",
+     "name": "",
+     "size": 0,
+     "st": "done",
+     "pct": 100
+    }
+   ],
+   "views": {
+    "sara": 1,
+    "kwame": 1,
+    "hana": 1
+   },
+   "likes": {
+    "sara": 1
+   },
+   "reports": []
+  },
+  {
+   "id": "s2",
+   "by": "isabelle",
+   "t": 1795266775966,
+   "caption": "Day 1 at the Small Business Show. Come say hi at booth 214!",
+   "aud": "members",
+   "status": "published",
+   "items": [
+    {
+     "id": "i2",
+     "type": "video",
+     "src": "img/story-show.mp4",
+     "poster": "img/story-show.jpg",
+     "name": "",
+     "size": 0,
+     "st": "done",
+     "pct": 100
+    },
+    {
+     "id": "i3",
+     "type": "image",
+     "src": "img/post-design.jpg",
+     "poster": "",
+     "name": "",
+     "size": 0,
+     "st": "done",
+     "pct": 100
+    }
+   ],
+   "views": {
+    "priya": 1,
+    "luc": 1
+   },
+   "likes": {
+    "luc": 1
+   },
+   "reports": []
+  },
+  {
+   "id": "s3",
+   "by": "luc",
+   "t": 1795273975966,
+   "caption": "Sketches for a café counter. Connections only for now.",
+   "aud": "conn",
+   "status": "published",
+   "items": [
+    {
+     "id": "i4",
+     "type": "image",
+     "src": "img/support.jpg",
+     "poster": "",
+     "name": "",
+     "size": 0,
+     "st": "done",
+     "pct": 100
+    }
+   ],
+   "views": {},
+   "likes": {},
+   "reports": []
+  },
+  {
+   "id": "s4",
+   "by": "sara",
+   "t": 1795212775966,
+   "caption": "My year-end bookkeeping checklist is ready. Message me for a copy.",
+   "aud": "members",
+   "status": "published",
+   "items": [
+    {
+     "id": "i5",
+     "type": "image",
+     "src": "img/post-grants.jpg",
+     "poster": "",
+     "name": "",
+     "size": 0,
+     "st": "done",
+     "pct": 100
+    }
+   ],
+   "views": {
+    "priya": 1
+   },
+   "likes": {},
+   "reports": []
+  },
+  {
+   "id": "s5",
+   "by": "priya",
+   "t": 1794507175966,
+   "caption": "Packing our first wholesale order.",
+   "aud": "members",
+   "status": "published",
+   "items": [
+    {
+     "id": "i6",
+     "type": "image",
+     "src": "img/post-retail.jpg",
+     "poster": "",
+     "name": "",
+     "size": 0,
+     "st": "done",
+     "pct": 100
+    }
+   ],
+   "views": {},
+   "likes": {},
+   "reports": []
+  },
+  {
+   "id": "s6",
+   "by": "priya",
+   "t": 1792692775966,
+   "caption": "Our stand at last year’s Small Business Show.",
+   "aud": "members",
+   "status": "published",
+   "items": [
+    {
+     "id": "i7",
+     "type": "image",
+     "src": "img/community.jpg",
+     "poster": "",
+     "name": "",
+     "size": 0,
+     "st": "done",
+     "pct": 100
+    }
+   ],
+   "views": {},
+   "likes": {},
+   "reports": []
+  },
+  {
+   "id": "s7",
+   "by": "priya",
+   "t": 1793988775966,
+   "caption": "Team lunch after a 4 am bake. Shared with connections only.",
+   "aud": "conn",
+   "status": "published",
+   "items": [
+    {
+     "id": "i8",
+     "type": "image",
+     "src": "img/who.jpg",
+     "poster": "",
+     "name": "",
+     "size": 0,
+     "st": "done",
+     "pct": 100
+    }
+   ],
+   "views": {},
+   "likes": {},
+   "reports": []
+  }
+ ],
+ "HL": {
+  "priya": [
+   {
+    "id": "h1",
+    "name": "Our Products",
+    "cover": "s1|i1",
+    "items": [
+     "s1|i1"
+    ]
+   },
+   {
+    "id": "h2",
+    "name": "Behind the Scenes",
+    "cover": "s5|i6",
+    "items": [
+     "s5|i6",
+     "s7|i8"
+    ]
+   },
+   {
+    "id": "h3",
+    "name": "Event Recaps",
+    "cover": "s6|i7",
+    "items": [
+     "s6|i7"
+    ]
+   }
+  ]
+ },
+ "STTYPES": {
+  "jpg": [
+   "image/jpeg",
+   "JPG"
+  ],
+  "png": [
+   "image/png",
+   "PNG"
+  ],
+  "webp": [
+   "image/webp",
+   "WebP"
+  ],
+  "gif": [
+   "image/gif",
+   "GIF"
+  ],
+  "mp4": [
+   "video/mp4",
+   "MP4"
+  ],
+  "mov": [
+   "video/quicktime",
+   "MOV"
+  ],
+  "webm": [
+   "video/webm",
+   "WebM"
+  ]
+ },
+ "AUDS": {
+  "public": "Public",
+  "members": "Members",
+  "conn": "Connections"
+ },
+ "AUDL": {
+  "public": "Anyone, including visitors",
+  "members": "All Hub members",
+  "conn": "My connections only"
+ },
+ "WIN": {
+  "0": "Off",
+  "10": "10 minutes",
+  "60": "1 hour",
+  "forever": "Forever"
+ },
+ "ST_BASE": 1795284775966
+}

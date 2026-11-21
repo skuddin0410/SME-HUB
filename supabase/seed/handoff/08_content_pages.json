@@ -1,0 +1,946 @@
+{
+ "DOCS": {
+  "about": [
+   "about",
+   "CanadianSME Small Business Hub",
+   "About SMB Hub",
+   "SMB Hub is the community from CanadianSME where small business owners and entrepreneurs connect and trade experience, tools and advice, from financing to expansion.",
+   [
+    [
+     "h",
+     "Meet other owners"
+    ],
+    [
+     "p",
+     "Connect with people running businesses like yours, in your city or your industry."
+    ],
+    [
+     "h",
+     "Ask and answer"
+    ],
+    [
+     "p",
+     "Post a question, share a win or pass on a lesson. Filter the feed to find what you need."
+    ],
+    [
+     "h",
+     "Join groups"
+    ],
+    [
+     "p",
+     "Smaller rooms for specific topics: funding, retail, importing, AI and more."
+    ],
+    [
+     "h",
+     "Get your business seen"
+    ],
+    [
+     "p",
+     "List your company in the business directory and share offers with members."
+    ],
+    [
+     "h",
+     "Who runs it"
+    ],
+    [
+     "p",
+     "SMB Hub is operated by Cmarketing Inc., the company behind CanadianSME Small Business Magazine, the Small Business Expo, the Small Business Summit and the Small Business Awards."
+    ]
+   ]
+  ],
+  "help": [
+   "policy",
+   "Policies and help",
+   "Help and frequently asked questions",
+   "Quick answers about accounts, posting, privacy, connections and plans. Still stuck? Email the team and we will help.",
+   [
+    [
+     "faq",
+     [
+      [
+       "Do I need an account to look around?",
+       "No. Anyone can read the public feed and browse members, groups and businesses. You need a free account to post, like, comment and connect."
+      ],
+      [
+       "How do I post?",
+       "Open Home, click the box at the top of the feed, choose what you are sharing (question, win, offer, hiring or intro), write it and press Post. You can add one photo."
+      ],
+      [
+       "Who can see my post?",
+       "You choose each time: anyone, members only, your connections, or only you. Posts inside a private group are visible to that group’s members."
+      ],
+      [
+       "How do connections work?",
+       "Press Connect on a member’s card or profile. They get an alert and can accept or decline."
+      ],
+      [
+       "How do I report something?",
+       "Use the three dots on any post that is not yours and choose Report. Our team reviews every report."
+      ],
+      [
+       "How does the AI assistant work?",
+       "Ask the Hub answers from member posts, advisors and CanadianSME articles, and points you to members who can help. Free members get 10 questions a month."
+      ],
+      [
+       "How do I upgrade my plan?",
+       "See Membership plans for what each plan includes, then contact us and we will set it up."
+      ]
+     ]
+    ],
+    [
+     "h",
+     "Contact us"
+    ],
+    [
+     "ul",
+     [
+      "6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6",
+      "+1 437 778 4446 or +1 416 655 0205",
+      "support@smehub.ca or info@canadiansme.ca"
+     ]
+    ]
+   ]
+  ],
+  "guidelines": [
+   "policy",
+   "Policies and help",
+   "Community guidelines",
+   "SMB Hub works when members treat each other with respect and share what they know. These guidelines apply to posts, comments, groups, messages and business listings.",
+   [
+    [
+     "h",
+     "What we value"
+    ],
+    [
+     "ul",
+     [
+      "Respect. Disagree with ideas, never attack people.",
+      "Collaboration. Share knowledge and contacts generously.",
+      "Professionalism. Keep it relevant and free of offensive language.",
+      "Integrity. Be honest about who you are and what your business does.",
+      "Growth. Stay open to feedback and help others improve."
+     ]
+    ],
+    [
+     "h",
+     "Please do"
+    ],
+    [
+     "ul",
+     [
+      "Welcome newcomers, including people with less experience or funding than you.",
+      "Post with a purpose: to inform, to ask or to share a lesson.",
+      "Write clearly. Tone is hard to read online.",
+      "Give feedback that helps the other person improve.",
+      "Celebrate other members’ wins and support them when times are hard.",
+      "Review the advisors, events and resources you have used."
+     ]
+    ],
+    [
+     "h",
+     "Please don’t"
+    ],
+    [
+     "ul",
+     [
+      "Spam, including the same comment pasted across groups or unsolicited sales messages.",
+      "Harass, bully, intimidate or stalk anyone.",
+      "Post hate speech about race, religion, gender, sexual orientation, disability or any similar trait.",
+      "Pretend to be someone else or misstate who you work for.",
+      "Share another person’s personal or confidential information without consent.",
+      "Post personal email addresses or phone numbers. Use messaging instead.",
+      "Share copyrighted material you have no right to share.",
+      "Post external crowdfunding links. They will be removed.",
+      "Promote illegal activity, violence or terrorism.",
+      "Try to break the site: no hacking, viruses or harmful files."
+     ]
+    ],
+    [
+     "h",
+     "How we enforce this"
+    ],
+    [
+     "p",
+     "Our team may review content. Depending on how serious the problem is, we may remove a post, send a warning, suspend an account or remove a member for good. This list is not complete, and we may act on other behaviour that harms the community."
+    ],
+    [
+     "h",
+     "Report a problem"
+    ],
+    [
+     "p",
+     "Use Report in the menu on any post, or email support@smehub.ca with a link or screenshot. Reports are reviewed by our team."
+    ],
+    [
+     "h",
+     "Changes"
+    ],
+    [
+     "p",
+     "We may update these guidelines. Continuing to use SMB Hub means you accept the current version."
+    ]
+   ]
+  ],
+  "discrimination": [
+   "policy",
+   "Policies and help",
+   "Discrimination policy",
+   "SMB Hub is an inclusive community. Every member, staff member and volunteer is entitled to fair treatment, online and at our events and workshops.",
+   [
+    [
+     "h",
+     "Our position"
+    ],
+    [
+     "ul",
+     [
+      "We do not allow discrimination based on any protected characteristic.",
+      "Discrimination includes unfair or hostile treatment, withholding an opportunity or benefit, and creating an intimidating environment.",
+      "Everyone who takes part in SMB Hub is responsible for following this policy."
+     ]
+    ],
+    [
+     "h",
+     "Raising a concern"
+    ],
+    [
+     "p",
+     "Tell our team. Concerns are handled in confidence. Where we find the policy was broken, we may take disciplinary action, up to ending a membership."
+    ],
+    [
+     "h",
+     "Prevention and education"
+    ],
+    [
+     "p",
+     "We share education and resources on diversity and inclusion, and encourage members, staff and volunteers to take part in training."
+    ],
+    [
+     "h",
+     "Review"
+    ],
+    [
+     "p",
+     "We review this policy regularly and tell members promptly when it changes."
+    ],
+    [
+     "h",
+     "Contact"
+    ],
+    [
+     "p",
+     "Questions about this policy: call 416 655 0205 or email support@smehub.ca."
+    ]
+   ]
+  ],
+  "terms": [
+   "policy",
+   "Policies and help",
+   "Terms and conditions",
+   "A plain-language summary of the terms for using SMB Hub, operated by Cmarketing Inc., Mississauga, Ontario. By using the site you accept these terms and our privacy policy.",
+   [
+    [
+     "h",
+     "Using the site"
+    ],
+    [
+     "ul",
+     [
+      "Follow the law when you use SMB Hub and when you buy anything through it.",
+      "No harassment, discrimination, spam, malware or hacking.",
+      "Do not misstate who you are, and do not try to enter another member’s account or a restricted area.",
+      "We can end anyone’s access at any time, without notice."
+     ]
+    ],
+    [
+     "h",
+     "Your content"
+    ],
+    [
+     "ul",
+     [
+      "You are responsible for everything you post: text, images, audio and video.",
+      "Only post what you have the right to share.",
+      "Feedback you send us is voluntary, and we may use it freely."
+     ]
+    ],
+    [
+     "h",
+     "Our content"
+    ],
+    [
+     "ul",
+     [
+      "The text, graphics, logos, images and software on the site belong to Cmarketing Inc. or its suppliers.",
+      "You may use the site for personal, non-commercial purposes.",
+      "Copying, redistributing or adapting our content needs written permission."
+     ]
+    ],
+    [
+     "h",
+     "Information, not advice"
+    ],
+    [
+     "ul",
+     [
+      "Content on SMB Hub, including answers from the AI assistant, is general information and education. It is not legal, financial or tax advice.",
+      "We do not guarantee accuracy. Speak to a qualified professional before making a decision.",
+      "We do not control or endorse third-party websites or content that members or pages link to."
+     ]
+    ],
+    [
+     "h",
+     "No warranty, limited liability"
+    ],
+    [
+     "ul",
+     [
+      "The site is provided as it is and as available. We do not promise it will be uninterrupted or free of errors.",
+      "As far as the law allows, Cmarketing Inc., its staff and partners are not liable for losses from using the site, including lost profits or data.",
+      "You agree to cover claims and legal costs that arise from your use of the site or a breach of these terms.",
+      "We are not responsible for delays caused by events outside our control."
+     ]
+    ],
+    [
+     "h",
+     "The legal details"
+    ],
+    [
+     "ul",
+     [
+      "These terms are governed by the laws of the place where Cmarketing Inc. is established, and disputes go to the courts there.",
+      "If one term is found invalid, the rest still apply. Not enforcing a term once does not waive it.",
+      "You cannot transfer these terms to someone else without our written consent. We can.",
+      "Using the site does not make you our partner, employee or agent.",
+      "You agree to receive notices from us by email or on the site."
+     ]
+    ],
+    [
+     "h",
+     "Changes"
+    ],
+    [
+     "p",
+     "We may change these terms at any time. Continuing to use the site means you accept the current version."
+    ],
+    [
+     "h",
+     "Contact"
+    ],
+    [
+     "p",
+     "Questions about these terms: info@canadiansme.ca or 416 655 0205."
+    ]
+   ]
+  ],
+  "privacy": [
+   "policy",
+   "Policies and help",
+   "Privacy policy",
+   "How SMB Hub collects, uses and protects your information.",
+   [
+    [
+     "draft",
+     "Draft for review. Your live site has no privacy policy page yet, although the terms refer to one. A lawyer should approve this text before it is published."
+    ],
+    [
+     "h",
+     "What we collect"
+    ],
+    [
+     "ul",
+     [
+      "Account details you give us: name, email address, business name, city and profile information.",
+      "What you post: posts, comments, messages, business listings and photos.",
+      "How you use the site: pages viewed, groups joined and device information."
+     ]
+    ],
+    [
+     "h",
+     "How we use it"
+    ],
+    [
+     "ul",
+     [
+      "To run your account and show your profile and posts to other members.",
+      "To suggest members, groups and content that fit your business.",
+      "To send service emails, and marketing emails only where you have agreed to receive them.",
+      "To keep the community safe and enforce our guidelines."
+     ]
+    ],
+    [
+     "h",
+     "AI features"
+    ],
+    [
+     "ul",
+     [
+      "Ask the Hub and member suggestions use public posts, profiles and CanadianSME articles to produce answers.",
+      "Private messages are never used by the AI features.",
+      "[CONFIRM: whether member content is used to train AI models, and which AI providers process it.]"
+     ]
+    ],
+    [
+     "h",
+     "Sharing"
+    ],
+    [
+     "ul",
+     [
+      "We do not sell your personal information.",
+      "We share it with service providers who help us run the site, under contract.",
+      "We may disclose it when the law requires."
+     ]
+    ],
+    [
+     "h",
+     "Your choices"
+    ],
+    [
+     "ul",
+     [
+      "You can see, correct or delete your information by contacting us.",
+      "You can unsubscribe from marketing emails at any time.",
+      "You can close your account at any time."
+     ]
+    ],
+    [
+     "h",
+     "Storage and security"
+    ],
+    [
+     "p",
+     "[CONFIRM: where data is stored and how long it is kept.]"
+    ],
+    [
+     "h",
+     "Contact"
+    ],
+    [
+     "p",
+     "Privacy questions: support@smehub.ca or 416 655 0205."
+    ]
+   ]
+  ]
+ },
+ "LISTS": {
+  "blog": [
+   "Blog",
+   "Stories, guides and profiles for Canadian small business owners.",
+   [
+    "Be Seen. Be Found. Be Chosen: How SocialEyes Communications Is Evolving the Digital Agency Model",
+    "What BVX 2026 Revealed About Canada’s Next Generation of Tech",
+    "The Toronto Company Flying Drones Inside Warehouses and Over Irish Farms",
+    "The Table That Costs Nothing",
+    "Teclara Brings Big-Company Security to the Firms That Can Least Afford a Breach",
+    "Why More Ontario Businesses Are Treating Compliance as Part of Their Security Stack, Not an Afterthought",
+    "Top 5 Tech AI Tools for Canadian SMBs",
+    "Top Canadian Banks for Small Businesses in 2025: A Comparison of Costs, Features and Tech",
+    "Innovation in Cloud Services and Seamless Integration",
+    "Championing Diversity: How Women-Led Businesses Are Driving Innovation in Canada’s Economy",
+    "Empowering Women Entrepreneurs: Top Resources to Kickstart Your Canadian Business Journey",
+    "Celebrating Culture Through Play with Joeydolls"
+   ],
+   "CanadianSME Magazine",
+   "Read article"
+  ],
+  "news": [
+   "News",
+   "Business announcements and appointments from across Canada.",
+   [
+    "ASUS Recognized as One of America’s Best Employers for Company Culture in Forbes’ 2026 Ranking",
+    "AI Mistakes Accountants Are Fixing This Tax Season",
+    "The Government of Canada Is Investing in Innovation in French and Bilingual Digital Health",
+    "Project Costing Gaps Leave IT Leaders Unable to Prove Value or Defend Spend, Finds Info-Tech Research Group",
+    "Global Brand Storytelling Agency INVNT Joins Nth Degree to Form a Live Events Platform",
+    "Acera Insurance and Navacord Join Vancouver Whitecaps FC as Official Insurance Broker and Employee Benefits Consulting Partner",
+    "Hon Hai Technology Group (Foxconn) Names Michael Chiang Rotating CEO",
+    "Markel Insurance Appoints James Shankland as Head of Ocean Cargo, U.S.",
+    "IBM Announces Strategic Collaboration with Arm to Shape the Future of Enterprise Computing",
+    "Sonny Kalsi Appointed President and CEO of SLC Management"
+   ],
+   "Business news",
+   "Read story"
+  ],
+  "podcast": [
+   "Small Business Podcast",
+   "Conversations with founders and experts on AI, marketing, hiring and growth.",
+   [
+    "90 Days to AI ROI: How Gradient Ascent Delivers Measurable Results",
+    "Sukhpal Kaur on Building Digital Visibility and ROI for Small Businesses",
+    "Workforce Planning vs. Panic Hiring: How to Secure Your Factory’s Future",
+    "Zoho Canada Unveils New Payroll, POS and AI Tools to Transform SMB Operations",
+    "How Network APIs Are Turning 5G into a Business Asset",
+    "How Businesses Can Prepare for AI-Driven Changes in Marketing",
+    "Death of the Waiting Room: Is AI Finally Killing the Lineup?",
+    "Jordan Mair on Branding, Creativity and AI in Modern Marketing",
+    "Chris McLellan on Human-AI Collaboration and Smarter Marketing for SMEs",
+    "Edward Johnson on Making AI Practical for Canadian Businesses",
+    "Speed, Cost and Excuse: Why AI?",
+    "From Ad Spend to Profit: Performance Marketing for SMEs"
+   ],
+   "Podcast episode",
+   "Listen"
+  ]
+ },
+ "ACATS": {
+  "blog": [
+   "Marketing",
+   "Technology",
+   "Technology",
+   "Leadership",
+   "Cybersecurity",
+   "Cybersecurity",
+   "AI",
+   "Finance",
+   "Technology",
+   "Diversity",
+   "Diversity",
+   "Retail"
+  ],
+  "news": [
+   "Announcement",
+   "AI",
+   "Government",
+   "Research",
+   "Announcement",
+   "Partnership",
+   "Appointment",
+   "Appointment",
+   "Partnership",
+   "Appointment"
+  ],
+  "podcast": [
+   "AI",
+   "Marketing",
+   "Hiring",
+   "Technology",
+   "Technology",
+   "Marketing",
+   "AI",
+   "Marketing",
+   "Marketing",
+   "AI",
+   "AI",
+   "Marketing"
+  ]
+ },
+ "ADATES": [
+  "Nov 18, 2026",
+  "Nov 16, 2026",
+  "Nov 12, 2026",
+  "Nov 9, 2026",
+  "Nov 5, 2026",
+  "Nov 2, 2026",
+  "Oct 28, 2026",
+  "Oct 22, 2026",
+  "Oct 15, 2026",
+  "Oct 9, 2026",
+  "Oct 2, 2026",
+  "Sep 24, 2026"
+ ],
+ "RES": {
+  "indigenous": [
+   "Indigenous Entrepreneurs Resource Centre",
+   "A one-stop hub for building and growing Indigenous businesses in Canada, powered by CanadianSME Small Business Magazine.",
+   [
+    [
+     "Holistic support",
+     "Resources for starting a business and for keeping it running and growing."
+    ],
+    [
+     "Expert guides",
+     "Startup guides written for Indigenous entrepreneurs."
+    ],
+    [
+     "Events calendar",
+     "Upcoming events and partnerships that support Indigenous businesses."
+    ],
+    [
+     "Business advisors",
+     "Experienced small business advisors you can talk to."
+    ]
+   ]
+  ],
+  "women": [
+   "Women Entrepreneurs Resource Centre",
+   "A platform committed to uplifting and expanding the presence of women-owned businesses across Canada, supported by CanadianSME Small Business Magazine.",
+   [
+    [
+     "Education and skill development",
+     "Educational materials, training programs and workshops on a wide range of business topics."
+    ],
+    [
+     "Networking opportunities",
+     "Events where women entrepreneurs connect, exchange ideas and build partnerships."
+    ],
+    [
+     "Funding assistance",
+     "Guidance on grants, loans and other funding designed for women entrepreneurs."
+    ],
+    [
+     "Mentorship programs",
+     "New entrepreneurs paired with seasoned business professionals."
+    ],
+    [
+     "Visibility and advocacy",
+     "A platform to gain recognition and share your story through the magazine."
+    ]
+   ]
+  ],
+  "black": [
+   "Black Entrepreneurs Resource Centre",
+   "A platform dedicated to empowering and growing Black-owned businesses across Canada, powered by CanadianSME Small Business Magazine.",
+   [
+    [
+     "Comprehensive education",
+     "Educational materials, training and development programs for managing and growing a business."
+    ],
+    [
+     "Networking and collaboration",
+     "Ways to meet other owners and build partnerships."
+    ],
+    [
+     "Funding guidance",
+     "Help finding grants, loans and investors."
+    ],
+    [
+     "Mentorship",
+     "Advice and support from experienced business owners."
+    ],
+    [
+     "Platform for visibility",
+     "A place to showcase your business and your story."
+    ]
+   ]
+  ],
+  "immigrant": [
+   "Immigrant Entrepreneurs Resource Centre",
+   "A platform committed to helping businesses owned by immigrants in Canada grow, supported by CanadianSME Small Business Magazine.",
+   [
+    [
+     "Tailored education",
+     "Educational materials and training designed for immigrant entrepreneurs."
+    ],
+    [
+     "Networking",
+     "Ways to meet other owners and build a local network."
+    ],
+    [
+     "Funding guidance",
+     "Help finding grants, loans and other funding."
+    ],
+    [
+     "Mentorship",
+     "Guidance from people who have built businesses in Canada."
+    ],
+    [
+     "Business visibility",
+     "A place to promote your business."
+    ],
+    [
+     "Language and cultural support",
+     "Help with the language and business culture of a new country."
+    ]
+   ]
+  ],
+  "lgbtq": [
+   "LGBTQ+ Entrepreneurs Resource Centre",
+   "A platform created to support and amplify the growth of LGBTQ+-owned businesses across Canada, powered by CanadianSME Small Business Magazine.",
+   [
+    [
+     "Inclusive education",
+     "Workshops, webinars and courses tailored to LGBTQ+ entrepreneurs."
+    ],
+    [
+     "Networking and collaboration",
+     "Events and groups for meeting other owners."
+    ],
+    [
+     "Funding guidance",
+     "Help finding grants, loans and investors."
+    ],
+    [
+     "Mentorship",
+     "Support from experienced LGBTQ+ business owners and allies."
+    ]
+   ]
+  ]
+ },
+ "SIDE": {
+  "hub": [
+   "Explore the Hub",
+   [
+    [
+     "groups",
+     "Groups"
+    ],
+    [
+     "people",
+     "Members"
+    ],
+    [
+     "hashtags",
+     "Hashtags"
+    ],
+    [
+     "businesses",
+     "Business Directory"
+    ],
+    [
+     "mybusinesses",
+     "My Businesses"
+    ],
+    [
+     "pavilion",
+     "Made in Canada Pavilion"
+    ],
+    [
+     "events",
+     "Events"
+    ],
+    [
+     "ask",
+     "Ask the Hub AI"
+    ],
+    [
+     "matches",
+     "AI matchmaking"
+    ],
+    [
+     "memberblogs",
+     "Member blogs"
+    ],
+    [
+     "advisors",
+     "SMB Advisors"
+    ],
+    [
+     "plans",
+     "Membership plans"
+    ],
+    [
+     "blog",
+     "Blog"
+    ],
+    [
+     "news",
+     "News"
+    ],
+    [
+     "courses",
+     "Courses"
+    ],
+    [
+     "podcast",
+     "Small Business Podcast"
+    ]
+   ]
+  ],
+  "policy": [
+   "Policies and help",
+   [
+    [
+     "help",
+     "Frequently asked questions"
+    ],
+    [
+     "guidelines",
+     "Community guidelines"
+    ],
+    [
+     "discrimination",
+     "Discrimination policy"
+    ],
+    [
+     "terms",
+     "Terms and conditions"
+    ],
+    [
+     "privacy",
+     "Privacy policy"
+    ]
+   ]
+  ],
+  "about": [
+   "About SMB Hub",
+   [
+    [
+     "about",
+     "About us"
+    ],
+    [
+     "magazine",
+     "CanadianSME Magazine"
+    ],
+    [
+     "guides",
+     "Business guides"
+    ],
+    [
+     "contact",
+     "Contact"
+    ]
+   ]
+  ],
+  "res": [
+   "SMB resources",
+   [
+    [
+     "res-indigenous",
+     "Indigenous entrepreneurs"
+    ],
+    [
+     "res-women",
+     "Women entrepreneurs"
+    ],
+    [
+     "res-black",
+     "Black entrepreneurs"
+    ],
+    [
+     "res-immigrant",
+     "Immigrant entrepreneurs"
+    ],
+    [
+     "res-lgbtq",
+     "Resources for LGBTQ+"
+    ]
+   ]
+  ],
+  "guide": [
+   "Province-wide resources",
+   [
+    [
+     "guide-alberta",
+     "Alberta"
+    ],
+    [
+     "guide-british-columbia",
+     "British Columbia"
+    ],
+    [
+     "guide-manitoba",
+     "Manitoba"
+    ],
+    [
+     "guide-new-brunswick",
+     "New Brunswick"
+    ],
+    [
+     "guide-newfoundland-and-labrador",
+     "Newfoundland and Labrador"
+    ],
+    [
+     "guide-northwest-territories",
+     "Northwest Territories"
+    ],
+    [
+     "guide-nova-scotia",
+     "Nova Scotia"
+    ],
+    [
+     "guide-nunavut",
+     "Nunavut"
+    ],
+    [
+     "guide-ontario",
+     "Ontario"
+    ],
+    [
+     "guide-prince-edward-island",
+     "Prince Edward Island"
+    ],
+    [
+     "guide-quebec",
+     "Quebec"
+    ],
+    [
+     "guide-saskatchewan",
+     "Saskatchewan"
+    ],
+    [
+     "guide-yukon",
+     "Yukon"
+    ]
+   ]
+  ]
+ },
+ "TEAMNAV": [
+  [
+   "Community",
+   [
+    [
+     "moderation",
+     "Moderation"
+    ],
+    [
+     "automations",
+     "Automations"
+    ]
+   ]
+  ],
+  [
+   "Settings",
+   [
+    [
+     "profilesettings",
+     "Profiles and directory"
+    ],
+    [
+     "feedsettings",
+     "Feed"
+    ],
+    [
+     "groupsettings",
+     "Groups"
+    ],
+    [
+     "blogsettings",
+     "Member blogs"
+    ],
+    [
+     "hashtagsettings",
+     "Hashtags"
+    ],
+    [
+     "storysettings",
+     "Stories"
+    ]
+   ]
+  ],
+  [
+   "Business Directory",
+   [
+    [
+     "bizadmin",
+     "Business Profiles"
+    ]
+   ]
+  ]
+ ],
+ "APOOL": [
+  "network",
+  "advisors",
+  "post-ai",
+  "community",
+  "support",
+  "hero",
+  "women",
+  "black",
+  "immigrant",
+  "indigenous",
+  "lgbtq"
+ ],
+ "THUMBS": [
+  "nodes",
+  "bars",
+  "awning",
+  "laptop",
+  "law",
+  "ship",
+  "solar",
+  "truck",
+  "bakery"
+ ]
+}

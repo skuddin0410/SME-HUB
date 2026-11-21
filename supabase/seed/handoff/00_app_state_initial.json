@@ -1,0 +1,1228 @@
+{
+ "S": {
+  "reports": [
+   {
+    "kind": "post",
+    "target": "sp1",
+    "by": "sara",
+    "cat": "Spam or disguised advertising",
+    "note": "Same message posted in three groups.",
+    "when": "Nov 19, 2026 · 9:34 pm"
+   },
+   {
+    "kind": "post",
+    "target": "sp1",
+    "by": "kwame",
+    "cat": "Scam or fraud",
+    "note": "",
+    "when": "Nov 19, 2026 · 10:02 pm"
+   },
+   {
+    "kind": "post",
+    "target": "sp1",
+    "by": "priya",
+    "cat": "Spam or disguised advertising",
+    "note": "",
+    "when": "Nov 20, 2026 · 8:15 am"
+   },
+   {
+    "kind": "post",
+    "target": "p5",
+    "by": "owen",
+    "cat": "Other",
+    "note": "Should this be in a hiring group?",
+    "when": "Nov 18, 2026 · 2:40 pm"
+   },
+   {
+    "kind": "photo",
+    "target": "p2",
+    "by": "tyler",
+    "cat": "Inappropriate",
+    "note": "Photo does not match the post.",
+    "when": "Nov 20, 2026 · 11:05 am"
+   },
+   {
+    "kind": "group",
+    "target": "trade",
+    "by": "mei",
+    "cat": "Misinformation",
+    "note": "Outdated tariff advice pinned at the top.",
+    "when": "Nov 17, 2026 · 4:20 pm"
+   },
+   {
+    "kind": "member",
+    "target": "spam1",
+    "by": "sara",
+    "cat": "Spam or disguised advertising",
+    "note": "",
+    "when": "Nov 19, 2026 · 9:36 pm"
+   },
+   {
+    "kind": "member",
+    "target": "spam1",
+    "by": "hana",
+    "cat": "Fake business or impersonation",
+    "note": "",
+    "when": "Nov 20, 2026 · 7:50 am"
+   },
+   {
+    "kind": "member",
+    "target": "spam2",
+    "by": "daniel",
+    "cat": "Scam or fraud",
+    "note": "Asked for a deposit by message.",
+    "when": "Nov 15, 2026 · 6:12 pm"
+   },
+   {
+    "kind": "member",
+    "target": "spam2",
+    "by": "chloe",
+    "cat": "Scam or fraud",
+    "note": "",
+    "when": "Nov 16, 2026 · 9:01 am"
+   },
+   {
+    "kind": "member",
+    "target": "marcus",
+    "by": "luc",
+    "cat": "Harassment",
+    "note": "Heated reply in a thread. Probably a one-off.",
+    "when": "Nov 12, 2026 · 3:33 pm"
+   }
+  ],
+  "modHide": {},
+  "susp": {},
+  "blocked": {},
+  "mod": {
+   "tab": "content",
+   "cf": "",
+   "mf": "",
+   "sel": {},
+   "memberReport": true,
+   "blocking": true,
+   "emailOn": true,
+   "types": {
+    "post": {
+     "on": true,
+     "auto": true,
+     "hide": 3
+    },
+    "comment": {
+     "on": true,
+     "auto": true,
+     "hide": 3
+    },
+    "photo": {
+     "on": true,
+     "auto": true,
+     "hide": 2
+    },
+    "group": {
+     "on": true,
+     "auto": false,
+     "hide": 5
+    },
+    "blog": {
+     "on": true,
+     "auto": true,
+     "hide": 3
+    },
+    "blogc": {
+     "on": true,
+     "auto": true,
+     "hide": 3
+    }
+   },
+   "susBlocks": {
+    "on": true,
+    "n": 5
+   },
+   "susReports": {
+    "on": true,
+    "n": 10
+   },
+   "email": {
+    "subject": "[SMB Hub] {{user.name}} has been suspended",
+    "body": "{{user.name}} has been automatically suspended from SMB Hub after being reported {{times.reported}} time(s) and blocked {{times.blocked}} time(s). Open Moderation to review."
+   },
+   "cats": [
+    {
+     "name": "Spam or disguised advertising",
+     "desc": "Sales pitches posted as questions, wins or comments.",
+     "show": "both"
+    },
+    {
+     "name": "Scam or fraud",
+     "desc": "Fake offers, requests for money or deposits.",
+     "show": "both"
+    },
+    {
+     "name": "Harassment",
+     "desc": "Bullying, threats or repeated unwanted contact.",
+     "show": "both"
+    },
+    {
+     "name": "Fake business or impersonation",
+     "desc": "Pretending to be a person or company they are not.",
+     "show": "member"
+    },
+    {
+     "name": "Misinformation",
+     "desc": "Misleading or false information.",
+     "show": "content"
+    },
+    {
+     "name": "Offensive",
+     "desc": "Abusive or derogatory content.",
+     "show": "content"
+    },
+    {
+     "name": "Inappropriate",
+     "desc": "Content that does not belong in a business community.",
+     "show": "content"
+    },
+    {
+     "name": "Other",
+     "desc": "Something else the team should look at.",
+     "show": "both"
+    }
+   ]
+  },
+  "gmade": 0,
+  "gpend": {},
+  "gin": {},
+  "gform": {
+   "name": "",
+   "desc": "",
+   "cover": "",
+   "join": "request"
+  },
+  "greq": [
+   {
+    "name": "Ontario Owners",
+    "by": "daniel",
+    "type": "City or region",
+    "why": "A place for Ontario owners to share local suppliers, events and rules."
+   },
+   {
+    "name": "Cybersecurity Basics",
+    "by": "ravi",
+    "type": "Topic",
+    "why": "Plain-language help with passwords, backups and scams."
+   }
+  ],
+  "gs": {
+   "create": "paid",
+   "privJoin": "request",
+   "layout": "grid",
+   "header": "side",
+   "card": {
+    "cat": true,
+    "desc": true,
+    "count": true,
+    "act": true,
+    "host": true
+   },
+   "head": {
+    "type": true,
+    "priv": true,
+    "desc": true,
+    "faces": true,
+    "act": true
+   },
+   "defCover": "nodes",
+   "msgAll": true,
+   "archive": true,
+   "types": [
+    "Topic",
+    "Industry",
+    "Community",
+    "City or region",
+    "Private circle"
+   ]
+  },
+  "offersUsed": 0,
+  "rx": null,
+  "ed": null,
+  "mbq": "",
+  "mbcat": "",
+  "mbtab": "mine",
+  "mbsaved": {},
+  "bs": {
+   "who": "all",
+   "approve": "free",
+   "reqImg": true,
+   "memberTags": true,
+   "layout": "grid",
+   "imgStyle": "standard",
+   "share": {
+    "linkedin": true,
+    "facebook": true,
+    "x": false,
+    "email": true,
+    "copy": true
+   },
+   "authorBox": true,
+   "cats": [
+    "Money",
+    "Sales & marketing",
+    "Operations",
+    "Hiring & people",
+    "AI & technology",
+    "Legal",
+    "Owner stories"
+   ]
+  },
+  "feedN": 6,
+  "artq": "",
+  "artcat": "",
+  "asaved": {},
+  "alike": {},
+  "gq": "",
+  "gcat": "",
+  "gsort": "act",
+  "advBooked": {},
+  "advSeat": {},
+  "advf": "",
+  "adq": "",
+  "advX": 2,
+  "pvsec": "all",
+  "pvclaim": "",
+  "pvq": "",
+  "pvprov": "",
+  "dock": {
+   "open": false,
+   "chat": false
+  },
+  "unreadT": {
+   "sara": true,
+   "kwame": true
+  },
+  "psel": "",
+  "psort": "active",
+  "pmore": false,
+  "pplan": "",
+  "pfound": false,
+  "bprov": "",
+  "bsort": "rec",
+  "mega": null,
+  "aq": "",
+  "aiLeft": 10,
+  "asks": [],
+  "fr": {},
+  "dark": false,
+  "route": "feed",
+  "member": true,
+  "filter": "all",
+  "sort": "top",
+  "q": "",
+  "pq": "",
+  "prov": "",
+  "bq": "",
+  "bcat": "",
+  "draft": "",
+  "draftKind": "question",
+  "group": null,
+  "yearly": false,
+  "modal": null,
+  "toast": "",
+  "draftImg": "",
+  "draftGroup": "",
+  "menu": null,
+  "notif": false,
+  "unread": 3,
+  "unreadMsg": 2,
+  "mdraft": "",
+  "thread": "sara",
+  "react": {},
+  "hidden": {},
+  "clike": {},
+  "notes": [
+   "3 people viewed your profile this week. Open your profile to see who.",
+   "Sara Haddad sent you a message",
+   "Kwame Asante sent you a message",
+   "Wednesday’s live session is open. Save your seat."
+  ],
+  "threads": {
+   "sara": [
+    {
+     "mine": false,
+     "t": "Thanks for joining, Alex. If you want the free year-end bookkeeping check, any weekday morning works for me."
+    }
+   ],
+   "kwame": [
+    {
+     "mine": false,
+     "t": "Welcome to the Hub. Send me your lease question any time."
+    }
+   ]
+  },
+  "joined": {},
+  "connected": {},
+  "saved": {},
+  "rsvp": {},
+  "recd": {},
+  "helped": {},
+  "open": {},
+  "steps": {
+   "profile": false,
+   "group": false,
+   "intro": false
+  },
+  "cdraft": {},
+  "posts": [
+   {
+    "id": "sp1",
+    "by": "spam1",
+    "kind": "offer",
+    "age": "2 days ago",
+    "t": 2,
+    "g": null,
+    "helpful": 0,
+    "text": "GROW YOUR BUSINESS FAST!!! 10,000 new followers in 7 days, guaranteed. Message me now for a special price, limited spots. #free #cheap #followers #growth",
+    "photo": "",
+    "comments": []
+   },
+   {
+    "id": "poll1",
+    "by": "daniel",
+    "kind": "question",
+    "age": "5 hours ago",
+    "t": 0.3,
+    "g": null,
+    "helpful": 16,
+    "title": "Quick poll: how do your customers pay you?",
+    "text": "We are deciding whether to stop accepting cheques. What do most of your customers use? #askthehub",
+    "photo": "",
+    "comments": [
+     {
+      "by": "hana",
+      "text": "E-transfer for almost everything now. Cheques only from two older clients."
+     }
+    ],
+    "poll": {
+     "opts": [
+      [
+       "E-transfer",
+       9
+      ],
+      [
+       "Credit card",
+       6
+      ],
+      [
+       "Cheque",
+       2
+      ],
+      [
+       "Cash",
+       1
+      ]
+     ],
+     "days": 4
+    }
+   },
+   {
+    "id": "g1",
+    "by": "hana",
+    "kind": "question",
+    "age": "3 hours ago",
+    "t": 0.2,
+    "g": "money",
+    "helpful": 5,
+    "text": "Year-end reminder: if you pay yourself a salary, your last payroll remittance for December is due in mid-January. What is everyone using to track remittance dates? #tax #askthehub",
+    "photo": "",
+    "comments": [
+     {
+      "by": "sara",
+      "text": "A shared calendar with two reminders. Simple and it never fails."
+     },
+     {
+      "by": "kwame",
+      "text": "Your payroll software should remind you. If it does not, switch.",
+      "likes": 2
+     },
+     {
+      "by": "nadia",
+      "text": "I set it as a recurring bill in my bank so it cannot be missed.",
+      "likes": 1
+     },
+     {
+      "by": "daniel",
+      "text": "Sticky note on the monitor. Not proud of it, but it works."
+     },
+     {
+      "by": "isabelle",
+      "text": "My bookkeeper sends me a text the week before."
+     }
+    ],
+    "title": "Tracking payroll remittance dates"
+   },
+   {
+    "id": "g9",
+    "by": "sara",
+    "kind": "offer",
+    "age": "1 day ago",
+    "t": 1,
+    "g": "funding",
+    "helpful": 6,
+    "text": "Heads up: several provincial digital adoption grants reopen in January. If you want my one-page checklist of what to have ready before you apply, reply here. #grants",
+    "photo": "",
+    "comments": [
+     {
+      "by": "arjun",
+      "text": "Yes please. We missed the last round by two days. #grants"
+     }
+    ]
+   },
+   {
+    "id": "g2",
+    "by": "isabelle",
+    "kind": "win",
+    "age": "1 day ago",
+    "t": 1,
+    "g": "marketing",
+    "helpful": 8,
+    "text": "We changed one line on a client homepage from what they do to who they help. Enquiries went from 6 to 13 in a month. Lead with the customer, not the company. #marketing #smallwins",
+    "photo": "img/post-design.jpg",
+    "comments": [],
+    "title": "One line that doubled our enquiries",
+    "cover": true
+   },
+   {
+    "id": "g3",
+    "by": "tyler",
+    "kind": "question",
+    "age": "2 days ago",
+    "t": 2,
+    "g": "trades",
+    "helpful": 3,
+    "text": "How are other contractors handling deposits? We ask for 30% up front and still get pushback on bigger jobs. #trades #askthehub",
+    "photo": "",
+    "comments": [
+     {
+      "by": "kwame",
+      "text": "Put the deposit and payment schedule in the signed quote. It ends most arguments before they start."
+     },
+     {
+      "by": "priya",
+      "text": "@Alex Morgan you quote renovation jobs every week. How do you handle deposits?",
+      "replies": [
+       {
+        "by": "tyler",
+        "text": "Good call, I would like to hear that too."
+       }
+      ]
+     }
+    ],
+    "title": "Deposits on bigger jobs"
+   },
+   {
+    "id": "g4",
+    "by": "nadia",
+    "kind": "offer",
+    "age": "2 days ago",
+    "t": 2,
+    "g": "women",
+    "helpful": 6,
+    "text": "I have two free seats for next month’s women in business lunch in Winnipeg. Reply here if you want one. #womeninbusiness",
+    "photo": "",
+    "comments": []
+   },
+   {
+    "id": "g5",
+    "by": "ravi",
+    "kind": "intro",
+    "age": "4 days ago",
+    "t": 4,
+    "g": "starting",
+    "helpful": 4,
+    "text": "Six months in. Biggest lesson so far: send the invoice the same day you finish the work. Our average payment time dropped by two weeks. #startup #newhere",
+    "photo": "",
+    "comments": []
+   },
+   {
+    "id": "g6",
+    "by": "luc",
+    "kind": "question",
+    "age": "5 days ago",
+    "t": 5,
+    "g": "makers",
+    "helpful": 2,
+    "text": "For makers using imported hardware: how do you word your label? We are going with Made in Canada with imported parts. #madeincanada #askthehub",
+    "photo": "",
+    "comments": []
+   },
+   {
+    "id": "g7",
+    "by": "priya",
+    "kind": "win",
+    "age": "6 days ago",
+    "t": 6,
+    "g": "food",
+    "helpful": 7,
+    "text": "Switched flour suppliers after comparing three quotes. Same quality, 9% lower cost. Ask for quotes every year, even if you are happy. #foodbusiness #smallwins",
+    "photo": "",
+    "comments": []
+   },
+   {
+    "id": "g8",
+    "by": "kwame",
+    "kind": "offer",
+    "age": "1 week ago",
+    "t": 7,
+    "g": "hiring",
+    "helpful": 5,
+    "text": "Free template: a one-page offer letter for your first employee, written in plain language. Message me and I will send it. #hiring",
+    "photo": "",
+    "comments": []
+   },
+   {
+    "id": "p1",
+    "photo": "img/post-grants.jpg",
+    "fr": "Nous venons de conclure notre premier compte de gros avec un épicier national. Il a fallu 14 mois et trois échantillons refusés. Ce qui a enfin fonctionné : une fiche de vente d’une page avec les données de durée de conservation en évidence. Je partage volontiers la structure avec ceux qui vivent le même processus.",
+    "insight": 3,
+    "celebrate": 9,
+    "reposts": 2,
+    "by": "priya",
+    "kind": "win",
+    "age": "3 days ago",
+    "t": 3,
+    "g": null,
+    "helpful": 6,
+    "text": "We just closed our first wholesale account with a national grocer. It took 14 months and three rejected samples. The thing that finally worked: a one-page sell sheet with shelf-life data up front. Happy to share the structure with anyone going through the same process. #smallwins",
+    "comments": [
+     {
+      "by": "sara",
+      "text": "Congratulations. Would you share the sell sheet layout in the Retail Roundtable?"
+     },
+     {
+      "by": "priya",
+      "text": "Yes, I will post it there this week."
+     }
+    ]
+   },
+   {
+    "id": "p2",
+    "photo": "img/post-retail.jpg",
+    "fr": "Après 20 ans de bouche-à-oreille, nous avons enfin lancé la commande en ligne. Première semaine : 4 commandes, toutes de personnes qui nous connaissaient déjà. Des conseils pour joindre de nouveaux clients sans brûler de l’argent en publicité ?",
+    "insight": 2,
+    "celebrate": 0,
+    "reposts": 1,
+    "by": "luc",
+    "kind": "question",
+    "age": "5 days ago",
+    "t": 5,
+    "g": "retail",
+    "helpful": 4,
+    "text": "After 20 years of word of mouth we finally launched online ordering. First week: 4 orders, all from people who already knew us. Any advice on reaching new customers without burning money on ads? #retail #askthehub",
+    "comments": [
+     {
+      "by": "mei",
+      "likes": 3,
+      "text": "Start with the customers you have. Ask each one for a Google review and one referral before spending on ads."
+     },
+     {
+      "by": "chloe",
+      "text": "A card in every order with a friend discount worked well for us."
+     }
+    ]
+   },
+   {
+    "id": "p3",
+    "fr": "Quelqu’un a-t-il changé de système de point de vente en pleine saison achalandée ? Le nôtre gèle sans cesse et j’hésite à migrer avant les Fêtes.",
+    "by": "chloe",
+    "kind": "question",
+    "age": "1 day ago",
+    "t": 1,
+    "g": "retail",
+    "helpful": 1,
+    "text": "Has anyone switched point-of-sale systems in the middle of a busy season? Ours keeps freezing and I am nervous about moving before the holidays. #retail #askthehub",
+    "comments": []
+   },
+   {
+    "id": "p4",
+    "fr": "Membres du Hub : j’offre une vérification gratuite de 30 minutes de votre tenue de livres de fin d’année jusqu’en janvier. Apportez vos questions et je vous dirai quoi corriger avant la saison des impôts.",
+    "insight": 1,
+    "celebrate": 1,
+    "reposts": 0,
+    "by": "sara",
+    "kind": "offer",
+    "age": "2 days ago",
+    "t": 2,
+    "g": null,
+    "helpful": 3,
+    "text": "Hub members: I am offering a free 30-minute year-end bookkeeping check through January. Bring your questions and I will tell you what to fix before tax season.",
+    "comments": [
+     {
+      "by": "daniel",
+      "text": "Booked. Thank you."
+     }
+    ]
+   },
+   {
+    "id": "p5",
+    "fr": "Nous embauchons un répartiteur à temps partiel à Mississauga, trois jours par semaine. Une expérience des expéditions transfrontalières est un atout. Les recommandations de membres sont les bienvenues.",
+    "img": "truck",
+    "by": "daniel",
+    "kind": "hiring",
+    "age": "4 days ago",
+    "t": 4,
+    "g": "trade",
+    "helpful": 2,
+    "text": "Hiring a part-time dispatcher in Mississauga, three days a week. Experience with cross-border shipments is a plus. Referrals from members are welcome. #export #hiring",
+    "comments": []
+   },
+   {
+    "id": "p6",
+    "photo": "img/post-ai.jpg",
+    "fr": "Je cherche à être présentée à deux ou trois détaillants indépendants en Colombie-Britannique prêts à tester un rapport d’inventaire hebdomadaire simple. Le projet pilote est gratuit.",
+    "by": "mei",
+    "kind": "question",
+    "age": "6 hours ago",
+    "t": 0.25,
+    "g": "ai",
+    "helpful": 0,
+    "text": "Looking for introductions to two or three independent retailers in BC who would test a simple weekly inventory report. No charge for the pilot. #ai #askthehub",
+    "comments": []
+   },
+   {
+    "id": "p7",
+    "fr": "Nouveau ici. Je dirige Asante Legal à Toronto et je travaille surtout avec des entreprises gérées par leur propriétaire. Je réponds volontiers aux questions générales sur les contrats et les baux commerciaux dans les commentaires.",
+    "insight": 0,
+    "celebrate": 2,
+    "reposts": 0,
+    "by": "kwame",
+    "kind": "intro",
+    "age": "6 days ago",
+    "t": 6,
+    "g": null,
+    "helpful": 5,
+    "text": "New here. I run Asante Legal in Toronto and work mostly with owner-run businesses. Happy to answer general questions about contracts and commercial leases in the comments. #newhere",
+    "comments": [
+     {
+      "by": "arjun",
+      "text": "Welcome. I will have a lease question for you soon."
+     }
+    ]
+   },
+   {
+    "id": "p8",
+    "fr": "Notre équipe a réussi l’inspection de notre première installation commerciale sur toit cette semaine. Merci aux deux membres d’ici qui m’ont expliqué les étapes du permis.",
+    "insight": 0,
+    "celebrate": 6,
+    "reposts": 0,
+    "img": "solar",
+    "by": "arjun",
+    "kind": "win",
+    "age": "1 week ago",
+    "t": 7,
+    "g": null,
+    "helpful": 4,
+    "text": "Our crew passed inspection on our first commercial rooftop install this week. Thanks to the two members here who walked me through the permit steps. #smallwins",
+    "comments": []
+   },
+   {
+    "id": "bp-seed1",
+    "by": "b_maple",
+    "biz": "maple",
+    "actor": "priya",
+    "kind": "biz",
+    "age": "1 day ago",
+    "t": 1,
+    "ts": 1795198375968,
+    "g": null,
+    "helpful": 3,
+    "text": "New for December: holiday catering trays for office parties, 10 to 80 people. Order 48 hours ahead.",
+    "photo": "img/story-bakery.jpg",
+    "comments": []
+   }
+  ],
+  "ps": {
+   "header": "left",
+   "head": {
+    "online": true,
+    "type": true,
+    "joined": true,
+    "followers": true,
+    "last": true
+   },
+   "dname": "full",
+   "link": "name",
+   "tabs": [
+    [
+     "about",
+     "About",
+     true
+    ],
+    [
+     "posts",
+     "Posts",
+     true
+    ],
+    [
+     "conn",
+     "Connections",
+     true
+    ],
+    [
+     "groups",
+     "Groups",
+     true
+    ],
+    [
+     "blog",
+     "Blog",
+     true
+    ]
+   ],
+   "defTab": "about",
+   "dview": "grid",
+   "dswitch": true,
+   "dcard": {
+    "online": true,
+    "type": true,
+    "followers": false,
+    "last": true,
+    "joined": false
+   },
+   "connect": true,
+   "follow": true,
+   "autoFollow": true,
+   "gate": false,
+   "actions": [
+    [
+     "connect",
+     true
+    ],
+    [
+     "message",
+     true
+    ],
+    [
+     "follow",
+     true
+    ]
+   ],
+   "invites": true,
+   "del": "free",
+   "exportData": true,
+   "nets": {
+    "linkedin": true,
+    "facebook": true,
+    "instagram": true,
+    "x": true,
+    "youtube": true,
+    "tiktok": true,
+    "whatsapp": true,
+    "pinterest": false,
+    "threads": false,
+    "reddit": false,
+    "medium": false,
+    "telegram": false,
+    "snapchat": false
+   },
+   "types": [
+    [
+     "owner",
+     "Business owner",
+     "#F4F4F5",
+     "#27272A"
+    ],
+    [
+     "advisor",
+     "SMB Advisor",
+     "#DBEAFE",
+     "#1D4ED8"
+    ],
+    [
+     "maker",
+     "Canadian maker",
+     "#FEE2E2",
+     "#B91C1C"
+    ],
+    [
+     "provider",
+     "Service provider",
+     "#DCFCE7",
+     "#15803D"
+    ],
+    [
+     "team",
+     "Hub team",
+     "#EDE9FE",
+     "#6D28D9"
+    ]
+   ],
+   "access": {
+    "owner": null,
+    "advisor": null,
+    "maker": null,
+    "provider": [
+     "advisor",
+     "maker",
+     "provider",
+     "team"
+    ],
+    "team": null
+   },
+   "auto": {
+    "owner": [
+     "funding"
+    ],
+    "advisor": [
+     "funding"
+    ],
+    "maker": [
+     "trade"
+    ],
+    "provider": [
+     "ai"
+    ],
+    "team": []
+   },
+   "fields": [
+    {
+     "k": "first",
+     "g": "About",
+     "l": "First name",
+     "t": "Text",
+     "vis": "public",
+     "lock": true,
+     "search": true,
+     "core": true
+    },
+    {
+     "k": "last",
+     "g": "About",
+     "l": "Last name",
+     "t": "Text",
+     "vis": "public",
+     "lock": true,
+     "search": true,
+     "core": true
+    },
+    {
+     "k": "nick",
+     "g": "About",
+     "l": "Nickname",
+     "t": "Text",
+     "vis": "members",
+     "lock": false,
+     "core": true
+    },
+    {
+     "k": "biz",
+     "g": "Business",
+     "l": "Business name",
+     "t": "Text",
+     "vis": "public",
+     "lock": true,
+     "search": true,
+     "core": true
+    },
+    {
+     "k": "industry",
+     "g": "Business",
+     "l": "Industry",
+     "t": "Dropdown",
+     "vis": "public",
+     "lock": true,
+     "search": true,
+     "core": true
+    },
+    {
+     "k": "city",
+     "g": "Business",
+     "l": "City and province",
+     "t": "Text",
+     "vis": "public",
+     "lock": true,
+     "search": true,
+     "core": true
+    },
+    {
+     "k": "founded",
+     "g": "Business",
+     "l": "Year founded",
+     "t": "Number",
+     "vis": "members",
+     "lock": false,
+     "core": true
+    },
+    {
+     "k": "team",
+     "g": "Business",
+     "l": "Team size",
+     "t": "Dropdown",
+     "vis": "members",
+     "lock": false,
+     "search": true,
+     "core": true
+    },
+    {
+     "k": "email",
+     "g": "Contact",
+     "l": "Email",
+     "t": "Email",
+     "vis": "conn",
+     "lock": false,
+     "core": true
+    },
+    {
+     "k": "phone",
+     "g": "Contact",
+     "l": "Phone",
+     "t": "Phone",
+     "vis": "conn",
+     "lock": false,
+     "core": true
+    },
+    {
+     "k": "web",
+     "g": "Contact",
+     "l": "Website",
+     "t": "Web address",
+     "vis": "public",
+     "lock": false,
+     "core": true
+    },
+    {
+     "k": "social",
+     "g": "Contact",
+     "l": "Social networks",
+     "t": "Social networks",
+     "vis": "public",
+     "lock": false,
+     "core": true
+    },
+    {
+     "k": "history",
+     "g": "Work history",
+     "l": "Past businesses and roles",
+     "t": "Repeater",
+     "vis": "members",
+     "lock": false,
+     "core": true
+    }
+   ]
+  },
+  "follow": {},
+  "accepted": {
+   "priya": true,
+   "sara": true
+  },
+  "myVis": {},
+  "myType": "owner",
+  "dview": "",
+  "ptype": "",
+  "pind": "",
+  "pteam": "",
+  "ptab": "",
+  "ptabId": "",
+  "delOk": false,
+  "invites": [
+   {
+    "name": "Jordan Lee",
+    "email": "jordan@leeelectric.example",
+    "type": "owner",
+    "by": "priya",
+    "st": "Joined"
+   },
+   {
+    "name": "Sam Okoye",
+    "email": "sam@okoyefoods.example",
+    "type": "maker",
+    "by": "daniel",
+    "st": "Waiting"
+   }
+  ],
+  "fs": {
+   "relevant": false,
+   "filters": {
+    "mine": true,
+    "reacted": true,
+    "groups": true,
+    "conn": true,
+    "follow": true,
+    "mention": true,
+    "tags": true
+   },
+   "topics": false,
+   "refresh": true,
+   "share": true,
+   "shareOut": true,
+   "schedule": true,
+   "pin": true,
+   "polls": true,
+   "pollMax": "10",
+   "cover": true,
+   "title": "optional",
+   "edit": "10",
+   "closeC": true,
+   "comments": true,
+   "cedit": "10",
+   "thread": "2",
+   "cshow": "2",
+   "cload": "10",
+   "access": "all",
+   "accessTypes": {
+    "owner": true,
+    "advisor": true,
+    "maker": true,
+    "provider": false,
+    "team": true
+   },
+   "auto": {
+    "register": true,
+    "joinGroup": true,
+    "connect": false,
+    "blog": true
+   }
+  },
+  "fd": {
+   "title": "",
+   "when": "",
+   "poll": null,
+   "pdays": "7",
+   "cover": false,
+   "sched": false,
+   "creply": ""
+  },
+  "ff": "all",
+  "ffAll": false,
+  "asTeam": false,
+  "pin": {},
+  "votes": {},
+  "cmore": {},
+  "creply": "",
+  "pendNew": [],
+  "newShown": false,
+  "sched": [
+   {
+    "id": "sc1",
+    "by": "me",
+    "kind": "intro",
+    "age": "Just now",
+    "t": 0,
+    "g": null,
+    "helpful": 0,
+    "title": "Awards nominations close Friday",
+    "text": "Reminder from the Hub team: nominations for the Small Business Awards close this Friday at 5 pm ET. Nominate an owner who helped you this year. #newhere",
+    "photo": "",
+    "comments": [],
+    "when": "2026-11-25T09:00"
+   }
+  ],
+  "pv": {
+   "on": true,
+   "strip": true,
+   "optout": true,
+   "guests": false,
+   "free": "2",
+   "notify": "weekly",
+   "chart": "bar"
+  },
+  "pvOpt": false,
+  "pvRange": "30",
+  "ht": {
+   "posts": true,
+   "comments": true,
+   "auto": true,
+   "follow": true,
+   "trend": true,
+   "profile": true,
+   "notify": "weekly",
+   "create": "all",
+   "min": "3",
+   "max": "24",
+   "per": "5",
+   "blocked": [
+    "free",
+    "cheap",
+    "followers"
+   ],
+   "removed": {},
+   "merge": {}
+  },
+  "tagFollow": {
+   "grants": true,
+   "hiring": true
+  },
+  "htq": "",
+  "htm": "",
+  "oppSeen": false,
+  "skip": {},
+  "introReq": {},
+  "myRecs": {},
+  "recAsk": {},
+  "recHide": {},
+  "pfit": "",
+  "meetDraft": null,
+  "stAs": "me",
+  "stClock": 0,
+  "stSeen": {},
+  "stHidden": {},
+  "stMuted": true,
+  "stv": null,
+  "stDraft": null,
+  "stFail": false,
+  "stPurged": 0,
+  "stManage": false,
+  "stHL": null,
+  "stHLadd": null,
+  "sts": {
+   "publish": "all",
+   "aud": {
+    "public": false,
+    "members": true,
+    "conn": true
+   },
+   "defAud": "members",
+   "approval": false,
+   "dur": "24",
+   "types": {
+    "jpg": true,
+    "png": true,
+    "webp": true,
+    "gif": false,
+    "mp4": true,
+    "mov": true,
+    "webm": true
+   },
+   "maxMB": "25",
+   "maxVid": "30",
+   "perMember": "3",
+   "perStory": "5",
+   "showViewers": true,
+   "likes": true,
+   "cleanup": false
+  },
+  "bd": {
+   "q": "",
+   "cat": "",
+   "prov": "",
+   "city": "",
+   "open": false,
+   "view": "grid",
+   "filters": false,
+   "sel": ""
+  },
+  "bzTab": {},
+  "bzMore": false,
+  "bzCompose": "",
+  "bzNew": {
+   "name": "",
+   "cat": "",
+   "desc": "",
+   "city": "",
+   "prov": "ON",
+   "kind": "storefront"
+  },
+  "bzM": {},
+  "bzSvc": null,
+  "bzThread": "",
+  "bzReply": "",
+  "bzA": "queues"
+ }
+}

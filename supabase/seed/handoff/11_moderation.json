@@ -1,0 +1,235 @@
+{
+ "mod_settings": {
+  "tab": "content",
+  "cf": "",
+  "mf": "",
+  "sel": {},
+  "memberReport": true,
+  "blocking": true,
+  "emailOn": true,
+  "types": {
+   "post": {
+    "on": true,
+    "auto": true,
+    "hide": 3
+   },
+   "comment": {
+    "on": true,
+    "auto": true,
+    "hide": 3
+   },
+   "photo": {
+    "on": true,
+    "auto": true,
+    "hide": 2
+   },
+   "group": {
+    "on": true,
+    "auto": false,
+    "hide": 5
+   },
+   "blog": {
+    "on": true,
+    "auto": true,
+    "hide": 3
+   },
+   "blogc": {
+    "on": true,
+    "auto": true,
+    "hide": 3
+   }
+  },
+  "susBlocks": {
+   "on": true,
+   "n": 5
+  },
+  "susReports": {
+   "on": true,
+   "n": 10
+  },
+  "email": {
+   "subject": "[SMB Hub] {{user.name}} has been suspended",
+   "body": "{{user.name}} has been automatically suspended from SMB Hub after being reported {{times.reported}} time(s) and blocked {{times.blocked}} time(s). Open Moderation to review."
+  },
+  "cats": [
+   {
+    "name": "Spam or disguised advertising",
+    "desc": "Sales pitches posted as questions, wins or comments.",
+    "show": "both"
+   },
+   {
+    "name": "Scam or fraud",
+    "desc": "Fake offers, requests for money or deposits.",
+    "show": "both"
+   },
+   {
+    "name": "Harassment",
+    "desc": "Bullying, threats or repeated unwanted contact.",
+    "show": "both"
+   },
+   {
+    "name": "Fake business or impersonation",
+    "desc": "Pretending to be a person or company they are not.",
+    "show": "member"
+   },
+   {
+    "name": "Misinformation",
+    "desc": "Misleading or false information.",
+    "show": "content"
+   },
+   {
+    "name": "Offensive",
+    "desc": "Abusive or derogatory content.",
+    "show": "content"
+   },
+   {
+    "name": "Inappropriate",
+    "desc": "Content that does not belong in a business community.",
+    "show": "content"
+   },
+   {
+    "name": "Other",
+    "desc": "Something else the team should look at.",
+    "show": "both"
+   }
+  ]
+ },
+ "reports": [
+  {
+   "kind": "post",
+   "target": "sp1",
+   "by": "sara",
+   "cat": "Spam or disguised advertising",
+   "note": "Same message posted in three groups.",
+   "when": "Nov 19, 2026 · 9:34 pm"
+  },
+  {
+   "kind": "post",
+   "target": "sp1",
+   "by": "kwame",
+   "cat": "Scam or fraud",
+   "note": "",
+   "when": "Nov 19, 2026 · 10:02 pm"
+  },
+  {
+   "kind": "post",
+   "target": "sp1",
+   "by": "priya",
+   "cat": "Spam or disguised advertising",
+   "note": "",
+   "when": "Nov 20, 2026 · 8:15 am"
+  },
+  {
+   "kind": "post",
+   "target": "p5",
+   "by": "owen",
+   "cat": "Other",
+   "note": "Should this be in a hiring group?",
+   "when": "Nov 18, 2026 · 2:40 pm"
+  },
+  {
+   "kind": "photo",
+   "target": "p2",
+   "by": "tyler",
+   "cat": "Inappropriate",
+   "note": "Photo does not match the post.",
+   "when": "Nov 20, 2026 · 11:05 am"
+  },
+  {
+   "kind": "group",
+   "target": "trade",
+   "by": "mei",
+   "cat": "Misinformation",
+   "note": "Outdated tariff advice pinned at the top.",
+   "when": "Nov 17, 2026 · 4:20 pm"
+  },
+  {
+   "kind": "member",
+   "target": "spam1",
+   "by": "sara",
+   "cat": "Spam or disguised advertising",
+   "note": "",
+   "when": "Nov 19, 2026 · 9:36 pm"
+  },
+  {
+   "kind": "member",
+   "target": "spam1",
+   "by": "hana",
+   "cat": "Fake business or impersonation",
+   "note": "",
+   "when": "Nov 20, 2026 · 7:50 am"
+  },
+  {
+   "kind": "member",
+   "target": "spam2",
+   "by": "daniel",
+   "cat": "Scam or fraud",
+   "note": "Asked for a deposit by message.",
+   "when": "Nov 15, 2026 · 6:12 pm"
+  },
+  {
+   "kind": "member",
+   "target": "spam2",
+   "by": "chloe",
+   "cat": "Scam or fraud",
+   "note": "",
+   "when": "Nov 16, 2026 · 9:01 am"
+  },
+  {
+   "kind": "member",
+   "target": "marcus",
+   "by": "luc",
+   "cat": "Harassment",
+   "note": "Heated reply in a thread. Probably a one-off.",
+   "when": "Nov 12, 2026 · 3:33 pm"
+  }
+ ],
+ "MKIND": {
+  "post": "Post",
+  "comment": "Comment",
+  "photo": "Photo",
+  "group": "Group",
+  "blog": "Blog post",
+  "blogc": "Blog comment",
+  "member": "Member"
+ },
+ "MTYPES": [
+  [
+   "post",
+   "Feed posts",
+   "Posts in the community feed."
+  ],
+  [
+   "comment",
+   "Comments",
+   "Replies under any feed post."
+  ],
+  [
+   "photo",
+   "Photos",
+   "Images in feeds and groups."
+  ],
+  [
+   "group",
+   "Groups",
+   "The group itself, not just its posts."
+  ],
+  [
+   "blog",
+   "Member blog posts",
+   "Posts written by members."
+  ],
+  [
+   "blogc",
+   "Blog comments",
+   "Replies under a member’s blog post."
+  ]
+ ],
+ "MBLK": {
+  "spam1": 4,
+  "spam2": 6,
+  "marcus": 1
+ },
+ "suspended": {},
+ "blocked": {}
+}

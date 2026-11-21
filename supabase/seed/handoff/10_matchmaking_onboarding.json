@@ -1,0 +1,165 @@
+{
+ "MMQ": [
+  "Your goal",
+  "What you need",
+  "Who to meet",
+  "When you are free",
+  "Check and match"
+ ],
+ "MMOPT": {
+  "goal": [
+   [
+    "customers",
+    "Find customers"
+   ],
+   [
+    "advice",
+    "Get expert advice"
+   ],
+   [
+    "supplier",
+    "Find a supplier or partner"
+   ],
+   [
+    "peers",
+    "Meet owners like me"
+   ]
+  ],
+  "needs": [
+   "Bookkeeping",
+   "Lease advice",
+   "Online marketing",
+   "Wholesale",
+   "Customs",
+   "Inventory reports",
+   "Solar installs",
+   "Packaging suppliers"
+  ],
+  "where": [
+   [
+    "near",
+    "Near me"
+   ],
+   [
+    "any",
+    "Anywhere in Canada"
+   ]
+  ],
+  "avail": [
+   "Weekday mornings",
+   "Weekday afternoons",
+   "Evenings"
+  ],
+  "format": [
+   [
+    "one",
+    "One-to-one"
+   ],
+   [
+    "group",
+    "Small group of 3 or 4"
+   ]
+  ]
+ },
+ "MMGI": {
+  "customers": [
+   "coin",
+   "More customers",
+   "Meet owners who need what you sell."
+  ],
+  "advice": [
+   "help",
+   "Expert advice",
+   "Talk to an advisor or a peer who has done it."
+  ],
+  "supplier": [
+   "building",
+   "A supplier or partner",
+   "Find someone to buy from or refer work with."
+  ],
+  "peers": [
+   "users",
+   "Owners like me",
+   "Swap notes with people at your stage."
+  ]
+ },
+ "WHO": {
+  "food": "Restaurant, café and food owners",
+  "retail": "Retail store owners",
+  "trades": "Builders and trades",
+  "account": "Accountants and bookkeepers",
+  "legal": "Lawyers",
+  "tech": "Software and web studios",
+  "design": "Designers and marketers",
+  "logistics": "Logistics, import and export",
+  "energy": "Energy and solar companies",
+  "makers": "Makers and manufacturers"
+ },
+ "WHO1": {
+  "food": "Food business owner",
+  "retail": "Retail store owner",
+  "trades": "Builder or trade",
+  "account": "Accountant or bookkeeper",
+  "legal": "Lawyer",
+  "tech": "Software or web studio",
+  "design": "Designer or marketer",
+  "logistics": "Logistics, import or export",
+  "energy": "Energy or solar company",
+  "makers": "Maker or manufacturer"
+ },
+ "SLOTS": {
+  "Weekday mornings": [
+   "Tue, Dec 1 · 10:00 am ET",
+   "Thu, Dec 3 · 9:30 am ET"
+  ],
+  "Weekday afternoons": [
+   "Wed, Dec 2 · 2:00 pm ET",
+   "Fri, Dec 4 · 1:30 pm ET"
+  ],
+  "Evenings": [
+   "Tue, Dec 1 · 7:00 pm ET",
+   "Thu, Dec 3 · 6:30 pm ET"
+  ]
+ },
+ "INDS": [
+  "Food and hospitality",
+  "Retail",
+  "Professional services",
+  "Construction and trades",
+  "Technology",
+  "Manufacturing",
+  "Transportation and trade"
+ ],
+ "TEAMS": [
+  "Just me",
+  "2 to 5 people",
+  "6 to 20 people",
+  "21 to 50 people"
+ ],
+ "GS4": [
+  [
+   "profile",
+   "Set up your business profile",
+   "Add your role, city and what you can help with.",
+   "Edit profile"
+  ],
+  [
+   "meet",
+   "Say who you want to meet",
+   "Pick your ideal customers and the businesses that send you work.",
+   "Choose"
+  ],
+  [
+   "connect",
+   "Connect with people you already know",
+   "Start with 3 owners you have worked with.",
+   "Find people"
+  ],
+  [
+   "opps",
+   "See your first referral opportunities",
+   "Three people worth meeting, picked for you today.",
+   "See them"
+  ]
+ ]
+}

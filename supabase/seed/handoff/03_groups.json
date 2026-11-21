@@ -1,0 +1,243 @@
+{
+ "GROUPS": [
+  {
+   "id": "ai",
+   "cover": "nodes",
+   "name": "AI for Small Business",
+   "desc": "What is saving time and money, and what is hype. Tools, prompts and honest results.",
+   "n": 6
+  },
+  {
+   "id": "funding",
+   "cover": "bars",
+   "name": "Funding & Grants",
+   "desc": "Grants, loans and investors for Canadian small businesses. Deadlines and what worked.",
+   "n": 6
+  },
+  {
+   "id": "trade",
+   "cover": "ship",
+   "name": "Importers & Exporters",
+   "desc": "Tariffs, freight, customs and suppliers. Ask before it costs you.",
+   "n": 6
+  },
+  {
+   "id": "retail",
+   "cover": "awning",
+   "name": "Retail Roundtable",
+   "desc": "Shop owners comparing notes on foot traffic, returns, staffing and online sales.",
+   "n": 7
+  },
+  {
+   "id": "money",
+   "cover": "bars",
+   "name": "Money, Tax & Bookkeeping",
+   "desc": "Cash flow, HST, payroll and year-end. Plain answers from owners and advisors.",
+   "n": 9
+  },
+  {
+   "id": "marketing",
+   "cover": "laptop",
+   "name": "Marketing & Sales",
+   "desc": "Getting found and getting chosen. Websites, social, email and referrals that work on a small budget.",
+   "n": 11
+  },
+  {
+   "id": "hiring",
+   "cover": "awning",
+   "name": "Hiring & People",
+   "desc": "Finding, paying and keeping good staff. Job posts, interviews and the rules to follow.",
+   "n": 5
+  },
+  {
+   "id": "starting",
+   "cover": "laptop",
+   "name": "First-Year Owners",
+   "desc": "For businesses under a year old. Registration, first customers and the mistakes to skip.",
+   "n": 8
+  },
+  {
+   "id": "food",
+   "cover": "bakery",
+   "name": "Food & Hospitality",
+   "desc": "Restaurants, bakeries, caterers and food makers on suppliers, margins and inspections.",
+   "n": 6
+  },
+  {
+   "id": "trades",
+   "cover": "truck",
+   "name": "Trades & Construction",
+   "desc": "Quoting, crews, materials and getting paid on time. For contractors and trades.",
+   "n": 7
+  },
+  {
+   "id": "women",
+   "cover": "nodes",
+   "name": "Women Entrepreneurs",
+   "desc": "Women who own and run businesses sharing funding leads, wins and straight talk.",
+   "n": 10
+  },
+  {
+   "id": "makers",
+   "cover": "solar",
+   "name": "Made in Canada Makers",
+   "desc": "Manufacturers and makers on sourcing, labelling and selling Canadian-made products.",
+   "n": 6
+  },
+  {
+   "id": "circle",
+   "cover": "bars",
+   "name": "Clearwater Client Circle",
+   "desc": "Monthly cash-flow check-ins for Clearwater Bookkeeping clients and invited owners.",
+   "n": 14,
+   "exact": true,
+   "priv": true,
+   "owner": "sara",
+   "join": "request"
+  },
+  {
+   "id": "taxclinic",
+   "cover": "laptop",
+   "name": "Year-End Tax Clinic",
+   "desc": "A small working group getting year-end ready together. Run by Kim & Co. Accounting.",
+   "n": 9,
+   "exact": true,
+   "priv": true,
+   "owner": "hana",
+   "join": "invite"
+  }
+ ],
+ "GMETA": {
+  "circle": [
+   "Private circle",
+   6,
+   "sara"
+  ],
+  "taxclinic": [
+   "Private circle",
+   4,
+   "hana"
+  ],
+  "ai": [
+   "Topic",
+   14,
+   "mei"
+  ],
+  "funding": [
+   "Topic",
+   9,
+   "sara"
+  ],
+  "trade": [
+   "Industry",
+   6,
+   "daniel"
+  ],
+  "retail": [
+   "Industry",
+   11,
+   "chloe"
+  ],
+  "money": [
+   "Topic",
+   12,
+   "hana"
+  ],
+  "marketing": [
+   "Topic",
+   16,
+   "isabelle"
+  ],
+  "hiring": [
+   "Topic",
+   4,
+   "kwame"
+  ],
+  "starting": [
+   "Community",
+   10,
+   "ravi"
+  ],
+  "food": [
+   "Industry",
+   7,
+   "priya"
+  ],
+  "trades": [
+   "Industry",
+   8,
+   "tyler"
+  ],
+  "women": [
+   "Community",
+   13,
+   "nadia"
+  ],
+  "makers": [
+   "Community",
+   5,
+   "luc"
+  ]
+ },
+ "GTAG": {
+  "money": "tax",
+  "funding": "grants",
+  "marketing": "marketing",
+  "trades": "trades",
+  "women": "womeninbusiness",
+  "starting": "startup",
+  "makers": "madeincanada",
+  "food": "foodbusiness",
+  "hiring": "hiring",
+  "ai": "ai",
+  "trade": "export",
+  "retail": "retail"
+ },
+ "GWHY": {
+  "money": "You are looking for bookkeeping help",
+  "trades": "You run a renovation business",
+  "hiring": "You can help with hiring trades",
+  "marketing": "You can help with local marketing"
+ },
+ "GCOVERS": [
+  "nodes",
+  "bars",
+  "awning",
+  "laptop",
+  "ship",
+  "solar",
+  "truck",
+  "bakery"
+ ],
+ "groupSettings_gs": {
+  "create": "paid",
+  "privJoin": "request",
+  "layout": "grid",
+  "header": "side",
+  "card": {
+   "cat": true,
+   "desc": true,
+   "count": true,
+   "act": true,
+   "host": true
+  },
+  "head": {
+   "type": true,
+   "priv": true,
+   "desc": true,
+   "faces": true,
+   "act": true
+  },
+  "defCover": "nodes",
+  "msgAll": true,
+  "archive": true,
+  "types": [
+   "Topic",
+   "Industry",
+   "Community",
+   "City or region",
+   "Private circle"
+  ]
+ },
+ "joined": {}
+}

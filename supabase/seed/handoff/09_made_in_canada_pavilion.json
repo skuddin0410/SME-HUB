@@ -1,0 +1,227 @@
+{
+ "PAV": [
+  {
+   "id": "pv1",
+   "name": "Atelier Bouchard",
+   "sec": "make",
+   "what": "Solid-wood tables, desks and shelving, built to order in Montréal from Quebec maple and oak.",
+   "city": "Montréal, QC",
+   "owner": "luc",
+   "img": "awning",
+   "claims": [
+    "poc",
+    "own"
+   ],
+   "feat": true
+  },
+  {
+   "id": "pv2",
+   "name": "Rock Coast Outfitters",
+   "sec": "make",
+   "what": "Waterproof jackets and packs, cut and sewn in St. John’s.",
+   "city": "St. John’s, NL",
+   "owner": "owen",
+   "img": "ship",
+   "claims": [
+    "mic",
+    "own"
+   ],
+   "note": "Made in Canada with imported fabric"
+  },
+  {
+   "id": "pv3",
+   "name": "Bell Cycle Works",
+   "sec": "make",
+   "what": "Custom commuter and cargo bikes, assembled and tuned in Victoria.",
+   "city": "Victoria, BC",
+   "owner": "marcus",
+   "img": "truck",
+   "claims": [
+    "aic",
+    "own"
+   ],
+   "note": "Assembled in Canada with imported frames and parts"
+  },
+  {
+   "id": "pv4",
+   "name": "Maple Bakery",
+   "sec": "make",
+   "what": "Small-batch bread and pastries for cafes and grocers across the GTA.",
+   "city": "Toronto, ON",
+   "owner": "priya",
+   "img": "bakery",
+   "claims": [
+    "own"
+   ]
+  },
+  {
+   "id": "pv5",
+   "name": "Prairie Roots Catering",
+   "sec": "make",
+   "what": "Prairie-inspired catering and packaged preserves from a Winnipeg kitchen.",
+   "city": "Winnipeg, MB",
+   "owner": "nadia",
+   "img": "bakery",
+   "claims": [
+    "own"
+   ]
+  },
+  {
+   "id": "pv6",
+   "name": "Harbour Forecast",
+   "by": "Harbour Analytics",
+   "sec": "soft",
+   "what": "AI sales forecasting for independent retailers. Connects to your till and predicts next week’s stock needs.",
+   "city": "Vancouver, BC",
+   "owner": "mei",
+   "img": "bars",
+   "claims": [
+    "bic",
+    "data",
+    "own"
+   ],
+   "feat": true,
+   "ai": true
+  },
+  {
+   "id": "pv7",
+   "name": "Loop Assist",
+   "by": "Loop Software",
+   "sec": "soft",
+   "what": "An AI receptionist for trades businesses. Answers calls, books jobs and sends quotes.",
+   "city": "Kitchener, ON",
+   "owner": "ravi",
+   "img": "laptop",
+   "claims": [
+    "bic",
+    "own"
+   ],
+   "ai": true
+  },
+  {
+   "id": "pv8",
+   "name": "LedgerLeaf",
+   "by": "Kim & Co. Accounting",
+   "sec": "soft",
+   "what": "An AI tool that reads receipts and sorts them into the right tax categories.",
+   "city": "Edmonton, AB",
+   "owner": "hana",
+   "img": "nodes",
+   "claims": [
+    "bic",
+    "data"
+   ],
+   "ai": true
+  },
+  {
+   "id": "pv9",
+   "name": "Clearwater Bookkeeping",
+   "sec": "serv",
+   "what": "Bookkeeping and cash-flow planning for owner-run businesses.",
+   "city": "Ottawa, ON",
+   "owner": "sara",
+   "img": "bars",
+   "claims": [
+    "own"
+   ]
+  },
+  {
+   "id": "pv10",
+   "name": "Northside Logistics",
+   "sec": "serv",
+   "what": "Cross-border freight for small shippers, with a real person to call.",
+   "city": "Mississauga, ON",
+   "owner": "daniel",
+   "img": "truck",
+   "claims": [
+    "own"
+   ]
+  },
+  {
+   "id": "pv11",
+   "name": "Brightline Solar",
+   "sec": "serv",
+   "what": "Solar installs for homes and small commercial buildings across Alberta.",
+   "city": "Calgary, AB",
+   "owner": "arjun",
+   "img": "solar",
+   "claims": [
+    "own"
+   ]
+  },
+  {
+   "id": "pv12",
+   "name": "Studio Gagnon Design",
+   "sec": "serv",
+   "what": "Brand and web design for small businesses, in French and English.",
+   "city": "Québec City, QC",
+   "owner": "isabelle",
+   "img": "laptop",
+   "claims": [
+    "own"
+   ]
+  },
+  {
+   "id": "pv13",
+   "name": "Whitecloud Construction",
+   "sec": "serv",
+   "what": "Commercial builds and renovations across Saskatchewan.",
+   "city": "Saskatoon, SK",
+   "owner": "tyler",
+   "img": "awning",
+   "claims": [
+    "own"
+   ]
+  }
+ ],
+ "PSEC": [
+  [
+   "all",
+   "All exhibitors"
+  ],
+  [
+   "make",
+   "Manufacturers and makers"
+  ],
+  [
+   "serv",
+   "Canadian-owned services"
+  ],
+  [
+   "soft",
+   "Software and AI tools"
+  ]
+ ],
+ "CLAIMS": {
+  "poc": [
+   "Product of Canada",
+   "At least 98% of the direct cost of making it was spent in Canada.",
+   0
+  ],
+  "mic": [
+   "Made in Canada",
+   "At least 51% of the direct cost was spent in Canada, and the last major production step happened here. Sellers should add a note such as “with imported parts”.",
+   0
+  ],
+  "aic": [
+   "Assembled in Canada",
+   "Put together in Canada, mostly from imported parts.",
+   0
+  ],
+  "own": [
+   "Canadian-owned",
+   "The business is majority owned by Canadians.",
+   0
+  ],
+  "bic": [
+   "Built in Canada",
+   "The software was designed and developed by a team in Canada.",
+   1
+  ],
+  "data": [
+   "Data stored in Canada",
+   "Customer data is kept on servers located in Canada.",
+   1
+  ]
+ }
+}

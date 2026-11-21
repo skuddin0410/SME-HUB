@@ -1,0 +1,1370 @@
+{
+ "ME": {
+  "id": "me",
+  "name": "Alex Morgan",
+  "role": "Owner, Morgan Home Renovations",
+  "city": "Mississauga, ON",
+  "helps": [
+   "Renovation quotes",
+   "Hiring trades",
+   "Local marketing"
+  ],
+  "needs": [
+   "Bookkeeping",
+   "Lease advice"
+  ],
+  "plan": "Free Member",
+  "founding": true,
+  "full": "Alex Morgan",
+  "is": "trades",
+  "want": [],
+  "partner": []
+ },
+ "MEMBERS": [
+  {
+   "id": "priya",
+   "name": "Priya Raman",
+   "role": "Founder, Maple Bakery",
+   "city": "Toronto, ON",
+   "plan": "Advisor",
+   "founding": true,
+   "helps": [
+    "Wholesale",
+    "Food retail"
+   ],
+   "needs": [
+    "Packaging suppliers"
+   ],
+   "full": "Priya Raman",
+   "is": "food",
+   "want": [
+    "retail",
+    "food"
+   ],
+   "partner": [
+    "logistics",
+    "design"
+   ]
+  },
+  {
+   "id": "luc",
+   "name": "Luc Bouchard",
+   "role": "Director, Atelier Bouchard",
+   "city": "Montréal, QC",
+   "plan": "Free Member",
+   "founding": true,
+   "helps": [
+    "Custom furniture",
+    "Craft pricing"
+   ],
+   "needs": [
+    "Online marketing"
+   ],
+   "full": "Luc Bouchard",
+   "is": "makers",
+   "want": [
+    "retail",
+    "food"
+   ],
+   "partner": [
+    "design",
+    "trades"
+   ]
+  },
+  {
+   "id": "sara",
+   "name": "Sara Haddad",
+   "role": "Founder, Clearwater Bookkeeping",
+   "city": "Ottawa, ON",
+   "plan": "Advisor",
+   "founding": true,
+   "helps": [
+    "Bookkeeping",
+    "Cash-flow planning"
+   ],
+   "needs": [
+    "Referral partners"
+   ],
+   "full": "Sara Haddad",
+   "is": "account",
+   "want": [
+    "food",
+    "retail",
+    "trades"
+   ],
+   "partner": [
+    "legal",
+    "tech"
+   ]
+  },
+  {
+   "id": "daniel",
+   "name": "Daniel Okafor",
+   "role": "Owner, Northside Logistics",
+   "city": "Mississauga, ON",
+   "plan": "Plus",
+   "founding": false,
+   "helps": [
+    "Cross-border freight",
+    "Customs"
+   ],
+   "needs": [
+    "Dispatch staff"
+   ],
+   "full": "Daniel Okafor",
+   "is": "logistics",
+   "want": [
+    "retail",
+    "makers",
+    "food"
+   ],
+   "partner": [
+    "logistics"
+   ]
+  },
+  {
+   "id": "mei",
+   "name": "Mei Tanaka",
+   "role": "Co-founder, Harbour Analytics",
+   "city": "Vancouver, BC",
+   "plan": "Plus",
+   "founding": true,
+   "helps": [
+    "Sales reports",
+    "Inventory data"
+   ],
+   "needs": [
+    "Retail pilot customers"
+   ],
+   "full": "Mei Tanaka",
+   "is": "tech",
+   "want": [
+    "retail"
+   ],
+   "partner": [
+    "tech",
+    "account"
+   ]
+  },
+  {
+   "id": "arjun",
+   "name": "Arjun Mehta",
+   "role": "CEO, Brightline Solar",
+   "city": "Calgary, AB",
+   "plan": "Plus",
+   "founding": false,
+   "helps": [
+    "Solar installs",
+    "Commercial permits"
+   ],
+   "needs": [
+    "Commercial leads"
+   ],
+   "full": "Arjun Mehta",
+   "is": "energy",
+   "want": [
+    "makers",
+    "retail",
+    "food"
+   ],
+   "partner": [
+    "trades"
+   ]
+  },
+  {
+   "id": "chloe",
+   "name": "Chloe Tremblay",
+   "role": "Owner, Fern & Fable Boutique",
+   "city": "Halifax, NS",
+   "plan": "Free Member",
+   "founding": true,
+   "helps": [
+    "Visual merchandising"
+   ],
+   "needs": [
+    "Point-of-sale advice"
+   ],
+   "full": "Chloe Tremblay",
+   "is": "retail",
+   "want": [
+    "makers"
+   ],
+   "partner": [
+    "design"
+   ]
+  },
+  {
+   "id": "kwame",
+   "name": "Kwame Asante",
+   "role": "Managing Partner, Asante Legal",
+   "city": "Toronto, ON",
+   "plan": "Advisor",
+   "founding": false,
+   "helps": [
+    "Contracts",
+    "Leases",
+    "Employment law"
+   ],
+   "needs": [
+    "Owner-run clients"
+   ],
+   "full": "Kwame Asante",
+   "is": "legal",
+   "want": [
+    "food",
+    "retail",
+    "trades",
+    "tech"
+   ],
+   "partner": [
+    "account"
+   ]
+  },
+  {
+   "id": "hana",
+   "name": "Hana Kim",
+   "role": "Founder, Kim & Co. Accounting",
+   "city": "Edmonton, AB",
+   "plan": "Advisor",
+   "founding": true,
+   "helps": [
+    "Tax planning",
+    "Payroll"
+   ],
+   "needs": [
+    "Referral partners"
+   ],
+   "full": "Hana Kim",
+   "is": "account",
+   "want": [
+    "trades",
+    "food",
+    "retail"
+   ],
+   "partner": [
+    "legal"
+   ]
+  },
+  {
+   "id": "ravi",
+   "name": "Ravi Patel",
+   "role": "Co-founder, Loop Software",
+   "city": "Kitchener, ON",
+   "plan": "Plus",
+   "founding": false,
+   "helps": [
+    "Websites",
+    "Automation"
+   ],
+   "needs": [
+    "Pilot customers"
+   ],
+   "full": "Ravi Patel",
+   "is": "tech",
+   "want": [
+    "trades",
+    "retail",
+    "food"
+   ],
+   "partner": [
+    "design"
+   ]
+  },
+  {
+   "id": "nadia",
+   "name": "Nadia Rahman",
+   "role": "Owner, Prairie Roots Catering",
+   "city": "Winnipeg, MB",
+   "plan": "Plus",
+   "founding": true,
+   "helps": [
+    "Catering",
+    "Food costing"
+   ],
+   "needs": [
+    "Commercial kitchen space"
+   ],
+   "full": "Nadia Rahman",
+   "is": "food",
+   "want": [
+    "tech",
+    "legal",
+    "account"
+   ],
+   "partner": [
+    "food"
+   ]
+  },
+  {
+   "id": "owen",
+   "name": "Owen Clarke",
+   "role": "Founder, Rock Coast Outfitters",
+   "city": "St. John’s, NL",
+   "plan": "Free Member",
+   "founding": false,
+   "helps": [
+    "Online stores",
+    "Shipping"
+   ],
+   "needs": [
+    "Wholesale buyers"
+   ],
+   "full": "Owen Clarke",
+   "is": "retail",
+   "want": [
+    "retail"
+   ],
+   "partner": [
+    "logistics"
+   ]
+  },
+  {
+   "id": "isabelle",
+   "name": "Isabelle Gagnon",
+   "role": "President, Studio Gagnon Design",
+   "city": "Québec City, QC",
+   "plan": "Advisor",
+   "founding": true,
+   "helps": [
+    "Branding",
+    "Web design"
+   ],
+   "needs": [
+    "Bookkeeping"
+   ],
+   "full": "Isabelle Gagnon",
+   "is": "design",
+   "want": [
+    "food",
+    "retail",
+    "makers"
+   ],
+   "partner": [
+    "tech"
+   ]
+  },
+  {
+   "id": "tyler",
+   "name": "Tyler Whitecloud",
+   "role": "Owner, Whitecloud Construction",
+   "city": "Saskatoon, SK",
+   "plan": "Free Member",
+   "founding": false,
+   "helps": [
+    "Commercial builds",
+    "Estimating"
+   ],
+   "needs": [
+    "Skilled trades"
+   ],
+   "full": "Tyler Whitecloud",
+   "is": "trades",
+   "want": [
+    "food",
+    "retail",
+    "energy"
+   ],
+   "partner": [
+    "trades",
+    "energy"
+   ]
+  },
+  {
+   "id": "marcus",
+   "name": "Marcus Bell",
+   "role": "Owner, Bell Cycle Works",
+   "city": "Victoria, BC",
+   "plan": "Free Member",
+   "founding": true,
+   "helps": [
+    "Retail operations",
+    "Repairs"
+   ],
+   "needs": [
+    "Online marketing"
+   ],
+   "full": "Marcus Bell",
+   "is": "retail",
+   "want": [
+    "makers"
+   ],
+   "partner": [
+    "retail"
+   ]
+  },
+  {
+   "id": "amara",
+   "name": "Amara Diallo",
+   "role": "Founder, Diallo Imports",
+   "city": "Moncton, NB",
+   "plan": "Plus",
+   "founding": false,
+   "helps": [
+    "Importing",
+    "Bilingual service"
+   ],
+   "needs": [
+    "Customs"
+   ],
+   "full": "Amara Diallo",
+   "is": "logistics",
+   "want": [
+    "retail",
+    "food"
+   ],
+   "partner": [
+    "logistics"
+   ]
+  }
+ ],
+ "XM": {
+  "spam1": {
+   "id": "spam1",
+   "name": "Growth Deals Daily",
+   "role": "Marketing, Growth Deals Daily",
+   "city": "Toronto, ON",
+   "plan": "Free Member",
+   "founding": false,
+   "helps": [
+    "Marketing"
+   ],
+   "needs": [
+    "Leads"
+   ]
+  },
+  "spam2": {
+   "id": "spam2",
+   "name": "QuickLoan Partners",
+   "role": "Agent, QuickLoan Partners",
+   "city": "Montréal, QC",
+   "plan": "Free Member",
+   "founding": false,
+   "helps": [
+    "Loans"
+   ],
+   "needs": [
+    "Leads"
+   ]
+  },
+  "mod": {
+   "id": "mod",
+   "name": "Hub Moderator",
+   "role": "Community team, SMB Hub",
+   "city": "Mississauga, ON",
+   "plan": "Team",
+   "founding": false,
+   "helps": [
+    "Community questions"
+   ],
+   "needs": []
+  },
+  "b_asante": {
+   "id": "b_asante",
+   "isBiz": true,
+   "bz": "asante",
+   "name": "Asante Legal",
+   "role": "Legal · Toronto, ON",
+   "city": "Toronto, ON",
+   "plan": "Business",
+   "founding": false,
+   "helps": [],
+   "needs": []
+  },
+  "b_brightline": {
+   "id": "b_brightline",
+   "isBiz": true,
+   "bz": "brightline",
+   "name": "Brightline Solar",
+   "role": "Construction & Trades · Calgary, AB",
+   "city": "Calgary, AB",
+   "plan": "Business",
+   "founding": false,
+   "helps": [],
+   "needs": []
+  },
+  "b_clearwater": {
+   "id": "b_clearwater",
+   "isBiz": true,
+   "bz": "clearwater",
+   "name": "Clearwater Bookkeeping",
+   "role": "Finance & Accounting · Ottawa, ON",
+   "city": "Ottawa, ON",
+   "plan": "Business",
+   "founding": false,
+   "helps": [],
+   "needs": []
+  },
+  "b_harbour": {
+   "id": "b_harbour",
+   "isBiz": true,
+   "bz": "harbour",
+   "name": "Harbour Analytics",
+   "role": "Technology · Online · based in Vancouver, BC",
+   "city": "Vancouver, BC",
+   "plan": "Business",
+   "founding": false,
+   "helps": [],
+   "needs": []
+  },
+  "b_maple": {
+   "id": "b_maple",
+   "isBiz": true,
+   "bz": "maple",
+   "name": "Maple Bakery",
+   "role": "Food & Drink · Toronto, ON",
+   "city": "Toronto, ON",
+   "plan": "Business",
+   "founding": false,
+   "helps": [],
+   "needs": []
+  },
+  "b_northside": {
+   "id": "b_northside",
+   "isBiz": true,
+   "bz": "northside",
+   "name": "Northside Logistics",
+   "role": "Logistics & Transport · Mississauga, ON",
+   "city": "Mississauga, ON",
+   "plan": "Business",
+   "founding": false,
+   "helps": [],
+   "needs": []
+  },
+  "b_morgan": {
+   "id": "b_morgan",
+   "isBiz": true,
+   "bz": "morgan",
+   "name": "Morgan Home Renovations",
+   "role": "Construction & Trades · Serves Peel Region and the west GTA",
+   "city": "Mississauga, ON",
+   "plan": "Business",
+   "founding": false,
+   "helps": [],
+   "needs": []
+  },
+  "b_lakeshore": {
+   "id": "b_lakeshore",
+   "isBiz": true,
+   "bz": "lakeshore",
+   "name": "Lakeshore Catering Co.",
+   "role": "Catering & Events · Toronto, ON",
+   "city": "Toronto, ON",
+   "plan": "Business",
+   "founding": false,
+   "helps": [],
+   "needs": []
+  }
+ },
+ "ABOUT": {
+  "priya": "We bake small-batch bread and pastries for cafes and grocers across the GTA.",
+  "luc": "We design and build custom furniture in Montréal, one piece at a time.",
+  "sara": "Bookkeeping and cash-flow planning for owner-run businesses, in plain language.",
+  "daniel": "Cross-border freight for small shippers who need a real person to call.",
+  "mei": "We help retailers make sense of their sales data without hiring a data team.",
+  "arjun": "Solar installs for homes and small commercial buildings across Alberta.",
+  "chloe": "An independent boutique on the Halifax waterfront, stocking Canadian makers.",
+  "kwame": "Contracts, leases and employment law for owner-run businesses.",
+  "hana": "Tax planning and payroll for small teams, with no surprises at year end.",
+  "ravi": "We build websites and simple automations that save small teams hours each week.",
+  "nadia": "Prairie-inspired catering for offices, weddings and community events.",
+  "owen": "Outdoor gear designed and tested on the Newfoundland coast, sold online.",
+  "isabelle": "Brand and web design for small businesses, in French and English.",
+  "tyler": "Commercial builds and renovations across Saskatchewan, on time and on budget.",
+  "marcus": "A neighbourhood bike shop: sales, repairs and honest advice.",
+  "amara": "We import West African foods and textiles for Atlantic Canadian retailers."
+ },
+ "ACTV": {
+  "priya": [
+   "Active today",
+   0
+  ],
+  "sara": [
+   "Active today",
+   0
+  ],
+  "kwame": [
+   "Active today",
+   0
+  ],
+  "daniel": [
+   "Active this week",
+   1
+  ],
+  "mei": [
+   "Active this week",
+   1
+  ],
+  "hana": [
+   "Active this week",
+   1
+  ],
+  "ravi": [
+   "Active this week",
+   1
+  ],
+  "luc": [
+   "Active this week",
+   1
+  ],
+  "nadia": [
+   "Active this week",
+   1
+  ],
+  "arjun": [
+   "Active this month",
+   2
+  ],
+  "chloe": [
+   "Active this month",
+   2
+  ],
+  "owen": [
+   "Active this month",
+   2
+  ],
+  "isabelle": [
+   "Active this month",
+   2
+  ],
+  "tyler": [
+   "Active this month",
+   2
+  ],
+  "marcus": [
+   "Active this month",
+   2
+  ],
+  "amara": [
+   "Active this month",
+   2
+  ]
+ },
+ "ADV": {
+  "priya": {
+   "field": "Food and retail",
+   "years": 11,
+   "helped": 64,
+   "rating": "4.9",
+   "reply": "Same day",
+   "langs": "English, Tamil",
+   "creds": [
+    "Founder, Maple Bakery (11 years)",
+    "Supplies 40+ cafes and grocers",
+    "Mentor, food business incubator"
+   ],
+   "services": [
+    [
+     "Wholesale readiness check",
+     "Is your product, pricing and packaging ready for a grocer or distributor?"
+    ],
+    [
+     "Sell sheet review",
+     "A one-page sheet buyers will actually read."
+    ],
+    [
+     "Pricing for retail",
+     "Set a wholesale price that still leaves you a margin."
+    ]
+   ],
+   "session": "Landing your first wholesale account · Wed, Jan 13 · 12:00 pm ET",
+   "reviews": [
+    [
+     "luc",
+     "Priya rewrote my sell sheet in one call. Two stores said yes the next week."
+    ],
+    [
+     "nadia",
+     "Clear, practical and kind. She told me what not to spend money on."
+    ]
+   ]
+  },
+  "kwame": {
+   "field": "Legal",
+   "years": 14,
+   "helped": 91,
+   "rating": "4.8",
+   "reply": "Within 1 day",
+   "langs": "English, French",
+   "creds": [
+    "Managing Partner, Asante Legal",
+    "Licensed lawyer in Ontario",
+    "Focus on owner-run businesses"
+   ],
+   "services": [
+    [
+     "Lease review",
+     "Know what you are signing before you sign a commercial lease."
+    ],
+    [
+     "Contract templates",
+     "Plain-language client and supplier agreements."
+    ],
+    [
+     "Hiring your first employee",
+     "Offer letters, probation and the rules to follow."
+    ]
+   ],
+   "session": "Commercial leases: five clauses to check · Wed, Jan 27 · 12:00 pm ET",
+   "reviews": [
+    [
+     "daniel",
+     "Kwame caught a renewal clause that would have cost us thousands."
+    ],
+    [
+     "chloe",
+     "Explained my lease in plain English. Worth every minute."
+    ]
+   ]
+  },
+  "hana": {
+   "field": "Finance",
+   "years": 9,
+   "helped": 58,
+   "rating": "4.9",
+   "reply": "Same day",
+   "langs": "English, Korean",
+   "creds": [
+    "Founder, Kim & Co. Accounting",
+    "Professional accountant",
+    "Works with teams of 1 to 25"
+   ],
+   "services": [
+    [
+     "Year-end tax planning",
+     "What to do before December 31 to lower your bill."
+    ],
+    [
+     "Payroll setup",
+     "Get payroll and remittances right from the first pay run."
+    ],
+    [
+     "Owner pay: salary or dividends",
+     "A clear answer for your situation."
+    ]
+   ],
+   "session": "Year-end tax checklist for owners · Wed, Dec 9 · 12:00 pm ET",
+   "reviews": [
+    [
+     "arjun",
+     "Hana set up our payroll in an afternoon. No more late-night spreadsheets."
+    ],
+    [
+     "tyler",
+     "She answered a question I had been afraid to ask for two years."
+    ]
+   ]
+  },
+  "sara": {
+   "field": "Finance",
+   "years": 8,
+   "helped": 73,
+   "rating": "4.9",
+   "reply": "Same day",
+   "langs": "English, Arabic",
+   "creds": [
+    "Founder, Clearwater Bookkeeping",
+    "Certified bookkeeper",
+    "Specialist in owner-run businesses"
+   ],
+   "services": [
+    [
+     "Free year-end bookkeeping check",
+     "A 20-minute look at your books before tax season."
+    ],
+    [
+     "Cash-flow plan",
+     "A simple 13-week view of money in and money out."
+    ],
+    [
+     "Clean-up",
+     "Get a messy year of books back in order."
+    ]
+   ],
+   "session": "Cash flow for the slow season · Wed, Jan 20 · 1:00 pm ET",
+   "reviews": [
+    [
+     "priya",
+     "Sara found three subscriptions I had forgotten about in the first call."
+    ],
+    [
+     "marcus",
+     "My books finally make sense to me."
+    ]
+   ]
+  },
+  "isabelle": {
+   "field": "Marketing and design",
+   "years": 12,
+   "helped": 47,
+   "rating": "4.7",
+   "reply": "Within 1 day",
+   "langs": "French, English",
+   "creds": [
+    "President, Studio Gagnon Design",
+    "100+ small business brands",
+    "Works in French and English"
+   ],
+   "services": [
+    [
+     "Brand check-up",
+     "Does your logo, website and signage tell one clear story?"
+    ],
+    [
+     "Website review",
+     "The five changes that would bring more enquiries."
+    ],
+    [
+     "Bilingual launch",
+     "Take your brand into French or English properly."
+    ]
+   ],
+   "session": "A website that brings enquiries · Wed, Feb 3 · 12:00 pm ET",
+   "reviews": [
+    [
+     "owen",
+     "Isabelle rebuilt our homepage headline. Enquiries doubled in a month."
+    ],
+    [
+     "amara",
+     "She understood our bilingual customers from the first call."
+    ]
+   ]
+  }
+ },
+ "ADVQ": {
+  "priya": "Ask about wholesale and food retail",
+  "kwame": "Ask about contracts and leases",
+  "hana": "Ask about tax and payroll",
+  "sara": "Ask about bookkeeping and cash flow",
+  "isabelle": "Ask about branding and websites"
+ },
+ "ADVSLOT": [
+  "Tue, Jan 19 · 10:00 am ET",
+  "Wed, Jan 20 · 2:00 pm ET",
+  "Thu, Jan 21 · 4:30 pm ET"
+ ],
+ "AVAIL": {
+  "priya": [
+   "Weekday mornings"
+  ],
+  "luc": [
+   "Weekday afternoons",
+   "Evenings"
+  ],
+  "sara": [
+   "Weekday mornings",
+   "Weekday afternoons"
+  ],
+  "daniel": [
+   "Evenings"
+  ],
+  "mei": [
+   "Weekday afternoons"
+  ],
+  "arjun": [
+   "Weekday mornings",
+   "Evenings"
+  ],
+  "chloe": [
+   "Weekday afternoons"
+  ],
+  "kwame": [
+   "Weekday mornings",
+   "Weekday afternoons"
+  ]
+ },
+ "PHOTOS": {
+  "me": 1,
+  "amara": 1,
+  "arjun": 1,
+  "chloe": 1,
+  "daniel": 1,
+  "hana": 1,
+  "isabelle": 1,
+  "kwame": 1,
+  "luc": 1,
+  "marcus": 1,
+  "mei": 1,
+  "nadia": 1,
+  "owen": 1,
+  "priya": 1,
+  "ravi": 1,
+  "sara": 1,
+  "tyler": 1
+ },
+ "HDR_M": {
+  "me": 1,
+  "priya": 1,
+  "luc": 1,
+  "sara": 1,
+  "daniel": 1,
+  "mei": 1,
+  "arjun": 1,
+  "chloe": 1,
+  "kwame": 1,
+  "hana": 1,
+  "ravi": 1,
+  "nadia": 1,
+  "owen": 1,
+  "isabelle": 1,
+  "tyler": 1,
+  "marcus": 1,
+  "amara": 1
+ },
+ "LOOK": {
+  "priya": [
+   "#C68B5E",
+   "#1E1A1A",
+   "long",
+   "#D42A2A",
+   "#FBE3E3",
+   0,
+   0
+  ],
+  "luc": [
+   "#F0C9A8",
+   "#6B4A2E",
+   "short",
+   "#2F5BD8",
+   "#E2E9FF",
+   1,
+   0
+  ],
+  "sara": [
+   "#E0A77C",
+   "#3A2418",
+   "bun",
+   "#17552F",
+   "#DDF3E4",
+   0,
+   0
+  ],
+  "daniel": [
+   "#7A4A2B",
+   "#111111",
+   "short",
+   "#55237F",
+   "#EFE3FA",
+   0,
+   0
+  ],
+  "mei": [
+   "#F2D2B0",
+   "#151515",
+   "long",
+   "#6B4300",
+   "#FFF0D1",
+   0,
+   1
+  ],
+  "arjun": [
+   "#B97A4E",
+   "#1A1A1A",
+   "short",
+   "#14171F",
+   "#E3E1DA",
+   1,
+   0
+  ],
+  "chloe": [
+   "#F5D6BF",
+   "#A5562B",
+   "curly",
+   "#2F5BD8",
+   "#E2E9FF",
+   0,
+   0
+  ],
+  "kwame": [
+   "#5E3A22",
+   "#0E0E0E",
+   "short",
+   "#D42A2A",
+   "#FBE3E3",
+   0,
+   1
+  ],
+  "me": [
+   "#E8B58C",
+   "#5A3B22",
+   "short",
+   "#2F5BD8",
+   "#ECEAE4",
+   0,
+   0
+  ],
+  "hana": [
+   "#F0CDA8",
+   "#141414",
+   "bun",
+   "#14171F",
+   "#E3E1DA",
+   0,
+   1
+  ],
+  "ravi": [
+   "#B07A52",
+   "#151515",
+   "short",
+   "#17552F",
+   "#DDF3E4",
+   1,
+   1
+  ],
+  "nadia": [
+   "#C99468",
+   "#2A1A12",
+   "long",
+   "#55237F",
+   "#EFE3FA",
+   0,
+   0
+  ],
+  "owen": [
+   "#F2CFB3",
+   "#B5642E",
+   "short",
+   "#6B4300",
+   "#FFF0D1",
+   1,
+   0
+  ],
+  "isabelle": [
+   "#F3D3BA",
+   "#7A4A2B",
+   "long",
+   "#2F5BD8",
+   "#E2E9FF",
+   0,
+   1
+  ],
+  "tyler": [
+   "#C48A5C",
+   "#161616",
+   "long",
+   "#D42A2A",
+   "#FBE3E3",
+   0,
+   0
+  ],
+  "marcus": [
+   "#6A4028",
+   "#0E0E0E",
+   "curly",
+   "#17552F",
+   "#DDF3E4",
+   1,
+   0
+  ],
+  "amara": [
+   "#5A3620",
+   "#0E0E0E",
+   "bun",
+   "#6B4300",
+   "#FFF0D1",
+   0,
+   0
+  ]
+ },
+ "PTOF": {
+  "luc": "maker",
+  "mei": "provider",
+  "ravi": "provider",
+  "arjun": "provider",
+  "owen": "maker"
+ },
+ "REC": {
+  "priya": [
+   [
+    "nadia",
+    "Referral partner",
+    "Priya sends us her catering clients and we send her our dessert orders. Reliable every single time.",
+    "Oct 2026"
+   ],
+   [
+    "chloe",
+    "Client",
+    "Her shortbread sells out in our shop every holiday season. Easy to order from and always on time.",
+    "Sep 2026"
+   ],
+   [
+    "owen",
+    "Client",
+    "Great wholesale terms for a small shop like ours.",
+    "Jul 2026"
+   ]
+  ],
+  "sara": [
+   [
+    "isabelle",
+    "Client",
+    "Sara cleaned up two years of messy books in a month and explained everything in plain words.",
+    "Nov 2026"
+   ],
+   [
+    "hana",
+    "Referral partner",
+    "I send Sara every client who needs monthly bookkeeping. They always thank me.",
+    "Oct 2026"
+   ],
+   [
+    "tyler",
+    "Client",
+    "Finally I know which jobs make money. Worth every dollar.",
+    "Aug 2026"
+   ],
+   [
+    "marcus",
+    "Client",
+    "Patient, clear and quick to answer emails.",
+    "Jun 2026"
+   ]
+  ],
+  "kwame": [
+   [
+    "priya",
+    "Client",
+    "Kwame read our new lease line by line and saved us from a costly clause.",
+    "Oct 2026"
+   ],
+   [
+    "ravi",
+    "Client",
+    "Fixed-fee contracts with no surprises on the bill.",
+    "Aug 2026"
+   ],
+   [
+    "hana",
+    "Referral partner",
+    "The lawyer I trust with my own clients.",
+    "May 2026"
+   ]
+  ],
+  "hana": [
+   [
+    "daniel",
+    "Client",
+    "Hana sorted our payroll remittances and we have not had a late notice since.",
+    "Sep 2026"
+   ],
+   [
+    "kwame",
+    "Referral partner",
+    "Clear thinking on tax for owner-run companies.",
+    "Jul 2026"
+   ]
+  ],
+  "isabelle": [
+   [
+    "luc",
+    "Client",
+    "Our new brand finally looks like the furniture we make.",
+    "Oct 2026"
+   ],
+   [
+    "amara",
+    "Client",
+    "Bilingual website, on budget and on time.",
+    "Aug 2026"
+   ]
+  ],
+  "tyler": [
+   [
+    "arjun",
+    "Referral partner",
+    "We hand Tyler our commercial roof jobs. Safe, tidy crews.",
+    "Sep 2026"
+   ],
+   [
+    "nadia",
+    "Client",
+    "Built out our kitchen two days early.",
+    "Jun 2026"
+   ]
+  ],
+  "daniel": [
+   [
+    "amara",
+    "Client",
+    "Daniel got our container through customs when two other firms gave up.",
+    "Oct 2026"
+   ],
+   [
+    "owen",
+    "Client",
+    "Fair rates for small shippers.",
+    "Jul 2026"
+   ]
+  ],
+  "arjun": [
+   [
+    "tyler",
+    "Referral partner",
+    "Arjun’s team is the solar partner I recommend to every commercial client.",
+    "Aug 2026"
+   ]
+  ],
+  "ravi": [
+   [
+    "marcus",
+    "Client",
+    "Our booking page took a week, not a month.",
+    "Sep 2026"
+   ]
+  ],
+  "luc": [
+   [
+    "chloe",
+    "Client",
+    "Beautiful display tables that customers ask about.",
+    "Jul 2026"
+   ]
+  ],
+  "mei": [
+   [
+    "chloe",
+    "Client",
+    "Her weekly sales report showed us which days to staff.",
+    "Oct 2026"
+   ]
+  ],
+  "nadia": [
+   [
+    "kwame",
+    "Client",
+    "Fed our whole client event and everyone asked who the caterer was.",
+    "Sep 2026"
+   ]
+  ],
+  "me": [
+   [
+    "priya",
+    "Client",
+    "Alex renovated our front counter over two weekends so we never had to close. Clean, careful work.",
+    "Oct 2026"
+   ],
+   [
+    "tyler",
+    "Referral partner",
+    "I pass Alex my small commercial jobs. He quotes fast and shows up when he says.",
+    "Aug 2026"
+   ]
+  ]
+ },
+ "RECP": [
+  [
+   "daniel",
+   "Client",
+   "Alex rebuilt our warehouse office in three weeks and stayed on budget. I would hire him again.",
+   "Nov 2026"
+  ]
+ ],
+ "PVV": [
+  [
+   "sara",
+   "2 hours ago",
+   0
+  ],
+  [
+   "kwame",
+   "5 hours ago",
+   0
+  ],
+  [
+   "mei",
+   "Yesterday",
+   1
+  ],
+  [
+   "daniel",
+   "3 days ago",
+   3
+  ],
+  [
+   "hana",
+   "5 days ago",
+   5
+  ],
+  [
+   "ravi",
+   "1 week ago",
+   7
+  ],
+  [
+   "luc",
+   "2 weeks ago",
+   14
+  ],
+  [
+   "nadia",
+   "3 weeks ago",
+   21
+  ],
+  [
+   "isabelle",
+   "4 weeks ago",
+   27
+  ],
+  [
+   "arjun",
+   "2 months ago",
+   60
+  ],
+  [
+   "chloe",
+   "3 months ago",
+   90
+  ]
+ ],
+ "PVD": [
+  1,
+  0,
+  2,
+  1,
+  0,
+  0,
+  3,
+  1,
+  0,
+  1,
+  2,
+  0,
+  0,
+  1,
+  4,
+  1,
+  0,
+  2,
+  0,
+  1,
+  1,
+  0,
+  3,
+  2,
+  0,
+  1,
+  2,
+  1,
+  3,
+  2
+ ],
+ "PXI": {
+  "priya": 0,
+  "luc": 5,
+  "sara": 2,
+  "daniel": 6,
+  "mei": 4,
+  "arjun": 3,
+  "chloe": 1,
+  "kwame": 2,
+  "hana": 2,
+  "ravi": 4,
+  "nadia": 0,
+  "owen": 1,
+  "isabelle": 2,
+  "tyler": 3,
+  "marcus": 1,
+  "amara": 6,
+  "me": 3
+ }
+}

@@ -275,3 +275,31 @@ set role anon; set request.jwt.claim.sub = '';
 select t.expect_denied('visitors cannot call can()', $$select can('cms.access')$$);
 select t.expect('visitors can read plan limits', (select count(*) = 18 from plan_limits));
 reset role;
+
+-- ===== Permission matrix, generated from plan_limits: every plan x every limited action =====
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email) values
+ ('00000000-0000-0000-0000-0000000000f1', 'free@x.ca'), ('00000000-0000-0000-0000-0000000000f2', 'plus@x.ca'),
+ ('00000000-0000-0000-0000-0000000000f3', 'advisor@x.ca');
+update profiles set plan = 'plus' where id = '00000000-0000-0000-0000-0000000000f2';
+update profiles set plan = 'advisor' where id = '00000000-0000-0000-0000-0000000000f3';
+create function t.plan_matrix() returns setof text language plpgsql as $$
+declare r record; persona uuid; action text;
+begin
+  for r in select * from plan_limits where key in ('offers_per_month', 'private_groups', 'ai_per_month') order by plan, key loop
+    action := case r.key when 'offers_per_month' then 'post.offer' when 'private_groups' then 'group.private' else 'ai.ask' end;
+    persona := case r.plan when 'free' then '00000000-0000-0000-0000-0000000000f1'::uuid
+                           when 'plus' then '00000000-0000-0000-0000-0000000000f2'::uuid
+                           else '00000000-0000-0000-0000-0000000000f3'::uuid end;
+    perform set_config('request.jwt.claim.sub', persona::text, true);
+    if r.value is null then
+      return next t.expect(format('%s: %s has no limit', r.plan, action), can(action, 999));
+    elsif r.value = 0 then
+      return next t.expect(format('%s: %s not allowed', r.plan, action), not can(action, 0));
+    else
+      return next t.expect(format('%s: %s allowed up to %s', r.plan, action, r.value), can(action, r.value - 1) and not can(action, r.value));
+    end if;
+  end loop;
+end $$;
+select * from t.plan_matrix();
+set request.jwt.claim.sub = '';

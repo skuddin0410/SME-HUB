@@ -1,0 +1,236 @@
+{
+ "MB": [
+  {
+   "id": "b1",
+   "by": "sara",
+   "title": "Five numbers every owner should check on the first of the month",
+   "cat": "Money",
+   "tags": [
+    "cash flow",
+    "bookkeeping"
+   ],
+   "img": "post-ai",
+   "date": "Nov 17, 2026",
+   "status": "published",
+   "blocks": [
+    [
+     "p",
+     "You do not need to love spreadsheets to stay in control of your business. You need five numbers and ten minutes."
+    ],
+    [
+     "h",
+     "The five numbers"
+    ],
+    [
+     "ul",
+     "Cash in the bank today\nMoney customers owe you, and how old it is\nBills you owe in the next 30 days\nLast month’s sales against the same month last year\nYour payroll and tax remittances due this month"
+    ],
+    [
+     "q",
+     "If the first number is smaller than the third, you want to know on the 1st, not the 25th."
+    ],
+    [
+     "h",
+     "What to do with them"
+    ],
+    [
+     "p",
+     "Write them in the same place every month. After three months you will see the pattern, and the pattern is what tells you when to chase invoices, delay a purchase or call your bank."
+    ]
+   ]
+  },
+  {
+   "id": "b2",
+   "by": "priya",
+   "title": "How we landed our first grocery account, and the sell sheet that did it",
+   "cat": "Sales & marketing",
+   "tags": [
+    "wholesale",
+    "food"
+   ],
+   "img": "community",
+   "date": "Nov 14, 2026",
+   "status": "published",
+   "blocks": [
+    [
+     "p",
+     "It took 14 months and three rejected samples. The product did not change much. The way we presented it did."
+    ],
+    [
+     "h",
+     "What buyers asked for every time"
+    ],
+    [
+     "ul",
+     "Shelf life, with test data\nCase size and price per unit\nWho else stocks it\nHow fast we can deliver"
+    ],
+    [
+     "p",
+     "So we put exactly those four things on one page, in that order, with a single photo. No story about our grandmother’s recipe."
+    ],
+    [
+     "q",
+     "A buyer gives you about a minute. Answer their questions before they ask."
+    ]
+   ]
+  },
+  {
+   "id": "b3",
+   "by": "kwame",
+   "title": "Before you sign a commercial lease, read these five clauses",
+   "cat": "Legal",
+   "tags": [
+    "lease",
+    "contracts"
+   ],
+   "img": "advisors",
+   "date": "Nov 11, 2026",
+   "status": "published",
+   "blocks": [
+    [
+     "p",
+     "Most owners read the rent and the term, then sign. The expensive surprises are usually somewhere else. This is general information, not legal advice for your situation."
+    ],
+    [
+     "h",
+     "The five to find"
+    ],
+    [
+     "ul",
+     "Renewal: do you have the right, and at what rent?\nAdditional rent: what costs can the landlord pass on?\nAssignment: can you sell the business with the lease?\nPersonal guarantee: are you signing as yourself?\nRepairs: who pays when the roof or the HVAC fails?"
+    ],
+    [
+     "p",
+     "If you only have time to negotiate one, make it the personal guarantee."
+    ]
+   ]
+  },
+  {
+   "id": "b4",
+   "by": "mei",
+   "title": "We let AI draft our support replies. Here is what happened.",
+   "cat": "AI & technology",
+   "tags": [
+    "AI",
+    "customer service"
+   ],
+   "img": "network",
+   "date": "Nov 8, 2026",
+   "status": "published",
+   "blocks": [
+    [
+     "p",
+     "We ran a small test for six weeks. An AI tool wrote the first draft of every support reply, and a person approved each one before it went out."
+    ],
+    [
+     "h",
+     "The result"
+    ],
+    [
+     "p",
+     "Reply time dropped from about a day to a couple of hours. Customers did not notice a change in tone."
+    ],
+    [
+     "q",
+     "The approval step is what made the team comfortable. Nobody wanted a robot talking to customers alone."
+    ],
+    [
+     "h",
+     "What we would do differently"
+    ],
+    [
+     "p",
+     "Start with the ten most common questions only. That covered most of our volume and was far easier to check."
+    ]
+   ]
+  },
+  {
+   "id": "b5",
+   "by": "tyler",
+   "title": "Getting paid on time: the deposit schedule we use on every job",
+   "cat": "Operations",
+   "tags": [
+    "trades",
+    "getting paid"
+   ],
+   "img": "support",
+   "date": "Nov 4, 2026",
+   "status": "published",
+   "blocks": [
+    [
+     "p",
+     "Late payments nearly sank us in year two. We fixed it with a simple schedule that goes in every signed quote."
+    ],
+    [
+     "ul",
+     "30% on signing\n30% when materials arrive on site\n30% at substantial completion\n10% after the final walk-through"
+    ],
+    [
+     "p",
+     "Customers rarely argue with a schedule that is written down before work starts. They argue with invoices that surprise them."
+    ]
+   ]
+  },
+  {
+   "id": "b6",
+   "by": "isabelle",
+   "title": "Your homepage has one job",
+   "cat": "Sales & marketing",
+   "tags": [
+    "website",
+    "branding"
+   ],
+   "img": "hero",
+   "date": "Oct 30, 2026",
+   "status": "published",
+   "blocks": [
+    [
+     "p",
+     "We changed one line on a client’s homepage, from what they do to who they help. Enquiries roughly doubled in a month."
+    ],
+    [
+     "h",
+     "Try this test"
+    ],
+    [
+     "p",
+     "Show your homepage to someone for five seconds, then close it. Ask them who it is for and what they should do next. If they cannot say, the page is not doing its job."
+    ]
+   ]
+  },
+  {
+   "id": "b7",
+   "by": "ravi",
+   "title": "What six months of invoicing taught us",
+   "cat": "Owner stories",
+   "tags": [
+    "invoicing"
+   ],
+   "img": "immigrant",
+   "date": "Nov 19, 2026",
+   "status": "review",
+   "blocks": [
+    [
+     "p",
+     "Send the invoice the same day you finish the work. Our average payment time dropped by two weeks."
+    ]
+   ]
+  }
+ ],
+ "MBCATS": [
+  "Money",
+  "Sales & marketing",
+  "Operations",
+  "Hiring & people",
+  "AI & technology",
+  "Legal",
+  "Owner stories"
+ ],
+ "BKINDS": {
+  "h": "Heading",
+  "p": "Paragraph",
+  "ul": "Bullet list",
+  "q": "Quote",
+  "img": "Image"
+ }
+}

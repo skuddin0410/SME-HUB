@@ -1,0 +1,520 @@
+{
+ "posts": [
+  {
+   "id": "sp1",
+   "by": "spam1",
+   "kind": "offer",
+   "age": "2 days ago",
+   "t": 2,
+   "g": null,
+   "helpful": 0,
+   "text": "GROW YOUR BUSINESS FAST!!! 10,000 new followers in 7 days, guaranteed. Message me now for a special price, limited spots. #free #cheap #followers #growth",
+   "photo": "",
+   "comments": []
+  },
+  {
+   "id": "poll1",
+   "by": "daniel",
+   "kind": "question",
+   "age": "5 hours ago",
+   "t": 0.3,
+   "g": null,
+   "helpful": 16,
+   "title": "Quick poll: how do your customers pay you?",
+   "text": "We are deciding whether to stop accepting cheques. What do most of your customers use? #askthehub",
+   "photo": "",
+   "comments": [
+    {
+     "by": "hana",
+     "text": "E-transfer for almost everything now. Cheques only from two older clients."
+    }
+   ],
+   "poll": {
+    "opts": [
+     [
+      "E-transfer",
+      9
+     ],
+     [
+      "Credit card",
+      6
+     ],
+     [
+      "Cheque",
+      2
+     ],
+     [
+      "Cash",
+      1
+     ]
+    ],
+    "days": 4
+   }
+  },
+  {
+   "id": "g1",
+   "by": "hana",
+   "kind": "question",
+   "age": "3 hours ago",
+   "t": 0.2,
+   "g": "money",
+   "helpful": 5,
+   "text": "Year-end reminder: if you pay yourself a salary, your last payroll remittance for December is due in mid-January. What is everyone using to track remittance dates? #tax #askthehub",
+   "photo": "",
+   "comments": [
+    {
+     "by": "sara",
+     "text": "A shared calendar with two reminders. Simple and it never fails."
+    },
+    {
+     "by": "kwame",
+     "text": "Your payroll software should remind you. If it does not, switch.",
+     "likes": 2
+    },
+    {
+     "by": "nadia",
+     "text": "I set it as a recurring bill in my bank so it cannot be missed.",
+     "likes": 1
+    },
+    {
+     "by": "daniel",
+     "text": "Sticky note on the monitor. Not proud of it, but it works."
+    },
+    {
+     "by": "isabelle",
+     "text": "My bookkeeper sends me a text the week before."
+    }
+   ],
+   "title": "Tracking payroll remittance dates"
+  },
+  {
+   "id": "g9",
+   "by": "sara",
+   "kind": "offer",
+   "age": "1 day ago",
+   "t": 1,
+   "g": "funding",
+   "helpful": 6,
+   "text": "Heads up: several provincial digital adoption grants reopen in January. If you want my one-page checklist of what to have ready before you apply, reply here. #grants",
+   "photo": "",
+   "comments": [
+    {
+     "by": "arjun",
+     "text": "Yes please. We missed the last round by two days. #grants"
+    }
+   ]
+  },
+  {
+   "id": "g2",
+   "by": "isabelle",
+   "kind": "win",
+   "age": "1 day ago",
+   "t": 1,
+   "g": "marketing",
+   "helpful": 8,
+   "text": "We changed one line on a client homepage from what they do to who they help. Enquiries went from 6 to 13 in a month. Lead with the customer, not the company. #marketing #smallwins",
+   "photo": "img/post-design.jpg",
+   "comments": [],
+   "title": "One line that doubled our enquiries",
+   "cover": true
+  },
+  {
+   "id": "g3",
+   "by": "tyler",
+   "kind": "question",
+   "age": "2 days ago",
+   "t": 2,
+   "g": "trades",
+   "helpful": 3,
+   "text": "How are other contractors handling deposits? We ask for 30% up front and still get pushback on bigger jobs. #trades #askthehub",
+   "photo": "",
+   "comments": [
+    {
+     "by": "kwame",
+     "text": "Put the deposit and payment schedule in the signed quote. It ends most arguments before they start."
+    },
+    {
+     "by": "priya",
+     "text": "@Alex Morgan you quote renovation jobs every week. How do you handle deposits?",
+     "replies": [
+      {
+       "by": "tyler",
+       "text": "Good call, I would like to hear that too."
+      }
+     ]
+    }
+   ],
+   "title": "Deposits on bigger jobs"
+  },
+  {
+   "id": "g4",
+   "by": "nadia",
+   "kind": "offer",
+   "age": "2 days ago",
+   "t": 2,
+   "g": "women",
+   "helpful": 6,
+   "text": "I have two free seats for next month’s women in business lunch in Winnipeg. Reply here if you want one. #womeninbusiness",
+   "photo": "",
+   "comments": []
+  },
+  {
+   "id": "g5",
+   "by": "ravi",
+   "kind": "intro",
+   "age": "4 days ago",
+   "t": 4,
+   "g": "starting",
+   "helpful": 4,
+   "text": "Six months in. Biggest lesson so far: send the invoice the same day you finish the work. Our average payment time dropped by two weeks. #startup #newhere",
+   "photo": "",
+   "comments": []
+  },
+  {
+   "id": "g6",
+   "by": "luc",
+   "kind": "question",
+   "age": "5 days ago",
+   "t": 5,
+   "g": "makers",
+   "helpful": 2,
+   "text": "For makers using imported hardware: how do you word your label? We are going with Made in Canada with imported parts. #madeincanada #askthehub",
+   "photo": "",
+   "comments": []
+  },
+  {
+   "id": "g7",
+   "by": "priya",
+   "kind": "win",
+   "age": "6 days ago",
+   "t": 6,
+   "g": "food",
+   "helpful": 7,
+   "text": "Switched flour suppliers after comparing three quotes. Same quality, 9% lower cost. Ask for quotes every year, even if you are happy. #foodbusiness #smallwins",
+   "photo": "",
+   "comments": []
+  },
+  {
+   "id": "g8",
+   "by": "kwame",
+   "kind": "offer",
+   "age": "1 week ago",
+   "t": 7,
+   "g": "hiring",
+   "helpful": 5,
+   "text": "Free template: a one-page offer letter for your first employee, written in plain language. Message me and I will send it. #hiring",
+   "photo": "",
+   "comments": []
+  },
+  {
+   "id": "p1",
+   "photo": "img/post-grants.jpg",
+   "fr": "Nous venons de conclure notre premier compte de gros avec un épicier national. Il a fallu 14 mois et trois échantillons refusés. Ce qui a enfin fonctionné : une fiche de vente d’une page avec les données de durée de conservation en évidence. Je partage volontiers la structure avec ceux qui vivent le même processus.",
+   "insight": 3,
+   "celebrate": 9,
+   "reposts": 2,
+   "by": "priya",
+   "kind": "win",
+   "age": "3 days ago",
+   "t": 3,
+   "g": null,
+   "helpful": 6,
+   "text": "We just closed our first wholesale account with a national grocer. It took 14 months and three rejected samples. The thing that finally worked: a one-page sell sheet with shelf-life data up front. Happy to share the structure with anyone going through the same process. #smallwins",
+   "comments": [
+    {
+     "by": "sara",
+     "text": "Congratulations. Would you share the sell sheet layout in the Retail Roundtable?"
+    },
+    {
+     "by": "priya",
+     "text": "Yes, I will post it there this week."
+    }
+   ]
+  },
+  {
+   "id": "p2",
+   "photo": "img/post-retail.jpg",
+   "fr": "Après 20 ans de bouche-à-oreille, nous avons enfin lancé la commande en ligne. Première semaine : 4 commandes, toutes de personnes qui nous connaissaient déjà. Des conseils pour joindre de nouveaux clients sans brûler de l’argent en publicité ?",
+   "insight": 2,
+   "celebrate": 0,
+   "reposts": 1,
+   "by": "luc",
+   "kind": "question",
+   "age": "5 days ago",
+   "t": 5,
+   "g": "retail",
+   "helpful": 4,
+   "text": "After 20 years of word of mouth we finally launched online ordering. First week: 4 orders, all from people who already knew us. Any advice on reaching new customers without burning money on ads? #retail #askthehub",
+   "comments": [
+    {
+     "by": "mei",
+     "likes": 3,
+     "text": "Start with the customers you have. Ask each one for a Google review and one referral before spending on ads."
+    },
+    {
+     "by": "chloe",
+     "text": "A card in every order with a friend discount worked well for us."
+    }
+   ]
+  },
+  {
+   "id": "p3",
+   "fr": "Quelqu’un a-t-il changé de système de point de vente en pleine saison achalandée ? Le nôtre gèle sans cesse et j’hésite à migrer avant les Fêtes.",
+   "by": "chloe",
+   "kind": "question",
+   "age": "1 day ago",
+   "t": 1,
+   "g": "retail",
+   "helpful": 1,
+   "text": "Has anyone switched point-of-sale systems in the middle of a busy season? Ours keeps freezing and I am nervous about moving before the holidays. #retail #askthehub",
+   "comments": []
+  },
+  {
+   "id": "p4",
+   "fr": "Membres du Hub : j’offre une vérification gratuite de 30 minutes de votre tenue de livres de fin d’année jusqu’en janvier. Apportez vos questions et je vous dirai quoi corriger avant la saison des impôts.",
+   "insight": 1,
+   "celebrate": 1,
+   "reposts": 0,
+   "by": "sara",
+   "kind": "offer",
+   "age": "2 days ago",
+   "t": 2,
+   "g": null,
+   "helpful": 3,
+   "text": "Hub members: I am offering a free 30-minute year-end bookkeeping check through January. Bring your questions and I will tell you what to fix before tax season.",
+   "comments": [
+    {
+     "by": "daniel",
+     "text": "Booked. Thank you."
+    }
+   ]
+  },
+  {
+   "id": "p5",
+   "fr": "Nous embauchons un répartiteur à temps partiel à Mississauga, trois jours par semaine. Une expérience des expéditions transfrontalières est un atout. Les recommandations de membres sont les bienvenues.",
+   "img": "truck",
+   "by": "daniel",
+   "kind": "hiring",
+   "age": "4 days ago",
+   "t": 4,
+   "g": "trade",
+   "helpful": 2,
+   "text": "Hiring a part-time dispatcher in Mississauga, three days a week. Experience with cross-border shipments is a plus. Referrals from members are welcome. #export #hiring",
+   "comments": []
+  },
+  {
+   "id": "p6",
+   "photo": "img/post-ai.jpg",
+   "fr": "Je cherche à être présentée à deux ou trois détaillants indépendants en Colombie-Britannique prêts à tester un rapport d’inventaire hebdomadaire simple. Le projet pilote est gratuit.",
+   "by": "mei",
+   "kind": "question",
+   "age": "6 hours ago",
+   "t": 0.25,
+   "g": "ai",
+   "helpful": 0,
+   "text": "Looking for introductions to two or three independent retailers in BC who would test a simple weekly inventory report. No charge for the pilot. #ai #askthehub",
+   "comments": []
+  },
+  {
+   "id": "p7",
+   "fr": "Nouveau ici. Je dirige Asante Legal à Toronto et je travaille surtout avec des entreprises gérées par leur propriétaire. Je réponds volontiers aux questions générales sur les contrats et les baux commerciaux dans les commentaires.",
+   "insight": 0,
+   "celebrate": 2,
+   "reposts": 0,
+   "by": "kwame",
+   "kind": "intro",
+   "age": "6 days ago",
+   "t": 6,
+   "g": null,
+   "helpful": 5,
+   "text": "New here. I run Asante Legal in Toronto and work mostly with owner-run businesses. Happy to answer general questions about contracts and commercial leases in the comments. #newhere",
+   "comments": [
+    {
+     "by": "arjun",
+     "text": "Welcome. I will have a lease question for you soon."
+    }
+   ]
+  },
+  {
+   "id": "p8",
+   "fr": "Notre équipe a réussi l’inspection de notre première installation commerciale sur toit cette semaine. Merci aux deux membres d’ici qui m’ont expliqué les étapes du permis.",
+   "insight": 0,
+   "celebrate": 6,
+   "reposts": 0,
+   "img": "solar",
+   "by": "arjun",
+   "kind": "win",
+   "age": "1 week ago",
+   "t": 7,
+   "g": null,
+   "helpful": 4,
+   "text": "Our crew passed inspection on our first commercial rooftop install this week. Thanks to the two members here who walked me through the permit steps. #smallwins",
+   "comments": []
+  },
+  {
+   "id": "bp-seed1",
+   "by": "b_maple",
+   "biz": "maple",
+   "actor": "priya",
+   "kind": "biz",
+   "age": "1 day ago",
+   "t": 1,
+   "ts": 1795198375968,
+   "g": null,
+   "helpful": 3,
+   "text": "New for December: holiday catering trays for office parties, 10 to 80 people. Order 48 hours ahead.",
+   "photo": "img/story-bakery.jpg",
+   "comments": []
+  }
+ ],
+ "PEND": [
+  {
+   "id": "nw1",
+   "by": "nadia",
+   "kind": "question",
+   "age": "Just now",
+   "t": -1,
+   "g": null,
+   "helpful": 0,
+   "title": "Holiday staffing",
+   "text": "Has anyone hired seasonal staff through a college co-op program? Wondering if it is worth the paperwork for six weeks. #askthehub",
+   "photo": "",
+   "comments": []
+  },
+  {
+   "id": "nw2",
+   "by": "ravi",
+   "kind": "win",
+   "age": "Just now",
+   "t": -1,
+   "g": null,
+   "helpful": 1,
+   "title": "",
+   "text": "Our booking tool just passed 100 small business customers. Thank you to the owners here who tested the first rough version. #smallwins",
+   "photo": "",
+   "comments": []
+  }
+ ],
+ "REACTS": [
+  [
+   "helpful",
+   "👍",
+   "Like",
+   "#2563EB"
+  ],
+  [
+   "celebrate",
+   "🎉",
+   "Celebrate",
+   "#15803D"
+  ],
+  [
+   "support",
+   "🤝",
+   "Support",
+   "#7C3AED"
+  ],
+  [
+   "love",
+   "❤️",
+   "Love",
+   "#DC2626"
+  ],
+  [
+   "insight",
+   "💡",
+   "Insightful",
+   "#B45309"
+  ],
+  [
+   "funny",
+   "😄",
+   "Funny",
+   "#0E7490"
+  ]
+ ],
+ "KINDS": {
+  "question": "Question",
+  "win": "Win",
+  "offer": "Offer",
+  "hiring": "Hiring",
+  "intro": "Intro"
+ },
+ "FFS": [
+  [
+   "all",
+   "All updates"
+  ],
+  [
+   "mine",
+   "Created by me"
+  ],
+  [
+   "reacted",
+   "I have reacted to"
+  ],
+  [
+   "groups",
+   "From my groups"
+  ],
+  [
+   "conn",
+   "From my connections"
+  ],
+  [
+   "follow",
+   "From people I follow"
+  ],
+  [
+   "mention",
+   "I am mentioned in"
+  ],
+  [
+   "tags",
+   "Hashtags I follow"
+  ]
+ ],
+ "feedSettings_fs": {
+  "relevant": false,
+  "filters": {
+   "mine": true,
+   "reacted": true,
+   "groups": true,
+   "conn": true,
+   "follow": true,
+   "mention": true,
+   "tags": true
+  },
+  "topics": false,
+  "refresh": true,
+  "share": true,
+  "shareOut": true,
+  "schedule": true,
+  "pin": true,
+  "polls": true,
+  "pollMax": "10",
+  "cover": true,
+  "title": "optional",
+  "edit": "10",
+  "closeC": true,
+  "comments": true,
+  "cedit": "10",
+  "thread": "2",
+  "cshow": "2",
+  "cload": "10",
+  "access": "all",
+  "accessTypes": {
+   "owner": true,
+   "advisor": true,
+   "maker": true,
+   "provider": false,
+   "team": true
+  },
+  "auto": {
+   "register": true,
+   "joinGroup": true,
+   "connect": false,
+   "blog": true
+  }
+ }
+}

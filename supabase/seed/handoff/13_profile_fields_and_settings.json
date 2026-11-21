@@ -1,0 +1,373 @@
+{
+ "profileSettings_ps": {
+  "header": "left",
+  "head": {
+   "online": true,
+   "type": true,
+   "joined": true,
+   "followers": true,
+   "last": true
+  },
+  "dname": "full",
+  "link": "name",
+  "tabs": [
+   [
+    "about",
+    "About",
+    true
+   ],
+   [
+    "posts",
+    "Posts",
+    true
+   ],
+   [
+    "conn",
+    "Connections",
+    true
+   ],
+   [
+    "groups",
+    "Groups",
+    true
+   ],
+   [
+    "blog",
+    "Blog",
+    true
+   ]
+  ],
+  "defTab": "about",
+  "dview": "grid",
+  "dswitch": true,
+  "dcard": {
+   "online": true,
+   "type": true,
+   "followers": false,
+   "last": true,
+   "joined": false
+  },
+  "connect": true,
+  "follow": true,
+  "autoFollow": true,
+  "gate": false,
+  "actions": [
+   [
+    "connect",
+    true
+   ],
+   [
+    "message",
+    true
+   ],
+   [
+    "follow",
+    true
+   ]
+  ],
+  "invites": true,
+  "del": "free",
+  "exportData": true,
+  "nets": {
+   "linkedin": true,
+   "facebook": true,
+   "instagram": true,
+   "x": true,
+   "youtube": true,
+   "tiktok": true,
+   "whatsapp": true,
+   "pinterest": false,
+   "threads": false,
+   "reddit": false,
+   "medium": false,
+   "telegram": false,
+   "snapchat": false
+  },
+  "types": [
+   [
+    "owner",
+    "Business owner",
+    "#F4F4F5",
+    "#27272A"
+   ],
+   [
+    "advisor",
+    "SMB Advisor",
+    "#DBEAFE",
+    "#1D4ED8"
+   ],
+   [
+    "maker",
+    "Canadian maker",
+    "#FEE2E2",
+    "#B91C1C"
+   ],
+   [
+    "provider",
+    "Service provider",
+    "#DCFCE7",
+    "#15803D"
+   ],
+   [
+    "team",
+    "Hub team",
+    "#EDE9FE",
+    "#6D28D9"
+   ]
+  ],
+  "access": {
+   "owner": null,
+   "advisor": null,
+   "maker": null,
+   "provider": [
+    "advisor",
+    "maker",
+    "provider",
+    "team"
+   ],
+   "team": null
+  },
+  "auto": {
+   "owner": [
+    "funding"
+   ],
+   "advisor": [
+    "funding"
+   ],
+   "maker": [
+    "trade"
+   ],
+   "provider": [
+    "ai"
+   ],
+   "team": []
+  },
+  "fields": [
+   {
+    "k": "first",
+    "g": "About",
+    "l": "First name",
+    "t": "Text",
+    "vis": "public",
+    "lock": true,
+    "search": true,
+    "core": true
+   },
+   {
+    "k": "last",
+    "g": "About",
+    "l": "Last name",
+    "t": "Text",
+    "vis": "public",
+    "lock": true,
+    "search": true,
+    "core": true
+   },
+   {
+    "k": "nick",
+    "g": "About",
+    "l": "Nickname",
+    "t": "Text",
+    "vis": "members",
+    "lock": false,
+    "core": true
+   },
+   {
+    "k": "biz",
+    "g": "Business",
+    "l": "Business name",
+    "t": "Text",
+    "vis": "public",
+    "lock": true,
+    "search": true,
+    "core": true
+   },
+   {
+    "k": "industry",
+    "g": "Business",
+    "l": "Industry",
+    "t": "Dropdown",
+    "vis": "public",
+    "lock": true,
+    "search": true,
+    "core": true
+   },
+   {
+    "k": "city",
+    "g": "Business",
+    "l": "City and province",
+    "t": "Text",
+    "vis": "public",
+    "lock": true,
+    "search": true,
+    "core": true
+   },
+   {
+    "k": "founded",
+    "g": "Business",
+    "l": "Year founded",
+    "t": "Number",
+    "vis": "members",
+    "lock": false,
+    "core": true
+   },
+   {
+    "k": "team",
+    "g": "Business",
+    "l": "Team size",
+    "t": "Dropdown",
+    "vis": "members",
+    "lock": false,
+    "search": true,
+    "core": true
+   },
+   {
+    "k": "email",
+    "g": "Contact",
+    "l": "Email",
+    "t": "Email",
+    "vis": "conn",
+    "lock": false,
+    "core": true
+   },
+   {
+    "k": "phone",
+    "g": "Contact",
+    "l": "Phone",
+    "t": "Phone",
+    "vis": "conn",
+    "lock": false,
+    "core": true
+   },
+   {
+    "k": "web",
+    "g": "Contact",
+    "l": "Website",
+    "t": "Web address",
+    "vis": "public",
+    "lock": false,
+    "core": true
+   },
+   {
+    "k": "social",
+    "g": "Contact",
+    "l": "Social networks",
+    "t": "Social networks",
+    "vis": "public",
+    "lock": false,
+    "core": true
+   },
+   {
+    "k": "history",
+    "g": "Work history",
+    "l": "Past businesses and roles",
+    "t": "Repeater",
+    "vis": "members",
+    "lock": false,
+    "core": true
+   }
+  ]
+ },
+ "NETS": [
+  [
+   "linkedin",
+   "LinkedIn",
+   "in"
+  ],
+  [
+   "facebook",
+   "Facebook",
+   "fb"
+  ],
+  [
+   "instagram",
+   "Instagram",
+   "ig"
+  ],
+  [
+   "x",
+   "X",
+   "x"
+  ],
+  [
+   "youtube",
+   "YouTube",
+   "yt"
+  ],
+  [
+   "tiktok",
+   "TikTok",
+   "tt"
+  ],
+  [
+   "whatsapp",
+   "WhatsApp",
+   "wa"
+  ],
+  [
+   "pinterest",
+   "Pinterest",
+   "pi"
+  ],
+  [
+   "threads",
+   "Threads",
+   "th"
+  ],
+  [
+   "reddit",
+   "Reddit",
+   "re"
+  ],
+  [
+   "medium",
+   "Medium",
+   "md"
+  ],
+  [
+   "telegram",
+   "Telegram",
+   "tg"
+  ],
+  [
+   "snapchat",
+   "Snapchat",
+   "sc"
+  ]
+ ],
+ "FTYPES": [
+  "Text",
+  "Number",
+  "Dropdown",
+  "Date",
+  "Phone",
+  "Email",
+  "Web address",
+  "Social networks",
+  "Repeater"
+ ],
+ "VISL": {
+  "public": "Public",
+  "members": "All members",
+  "conn": "My connections",
+  "only": "Only me"
+ },
+ "PSEC": [
+  [
+   "all",
+   "All exhibitors"
+  ],
+  [
+   "make",
+   "Manufacturers and makers"
+  ],
+  [
+   "serv",
+   "Canadian-owned services"
+  ],
+  [
+   "soft",
+   "Software and AI tools"
+  ]
+ ]
+}

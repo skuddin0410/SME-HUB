@@ -1,0 +1,1444 @@
+{
+ "BZ": {
+  "v": 1,
+  "biz": {
+   "asante": {
+    "id": "asante",
+    "slug": "asante",
+    "name": "Asante Legal",
+    "cat": "Legal",
+    "desc": "Contracts, leases and employment law for owner-run businesses.",
+    "about": "Contracts, leases and employment law for owner-run businesses.",
+    "kind": "storefront",
+    "street": "120 King St W",
+    "postal": "M5V 1J5",
+    "city": "Toronto",
+    "prov": "ON",
+    "tz": "America/Toronto",
+    "showAddr": true,
+    "area": "",
+    "cover": "law",
+    "logo": "",
+    "web": "https://asante.example.ca",
+    "email": "hello@asante.example.ca",
+    "phone": "(416) 555-0120",
+    "wa": "",
+    "book": "https://asante.example.ca/book",
+    "social": {
+     "instagram": "",
+     "facebook": "",
+     "linkedin": "https://linkedin.com/company/asante"
+    },
+    "show": {
+     "web": true,
+     "email": true,
+     "phone": true,
+     "wa": false
+    },
+    "primary": "book",
+    "hours": {
+     "mon": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "tue": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "wed": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "thu": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "fri": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "sat": [],
+     "sun": []
+    },
+    "appt": true,
+    "closures": [],
+    "services": [
+     {
+      "id": "asantes0",
+      "name": "Contracts",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     },
+     {
+      "id": "asantes1",
+      "name": "Leases",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     },
+     {
+      "id": "asantes2",
+      "name": "Employment law",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     }
+    ],
+    "team": {
+     "kwame": "owner"
+    },
+    "owner": "kwame",
+    "status": "published",
+    "created": 1791828775968,
+    "recs": 3,
+    "fbase": 15,
+    "tabs": {
+     "photos": true,
+     "events": true,
+     "jobs": true,
+     "shop": false
+    },
+    "photos": [],
+    "products": [],
+    "jobs": []
+   },
+   "brightline": {
+    "id": "brightline",
+    "slug": "brightline",
+    "name": "Brightline Solar",
+    "cat": "Construction & Trades",
+    "desc": "Residential and small commercial solar installs.",
+    "about": "Residential and small commercial solar installs.",
+    "kind": "storefront",
+    "street": "157 8 Ave SW",
+    "postal": "T2P 1G1",
+    "city": "Calgary",
+    "prov": "AB",
+    "tz": "America/Edmonton",
+    "showAddr": true,
+    "area": "",
+    "cover": "solar",
+    "logo": "",
+    "web": "https://brightline.example.ca",
+    "email": "hello@brightline.example.ca",
+    "phone": "(416) 555-0121",
+    "wa": "",
+    "book": "",
+    "social": {
+     "instagram": "",
+     "facebook": "",
+     "linkedin": "https://linkedin.com/company/brightline"
+    },
+    "show": {
+     "web": true,
+     "email": true,
+     "phone": true,
+     "wa": false
+    },
+    "primary": "message",
+    "hours": {
+     "mon": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "tue": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "wed": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "thu": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "fri": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "sat": [],
+     "sun": []
+    },
+    "appt": false,
+    "closures": [],
+    "services": [
+     {
+      "id": "brightlines0",
+      "name": "Residential solar",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     },
+     {
+      "id": "brightlines1",
+      "name": "Commercial solar",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     }
+    ],
+    "team": {
+     "arjun": "owner"
+    },
+    "owner": "arjun",
+    "status": "published",
+    "created": 1791915175968,
+    "recs": 1,
+    "fbase": 7,
+    "tabs": {
+     "photos": true,
+     "events": true,
+     "jobs": true,
+     "shop": false
+    },
+    "photos": [],
+    "products": [],
+    "jobs": []
+   },
+   "clearwater": {
+    "id": "clearwater",
+    "slug": "clearwater",
+    "name": "Clearwater Bookkeeping",
+    "cat": "Finance & Accounting",
+    "desc": "Bookkeeping and cash-flow planning for small businesses.",
+    "about": "Bookkeeping and cash-flow planning for small businesses.",
+    "kind": "storefront",
+    "street": "194 Bank St",
+    "postal": "K1P 5N2",
+    "city": "Ottawa",
+    "prov": "ON",
+    "tz": "America/Toronto",
+    "showAddr": true,
+    "area": "",
+    "cover": "bars",
+    "logo": "",
+    "web": "https://clearwater.example.ca",
+    "email": "hello@clearwater.example.ca",
+    "phone": "(416) 555-0122",
+    "wa": "",
+    "book": "",
+    "social": {
+     "instagram": "",
+     "facebook": "",
+     "linkedin": "https://linkedin.com/company/clearwater"
+    },
+    "show": {
+     "web": true,
+     "email": true,
+     "phone": true,
+     "wa": false
+    },
+    "primary": "message",
+    "hours": {
+     "mon": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "tue": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "wed": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "thu": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "fri": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "sat": [],
+     "sun": []
+    },
+    "appt": false,
+    "closures": [],
+    "services": [
+     {
+      "id": "clearwaters0",
+      "name": "Bookkeeping",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     },
+     {
+      "id": "clearwaters1",
+      "name": "Cash-flow planning",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     }
+    ],
+    "team": {
+     "sara": "owner"
+    },
+    "owner": "sara",
+    "status": "published",
+    "created": 1792001575968,
+    "recs": 4,
+    "fbase": 19,
+    "tabs": {
+     "photos": true,
+     "events": true,
+     "jobs": true,
+     "shop": false
+    },
+    "photos": [],
+    "products": [],
+    "jobs": []
+   },
+   "harbour": {
+    "id": "harbour",
+    "slug": "harbour",
+    "name": "Harbour Analytics",
+    "cat": "Technology",
+    "desc": "Sales and inventory reporting for independent retailers.",
+    "about": "Sales and inventory reporting for independent retailers.",
+    "kind": "online",
+    "street": "",
+    "postal": "",
+    "city": "Vancouver",
+    "prov": "BC",
+    "tz": "America/Vancouver",
+    "showAddr": false,
+    "area": "",
+    "cover": "nodes",
+    "logo": "",
+    "web": "https://harbour.example.ca",
+    "email": "hello@harbour.example.ca",
+    "phone": "(416) 555-0123",
+    "wa": "",
+    "book": "",
+    "social": {
+     "instagram": "",
+     "facebook": "",
+     "linkedin": "https://linkedin.com/company/harbour"
+    },
+    "show": {
+     "web": true,
+     "email": true,
+     "phone": true,
+     "wa": false
+    },
+    "primary": "web",
+    "hours": {
+     "mon": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "tue": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "wed": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "thu": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "fri": [
+      [
+       "09:00",
+       "17:00"
+      ]
+     ],
+     "sat": [],
+     "sun": []
+    },
+    "appt": false,
+    "closures": [],
+    "services": [
+     {
+      "id": "harbours0",
+      "name": "Sales reports",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     },
+     {
+      "id": "harbours1",
+      "name": "Inventory data",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     }
+    ],
+    "team": {
+     "mei": "owner"
+    },
+    "owner": "mei",
+    "status": "published",
+    "created": 1792087975968,
+    "recs": 2,
+    "fbase": 11,
+    "tabs": {
+     "photos": true,
+     "events": true,
+     "jobs": true,
+     "shop": false
+    },
+    "photos": [],
+    "products": [],
+    "jobs": []
+   },
+   "maple": {
+    "id": "maple",
+    "slug": "maple",
+    "name": "Maple Bakery",
+    "cat": "Food & Drink",
+    "desc": "Wholesale and retail bakery. Catering trays for offices and events.",
+    "about": "Family bakery making bread, pastries and maple shortbread since 2016. We supply cafés and grocers across the GTA and cater office breakfasts and events.",
+    "kind": "storefront",
+    "street": "268 Queen St E",
+    "postal": "M4M 1J8",
+    "city": "Toronto",
+    "prov": "ON",
+    "tz": "America/Toronto",
+    "showAddr": true,
+    "area": "",
+    "cover": "bakery",
+    "logo": "",
+    "web": "https://maple.example.ca",
+    "email": "hello@maple.example.ca",
+    "phone": "(416) 555-0124",
+    "wa": "",
+    "book": "",
+    "social": {
+     "instagram": "",
+     "facebook": "",
+     "linkedin": "https://linkedin.com/company/maple"
+    },
+    "show": {
+     "web": true,
+     "email": true,
+     "phone": true,
+     "wa": false
+    },
+    "primary": "message",
+    "hours": {
+     "mon": [],
+     "tue": [
+      [
+       "06:00",
+       "18:00"
+      ]
+     ],
+     "wed": [
+      [
+       "06:00",
+       "18:00"
+      ]
+     ],
+     "thu": [
+      [
+       "06:00",
+       "18:00"
+      ]
+     ],
+     "fri": [
+      [
+       "06:00",
+       "19:00"
+      ]
+     ],
+     "sat": [
+      [
+       "07:00",
+       "17:00"
+      ]
+     ],
+     "sun": [
+      [
+       "08:00",
+       "14:00"
+      ]
+     ]
+    },
+    "appt": false,
+    "closures": [],
+    "services": [
+     {
+      "id": "ms1",
+      "name": "Office breakfast catering",
+      "desc": "Pastry and fruit trays for 10 to 80 people. Order 48 hours ahead.",
+      "photo": "img/story-bakery.jpg",
+      "pt": "from",
+      "price": "120"
+     },
+     {
+      "id": "ms2",
+      "name": "Wholesale bread for cafés",
+      "desc": "Daily or weekly delivery in Toronto.",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     },
+     {
+      "id": "ms3",
+      "name": "Maple shortbread gift box",
+      "desc": "Twelve cookies in a gift box.",
+      "photo": "",
+      "pt": "fixed",
+      "price": "28"
+     }
+    ],
+    "team": {
+     "priya": "owner"
+    },
+    "owner": "priya",
+    "status": "published",
+    "created": 1792174375968,
+    "recs": 5,
+    "fbase": 23,
+    "tabs": {
+     "photos": true,
+     "events": true,
+     "jobs": true,
+     "shop": true
+    },
+    "photos": [
+     "img/story-bakery.jpg",
+     "img/post-retail.jpg"
+    ],
+    "products": [
+     {
+      "id": "mp1",
+      "name": "Maple shortbread gift box",
+      "price": "28",
+      "photo": "img/story-bakery.jpg",
+      "desc": "Twelve cookies."
+     }
+    ],
+    "jobs": []
+   },
+   "northside": {
+    "id": "northside",
+    "slug": "northside",
+    "name": "Northside Logistics",
+    "cat": "Logistics & Transport",
+    "desc": "Cross-border freight and customs help for small importers.",
+    "about": "Overnight dispatch for cross-border freight. Our office runs through the night so trucks clear the border by morning.",
+    "kind": "storefront",
+    "street": "305 Dixie Rd",
+    "postal": "L4Y 2A8",
+    "city": "Mississauga",
+    "prov": "ON",
+    "tz": "America/Toronto",
+    "showAddr": true,
+    "area": "",
+    "cover": "truck",
+    "logo": "",
+    "web": "https://northside.example.ca",
+    "email": "hello@northside.example.ca",
+    "phone": "(416) 555-0125",
+    "wa": "",
+    "book": "",
+    "social": {
+     "instagram": "",
+     "facebook": "",
+     "linkedin": "https://linkedin.com/company/northside"
+    },
+    "show": {
+     "web": true,
+     "email": true,
+     "phone": true,
+     "wa": false
+    },
+    "primary": "message",
+    "hours": {
+     "mon": [
+      [
+       "20:00",
+       "04:00"
+      ]
+     ],
+     "tue": [
+      [
+       "20:00",
+       "04:00"
+      ]
+     ],
+     "wed": [
+      [
+       "20:00",
+       "04:00"
+      ]
+     ],
+     "thu": [
+      [
+       "20:00",
+       "04:00"
+      ]
+     ],
+     "fri": [
+      [
+       "20:00",
+       "02:00"
+      ]
+     ],
+     "sat": [],
+     "sun": []
+    },
+    "appt": false,
+    "closures": [],
+    "services": [
+     {
+      "id": "northsides0",
+      "name": "Cross-border freight",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     },
+     {
+      "id": "northsides1",
+      "name": "Customs",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     }
+    ],
+    "team": {
+     "daniel": "owner"
+    },
+    "owner": "daniel",
+    "status": "published",
+    "created": 1792260775968,
+    "recs": 2,
+    "fbase": 11,
+    "tabs": {
+     "photos": true,
+     "events": true,
+     "jobs": true,
+     "shop": false
+    },
+    "photos": [],
+    "products": [],
+    "jobs": [
+     {
+      "id": "nj1",
+      "title": "Night dispatcher",
+      "type": "Full-time",
+      "pay": "$24 to $28 an hour",
+      "desc": "Plan routes and keep drivers moving overnight. Mississauga office."
+     }
+    ]
+   },
+   "morgan": {
+    "id": "morgan",
+    "slug": "morgan-home-renovations",
+    "name": "Morgan Home Renovations",
+    "cat": "Construction & Trades",
+    "desc": "Kitchens, bathrooms and small commercial fit-outs in Peel and the west GTA.",
+    "about": "Owner-run renovation company. Alex quotes every job himself and the same crew finishes it.",
+    "kind": "service",
+    "street": "42 Maple Grove Cres",
+    "postal": "L5B 0A1",
+    "city": "Mississauga",
+    "prov": "ON",
+    "tz": "America/Toronto",
+    "showAddr": false,
+    "area": "Peel Region and the west GTA",
+    "cover": "awning",
+    "logo": "",
+    "web": "https://morganreno.example.ca",
+    "email": "quotes@morganreno.example.ca",
+    "phone": "(905) 555-0142",
+    "wa": "(905) 555-0142",
+    "book": "",
+    "social": {
+     "instagram": "https://instagram.com/morganreno",
+     "facebook": "",
+     "linkedin": ""
+    },
+    "show": {
+     "web": true,
+     "email": false,
+     "phone": true,
+     "wa": true
+    },
+    "primary": "call",
+    "hours": {
+     "mon": [
+      [
+       "08:00",
+       "18:00"
+      ]
+     ],
+     "tue": [
+      [
+       "08:00",
+       "18:00"
+      ]
+     ],
+     "wed": [
+      [
+       "08:00",
+       "18:00"
+      ]
+     ],
+     "thu": [
+      [
+       "08:00",
+       "18:00"
+      ]
+     ],
+     "fri": [
+      [
+       "08:00",
+       "18:00"
+      ]
+     ],
+     "sat": [
+      [
+       "08:00",
+       "18:00"
+      ]
+     ],
+     "sun": []
+    },
+    "appt": false,
+    "closures": [],
+    "services": [
+     {
+      "id": "mr1",
+      "name": "Kitchen renovation",
+      "desc": "Design, permits and build.",
+      "photo": "",
+      "pt": "from",
+      "price": "18000"
+     },
+     {
+      "id": "mr2",
+      "name": "Bathroom renovation",
+      "desc": "",
+      "photo": "",
+      "pt": "from",
+      "price": "9500"
+     },
+     {
+      "id": "mr3",
+      "name": "Small commercial fit-out",
+      "desc": "Cafés, shops and offices.",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     }
+    ],
+    "team": {
+     "me": "owner"
+    },
+    "owner": "me",
+    "status": "published",
+    "created": 1793556775968,
+    "recs": 2,
+    "fbase": 9,
+    "tabs": {
+     "photos": true,
+     "events": true,
+     "jobs": true,
+     "shop": false
+    },
+    "photos": [],
+    "products": [],
+    "jobs": []
+   },
+   "lakeshore": {
+    "id": "lakeshore",
+    "slug": "lakeshore-catering-toronto",
+    "name": "Lakeshore Catering Co.",
+    "cat": "Catering & Events",
+    "desc": "Corporate lunches and event catering on the Toronto waterfront.",
+    "about": "Listed by the CanadianSME team from public information. Not yet managed by the owner.",
+    "kind": "storefront",
+    "street": "215 Queens Quay W",
+    "postal": "M5J 2Y3",
+    "city": "Toronto",
+    "prov": "ON",
+    "tz": "America/Toronto",
+    "showAddr": true,
+    "area": "",
+    "cover": "bakery",
+    "logo": "",
+    "web": "https://lakeshorecatering.example.ca",
+    "email": "",
+    "phone": "(416) 555-0199",
+    "wa": "",
+    "book": "",
+    "social": {},
+    "show": {
+     "web": true,
+     "email": false,
+     "phone": true,
+     "wa": false
+    },
+    "primary": "call",
+    "hours": {
+     "mon": [
+      [
+       "08:00",
+       "16:00"
+      ]
+     ],
+     "tue": [
+      [
+       "08:00",
+       "16:00"
+      ]
+     ],
+     "wed": [
+      [
+       "08:00",
+       "16:00"
+      ]
+     ],
+     "thu": [
+      [
+       "08:00",
+       "16:00"
+      ]
+     ],
+     "fri": [
+      [
+       "08:00",
+       "16:00"
+      ]
+     ],
+     "sat": [],
+     "sun": []
+    },
+    "appt": false,
+    "closures": [],
+    "services": [
+     {
+      "id": "lc1",
+      "name": "Corporate lunch catering",
+      "desc": "",
+      "photo": "",
+      "pt": "quote",
+      "price": ""
+     }
+    ],
+    "team": {},
+    "owner": null,
+    "status": "published",
+    "created": 1794852775968,
+    "recs": 0,
+    "fbase": 2,
+    "createdBy": "mod",
+    "tabs": {
+     "photos": true,
+     "events": true,
+     "jobs": true,
+     "shop": false
+    },
+    "photos": [],
+    "products": [],
+    "jobs": []
+   }
+  },
+  "order": [
+   "asante",
+   "brightline",
+   "clearwater",
+   "harbour",
+   "maple",
+   "northside",
+   "morgan",
+   "lakeshore"
+  ],
+  "follows": {
+   "maple": {
+    "sara": 1,
+    "kwame": 1
+   }
+  },
+  "posts": [
+   {
+    "id": "bp-seed1",
+    "by": "b_maple",
+    "biz": "maple",
+    "actor": "priya",
+    "kind": "biz",
+    "age": "1 day ago",
+    "t": 1,
+    "ts": 1795198375968,
+    "g": null,
+    "helpful": 3,
+    "text": "New for December: holiday catering trays for office parties, 10 to 80 people. Order 48 hours ahead.",
+    "photo": "img/story-bakery.jpg",
+    "comments": []
+   }
+  ],
+  "reviews": [
+   {
+    "id": "r1",
+    "biz": "maple",
+    "by": "sara",
+    "stars": 5,
+    "crit": {
+     "Quality": 5,
+     "Value": 4,
+     "Communication": 5
+    },
+    "text": "Ordered breakfast trays for a client workshop. On time, fresh and they labelled everything with allergens.",
+    "status": "published",
+    "t": 1794507175968,
+    "reports": []
+   },
+   {
+    "id": "r2",
+    "biz": "maple",
+    "by": "kwame",
+    "stars": 4,
+    "crit": {
+     "Quality": 5,
+     "Value": 4
+    },
+    "text": "Great shortbread boxes for our client gifts.",
+    "status": "published",
+    "t": 1793556775968,
+    "reports": []
+   },
+   {
+    "id": "r3",
+    "biz": "clearwater",
+    "by": "isabelle",
+    "stars": 5,
+    "crit": {},
+    "text": "Clear monthly reports and fast answers.",
+    "status": "published",
+    "t": 1794075175968,
+    "reports": []
+   },
+   {
+    "id": "r4",
+    "biz": "morgan",
+    "by": "tyler",
+    "stars": 5,
+    "crit": {
+     "Quality": 5
+    },
+    "text": "Tidy crew, finished our office kitchen a day early.",
+    "status": "published",
+    "t": 1792692775968,
+    "reports": []
+   }
+  ],
+  "inbox": {},
+  "claims": [],
+  "reports": [],
+  "events": [],
+  "notes": {},
+  "cart": [],
+  "set": {
+   "create": "all",
+   "limit": "3",
+   "pubApproval": true,
+   "revApproval": false,
+   "criteria": [
+    "Quality",
+    "Value",
+    "Communication"
+   ],
+   "cats": [
+    "Food & Drink",
+    "Catering & Events",
+    "Retail",
+    "Professional Services",
+    "Finance & Accounting",
+    "Legal",
+    "Construction & Trades",
+    "Home Services",
+    "Technology",
+    "Logistics & Transport",
+    "Health & Wellness",
+    "Manufacturing",
+    "Marketing & Design",
+    "Other"
+   ],
+   "tabs": {
+    "photos": true,
+    "events": true,
+    "jobs": true,
+    "shop": true
+   },
+   "commerce": false
+  }
+ },
+ "BCATS0": [
+  "Food & Drink",
+  "Catering & Events",
+  "Retail",
+  "Professional Services",
+  "Finance & Accounting",
+  "Legal",
+  "Construction & Trades",
+  "Home Services",
+  "Technology",
+  "Logistics & Transport",
+  "Health & Wellness",
+  "Manufacturing",
+  "Marketing & Design",
+  "Other"
+ ],
+ "BCATI": {
+  "Food & Drink": "store",
+  "Catering & Events": "cal",
+  "Retail": "tag",
+  "Professional Services": "users",
+  "Finance & Accounting": "coin",
+  "Legal": "book",
+  "Construction & Trades": "building",
+  "Home Services": "home",
+  "Technology": "spark",
+  "Logistics & Transport": "send",
+  "Health & Wellness": "help",
+  "Manufacturing": "building",
+  "Marketing & Design": "edit",
+  "Other": "grid"
+ },
+ "BKIND": {
+  "storefront": "Visit in person",
+  "service": "Comes to you",
+  "online": "Online"
+ },
+ "BROLES": {
+  "owner": [
+   "Owner",
+   "Everything: details, updates, inquiries, the team and the page itself"
+  ],
+  "manager": [
+   "Manager",
+   "Edit details, post updates and stories, answer inquiries"
+  ],
+  "editor": [
+   "Editor",
+   "Post updates and stories as the business"
+  ],
+  "responder": [
+   "Inbox",
+   "Read and answer inquiries as the business"
+  ]
+ },
+ "BPERM": {
+  "edit": [
+   "owner",
+   "manager"
+  ],
+  "post": [
+   "owner",
+   "manager",
+   "editor"
+  ],
+  "inbox": [
+   "owner",
+   "manager",
+   "responder"
+  ],
+  "team": [
+   "owner"
+  ]
+ },
+ "BTABS": [
+  [
+   "feed",
+   "Feed"
+  ],
+  [
+   "services",
+   "Services"
+  ],
+  [
+   "about",
+   "About"
+  ],
+  [
+   "reviews",
+   "Reviews"
+  ],
+  [
+   "photos",
+   "Photos"
+  ],
+  [
+   "shop",
+   "Shop"
+  ],
+  [
+   "events",
+   "Events"
+  ],
+  [
+   "jobs",
+   "Jobs"
+  ]
+ ],
+ "BTAGS": {
+  "asante": [
+   "Contracts",
+   "Leases",
+   "Employment law"
+  ],
+  "brightline": [
+   "Residential solar",
+   "Commercial solar"
+  ],
+  "clearwater": [
+   "Bookkeeping",
+   "Cash-flow planning"
+  ],
+  "harbour": [
+   "Sales reports",
+   "Inventory data"
+  ],
+  "maple": [
+   "Wholesale",
+   "Retail bakery"
+  ],
+  "northside": [
+   "Cross-border freight",
+   "Customs"
+  ]
+ },
+ "BCOL": [
+  "#1D4ED8",
+  "#B91C1C",
+  "#047857",
+  "#7C3AED",
+  "#B45309",
+  "#0E7490",
+  "#BE185D",
+  "#4D7C0F"
+ ],
+ "BUSINESSES": [
+  {
+   "id": "asante",
+   "cover": "law",
+   "name": "Asante Legal",
+   "cat": "Law",
+   "city": "Toronto, ON",
+   "owner": "kwame",
+   "desc": "Contracts, leases and employment law for owner-run businesses.",
+   "recs": 3
+  },
+  {
+   "id": "brightline",
+   "cover": "solar",
+   "name": "Brightline Solar",
+   "cat": "Construction",
+   "city": "Calgary, AB",
+   "owner": "arjun",
+   "desc": "Residential and small commercial solar installs.",
+   "recs": 1
+  },
+  {
+   "id": "clearwater",
+   "cover": "bars",
+   "name": "Clearwater Bookkeeping",
+   "cat": "Finance",
+   "city": "Ottawa, ON",
+   "owner": "sara",
+   "desc": "Bookkeeping and cash-flow planning for small businesses.",
+   "recs": 4
+  },
+  {
+   "id": "harbour",
+   "cover": "nodes",
+   "name": "Harbour Analytics",
+   "cat": "Technology",
+   "city": "Vancouver, BC",
+   "owner": "mei",
+   "desc": "Sales and inventory reporting for independent retailers.",
+   "recs": 2
+  },
+  {
+   "id": "maple",
+   "cover": "bakery",
+   "name": "Maple Bakery",
+   "cat": "Food & Drink",
+   "city": "Toronto, ON",
+   "owner": "priya",
+   "desc": "Wholesale and retail bakery supplying cafes and grocers.",
+   "recs": 5
+  },
+  {
+   "id": "northside",
+   "cover": "truck",
+   "name": "Northside Logistics",
+   "cat": "Logistics",
+   "city": "Mississauga, ON",
+   "owner": "daniel",
+   "desc": "Cross-border freight and customs help for small importers.",
+   "recs": 2
+  }
+ ],
+ "GEO": {
+  "Toronto": [
+   -79.4,
+   43.7
+  ],
+  "Mississauga": [
+   -79.65,
+   43.6
+  ],
+  "Kitchener": [
+   -80.5,
+   43.45
+  ],
+  "Ottawa": [
+   -75.7,
+   45.4
+  ],
+  "Montréal": [
+   -73.6,
+   45.5
+  ],
+  "Québec City": [
+   -71.2,
+   46.8
+  ],
+  "Halifax": [
+   -63.6,
+   44.65
+  ],
+  "Moncton": [
+   -64.8,
+   46.1
+  ],
+  "St. John’s": [
+   -52.7,
+   47.56
+  ],
+  "Winnipeg": [
+   -97.1,
+   49.9
+  ],
+  "Saskatoon": [
+   -106.7,
+   52.1
+  ],
+  "Calgary": [
+   -114.1,
+   51.05
+  ],
+  "Edmonton": [
+   -113.5,
+   53.5
+  ],
+  "Vancouver": [
+   -123.1,
+   49.3
+  ],
+  "Victoria": [
+   -123.4,
+   48.4
+  ]
+ },
+ "PROVS": [
+  [
+   "AB",
+   "Alberta",
+   "America/Edmonton"
+  ],
+  [
+   "BC",
+   "British Columbia",
+   "America/Vancouver"
+  ],
+  [
+   "MB",
+   "Manitoba",
+   "America/Winnipeg"
+  ],
+  [
+   "NB",
+   "New Brunswick",
+   "America/Moncton"
+  ],
+  [
+   "NL",
+   "Newfoundland and Labrador",
+   "America/St_Johns"
+  ],
+  [
+   "NS",
+   "Nova Scotia",
+   "America/Halifax"
+  ],
+  [
+   "NT",
+   "Northwest Territories",
+   "America/Yellowknife"
+  ],
+  [
+   "NU",
+   "Nunavut",
+   "America/Iqaluit"
+  ],
+  [
+   "ON",
+   "Ontario",
+   "America/Toronto"
+  ],
+  [
+   "PE",
+   "Prince Edward Island",
+   "America/Halifax"
+  ],
+  [
+   "QC",
+   "Quebec",
+   "America/Toronto"
+  ],
+  [
+   "SK",
+   "Saskatchewan",
+   "America/Regina"
+  ],
+  [
+   "YT",
+   "Yukon",
+   "America/Whitehorse"
+  ]
+ ],
+ "PNAME": {
+  "ON": "Ontario",
+  "QC": "Quebec",
+  "BC": "British Columbia",
+  "AB": "Alberta",
+  "NS": "Nova Scotia",
+  "MB": "Manitoba",
+  "SK": "Saskatchewan",
+  "NB": "New Brunswick",
+  "NL": "Newfoundland and Labrador",
+  "NT": "Northwest Territories",
+  "NU": "Nunavut",
+  "PE": "Prince Edward Island",
+  "YT": "Yukon"
+ },
+ "PROV": [
+  "Alberta",
+  "British Columbia",
+  "Manitoba",
+  "New Brunswick",
+  "Newfoundland and Labrador",
+  "Northwest Territories",
+  "Nova Scotia",
+  "Nunavut",
+  "Ontario",
+  "Prince Edward Island",
+  "Quebec",
+  "Saskatchewan",
+  "Yukon"
+ ],
+ "TZS": [
+  [
+   "America/St_Johns",
+   "Newfoundland Time (St. John’s)"
+  ],
+  [
+   "America/Halifax",
+   "Atlantic Time (Halifax)"
+  ],
+  [
+   "America/Moncton",
+   "Atlantic Time (Moncton)"
+  ],
+  [
+   "America/Toronto",
+   "Eastern Time (Toronto)"
+  ],
+  [
+   "America/Winnipeg",
+   "Central Time (Winnipeg)"
+  ],
+  [
+   "America/Regina",
+   "Central Standard Time, no daylight saving (Regina)"
+  ],
+  [
+   "America/Edmonton",
+   "Mountain Time (Edmonton)"
+  ],
+  [
+   "America/Vancouver",
+   "Pacific Time (Vancouver)"
+  ],
+  [
+   "America/Whitehorse",
+   "Yukon Time (Whitehorse)"
+  ],
+  [
+   "America/Yellowknife",
+   "Mountain Time (Yellowknife)"
+  ],
+  [
+   "America/Iqaluit",
+   "Eastern Time (Iqaluit)"
+  ]
+ ],
+ "DAYK": [
+  "sun",
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat"
+ ]
+}
