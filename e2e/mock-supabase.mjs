@@ -1,8 +1,23 @@
 // A stand-in for Supabase so browser tests run without the real database or any keys.
-// Every table read returns no rows and nobody is signed in, which is enough to check that pages
-// render and fit the screen. Tests that need data add it in later phases.
+// Every table read returns no rows, which is enough to check that pages render and fit the screen.
+// Nobody is signed in, except a request that carries a test session token (see e2e/personas.ts):
+// then /auth/v1/user and the viewer's own profile row answer, so signed-in pages can be checked.
 import http from "node:http";
 
+const MEMBER = {
+  id: "00000000-0000-4000-8000-000000000001",
+  full_name: "Test Member",
+  headline: "Owner, Test Bakery",
+  location: null,
+  bio: null,
+  website: null,
+  avatar_url: null,
+  role: "member",
+  status: "active",
+  member_type: "owner",
+  plan: "free",
+  created_at: new Date().toISOString(),
+};
 const port = Number(process.env.MOCK_SUPABASE_PORT || 54398);
 
 http
@@ -13,6 +28,15 @@ http
     res.setHeader("access-control-allow-methods", "*");
     if (req.method === "OPTIONS") return res.end();
     res.setHeader("content-type", "application/json");
+    if (process.env.MOCK_LOG) console.log(req.method, req.url.slice(0, 90), String(req.headers.authorization).slice(0, 20));
+    const token = String(req.headers.authorization || "").replace(/^Bearer /, "");
+    const member = token.startsWith("ey");
+    if (member && url.pathname === "/auth/v1/user") {
+      return res.end(JSON.stringify({ id: MEMBER.id, aud: "authenticated", role: "authenticated", email: "member@example.test", app_metadata: {}, user_metadata: {}, created_at: MEMBER.created_at }));
+    }
+    if (member && url.pathname === "/rest/v1/profiles" && url.searchParams.get("id") === `eq.${MEMBER.id}`) {
+      return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? MEMBER : [MEMBER]));
+    }
     if (url.pathname.startsWith("/auth/v1/")) {
       res.statusCode = 401;
       return res.end(JSON.stringify({ code: 401, msg: "not signed in" }));

@@ -33,26 +33,30 @@
     --tint: 207.3 44% 95.1%; /* #edf3f8 search fields, selected rows */
     --card-edge: 240 5.9% 90.6%; /* hairline #E5E5E8 around cards */
   }
+  /* dark theme: the handoff tokens (docs: SMB Hub design guide, section 4) */
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    color-scheme: dark;
+    --background: 220 22% 8%; /* #101319 */
+    --foreground: 225 17% 95%; /* #F1F2F5 */
+    --card: 221 21% 12%; /* #191D26 */
+    --card-foreground: 225 17% 95%;
+    --popover: 221 21% 12%;
+    --popover-foreground: 225 17% 95%;
+    --primary: 225 72% 56%; /* #3D66E0 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 21% 16%;
+    --secondary-foreground: 225 17% 95%;
+    --muted: 222 21% 16%; /* #202531 */
+    --muted-foreground: 221 12% 70%; /* #A9AFBC */
+    --accent: 222 21% 16%;
+    --accent-foreground: 225 17% 95%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 19% 21%; /* #2C3240 */
+    --input: 222 19% 21%;
+    --ring: 225 72% 62%;
+    --tint: 222 21% 16%;
+    --card-edge: 222 19% 21%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -76,7 +80,6 @@
     font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 14px;
     line-height: 1.42857;
-    color: #18181B;
   }
   h1, h2, h3 { font-weight: 600; letter-spacing: 0; }
   :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
@@ -224,3 +227,49 @@
 @media (prefers-reduced-motion: reduce) {
   .react-like, .react-love, .react-celebrate, .react-off, .react-particle, .react-glow, .react-ring, .react-count { animation: none; }
 }
+
+
+/* ---------- dark mode ----------
+ * Most of the hub is written with fixed light colours (white cards, zinc text, #E5E5E8 borders).
+ * Rather than touching every page, the dark theme remaps those few values in one place.
+ * New components should use the theme tokens (bg-card, text-foreground, border-border) instead. */
+.dark body { color: hsl(var(--foreground)); }
+.dark .panel { background: hsl(var(--card)); border-color: hsl(var(--border)); box-shadow: none; }
+.dark .panel-hover:hover { border-color: #3A4152; box-shadow: none; }
+.dark .field { background: hsl(var(--muted)); border-color: hsl(var(--border)); color: hsl(var(--foreground)); }
+.dark .field:focus { background: hsl(var(--card)); border-color: hsl(var(--primary)); }
+.dark .banner { background: linear-gradient(120deg, #2C3240, #3A4152); }
+.dark .skeleton { background: hsl(var(--muted)); }
+/* surfaces */
+.dark .bg-white, .dark .bg-white\/95, .dark .bg-white\/90, .dark .bg-white\/70 { background-color: hsl(var(--card)); }
+.dark .bg-\[\#F5F5F6\], .dark .bg-\[\#F7F7F8\], .dark .bg-\[\#FAFAFA\], .dark .bg-zinc-50, .dark .bg-zinc-100, .dark .bg-slate-50,
+.dark .bg-slate-100\/90, .dark .bg-zinc-200, .dark .bg-slate-200 { background-color: hsl(var(--muted)); }
+.dark [class*="bg-\[\#F5F5F6\]/"], .dark [class*="bg-\[\#F7F7F8\]/"], .dark [class*="bg-zinc-50/"] { background-color: hsl(var(--muted) / 0.7); }
+.dark .bg-\[\#E5E5E8\] { background-color: hsl(var(--border)); }
+.dark .bg-\[\#18181B\], .dark .bg-zinc-900 { background-color: #F1F2F5; color: #101319; }
+.dark .bg-zinc-800 { background-color: #2C3240; }
+.dark .hover\:bg-zinc-50:hover, .dark .hover\:bg-zinc-100:hover, .dark .hover\:bg-\[\#F5F5F6\]:hover, .dark .hover\:bg-\[\#EFEFF1\]:hover, .dark .hover\:bg-white\/70:hover,
+.dark .hover\:bg-zinc-100\/80:hover, .dark .hover\:bg-\[\#E5E5E8\]:hover { background-color: hsl(var(--muted)); }
+/* borders and dividers */
+.dark .border-\[\#E5E5E8\], .dark .border-\[\#E5E5E8\]\/90, .dark .border-zinc-200, .dark .border-zinc-100, .dark .border-slate-200, .dark .border-slate-100,
+.dark .border-\[\#F5F5F6\], .dark .border-\[\#F0F0F2\], .dark [class*="border-slate-200/"] { border-color: hsl(var(--border)); }
+.dark .border-zinc-300, .dark .hover\:border-zinc-300:hover { border-color: #3A4152; }
+.dark .divide-zinc-100 > :not([hidden]) ~ :not([hidden]), .dark .divide-\[\#E5E5E8\] > :not([hidden]) ~ :not([hidden]), .dark .divide-\[\#F5F5F6\] > :not([hidden]) ~ :not([hidden]) { border-color: hsl(var(--border)); }
+.dark .ring-white { --tw-ring-color: hsl(var(--card)); }
+.dark .border-white { border-color: hsl(var(--card)); }
+/* text */
+.dark .text-zinc-950, .dark .text-zinc-900, .dark .text-zinc-800, .dark .text-slate-950, .dark .text-slate-900, .dark .text-slate-800,
+.dark .hover\:text-zinc-950:hover, .dark .hover\:text-zinc-900:hover { color: hsl(var(--foreground)); }
+.dark .text-zinc-700, .dark .text-slate-700, .dark .text-zinc-600, .dark .text-slate-600, .dark .text-slate-300 { color: #C9CDD6; }
+.dark .text-zinc-500, .dark .text-zinc-400, .dark .text-slate-500, .dark .text-slate-400 { color: hsl(var(--muted-foreground)); }
+.dark .text-blue-600, .dark .text-blue-700, .dark .hover\:text-blue-600:hover { color: #9DB5FF; }
+.dark .placeholder\:text-zinc-400::placeholder, .dark .placeholder-zinc-400::placeholder { color: #7C8394; }
+/* tinted chips: keep the hue, darken the fill */
+.dark .bg-blue-50 { background-color: #1B2750; } .dark .text-blue-700, .dark .text-indigo-700, .dark .text-indigo-800 { color: #B9C8FF; }
+.dark .bg-amber-50, .dark .from-amber-50 { background-color: #3A2C0C; --tw-gradient-from: #3A2C0C; } .dark .text-amber-900, .dark .text-amber-800, .dark .text-amber-700 { color: #FFD88A; }
+.dark .bg-emerald-50 { background-color: #143222; } .dark .text-emerald-700, .dark .text-emerald-800 { color: #9BE0B4; }
+.dark .bg-rose-50, .dark .hover\:bg-rose-50:hover { background-color: #3A1A1C; } .dark .text-rose-600, .dark .text-rose-700 { color: #FFB4B4; }
+.dark .bg-violet-50, .dark .bg-purple-50 { background-color: #2E1B44; } .dark .text-violet-700, .dark .text-purple-700 { color: #DDBBFA; }
+.dark .to-white, .dark .via-white { --tw-gradient-to: hsl(var(--card)); }
+.dark img { filter: brightness(0.92); }
+.dark .no-dim img, .dark img.no-dim { filter: none; }

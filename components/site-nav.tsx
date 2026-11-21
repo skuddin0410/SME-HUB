@@ -16,7 +16,6 @@ import {
   LayoutGrid,
   LogOut,
   Menu,
-  MessageSquare,
   Search,
   Shield,
   Store,
@@ -26,6 +25,7 @@ import {
 import { markNotificationsRead } from "@/app/(hub)/actions";
 import { ABOUT_MENU, EXPLORE_MENU, POLICY_MENU, PROVINCE_MENU, RESOURCES_MENU, type NavItem } from "@/lib/site";
 import { AvatarImg, SignOutButton } from "@/components/hub-client";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 
 /**
@@ -42,8 +42,12 @@ export function Logo({ href = "/feed", onDark = false }: { onDark?: boolean; hre
         alt="SMB Hub"
         width={874}
         height={224}
-        className="hidden sm:block h-8 w-auto group-hover:opacity-90 transition-opacity"
+        className={`hidden sm:block h-8 w-auto group-hover:opacity-90 transition-opacity no-dim ${onDark ? "" : "dark:!hidden"}`}
       />
+      {!onDark && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src="/brand/smb-hub-logo-on-dark.png" alt="SMB Hub" width={874} height={224} className="hidden dark:sm:block h-8 w-auto no-dim" />
+      )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/brand/smb-hub-mark.png" alt="SMB Hub" width={226} height={224} className="sm:hidden h-8 w-8" />
     </Link>
@@ -134,13 +138,7 @@ export function SiteNav({
           <span className="px-1.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80 leading-tight">{requests > 99 ? "99+" : requests}</span>
         ) : null,
     },
-    {
-      href: "/messages",
-      label: "Messaging",
-      icon: MessageSquare,
-      active: pathname.startsWith("/messages"),
-      extra: messages > 0 ? <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" aria-label={`${messages} unread`} /> : null,
-    },
+    { href: "/businesses", label: "Business Directory", icon: Building2, active: pathname.startsWith("/businesses"), extra: null as React.ReactNode },
   ];
 
   return (
@@ -152,11 +150,11 @@ export function SiteNav({
           <button
             type="button"
             onClick={() => setPalette(true)}
-            className="hidden sm:flex items-center justify-between gap-2 w-[180px] lg:w-[200px] 2xl:w-[210px] h-9 px-3.5 rounded-full bg-[#F7F7F8] hover:bg-[#EFEFF1] border border-[#E5E5E8] hover:border-zinc-300 text-[13px] text-zinc-500 transition-colors shrink-0"
+            className="hidden lg:flex items-center justify-between gap-2 w-[200px] 2xl:w-[210px] h-9 px-3.5 rounded-full bg-[#F7F7F8] hover:bg-[#EFEFF1] border border-[#E5E5E8] hover:border-zinc-300 text-[13px] text-zinc-500 transition-colors shrink-0"
           >
             <span className="flex items-center gap-2 min-w-0">
               <Search className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-              <span className="truncate">Search SMB Hub...</span>
+              <span className="truncate">Search</span>
             </span>
             <kbd className="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium bg-white border border-[#E5E5E8] rounded-md text-zinc-500">⌘K</kbd>
           </button>
@@ -164,7 +162,7 @@ export function SiteNav({
             type="button"
             onClick={() => setPalette(true)}
             aria-label="Search SMB Hub"
-            className="hidden w-8 h-8 rounded-full bg-[#F7F7F8] border border-[#E5E5E8] items-center justify-center text-zinc-800 shrink-0"
+            className="hidden sm:flex lg:hidden w-8 h-8 rounded-full bg-[#F7F7F8] border border-[#E5E5E8] items-center justify-center text-zinc-800 shrink-0"
           >
             <Search className="w-3.5 h-3.5" />
           </button>
@@ -186,11 +184,11 @@ export function SiteNav({
             {[
               { href: "/feed", label: "Home", icon: Home },
               { href: "/members", label: "People", icon: Users },
-              { href: "/businesses", label: "Businesses", icon: Building2 },
+              { href: "/businesses", label: "Business Directory", icon: Building2 },
             ].map(({ href, label, icon: Icon }) => (
-              <Link key={href} href={href} className={pathname === href ? TAB_ON : TAB_OFF}>
+              <Link key={href} href={href} aria-label={label} aria-current={pathname === href ? "page" : undefined} className={pathname === href ? TAB_ON : TAB_OFF}>
                 <Icon className="w-3.5 h-3.5 shrink-0" />
-                <span>{label}</span>
+                <span className="hidden xl:inline">{label}</span>
               </Link>
             ))}
           </nav>
@@ -198,10 +196,10 @@ export function SiteNav({
 
         {/* right: the smehub.ca menus (About, Explore, Help), then notifications, me, upgrade */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          <div className="relative hidden md:block shrink-0">
+          <div className="relative hidden lg:block shrink-0">
             <button type="button" onClick={() => toggle("about")} aria-expanded={open === "about"} className={open === "about" ? MENU_BTN_ON : MENU_BTN}>
               <Info className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden xl:inline">About</span>
+              <span className="hidden 2xl:inline">About</span>
               <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "about" ? "rotate-180" : ""}`} />
             </button>
             {open === "about" && (
@@ -213,10 +211,10 @@ export function SiteNav({
             )}
           </div>
 
-          <div className="relative hidden md:block shrink-0">
+          <div className="relative hidden lg:block shrink-0">
             <button type="button" onClick={() => toggle("explore")} aria-expanded={open === "explore"} className={open === "explore" ? MENU_BTN_ON : MENU_BTN}>
               <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
-              <span className="hidden xl:inline">Explore</span>
+              <span className="hidden 2xl:inline">Explore</span>
               <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "explore" ? "rotate-180" : ""}`} />
             </button>
             {open === "explore" && (
@@ -235,12 +233,19 @@ export function SiteNav({
             )}
           </div>
 
-          <Link href="/help" className={`hidden md:inline-flex ${pathname.startsWith("/help") ? MENU_BTN_ON : MENU_BTN}`}>
+          <Link href="/help" className={`hidden lg:inline-flex ${pathname.startsWith("/help") ? MENU_BTN_ON : MENU_BTN}`}>
             <HelpCircle className="w-3.5 h-3.5 shrink-0" />
             <span className="hidden 2xl:inline">Help</span>
           </Link>
 
           <div className="h-4 w-px bg-[#E5E5E8] mx-0.5 hidden sm:block shrink-0" />
+
+          <ThemeToggle className="w-8 h-8 rounded-full flex items-center justify-center border border-[#E5E5E8] bg-white text-zinc-800 hover:bg-zinc-50 transition-all shrink-0" />
+          {isStaff && (
+            <Link href="/admin" aria-label="Team" title="Team" className="hidden sm:flex w-8 h-8 rounded-full items-center justify-center border border-[#E5E5E8] bg-white text-zinc-800 hover:bg-zinc-50 transition-all shrink-0">
+              <Shield className="w-3.5 h-3.5" />
+            </Link>
+          )}
 
           {me ? (
             <>
@@ -374,7 +379,7 @@ export function SiteNav({
           )}
           <button
             type="button"
-            className="md:hidden w-8 h-8 rounded-full border border-[#E5E5E8] bg-white flex items-center justify-center text-zinc-800"
+            className="lg:hidden w-8 h-8 rounded-full border border-[#E5E5E8] bg-white flex items-center justify-center text-zinc-800"
             aria-label="Menu"
             aria-expanded={mobile}
             onClick={() => setMobile((m) => !m)}
@@ -385,7 +390,7 @@ export function SiteNav({
       </div>
 
       {mobile && (
-        <div className="md:hidden max-h-[calc(100vh-62px)] overflow-y-auto border-t border-[#E5E5E8] bg-white p-4 space-y-4 fade-in">
+        <div className="lg:hidden max-h-[calc(100vh-62px)] overflow-y-auto border-t border-[#E5E5E8] bg-white p-4 space-y-4 fade-in">
           <button
             type="button"
             onClick={() => {

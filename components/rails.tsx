@@ -28,37 +28,18 @@ const PROFILE_FIELDS = [
   ["full_name", "Add your name"],
 ] as const;
 
-/** Left rail: identity card with profile strength and counts, then quick links. */
+/** Right rail: identity card with profile strength and counts (the profile card sits on the right, unlike LinkedIn). */
 export async function ProfileCard() {
   const { supabase, userId, profile } = await getViewer();
-  if (!profile || !userId) {
-    return (
-      <div className="panel overflow-hidden">
-        <div className="h-16 bg-gradient-to-r from-zinc-800 via-zinc-800 to-zinc-700" />
-        <div className="p-4 space-y-2">
-          <p className="font-display font-bold text-[15px] text-zinc-900 leading-snug">Where Canadian business owners meet.</p>
-          <p className="text-xs text-zinc-500">Ask questions, share what is working and find the people who can help you grow.</p>
-          <Link href="/auth/sign-up" className="block w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold text-center shadow-sm transition-colors">
-            Join free
-          </Link>
-          <Link href="/auth/login" className="block text-center text-[11px] font-medium text-blue-600 hover:underline">
-            I already have an account
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  if (!profile || !userId) return <FoundingCard />;
 
-  const [connections, posts, inbox, saved] = await Promise.all([
+  const [connections, posts] = await Promise.all([
     supabase.rpc("connection_count", { member: userId }),
     supabase.from("posts").select("id", { count: "exact", head: true }).eq("author_id", userId),
-    supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", userId).is("read_at", null),
-    supabase.from("saved_posts").select("post_id", { count: "exact", head: true }).eq("user_id", userId),
   ]);
   const missing = PROFILE_FIELDS.filter(([f]) => !profile[f]);
   const step = Math.round(100 / PROFILE_FIELDS.length);
   const done = Math.round(((PROFILE_FIELDS.length - missing.length) / PROFILE_FIELDS.length) * 100);
-  const unread = inbox.count ?? 0;
 
   return (
     <>
@@ -123,40 +104,6 @@ export async function ProfileCard() {
             </ComposeLink>
           </div>
         </div>
-      </div>
-
-      <div className="panel p-1.5">
-        <Link href="/messages" className={QUICK_ROW}>
-          <span className="flex items-center gap-2.5">
-            <MessageCircle className="w-4 h-4 text-zinc-400" />
-            <span>Messages</span>
-          </span>
-          <span className="flex items-center gap-1.5">
-            {unread > 0 && <span className="px-1.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-600">{unread}</span>}
-            <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
-          </span>
-        </Link>
-        <Link href="/groups" className={QUICK_ROW}>
-          <span className="flex items-center gap-2.5">
-            <UsersRound className="w-4 h-4 text-zinc-400" />
-            <span>Groups</span>
-          </span>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
-        </Link>
-        <Link href="/businesses/mine" className={QUICK_ROW}>
-          <span className="flex items-center gap-2.5">
-            <Store className="w-4 h-4 text-zinc-400" />
-            <span>My business listings</span>
-          </span>
-          <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
-        </Link>
-        <Link href="/feed?saved=1" className={QUICK_ROW}>
-          <span className="flex items-center gap-2.5">
-            <Bookmark className="w-4 h-4 text-zinc-400" />
-            <span>Saved bookmarks</span>
-          </span>
-          <span className="text-[11px] font-semibold text-zinc-400">{saved.count ?? 0}</span>
-        </Link>
       </div>
     </>
   );
@@ -306,6 +253,85 @@ export function TwoCol({ children, aside }: { children: React.ReactNode; aside: 
     <div className="max-w-[1360px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
       <main className="lg:col-span-9 flex min-w-0 flex-col gap-4">{children}</main>
       <aside className="lg:col-span-3 hidden space-y-4 lg:block">{aside}</aside>
+    </div>
+  );
+}
+
+/** Left rail for visitors: what the Hub is, and how to join. */
+export function VisitorCard() {
+  return (
+    <div className="panel overflow-hidden">
+      <div className="h-16 bg-gradient-to-r from-zinc-800 via-zinc-800 to-zinc-700" />
+      <div className="p-4 space-y-2">
+        <p className="font-display font-bold text-[15px] text-zinc-900 leading-snug">Where Canadian business owners meet.</p>
+        <p className="text-xs text-zinc-500">Ask questions, share what is working and find the people who can help you grow.</p>
+        <Link href="/auth/sign-up" className="block w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold text-center shadow-sm transition-colors">
+          Join free
+        </Link>
+        <Link href="/auth/login" className="block text-center text-[11px] font-medium text-blue-600 hover:underline">
+          I already have an account
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/** Left rail for members: Messages, Groups, My businesses, Saved bookmarks. */
+export async function QuickLinks() {
+  const { supabase, userId } = await getViewer();
+  if (!userId) return <VisitorCard />;
+  const [inbox, saved] = await Promise.all([
+    supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", userId).is("read_at", null),
+    supabase.from("saved_posts").select("post_id", { count: "exact", head: true }).eq("user_id", userId),
+  ]);
+  const unread = inbox.count ?? 0;
+  return (
+    <div className="panel p-1.5">
+      <Link href="/messages" className={QUICK_ROW}>
+        <span className="flex items-center gap-2.5">
+          <MessageCircle className="w-4 h-4 text-zinc-400" />
+          <span>Messages</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          {unread > 0 && <span className="px-1.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-600">{unread}</span>}
+          <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+        </span>
+      </Link>
+      <Link href="/groups" className={QUICK_ROW}>
+        <span className="flex items-center gap-2.5">
+          <UsersRound className="w-4 h-4 text-zinc-400" />
+          <span>Groups</span>
+        </span>
+        <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+      </Link>
+      <Link href="/businesses/mine" className={QUICK_ROW}>
+        <span className="flex items-center gap-2.5">
+          <Store className="w-4 h-4 text-zinc-400" />
+          <span>My business listings</span>
+        </span>
+        <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+      </Link>
+      <Link href="/feed?saved=1" className={QUICK_ROW}>
+        <span className="flex items-center gap-2.5">
+          <Bookmark className="w-4 h-4 text-zinc-400" />
+          <span>Saved bookmarks</span>
+        </span>
+        <span className="text-[11px] font-semibold text-zinc-400">{saved.count ?? 0}</span>
+      </Link>
+    </div>
+  );
+}
+
+/** Right rail for visitors: the Founding Member offer. */
+export function FoundingCard() {
+  return (
+    <div className="rounded-2xl bg-[#18181B] p-5 text-white dark:bg-[#262C3A]">
+      <span className="inline-block rounded-md bg-[#D42A2A] px-2 py-0.5 text-[11px] font-semibold">Founding Member</span>
+      <p className="mt-3 font-display text-lg font-bold leading-snug">Be one of the first 500 members.</p>
+      <p className="mt-2 text-[13px] leading-relaxed text-white/80">Join now and keep a permanent Founding Member badge on your profile.</p>
+      <Link href="/auth/sign-up" className="mt-4 inline-flex h-9 items-center rounded-full bg-white px-4 text-[13px] font-semibold text-zinc-900 hover:bg-zinc-100">
+        Claim my badge
+      </Link>
     </div>
   );
 }

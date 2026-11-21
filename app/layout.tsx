@@ -7,6 +7,7 @@ import "@fontsource/plus-jakarta-sans/600.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import "./globals.css";
+import { THEME_SCRIPT } from "@/lib/theme";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL || "http://localhost:3000"),
@@ -25,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en-CA" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="antialiased">{children}</body>
     </html>
   );

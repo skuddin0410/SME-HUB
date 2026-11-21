@@ -5,6 +5,7 @@ import { topSignal } from "@/lib/feed";
 import { KINDS, type Kind } from "@/lib/demo";
 import { Empty, Pager, PostCard } from "@/components/hub";
 import { Composer } from "@/components/hub-client";
+import { FirstWeek, type WeekStep } from "@/components/first-week";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({ title: "Feed", description: "What Canadian small business owners are posting: questions, wins, offers and hiring.", path: "/feed" });
@@ -28,6 +29,59 @@ function href(p: Params) {
   return q ? `/feed?${q}` : "/feed";
 }
 
+const NEW_MEMBER_DAYS = 30;
+
+/** The checklist is for new members only, and each step ticks itself from what the member has done. */
+async function firstWeekSteps(viewer: Awaited<ReturnType<typeof getViewer>>): Promise<WeekStep[] | null> {
+  const { supabase, userId, profile } = viewer;
+  if (!userId || !profile) return null;
+  const age = Date.now() - new Date(profile.created_at).getTime();
+  if (age > NEW_MEMBER_DAYS * 86_400_000) return null;
+  const { data: connections } = await supabase.rpc("connection_count", { member: userId });
+  const count = (connections as number | null) ?? 0;
+  return [
+    {
+      key: "profile",
+      title: "Set up your business profile",
+      text: "Add your role, city and what you can help with.",
+      cta: "Edit profile",
+      href: "/profile/edit",
+      done: !!(profile.headline && profile.location && profile.bio),
+    },
+    { key: "meet", title: "Say who you want to meet", text: "Pick your ideal customers and the businesses that send you work.", cta: "Choose", href: "/feed", done: false, soon: true },
+    {
+      key: "connect",
+      title: "Connect with people you already know",
+      text: "Start with 3 owners you have worked with.",
+      cta: "Find people",
+      href: "/members",
+      done: count >= 3,
+    },
+    { key: "referrals", title: "See your first referral opportunities", text: "Three people worth meeting, picked for you today.", cta: "See them", href: "/feed", done: false, soon: true },
+  ];
+}
+
+/** What a visitor sees first on the home page. */
+function VisitorHero() {
+  return (
+    <section className="panel p-6 sm:p-8">
+      <p className="text-[12px] font-semibold uppercase tracking-[.06em] text-[#8E1717] dark:text-[#FFB4B4]">Canada&apos;s small business community</p>
+      <h1 className="mt-3 font-display text-[clamp(28px,4.2vw,44px)] font-extrabold leading-[1.05] tracking-tight text-zinc-900">Get known. Get answers. Get customers.</h1>
+      <p className="mt-3 max-w-[52ch] text-[16px] leading-relaxed text-zinc-500">
+        A free community for Canadian small-business owners, from the team behind CanadianSME Small Business Magazine.
+      </p>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <Link href="/auth/sign-up" className="inline-flex h-11 items-center rounded-full bg-blue-600 px-6 text-sm font-semibold text-white hover:bg-blue-700">
+          Join free
+        </Link>
+        <Link href="/membership-plans" className="text-sm font-medium text-blue-600 underline underline-offset-2">
+          See what members get
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export default async function FeedPage({ searchParams }: { searchParams: Promise<Params> }) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
@@ -38,10 +92,13 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
   const compose = params.compose && params.compose in KINDS ? (params.compose as Kind) : undefined;
   const fetched = await fetchPosts(viewer.supabase, viewer.userId, { page, kind, savedBy: saved ? viewer.userId! : undefined });
   const posts = latest || saved ? fetched : topSignal(fetched);
+  const week = viewer.userId && viewer.profile ? await firstWeekSteps(viewer) : null;
   const keep = { kind, sort: latest ? "latest" : undefined, saved: saved ? "1" : undefined };
 
   return (
     <>
+      {!viewer.userId && <VisitorHero />}
+      {week && !saved && !kind && page === 1 && <FirstWeek steps={week} />}
       <Composer me={viewer.profile} initialKind={compose} />
 
       <div className="flex flex-wrap items-center justify-between gap-2">

@@ -3,6 +3,7 @@ import { AUTHOR_FIELDS, getViewer, type Author } from "@/lib/hub";
 import { CONTACT, EVENTS } from "@/lib/site";
 import { Logo, SiteNav, type NavNote } from "@/components/site-nav";
 import { HideOn } from "@/components/hide-on";
+import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
   const { supabase, userId, profile, isStaff } = await getViewer();
 
   const none = Promise.resolve({ count: 0 });
-  const [unread, requests, inbox, latest] = await Promise.all([
+  const [unread, requests, inbox, latest, recentMsgs] = await Promise.all([
     userId
       ? supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null)
       : none,
@@ -60,7 +61,28 @@ export default async function HubShell({ children }: { children: React.ReactNode
           .order("created_at", { ascending: false })
           .limit(5)
       : Promise.resolve({ data: [] }),
+    userId
+      ? supabase
+          .from("messages")
+          .select(
+            `id, sender_id, recipient_id, body, created_at, read_at, sender:profiles!messages_sender_id_fkey(${AUTHOR_FIELDS}), recipient:profiles!messages_recipient_id_fkey(${AUTHOR_FIELDS})`,
+          )
+          .order("created_at", { ascending: false })
+          .limit(60)
+      : Promise.resolve({ data: [] }),
   ]);
+
+  // one row per conversation for the messaging pop-up, newest first
+  type MsgRow = { sender_id: string; recipient_id: string; body: string; created_at: string; read_at: string | null; sender: Author; recipient: Author };
+  const threadMap = new Map<string, DockThread>();
+  for (const m of (recentMsgs.data ?? []) as unknown as MsgRow[]) {
+    const other = m.sender_id === userId ? m.recipient : m.sender;
+    if (!other) continue;
+    const t = threadMap.get(other.id) ?? { id: other.id, name: other.full_name, avatar_url: other.avatar_url, last: m.body, ago: shortAgo(m.created_at), unread: 0 };
+    if (m.recipient_id === userId && !m.read_at) t.unread += 1;
+    threadMap.set(other.id, t);
+  }
+  const threads = [...threadMap.values()].slice(0, 8);
 
   type NoteRow = { id: string; type: keyof typeof NOTE_TEXT; post_id: string | null; read_at: string | null; created_at: string; actor: Author };
   const notes: NavNote[] = ((latest.data ?? []) as unknown as NoteRow[]).map((n) => ({
@@ -153,7 +175,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
       </footer>
       </HideOn>
 
-
+      {profile && userId && <MessagingDock me={{ id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url }} threads={threads} unread={inbox.count ?? 0} />}
     </div>
   );
 }
