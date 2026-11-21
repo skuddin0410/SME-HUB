@@ -15,7 +15,7 @@
     --secondary: 0 0% 92.2%;
     --secondary-foreground: 0 0% 9.8%;
     --muted: 240 4.8% 95.9%; /* hover and chip #F5F5F6 */
-    --muted-foreground: 240 3.8% 46.1%; /* zinc-500 */
+    --muted-foreground: 240 4% 38%; /* darker than zinc-500 so small grey text keeps 4.5:1 on the stone page */
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 0 0% 9.8%;
     --destructive: 350 80% 50%;
@@ -229,6 +229,10 @@
 }
 
 
+/* light-mode text: the pale greys used for small meta text fall under the 4.5:1 contrast rule, so they are darkened one step */
+.text-zinc-400, .text-slate-400 { color: #6B6B75; }
+.text-zinc-500, .text-slate-500 { color: #5E5E68; }
+
 /* ---------- dark mode ----------
  * Most of the hub is written with fixed light colours (white cards, zinc text, #E5E5E8 borders).
  * Rather than touching every page, the dark theme remaps those few values in one place.
@@ -244,7 +248,7 @@
 .dark .bg-white, .dark .bg-white\/95, .dark .bg-white\/90, .dark .bg-white\/70 { background-color: hsl(var(--card)); }
 .dark .bg-\[\#F5F5F6\], .dark .bg-\[\#F7F7F8\], .dark .bg-\[\#FAFAFA\], .dark .bg-zinc-50, .dark .bg-zinc-100, .dark .bg-slate-50,
 .dark .bg-slate-100\/90, .dark .bg-zinc-200, .dark .bg-slate-200 { background-color: hsl(var(--muted)); }
-.dark [class*="bg-\[\#F5F5F6\]/"], .dark [class*="bg-\[\#F7F7F8\]/"], .dark [class*="bg-zinc-50/"] { background-color: hsl(var(--muted) / 0.7); }
+.dark [class*="bg-slate-50/"], .dark [class*="bg-slate-100/"], .dark [class*="bg-\[\#F5F5F6\]/"], .dark [class*="bg-\[\#F7F7F8\]/"], .dark [class*="bg-zinc-50/"] { background-color: hsl(var(--muted) / 0.7); }
 .dark .bg-\[\#E5E5E8\] { background-color: hsl(var(--border)); }
 .dark .bg-\[\#18181B\], .dark .bg-zinc-900 { background-color: #F1F2F5; color: #101319; }
 .dark .bg-zinc-800 { background-color: #2C3240; }
@@ -262,7 +266,7 @@
 .dark .hover\:text-zinc-950:hover, .dark .hover\:text-zinc-900:hover { color: hsl(var(--foreground)); }
 .dark .text-zinc-700, .dark .text-slate-700, .dark .text-zinc-600, .dark .text-slate-600, .dark .text-slate-300 { color: #C9CDD6; }
 .dark .text-zinc-500, .dark .text-zinc-400, .dark .text-slate-500, .dark .text-slate-400 { color: hsl(var(--muted-foreground)); }
-.dark .text-blue-600, .dark .text-blue-700, .dark .hover\:text-blue-600:hover { color: #9DB5FF; }
+.dark .text-primary, .dark .text-blue-600, .dark .text-blue-700, .dark .hover\:text-blue-600:hover { color: #9DB5FF; }
 .dark .placeholder\:text-zinc-400::placeholder, .dark .placeholder-zinc-400::placeholder { color: #7C8394; }
 /* tinted chips: keep the hue, darken the fill */
 .dark .bg-blue-50 { background-color: #1B2750; } .dark .text-blue-700, .dark .text-indigo-700, .dark .text-indigo-800 { color: #B9C8FF; }

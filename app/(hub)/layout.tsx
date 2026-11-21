@@ -96,6 +96,9 @@ export default async function HubShell({ children }: { children: React.ReactNode
 
   return (
     <div className="min-h-screen">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white">
+        Skip to content
+      </a>
       <SiteNav
         me={profile ? { id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url, headline: profile.headline } : null}
         isStaff={isStaff}
@@ -111,7 +114,9 @@ export default async function HubShell({ children }: { children: React.ReactNode
         </p>
       )}
 
-      {children}
+      <div id="main-content" tabIndex={-1} className="outline-none">
+        {children}
+      </div>
 
       {/* the feed carries its own small footer in the right rail */}
       <HideOn paths={["/feed"]}>

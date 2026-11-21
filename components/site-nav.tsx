@@ -197,7 +197,7 @@ export function SiteNav({
         {/* right: the smehub.ca menus (About, Explore, Help), then notifications, me, upgrade */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <div className="relative hidden lg:block shrink-0">
-            <button type="button" onClick={() => toggle("about")} aria-expanded={open === "about"} className={open === "about" ? MENU_BTN_ON : MENU_BTN}>
+            <button type="button" onClick={() => toggle("about")} aria-label="About" aria-expanded={open === "about"} className={open === "about" ? MENU_BTN_ON : MENU_BTN}>
               <Info className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden 2xl:inline">About</span>
               <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "about" ? "rotate-180" : ""}`} />
@@ -212,7 +212,7 @@ export function SiteNav({
           </div>
 
           <div className="relative hidden lg:block shrink-0">
-            <button type="button" onClick={() => toggle("explore")} aria-expanded={open === "explore"} className={open === "explore" ? MENU_BTN_ON : MENU_BTN}>
+            <button type="button" onClick={() => toggle("explore")} aria-label="Explore" aria-expanded={open === "explore"} className={open === "explore" ? MENU_BTN_ON : MENU_BTN}>
               <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden 2xl:inline">Explore</span>
               <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "explore" ? "rotate-180" : ""}`} />
@@ -233,7 +233,7 @@ export function SiteNav({
             )}
           </div>
 
-          <Link href="/help" className={`hidden lg:inline-flex ${pathname.startsWith("/help") ? MENU_BTN_ON : MENU_BTN}`}>
+          <Link href="/help" aria-label="Help" className={`hidden lg:inline-flex ${pathname.startsWith("/help") ? MENU_BTN_ON : MENU_BTN}`}>
             <HelpCircle className="w-3.5 h-3.5 shrink-0" />
             <span className="hidden 2xl:inline">Help</span>
           </Link>

@@ -6,3 +6,4 @@
 - **Messaging dock** (`components/messaging-dock.tsx`): bottom-right on every page for signed-in members on desktop; hidden on /messages.
 - **Your first week** (`components/first-week.tsx`): shown to members in their first 30 days. "Set up your profile" and "Connect with 3 owners" tick from real data. The other two say "Coming soon" until Phase 3 (matchmaking).
 - **Browser tests** now include a signed-in member (`e2e/member.spec.ts`, using the mock in `e2e/mock-supabase.mjs`).
+- **Accessibility** (`e2e/a11y.spec.ts`, `e2e/keyboard.spec.ts`): axe finds no serious or critical problems on 10 pages, light and dark, visitor and member. Pale grey text was darkened to meet 4.5:1. A "Skip to content" link is the first Tab stop; icon-only header controls have labels.

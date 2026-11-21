@@ -325,7 +325,7 @@ export async function QuickLinks() {
 /** Right rail for visitors: the Founding Member offer. */
 export function FoundingCard() {
   return (
-    <div className="rounded-2xl bg-[#18181B] p-5 text-white dark:bg-[#262C3A]">
+    <div className="rounded-2xl bg-zinc-950 p-5 text-white dark:bg-[#262C3A]">
       <span className="inline-block rounded-md bg-[#D42A2A] px-2 py-0.5 text-[11px] font-semibold">Founding Member</span>
       <p className="mt-3 font-display text-lg font-bold leading-snug">Be one of the first 500 members.</p>
       <p className="mt-2 text-[13px] leading-relaxed text-white/80">Join now and keep a permanent Founding Member badge on your profile.</p>

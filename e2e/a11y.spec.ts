@@ -1,0 +1,24 @@
+import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+import { memberCookie, PUBLIC_PAGES } from "./personas";
+
+// Accessibility: no serious or critical problems, in light and dark, as a visitor and as a member.
+const PAGES = [...PUBLIC_PAGES, "/feed", "/members", "/groups", "/businesses"];
+
+async function scan(page: import("@playwright/test").Page) {
+  const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  return r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${v.id}: ${v.nodes.length} (${v.nodes[0]?.target?.join(" ")})`);
+}
+
+for (const dark of [false, true]) {
+  for (const signedIn of [false, true]) {
+    for (const path of PAGES) {
+      test(`${path} ${dark ? "dark" : "light"} ${signedIn ? "member" : "visitor"} has no serious accessibility problems`, async ({ page, context, baseURL }) => {
+        if (signedIn) await context.addCookies([memberCookie(baseURL!)]);
+        await page.addInitScript((d) => { try { localStorage.setItem("smbhub.theme", d ? "dark" : "light"); } catch {} }, dark);
+        await page.goto(path, { waitUntil: "networkidle" });
+        expect(await scan(page)).toEqual([]);
+      });
+    }
+  }
+}
