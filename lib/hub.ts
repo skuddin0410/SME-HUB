@@ -27,7 +27,7 @@ export type Post = {
   visibility: "public" | "members" | "connections" | "private";
   created_at: string;
   pinned_at: string | null;
-  kind: "update" | "question" | "win" | "offer" | "hiring";
+  kind: "update" | "question" | "win" | "offer" | "hiring" | "intro";
   group_id: string | null;
   author: Author;
   group: { name: string; slug: string } | null;

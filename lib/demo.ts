@@ -28,6 +28,7 @@ export const KINDS = {
   win: { label: "Win", prompt: "What went well? Others can learn from it", chip: "bg-amber-50 text-amber-800" },
   offer: { label: "Offer", prompt: "What can you offer other members?", chip: "bg-emerald-50 text-emerald-700" },
   hiring: { label: "Hiring", prompt: "Who are you looking for?", chip: "bg-violet-50 text-violet-700" },
+  intro: { label: "Intro", prompt: "Introduce yourself and what you can help with", chip: "bg-sky-50 text-sky-700" },
 } as const;
 export type Kind = keyof typeof KINDS;
 

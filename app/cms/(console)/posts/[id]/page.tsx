@@ -74,7 +74,7 @@ export default async function CmsPost({ params }: { params: Promise<{ id: string
                 <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
                   Type
                   <select name="kind" defaultValue={post.kind} className={SELECT}>
-                    {["update", "question", "win", "offer", "hiring"].map((k) => (
+                    {["update", "question", "win", "offer", "hiring", "intro"].map((k) => (
                       <option key={k} value={k}>{k}</option>
                     ))}
                   </select>

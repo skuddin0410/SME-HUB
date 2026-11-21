@@ -15,6 +15,7 @@ const FILTERS: { key: string; label: string }[] = [
   { key: "win", label: "Wins" },
   { key: "offer", label: "Offers" },
   { key: "hiring", label: "Hiring" },
+  { key: "intro", label: "Intros" },
 ];
 
 const PILL_ON = "px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition-all";

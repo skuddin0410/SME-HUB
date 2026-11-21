@@ -74,7 +74,7 @@ export async function cmsDeleteMember(memberId: string) {
 }
 
 // ---------- posts and comments ----------
-const KINDS = ["update", "question", "win", "offer", "hiring"];
+const KINDS = ["update", "question", "win", "offer", "hiring", "intro"];
 const VISIBILITY = ["public", "members", "connections", "private"];
 
 export async function cmsUpdatePost(postId: string, form: FormData) {

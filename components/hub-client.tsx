@@ -247,6 +247,7 @@ const KIND_OPTIONS: { value: Kind; label: string }[] = [
   { value: "question", label: "❓ Ask a Question" },
   { value: "offer", label: "📣 Post an Offer" },
   { value: "hiring", label: "💼 Hiring / Talent" },
+  { value: "intro", label: "👋 Introduce yourself" },
 ];
 const QUICK = "flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F5F5F6] transition-colors";
 const SMALL_SELECT = "px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F5F5F6] border border-[#E5E5E8] text-zinc-900 focus:outline-none focus:border-blue-600";

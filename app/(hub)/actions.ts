@@ -41,7 +41,7 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const visibility = ["public", "members", "connections", "private"].includes(rawVisibility) ? rawVisibility : "public";
   const groupId = text(form, "group_id") ? uuid(text(form, "group_id")) : null;
   const rawKind = text(form, "kind");
-  const kind = ["question", "win", "offer", "hiring"].includes(rawKind) ? rawKind : "update";
+  const kind = ["question", "win", "offer", "hiring", "intro"].includes(rawKind) ? rawKind : "update";
   const image_url = ownUpload(form, "image_url", userId);
 
   const { error } = await supabase

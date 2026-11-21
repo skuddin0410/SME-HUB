@@ -26,6 +26,7 @@ const KIND_CHIP = {
   question: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
   offer: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
   hiring: "bg-rose-50 text-rose-700 border-rose-200/80",
+  intro: "bg-sky-50 text-sky-700 border-sky-200/80",
   update: "bg-zinc-100 text-zinc-800 border-zinc-200",
 } as const;
 

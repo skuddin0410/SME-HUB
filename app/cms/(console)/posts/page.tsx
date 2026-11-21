@@ -7,7 +7,7 @@ import { cmsDeletePost, cmsPinPost } from "@/app/cms/actions";
 
 export const metadata = { title: "Posts" };
 
-const KINDS = ["update", "question", "win", "offer", "hiring"];
+const KINDS = ["update", "question", "win", "offer", "hiring", "intro"];
 type Params = { q?: string; kind?: string; author?: string; group?: string; pinned?: string; page?: string };
 type Row = {
   id: string;
