@@ -218,3 +218,60 @@ select cms_delete_account('00000000-0000-0000-0000-00000000000c');
 reset role;
 select t.expect('deleting an account removes the login and profile', (select count(*) = 0 from auth.users where id = '00000000-0000-0000-0000-00000000000c') and (select count(*) = 0 from profiles where id = '00000000-0000-0000-0000-00000000000c'));
 select t.expect('the deletion is in the activity log', (select count(*) = 1 from cms_events where action = 'member.delete'));
+
+-- ===== V2 foundation: team roles, plans, Founding badge, can(), test clock =====
+reset role;
+update profiles set plan = 'plus' where id = '00000000-0000-0000-0000-00000000000a';
+select t.expect('an admin set the old way is in team_roles', (select count(*) = 1 from team_roles where user_id = '00000000-0000-0000-0000-00000000000d' and role = 'admin'));
+select t.expect('every real member has a Founding number', (select count(*) = 0 from profiles where founding_number is null and not is_sample));
+
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+update profiles set plan = 'advisor', founding_number = 999, is_sample = true, role = 'admin' where id = auth.uid();
+select t.expect('a member cannot change their own plan, badge, sample flag or role', (select plan = 'free' and founding_number <> 999 and not is_sample and role = 'member' from profiles where id = auth.uid()));
+select t.expect_denied('a member cannot give themselves a team role', $$insert into team_roles (user_id, role) values (auth.uid(), 'admin')$$);
+select t.expect('a member is not staff', not is_staff() and not can('cms.access'));
+select t.expect('Free cannot post an Offer', not can('post.offer', 0));
+select t.expect('Free cannot host a private group', not can('group.private', 0));
+select t.expect('Free gets 10 AI questions', can('ai.ask', 9) and not can('ai.ask', 10));
+
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect('Plus may post 2 Offers a month, not 3', can('post.offer', 0) and can('post.offer', 1) and not can('post.offer', 2));
+select t.expect('Plus may host 1 private group', can('group.private', 0) and not can('group.private', 1));
+
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+insert into team_roles (user_id, role, granted_by) values ('00000000-0000-0000-0000-00000000000b', 'moderator', auth.uid());
+select t.expect_denied('an admin cannot change their own team role', $$update team_roles set role = 'moderator' where user_id = auth.uid()$$);
+select t.expect('admin can open the CMS and manage roles', can('cms.access') and can('cms.admin'));
+
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+select t.expect('a moderator is staff but not admin', is_staff() and not is_admin() and can('cms.access') and not can('cms.admin'));
+select t.expect('a moderator still shows as member in the old role column', (select role = 'member' from profiles where id = auth.uid()));
+
+reset role;
+update profiles set status = 'suspended' where id = '00000000-0000-0000-0000-00000000000a';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect('a suspended member can do nothing', not can('post.offer', 0) and not can('ai.ask', 0));
+reset role; set request.jwt.claim.sub = '';
+update profiles set status = 'active' where id = '00000000-0000-0000-0000-00000000000a';
+
+insert into auth.users (id, email, raw_app_meta_data) values ('00000000-0000-0000-0000-0000000000e1', 'sample@x.ca', '{"sample": true}');
+select t.expect('sample accounts are flagged and take no Founding number', (select is_sample and founding_number is null from profiles where id = '00000000-0000-0000-0000-0000000000e1'));
+update founding_counter set cap = issued;
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000e2', 'late@x.ca');
+select t.expect('after the cap, new members get no Founding number', (select founding_number is null from profiles where id = '00000000-0000-0000-0000-0000000000e2'));
+select t.expect('no two members share a Founding number', (select count(*) = count(distinct founding_number) from profiles where founding_number is not null));
+update founding_counter set cap = 500;
+
+update profiles set role = 'member' where id = '00000000-0000-0000-0000-00000000000d';
+select t.expect('removing admin the old way removes the team role', (select count(*) = 0 from team_roles where user_id = '00000000-0000-0000-0000-00000000000d'));
+update profiles set role = 'admin' where id = '00000000-0000-0000-0000-00000000000d';
+
+set app.now = '2030-01-01 00:00+00';
+select t.expect('tests can move the clock', app_now() = '2030-01-01 00:00+00'::timestamptz);
+reset app.now;
+select t.expect('the clock is real time otherwise', abs(extract(epoch from app_now() - now())) < 1);
+
+set role anon; set request.jwt.claim.sub = '';
+select t.expect_denied('visitors cannot call can()', $$select can('cms.access')$$);
+select t.expect('visitors can read plan limits', (select count(*) = 18 from plan_limits));
+reset role;
