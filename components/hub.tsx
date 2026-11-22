@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Lock, Pin } from "lucide-react";
 import { DEGREE_LABEL, MEMBER_TYPES, timeAgo, type Author, type Degree, type Post, type Profile } from "@/lib/hub";
 import { AvatarImg, GroupLogo, PostActions, PostBody, PostMenu } from "@/components/hub-client";
+import { PollView, PostManage, QuoteButton, QuoteEmbed } from "@/components/post-extras";
 import { ConnectButton } from "@/components/network-client";
 import { SaveButton } from "@/components/feed-client";
 import { KINDS } from "@/lib/demo";
@@ -22,11 +23,11 @@ export function TierBadge({ type, always = false }: { type: Profile["member_type
 }
 
 const KIND_CHIP = {
-  win: "bg-amber-50 text-amber-800 border-amber-200/80",
-  question: "bg-indigo-50 text-indigo-700 border-indigo-200/80",
-  offer: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
-  hiring: "bg-rose-50 text-rose-700 border-rose-200/80",
-  intro: "bg-sky-50 text-sky-700 border-sky-200/80",
+  win: "bg-amber-50 text-amber-800 border-amber-200/80 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800",
+  question: "bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-950 dark:text-indigo-200 dark:border-indigo-800",
+  offer: "bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950 dark:text-emerald-200 dark:border-emerald-800",
+  hiring: "bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-950 dark:text-rose-200 dark:border-rose-800",
+  intro: "bg-sky-50 text-sky-700 border-sky-200/80 dark:bg-sky-950 dark:text-sky-200 dark:border-sky-800",
   update: "bg-zinc-100 text-zinc-800 border-zinc-200",
 } as const;
 
@@ -84,6 +85,12 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
               </Link>
               <TierBadge type={post.author.member_type} always />
               {post.kind !== "update" && <span className={`${chip} ${KIND_CHIP[post.kind]}`}>{KINDS[post.kind].label}</span>}
+              {post.edited_at && <span className="text-[11px] text-zinc-400">(edited)</span>}
+              {post.profile_pinned && (
+                <span className={`${chip} bg-zinc-100 text-zinc-700 border-zinc-200 inline-flex items-center gap-1`}>
+                  <Pin className="h-2.5 w-2.5" /> Pinned on profile
+                </span>
+              )}
               {post.pinned_at && (
                 <span className={`${chip} bg-amber-50 text-amber-800 border-amber-200/80 inline-flex items-center gap-1`}>
                   <Pin className="h-2.5 w-2.5" /> Pinned
@@ -104,7 +111,15 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
           <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} />
         </div>
       </div>
+      {post.cover_url && (
+        <div className="overflow-hidden rounded-xl border border-[#E5E5E8] bg-zinc-100">
+          <img src={post.cover_url} alt="" loading="lazy" className="h-44 w-full object-cover" />
+        </div>
+      )}
+      {post.title && <h3 className="font-display text-[17px] font-bold leading-snug text-zinc-900">{post.title}</h3>}
       <PostBody text={post.body} />
+      {post.quoted && <QuoteEmbed quoted={post.quoted} />}
+      {post.poll && <PollView postId={post.id} poll={post.poll} signedIn={!!viewer.userId} />}
       {post.image_url && (
         <div className="rounded-xl overflow-hidden border border-[#E5E5E8] bg-zinc-100">
           <img src={post.image_url} alt="" loading="lazy" className="w-full max-h-[360px] object-cover" />
@@ -120,7 +135,10 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
         me={viewer.profile ? { id: viewer.profile.id, full_name: viewer.profile.full_name, avatar_url: viewer.profile.avatar_url } : null}
         isStaff={viewer.isStaff}
         startOpen={startOpen}
+        commentsClosed={post.comments_closed}
       />
+      {viewer.userId && post.id && <QuoteButton postId={post.id} signedIn />}
+      {own && <PostManage post={post} />}
     </article>
   );
 }

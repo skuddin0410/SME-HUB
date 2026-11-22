@@ -2,6 +2,7 @@
 
 import { AUTHOR_FIELDS, requireStaff, requireUser, slugify, type CommentRow, type Profile } from "@/lib/hub";
 import { REACTION_KINDS, type ReactionKind } from "@/lib/reactions";
+import { cleanPollOptions, FEED } from "@/lib/feed-rules";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -43,13 +44,102 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const rawKind = text(form, "kind");
   const kind = ["question", "win", "offer", "hiring", "intro"].includes(rawKind) ? rawKind : "update";
   const image_url = ownUpload(form, "image_url", userId);
+  const cover_url = ownUpload(form, "cover_url", userId);
+  const title = text(form, "title").slice(0, FEED.titleMax);
+  const comments_closed = text(form, "comments_closed") === "1";
+  const quoted_post_id = text(form, "quoted_post_id") ? uuid(text(form, "quoted_post_id")) : null;
 
-  const { error } = await supabase
+  // schedule: a local date-time string plus the browser's offset in minutes, turned into one exact moment
+  let scheduled_at: string | null = null;
+  if (text(form, "scheduled_local")) {
+    const offset = Number(text(form, "tz_offset")) || 0;
+    const when = new Date(`${text(form, "scheduled_local")}:00Z`);
+    if (Number.isNaN(when.getTime())) return { error: "That date does not look right." };
+    scheduled_at = new Date(when.getTime() + offset * 60_000).toISOString();
+  }
+
+  const options = form.getAll("poll_option").map(String);
+  const wantsPoll = options.some((o) => o.trim());
+  const pollOptions = wantsPoll ? cleanPollOptions(options) : null;
+  if (wantsPoll && !pollOptions) return { error: `A poll needs ${FEED.pollMin} to ${FEED.pollMax} options of up to ${FEED.pollOptionMax} characters.` };
+  const pollDays = Math.min(30, Math.max(1, Number(text(form, "poll_days")) || 3));
+
+  const { data, error } = await supabase
     .from("posts")
-    .insert({ author_id: userId, body, visibility, kind, group_id: groupId, image_url });
+    .insert({ author_id: userId, body, visibility, kind, group_id: groupId, image_url, cover_url, title, comments_closed, scheduled_at, quoted_post_id })
+    .select("id")
+    .single();
   if (error) return { error: error.message };
+  if (pollOptions) {
+    const closes = new Date(Date.now() + pollDays * 86_400_000).toISOString();
+    const res = await supabase.rpc("add_poll", { p_post: data.id, p_options: pollOptions, p_closes: closes });
+    if (res.error) {
+      await supabase.from("posts").delete().eq("id", data.id); // no half-made post
+      return { error: res.error.message };
+    }
+  }
   revalidatePath("/", "layout");
   return { ok: Date.now() };
+}
+
+/** Changes the words of your own post inside the edit window (the database enforces the window). */
+export async function editPost(postId: string, input: { title: string; body: string }) {
+  uuid(postId);
+  const { supabase } = await requireUser();
+  const body = input.body.trim();
+  if (!body) throw new Error("A post cannot be empty.");
+  fail((await supabase.from("posts").update({ body, title: input.title.trim().slice(0, FEED.titleMax) }).eq("id", postId)).error);
+  revalidatePath("/", "layout");
+}
+
+/** Pins one of your posts to your profile, or unpins it. Pinning another one moves the pin. */
+export async function setProfilePin(postId: string, pin: boolean) {
+  uuid(postId);
+  const { supabase, userId } = await requireUser();
+  if (pin) fail((await supabase.from("posts").update({ profile_pinned: false }).eq("author_id", userId).eq("profile_pinned", true)).error);
+  fail((await supabase.from("posts").update({ profile_pinned: pin }).eq("id", postId)).error);
+  revalidatePath("/", "layout");
+}
+
+export async function setCommentsClosed(postId: string, closed: boolean) {
+  uuid(postId);
+  const { supabase } = await requireUser();
+  fail((await supabase.from("posts").update({ comments_closed: closed }).eq("id", postId)).error);
+  revalidatePath("/", "layout");
+}
+
+/** A scheduled post: publish it now, move it to a new time, or delete it. */
+export async function publishScheduledNow(postId: string) {
+  uuid(postId);
+  const { supabase } = await requireUser();
+  fail((await supabase.from("posts").update({ scheduled_at: null }).eq("id", postId).eq("status", "scheduled")).error);
+  revalidatePath("/", "layout");
+}
+export async function rescheduleScheduled(postId: string, whenIso: string) {
+  uuid(postId);
+  const when = new Date(whenIso);
+  if (Number.isNaN(when.getTime())) throw new Error("That date does not look right.");
+  const { supabase } = await requireUser();
+  fail((await supabase.from("posts").update({ scheduled_at: when.toISOString() }).eq("id", postId).eq("status", "scheduled")).error);
+  revalidatePath("/", "layout");
+}
+
+/** Quote a post you can see, adding your own words. A plain repost stays toggleRepost. */
+export async function quotePost(postId: string, body: string) {
+  uuid(postId);
+  const { supabase, userId } = await requireUser();
+  const clean = body.trim();
+  if (!clean) throw new Error("Add your own words to quote a post.");
+  fail((await supabase.from("posts").insert({ author_id: userId, body: clean, quoted_post_id: postId, visibility: "public" })).error);
+  revalidatePath("/", "layout");
+}
+
+/** One vote per member; the database counts it and refuses after the poll closes. */
+export async function votePoll(postId: string, optionId: string) {
+  uuid(postId);
+  uuid(optionId);
+  const { supabase, userId } = await requireUser();
+  fail((await supabase.from("poll_votes").insert({ post_id: postId, option_id: optionId, user_id: userId })).error);
 }
 
 export async function deletePost(postId: string) {
@@ -90,27 +180,36 @@ export async function toggleSave(postId: string, saved: boolean) {
   fail(error);
 }
 
+const COMMENT_SELECT = `id, body, created_at, edited_at, parent_id, author:profiles!comments_author_id_fkey(${AUTHOR_FIELDS})`;
+
 export async function loadComments(postId: string): Promise<CommentRow[]> {
   uuid(postId);
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("comments")
-    .select(`id, body, created_at, author:profiles!comments_author_id_fkey(${AUTHOR_FIELDS})`)
-    .eq("post_id", postId)
-    .order("created_at");
+  const { data } = await supabase.from("comments").select(COMMENT_SELECT).eq("post_id", postId).order("created_at");
   return (data ?? []) as unknown as CommentRow[];
 }
 
-export async function addComment(postId: string, body: string): Promise<CommentRow> {
+export async function addComment(postId: string, body: string, parentId?: string | null): Promise<CommentRow> {
   uuid(postId);
+  if (parentId) uuid(parentId);
   const { supabase, userId } = await requireUser();
   const clean = body.trim().slice(0, 2000);
   if (!clean) throw new Error("Empty comment");
   const { data, error } = await supabase
     .from("comments")
-    .insert({ post_id: postId, author_id: userId, body: clean })
-    .select(`id, body, created_at, author:profiles!comments_author_id_fkey(${AUTHOR_FIELDS})`)
+    .insert({ post_id: postId, author_id: userId, body: clean, parent_id: parentId ?? null })
+    .select(COMMENT_SELECT)
     .single();
+  fail(error);
+  return data as unknown as CommentRow;
+}
+
+export async function editComment(commentId: string, body: string): Promise<CommentRow> {
+  uuid(commentId);
+  const { supabase } = await requireUser();
+  const clean = body.trim().slice(0, 2000);
+  if (!clean) throw new Error("Empty comment");
+  const { data, error } = await supabase.from("comments").update({ body: clean }).eq("id", commentId).select(COMMENT_SELECT).single();
   fail(error);
   return data as unknown as CommentRow;
 }

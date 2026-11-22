@@ -56,6 +56,20 @@ http
         { id: "00000000-0000-4000-8000-000000000012", full_name: "Luc Bouchard", headline: "Director, Atelier Bouchard", location: "Montréal, QC", avatar_url: null, profile_type: "maker", founding_number: 2, helps_with: [] },
       ]));
     }
+    // feed: one published post (with a poll) and one scheduled post, so the Phase 3 screens have something to show
+    const AUTHOR = { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", avatar_url: null, member_type: "owner" };
+    const POST_ID = "00000000-0000-4000-8000-0000000000a1";
+    const postRow = (over) => ({ id: POST_ID, body: "Which wholesale box size sells best for you?", title: "Wholesale boxes", cover_url: null, image_url: null, visibility: "public", kind: "question", created_at: new Date(Date.now() - 3600_000).toISOString(), pinned_at: null, group_id: null, edited_at: null, comments_closed: false, profile_pinned: false, status: "published", scheduled_at: null, quoted_post_id: null, author: AUTHOR, group: null, reactions: [{ count: 0 }], comments: [{ count: 0 }], ...over });
+    if (url.pathname === "/rest/v1/posts" && (url.searchParams.get("select") || "").includes("quoted_post_id")) {
+      const scheduled = url.searchParams.get("status") === "eq.scheduled";
+      const row = scheduled ? postRow({ id: "00000000-0000-4000-8000-0000000000a2", status: "scheduled", scheduled_at: new Date(Date.now() + 86400_000).toISOString(), title: "Launch day", body: "Our spring box is live." , author: { ...AUTHOR, id: MEMBER.id } }) : postRow({});
+      res.setHeader("content-range", "0-0/1");
+      return res.end(JSON.stringify([row]));
+    }
+    if (url.pathname === "/rest/v1/polls") {
+      res.setHeader("content-range", "0-0/1");
+      return res.end(JSON.stringify([{ post_id: POST_ID, closes_at: new Date(Date.now() + 3 * 86400_000).toISOString(), poll_options: [{ id: "00000000-0000-4000-8000-0000000000b1", label: "Six boxes", votes: 3, position: 1 }, { id: "00000000-0000-4000-8000-0000000000b2", label: "Twelve boxes", votes: 1, position: 2 }] }]));
+    }
     if (url.pathname.startsWith("/rest/v1/rpc/")) return res.end("null");
     if (url.pathname.startsWith("/rest/v1/")) {
       res.setHeader("content-range", "*/0");

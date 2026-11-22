@@ -3,15 +3,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageSquare, Megaphone, Repeat2, Send, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useImageUpload } from "@/lib/upload";
 import {
-  addComment,
   createPost,
-  deleteComment,
   deletePost,
   loadComments,
   reportPost,
@@ -21,7 +19,9 @@ import {
   type FormState,
 } from "@/app/(hub)/actions";
 import type { CommentRow, Profile } from "@/lib/hub";
-import type { ReactionKind } from "@/lib/reactions";
+import { REACTION_LABEL, type ReactionKind } from "@/lib/reactions";
+import { CommentThread } from "@/components/comment-thread";
+import { ComposerOptions } from "@/components/composer-options";
 import { DEMO_IMAGES, demoAvatar, demoCover, KINDS, type Kind } from "@/lib/demo";
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
@@ -269,6 +269,7 @@ export function Composer({
   const photo = useImageUpload("post");
   const clearPhoto = photo.clear;
   const [count, setCount] = useState(0);
+  const [optionsBusy, setOptionsBusy] = useState(false);
   const [kind, setKind] = useState<Kind>(initialKind ?? "update");
   const formRef = useRef<HTMLFormElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -371,6 +372,13 @@ export function Composer({
                 </button>
               </div>
 
+              <input
+                name="title"
+                maxLength={120}
+                placeholder="Title (optional)"
+                aria-label="Post title"
+                className="w-full rounded-xl border border-[#E5E5E8] bg-[#F5F5F6]/60 p-2.5 text-[13px] font-semibold text-zinc-900 placeholder-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600"
+              />
               <textarea
                 ref={textRef}
                 name="body"
@@ -399,6 +407,7 @@ export function Composer({
                   </button>
                 </div>
               )}
+              <ComposerOptions key={state.ok ?? 0} onBusy={setOptionsBusy} />
               {state.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{state.error}</p>}
 
               <div className="flex items-center justify-between pt-1">
@@ -411,7 +420,7 @@ export function Composer({
                   <button type="button" onClick={collapse} className="px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F5F5F6]">
                     Cancel
                   </button>
-                  <PublishButton disabled={photo.busy} />
+                  <PublishButton disabled={photo.busy || optionsBusy} />
                 </div>
               </div>
             </div>
@@ -542,10 +551,15 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
 // One reaction per member, LinkedIn style. Stored kinds keep their database names:
 // like = Helpful, love = Insightful, celebrate = Celebrate.
 const REACTIONS: { kind: ReactionKind; emoji: string; label: string; on: string }[] = [
-  { kind: "like", emoji: "👍", label: "Helpful", on: "bg-blue-50 text-blue-700 border-blue-200" },
-  { kind: "love", emoji: "💡", label: "Insightful", on: "bg-amber-50 text-amber-800 border-amber-200" },
-  { kind: "celebrate", emoji: "🎉", label: "Celebrate", on: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  { kind: "like", emoji: "👍", label: REACTION_LABEL.like, on: "bg-blue-50 text-blue-700 border-blue-200" },
+  { kind: "celebrate", emoji: "🎉", label: REACTION_LABEL.celebrate, on: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  { kind: "support", emoji: "🤝", label: REACTION_LABEL.support, on: "bg-violet-50 text-violet-700 border-violet-200" },
+  { kind: "love", emoji: "❤️", label: REACTION_LABEL.love, on: "bg-rose-50 text-rose-700 border-rose-200" },
+  { kind: "insight", emoji: "💡", label: REACTION_LABEL.insight, on: "bg-amber-50 text-amber-800 border-amber-200" },
+  { kind: "funny", emoji: "😄", label: REACTION_LABEL.funny, on: "bg-orange-50 text-orange-700 border-orange-200" },
 ];
+const BURST_EMOJI: Partial<Record<ReactionKind, string>> = { like: "👍", support: "🤝", love: "❤️", funny: "😄" };
+const ICON_CLASS: Record<ReactionKind, string> = { like: "react-like", celebrate: "react-celebrate", support: "react-like", love: "react-like", insight: "react-love", funny: "react-like" };
 
 /**
  * One reaction pill. Turning a reaction on plays that emotion's own moment: the thumb nods and
@@ -566,7 +580,7 @@ function burstFor(kind: ReactionKind, seed: number): Particle[] {
       return { id: seed * 100 + i, dx: Math.cos(angle) * dist, dy: Math.sin(angle) * dist + rand(4, 14), r: rand(-260, 260), delay: rand(0, 60), content: "", color: CONFETTI[i % CONFETTI.length], size: rand(4, 6.5) };
     });
   }
-  if (kind === "love") {
+  if (kind === "insight") {
     // sparkles ring out around the bulb
     return Array.from({ length: 7 }, (_, i) => {
       const angle = ((i / 7) * 360 - 90 + rand(-12, 12)) * (Math.PI / 180);
@@ -575,7 +589,7 @@ function burstFor(kind: ReactionKind, seed: number): Particle[] {
     });
   }
   // little thumbs float up in a loose column
-  return Array.from({ length: 6 }, (_, i) => ({ id: seed * 100 + i, dx: (i - 2.5) * 9 + rand(-5, 5), dy: rand(-60, -36), r: rand(-30, 30), delay: i * 60, content: "👍", size: rand(10, 14) }));
+  return Array.from({ length: 6 }, (_, i) => ({ id: seed * 100 + i, dx: (i - 2.5) * 9 + rand(-5, 5), dy: rand(-60, -36), r: rand(-30, 30), delay: i * 60, content: BURST_EMOJI[kind] ?? "👍", size: rand(10, 14) }));
 }
 
 function ReactionButton({
@@ -608,7 +622,7 @@ function ReactionButton({
     setTimeout(() => setParticles((p) => p.filter((x) => !burst.includes(x))), 1100);
   };
 
-  const iconAnim = play ? (play.on ? `react-${kind}` : "react-off") : "";
+  const iconAnim = play ? (play.on ? ICON_CLASS[kind] : "react-off") : "";
   return (
     <button
       type="button"
@@ -621,7 +635,7 @@ function ReactionButton({
       )}
     >
       <span className="relative inline-flex">
-        {kind === "love" && play?.on && <span key={`g${play.n}`} aria-hidden="true" className="react-glow pointer-events-none absolute -inset-2 rounded-full" />}
+        {kind === "insight" && play?.on && <span key={`g${play.n}`} aria-hidden="true" className="react-glow pointer-events-none absolute -inset-2 rounded-full" />}
         {kind === "celebrate" && play?.on && <span key={`r${play.n}`} aria-hidden="true" className="react-ring pointer-events-none absolute -inset-1.5 rounded-full border-2 border-emerald-400" />}
         <span key={play ? `i${play.n}` : "i"} aria-hidden="true" className={cx("relative inline-block", iconAnim)}>
           {emoji}
@@ -637,7 +651,7 @@ function ReactionButton({
                   "--dy": `${p.dy}px`,
                   "--r": `${p.r}deg`,
                   animationDelay: `${p.delay}ms`,
-                  animationDuration: kind === "celebrate" ? "900ms" : kind === "love" ? "700ms" : "950ms",
+                  animationDuration: kind === "celebrate" ? "900ms" : kind === "insight" ? "700ms" : "950ms",
                   width: p.content ? undefined : p.size,
                   height: p.content ? undefined : p.size * 0.6,
                   background: p.content ? undefined : p.color,
@@ -651,7 +665,7 @@ function ReactionButton({
           ))}
         </span>
       </span>
-      <span>{label}</span>
+      <span className="hidden sm:inline">{label}</span>
       <span key={`c${count}`} className={cx("font-semibold tabular-nums inline-block", play && "react-count")}>
         {count}
       </span>
@@ -672,8 +686,10 @@ export function PostActions({
   me,
   isStaff,
   startOpen = false,
+  commentsClosed = false,
 }: {
   postId: string;
+  commentsClosed?: boolean;
   likes?: number;
   comments: number;
   counts: Partial<Record<ReactionKind, number>>;
@@ -693,10 +709,7 @@ export function PostActions({
   const [open, setOpen] = useState(startOpen);
   const [list, setList] = useState<CommentRow[] | null>(null);
   const [commentCount, setCommentCount] = useState(comments);
-  const [draft, setDraft] = useState("");
   const [note, setNote] = useState<string | null>(null);
-  const [busy, startTransition] = useTransition();
-  const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open && list === null) loadComments(postId).then(setList);
@@ -743,22 +756,6 @@ export function PostActions({
     });
   };
 
-  const send = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const body = draft.trim();
-    if (!body || needAccount()) return;
-    startTransition(async () => {
-      try {
-        const created = await addComment(postId, body);
-        setList((l) => [...(l ?? []), created]);
-        setCommentCount((n) => n + 1);
-        setDraft("");
-      } catch {
-        setNote("Could not post your reply. Try again.");
-      }
-    });
-  };
-
   return (
     <>
       <div className="pt-3 border-t border-[#F5F5F6] flex flex-wrap items-center justify-between gap-2">
@@ -778,7 +775,6 @@ export function PostActions({
             type="button"
             onClick={() => {
               setOpen((o) => !o);
-              setTimeout(() => input.current?.focus(), 50);
             }}
             aria-expanded={open}
             aria-label={`Comments, ${commentCount}`}
@@ -814,72 +810,17 @@ export function PostActions({
       </div>
 
       {open && (
-        <div className="pt-3 border-t border-[#F5F5F6] space-y-3 fade-in">
-          <div className="space-y-2">
-            {list === null && (
-              <>
-                <div className="skeleton h-14 w-full !rounded-xl" />
-                <div className="skeleton h-14 w-2/3 !rounded-xl" />
-              </>
-            )}
-            {list?.map((c) => (
-              <div key={c.id} className="group p-2.5 rounded-xl bg-[#F5F5F6]/75 border border-[#E5E5E8]/70">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex min-w-0 items-center gap-1.5">
-                    <Link href={`/members/${c.author.id}`} className="truncate text-xs font-bold text-zinc-900 hover:underline">
-                      {c.author.full_name || "Member"}
-                    </Link>
-                    {c.author.headline && <span className="truncate text-[10px] text-zinc-500">• {c.author.headline}</span>}
-                  </div>
-                  {(c.author.id === me?.id || isStaff) && (
-                    <button
-                      type="button"
-                      aria-label="Delete comment"
-                      onClick={() => {
-                        setList((l) => (l ?? []).filter((x) => x.id !== c.id));
-                        setCommentCount((n) => Math.max(0, n - 1));
-                        deleteComment(c.id).catch(() => setNote("Could not delete the comment."));
-                      }}
-                      className="text-zinc-400 opacity-0 transition-opacity hover:text-rose-600 focus:opacity-100 group-hover:opacity-100"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </div>
-                <p className="text-xs text-zinc-800 mt-1 leading-relaxed whitespace-pre-wrap break-words">{c.body}</p>
-              </div>
-            ))}
-            {list?.length === 0 && <p className="text-xs text-zinc-500">No replies yet. Start the conversation.</p>}
-          </div>
-
-          {me ? (
-            <form onSubmit={send} className="flex items-center gap-2">
-              <input
-                ref={input}
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                maxLength={2000}
-                placeholder="Add a thoughtful reply..."
-                aria-label="Add a reply"
-                className="flex-1 px-3 py-2 rounded-xl bg-[#F5F5F6]/70 border border-[#E5E5E8] text-xs text-zinc-900 focus:bg-white focus:outline-none focus:border-blue-600"
-              />
-              <button
-                type="submit"
-                disabled={busy || !draft.trim()}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold transition-colors disabled:opacity-50"
-              >
-                {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                Reply
-              </button>
-            </form>
-          ) : (
-            <p className="text-xs text-zinc-500">
-              <Link href="/auth/login" className="font-semibold text-blue-600 hover:underline">
-                Sign in
-              </Link>{" "}
-              to join the conversation.
-            </p>
-          )}
+        <div className="pt-3 border-t border-[#F5F5F6] fade-in">
+          <CommentThread
+            postId={postId}
+            me={me}
+            isStaff={isStaff}
+            closed={commentsClosed}
+            list={list}
+            setList={(fn) => setList(fn)}
+            onCount={(by) => setCommentCount((n) => Math.max(0, n + by))}
+            onNote={setNote}
+          />
         </div>
       )}
     </>

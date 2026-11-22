@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 const SETTINGS = {
   avatar: { side: 512, type: "image/jpeg" },
   post: { side: 1600, type: "image/jpeg" },
+  cover: { side: 1600, type: "image/jpeg" },
   logo: { side: 512, type: "image/png" }, // PNG keeps a logo's transparent background
 } as const;
 export type ImageKind = keyof typeof SETTINGS;

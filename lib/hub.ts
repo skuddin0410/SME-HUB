@@ -43,10 +43,22 @@ export type Post = {
   /** the viewer bookmarked it */
   saved: boolean;
   link: LinkState;
+  title: string;
+  cover_url: string | null;
+  edited_at: string | null;
+  comments_closed: boolean;
+  profile_pinned: boolean;
+  status: "published" | "scheduled";
+  scheduled_at: string | null;
+  quoted: QuotedPost | null;
+  poll: PollData | null;
 };
 
+export type QuotedPost = { id: string; body: string; title: string; created_at: string; author: Pick<Author, "id" | "full_name" | "avatar_url"> };
+export type PollData = { closesAt: string; options: { id: string; label: string; votes: number }[]; myVote: string | null };
 
-export type CommentRow = { id: string; body: string; created_at: string; author: Author };
+
+export type CommentRow = { id: string; body: string; created_at: string; edited_at: string | null; parent_id: string | null; author: Author };
 
 export const MEMBER_TYPES: Record<Profile["member_type"], string> = {
   owner: "Business Owner",
@@ -104,9 +116,10 @@ export async function requireStaff() {
   return { ...viewer, userId: viewer.userId, profile: viewer.profile as Profile };
 }
 
-const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
+const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, title, cover_url, edited_at, comments_closed, profile_pinned, status, scheduled_at, quoted_post_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
 
-type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link" | "counts" | "saved"> & {
+type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link" | "counts" | "saved" | "quoted" | "poll"> & {
+  quoted_post_id: string | null;
   reactions: { count: number }[];
   comments: { count: number }[];
 };
@@ -115,19 +128,43 @@ type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" 
 export async function fetchPosts(
   supabase: Supabase,
   userId: string | null,
-  opts: { page?: number; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string } = {},
+  opts: { page?: number; before?: { createdAt: string; id: string }; mine?: boolean; reactedBy?: string; groupsOnly?: boolean; connectionsOnly?: boolean; followingOnly?: boolean; scheduledBy?: string; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string } = {},
 ): Promise<Post[]> {
   const page = Math.max(1, opts.page ?? 1);
   const size = opts.limit ?? PAGE_SIZE;
 
   // bookmarks: only posts this member saved (the table's rules show each member their own)
+  // the feed only shows published posts; an author's own scheduled posts are listed on their own page
   let query = supabase.from("posts").select(opts.savedBy ? `${POST_SELECT}, saved_posts!inner(user_id)` : POST_SELECT);
   if (opts.savedBy) query = query.eq("saved_posts.user_id", opts.savedBy);
   // pinned posts lead the main feed only
   if (!opts.authorId && !opts.postId && !opts.search && !opts.kind && !opts.savedBy) {
     query = query.order("pinned_at", { ascending: false, nullsFirst: false });
   }
-  query = query.order("created_at", { ascending: false }).range((page - 1) * size, page * size - 1);
+  // on a member's profile, the post they pinned comes first
+  if (opts.authorId && !opts.before && (opts.page ?? 1) === 1) query = query.order("profile_pinned", { ascending: false });
+  query = opts.scheduledBy
+    ? query.eq("status", "scheduled").eq("author_id", opts.scheduledBy).order("scheduled_at", { ascending: true }).limit(size)
+    : query.eq("status", "published").order("created_at", { ascending: false }).order("id", { ascending: false });
+  if (!opts.scheduledBy) {
+    // cursor paging (stable while new posts arrive) when given, page numbers otherwise
+    if (opts.before) query = query.or(`created_at.lt.${opts.before.createdAt},and(created_at.eq.${opts.before.createdAt},id.lt.${opts.before.id})`).limit(size);
+    else query = query.range((page - 1) * size, page * size - 1);
+  }
+  if (opts.mine && userId) query = query.eq("author_id", userId);
+  if (userId && (opts.reactedBy || opts.connectionsOnly || opts.followingOnly)) {
+    if (opts.reactedBy) {
+      const { data: r } = await supabase.from("reactions").select("post_id").eq("user_id", userId).limit(500);
+      query = query.in("id", (r ?? []).map((x) => x.post_id as string));
+    } else if (opts.connectionsOnly) {
+      const links = await getLinks();
+      query = query.in("author_id", [...links].filter(([, v]) => v === "connected").map(([k]) => k));
+    } else {
+      const { data: f } = await supabase.from("follows").select("followee_id").eq("follower_id", userId).limit(500);
+      query = query.in("author_id", (f ?? []).map((x) => x.followee_id as string));
+    }
+  }
+  if (opts.groupsOnly) query = query.not("group_id", "is", null);
   if (opts.groupId) query = query.eq("group_id", opts.groupId);
   if (opts.authorId) query = query.eq("author_id", opts.authorId);
   if (opts.postId) query = query.eq("id", opts.postId);
@@ -146,6 +183,24 @@ export async function fetchPosts(
   const extras = new Map(((extraRows ?? []) as Extra[]).map((e) => [e.post_id, e]));
 
   const links = await getLinks();
+
+  // quoted posts and polls, fetched together for the whole page
+  const quotedIds = [...new Set(rows.map((r) => r.quoted_post_id).filter((x): x is string => !!x))];
+  const quotedMap = new Map<string, QuotedPost>();
+  if (quotedIds.length) {
+    const { data: q } = await supabase.from("posts").select(`id, body, title, created_at, author:profiles!posts_author_id_fkey(id, full_name, avatar_url)`).in("id", quotedIds);
+    for (const x of (q ?? []) as unknown as QuotedPost[]) quotedMap.set(x.id, x);
+  }
+  const ids = rows.map((r) => r.id);
+  const { data: pollRows } = await supabase.from("polls").select("post_id, closes_at, poll_options(id, label, votes, position)").in("post_id", ids);
+  const pollMap = new Map<string, PollData>();
+  if (pollRows?.length) {
+    const mine = userId ? await supabase.from("poll_votes").select("post_id, option_id").in("post_id", ids) : { data: [] };
+    const myVotes = new Map(((mine.data ?? []) as { post_id: string; option_id: string }[]).map((v) => [v.post_id, v.option_id]));
+    for (const p of pollRows as unknown as { post_id: string; closes_at: string; poll_options: { id: string; label: string; votes: number; position: number }[] }[]) {
+      pollMap.set(p.post_id, { closesAt: p.closes_at, options: [...p.poll_options].sort((a, b) => a.position - b.position).map(({ id, label, votes }) => ({ id, label, votes })), myVote: myVotes.get(p.post_id) ?? null });
+    }
+  }
   return rows.map((r) => {
     const e = extras.get(r.id);
     const likes = r.reactions[0]?.count ?? 0;
@@ -160,6 +215,8 @@ export async function fetchPosts(
       reposted: !!userId && !!e?.reposted,
       counts: e?.counts ?? (likes > 0 ? { like: likes } : {}),
       saved: !!userId && !!e?.saved,
+      quoted: r.quoted_post_id ? (quotedMap.get(r.quoted_post_id) ?? null) : null,
+      poll: pollMap.get(r.id) ?? null,
     };
   });
 }

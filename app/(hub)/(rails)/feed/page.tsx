@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Sparkles, Clock } from "lucide-react";
-import { fetchPosts, getViewer, PAGE_SIZE } from "@/lib/hub";
+import { fetchPosts, getViewer } from "@/lib/hub";
+import { FEED } from "@/lib/feed-rules";
 import { topSignal } from "@/lib/feed";
 import { KINDS, type Kind } from "@/lib/demo";
-import { Empty, Pager, PostCard } from "@/components/hub";
+import { Empty, PostCard } from "@/components/hub";
 import { Composer } from "@/components/hub-client";
 import { FirstWeek, type WeekStep } from "@/components/first-week";
 import { pageMeta } from "@/lib/seo";
@@ -22,7 +23,22 @@ const FILTERS: { key: string; label: string }[] = [
 const PILL_ON = "px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition-all";
 const PILL_OFF = "px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-800 border border-[#E5E5E8] transition-all";
 
-type Params = { page?: string; kind?: string; sort?: string; saved?: string; compose?: string };
+type Params = { page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string };
+
+const SCOPES: { key: string; label: string }[] = [
+  { key: "", label: "All" },
+  { key: "mine", label: "My posts" },
+  { key: "reacted", label: "Reacted" },
+  { key: "groups", label: "Groups" },
+  { key: "conn", label: "Connections" },
+  { key: "follow", label: "Following" },
+];
+
+/** "2026-11-22T10:00:00+00:00_<uuid>" from the Show older link. */
+function parseCursor(raw?: string) {
+  const m = raw?.match(/^(.+)_([0-9a-f-]{36})$/i);
+  return m && !Number.isNaN(Date.parse(m[1])) ? { createdAt: m[1], id: m[2] } : undefined;
+}
 
 function href(p: Params) {
   const q = new URLSearchParams(Object.entries(p).filter(([, v]) => v) as [string, string][]).toString();
@@ -90,10 +106,25 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
   const viewer = await getViewer();
   const saved = params.saved === "1" && !!viewer.userId;
   const compose = params.compose && params.compose in KINDS ? (params.compose as Kind) : undefined;
-  const fetched = await fetchPosts(viewer.supabase, viewer.userId, { page, kind, savedBy: saved ? viewer.userId! : undefined });
-  const posts = latest || saved ? fetched : topSignal(fetched);
+  const scope = viewer.userId && SCOPES.some((x) => x.key && x.key === params.scope) ? params.scope : undefined;
+  const before = parseCursor(params.before);
+  const fetched = await fetchPosts(viewer.supabase, viewer.userId, {
+    page,
+    before,
+    kind,
+    savedBy: saved ? viewer.userId! : undefined,
+    mine: scope === "mine",
+    reactedBy: scope === "reacted" ? viewer.userId! : undefined,
+    groupsOnly: scope === "groups",
+    connectionsOnly: scope === "conn",
+    followingOnly: scope === "follow",
+    limit: FEED.pageSize,
+  });
+  const posts = latest || saved || before || scope ? fetched : topSignal(fetched);
   const week = viewer.userId && viewer.profile ? await firstWeekSteps(viewer) : null;
-  const keep = { kind, sort: latest ? "latest" : undefined, saved: saved ? "1" : undefined };
+  const keep = { kind, scope, sort: latest ? "latest" : undefined, saved: saved ? "1" : undefined };
+  const last = fetched[fetched.length - 1];
+  const older = fetched.length === FEED.pageSize && last ? `${last.created_at}_${last.id}` : null;
 
   return (
     <>
@@ -101,6 +132,21 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week} />}
       <Composer me={viewer.profile} initialKind={compose} />
 
+      {viewer.userId && !saved && (
+        <nav className="flex flex-wrap items-center gap-1.5" aria-label="Whose posts">
+          {SCOPES.map((f) => {
+            const active = (scope ?? "") === f.key;
+            return (
+              <Link key={f.key} href={href({ ...keep, scope: f.key || undefined })} aria-current={active ? "page" : undefined} className={active ? PILL_ON : PILL_OFF}>
+                {f.label}
+              </Link>
+            );
+          })}
+          <Link href="/scheduled" className={PILL_OFF}>
+            Scheduled
+          </Link>
+        </nav>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <nav className="flex flex-wrap items-center gap-1.5" aria-label="Filter the feed">
           {saved ? (
@@ -148,7 +194,13 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           <PostCard key={post.id} post={post} viewer={viewer} />
         ))}
       </div>
-      <Pager page={page} hasMore={fetched.length === PAGE_SIZE} base={href(keep)} />
+      {older && (
+        <div className="flex justify-center">
+          <Link href={href({ ...keep, before: older })} rel="next" className="rounded-xl border border-[#E5E5E8] bg-white px-4 py-2 text-xs font-semibold text-zinc-800 hover:bg-[#F5F5F6]">
+            Show older posts
+          </Link>
+        </div>
+      )}
     </>
   );
 }
