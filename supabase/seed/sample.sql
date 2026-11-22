@@ -27,6 +27,30 @@ from s_members s where not exists (select 1 from auth.users u where u.email = s.
 update auth.users set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"sample": true}' where email like '%@demo.invalid';
 update profiles p set is_sample = true, founding_number = null, full_name = s.name, headline = s.headline, location = s.city, bio = s.bio, plan = s.plan, member_type = s.member_type, avatar_url = s.avatar
 from s_members s join auth.users u on u.email = s.email where p.id = u.id;
+create temp table s_details (key text, ptype text, helps text[], needs text[], avail text[]) on commit drop;
+insert into s_details values
+  ('priya', 'owner', array['Wholesale', 'Food retail']::text[], array['Packaging suppliers']::text[], array['Weekday mornings']::text[]),
+  ('luc', 'maker', array['Custom furniture', 'Craft pricing']::text[], array['Online marketing']::text[], array['Weekday afternoons', 'Evenings']::text[]),
+  ('sara', 'provider', array['Bookkeeping', 'Cash-flow planning']::text[], array['Referral partners']::text[], array['Weekday mornings', 'Weekday afternoons']::text[]),
+  ('daniel', 'provider', array['Cross-border freight', 'Customs']::text[], array['Dispatch staff']::text[], array['Evenings']::text[]),
+  ('mei', 'owner', array['Sales reports', 'Inventory data']::text[], array['Retail pilot customers']::text[], array['Weekday afternoons']::text[]),
+  ('arjun', 'owner', array['Solar installs', 'Commercial permits']::text[], array['Commercial leads']::text[], array['Weekday mornings', 'Evenings']::text[]),
+  ('chloe', 'owner', array['Visual merchandising']::text[], array['Point-of-sale advice']::text[], array['Weekday afternoons']::text[]),
+  ('kwame', 'provider', array['Contracts', 'Leases', 'Employment law']::text[], array['Owner-run clients']::text[], array['Weekday mornings', 'Weekday afternoons']::text[]),
+  ('hana', 'provider', array['Tax planning', 'Payroll']::text[], array['Referral partners']::text[], '{}'::text[]),
+  ('ravi', 'owner', array['Websites', 'Automation']::text[], array['Pilot customers']::text[], '{}'::text[]),
+  ('nadia', 'owner', array['Catering', 'Food costing']::text[], array['Commercial kitchen space']::text[], '{}'::text[]),
+  ('owen', 'owner', array['Online stores', 'Shipping']::text[], array['Wholesale buyers']::text[], '{}'::text[]),
+  ('isabelle', 'provider', array['Branding', 'Web design']::text[], array['Bookkeeping']::text[], '{}'::text[]),
+  ('tyler', 'provider', array['Commercial builds', 'Estimating']::text[], array['Skilled trades']::text[], '{}'::text[]),
+  ('marcus', 'owner', array['Retail operations', 'Repairs']::text[], array['Online marketing']::text[], '{}'::text[]),
+  ('amara', 'provider', array['Importing', 'Bilingual service']::text[], array['Customs']::text[], '{}'::text[]),
+  ('spam1', 'owner', array['Marketing']::text[], array['Leads']::text[], '{}'::text[]),
+  ('spam2', 'owner', array['Loans']::text[], array['Leads']::text[], '{}'::text[]);
+update profiles p set profile_type = d.ptype from s_details d join s_members s on s.key = d.key join auth.users u on u.email = s.email where p.id = u.id;
+insert into profile_details (user_id, helps_with, needs, availability)
+select u.id, d.helps, d.needs, d.avail from s_details d join s_members s on s.key = d.key join auth.users u on u.email = s.email
+on conflict (user_id) do nothing;
 create temp table s_ids on commit drop as select s.key, u.id from s_members s join auth.users u on u.email = s.email;
 
 insert into groups (id, slug, name, description, is_private, created_by, is_sample)

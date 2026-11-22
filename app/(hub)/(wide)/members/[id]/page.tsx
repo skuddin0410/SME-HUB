@@ -11,6 +11,11 @@ import { TwoCol } from "@/components/rails";
 import { ConnectButton } from "@/components/network-client";
 import { AvatarImg, Cover, SubmitButton } from "@/components/hub-client";
 import { blockMember } from "@/app/(hub)/actions";
+import { FollowButton, IntroButton, RecActions, RecommendForm, RequestRecButton, type Candidate } from "@/components/profile-extras";
+import { PROFILE_TYPES, RELATIONSHIPS, SOCIAL_NETWORKS } from "@/lib/profile-extra";
+
+type Details = { helps_with: string[]; needs: string[]; availability: string[]; social_links: Record<string, string> };
+type Rec = { id: string; author_id: string; relationship: keyof typeof RELATIONSHIPS; body: string; hidden: boolean; created_at: string; author: { id: string; full_name: string; headline: string } | null };
 
 type Listing = { slug: string; name: string; category: string; logo_url: string | null };
 
@@ -19,8 +24,8 @@ const valid = (id: string) => /^[0-9a-f-]{36}$/i.test(id);
 // one read shared by the page and its search-engine tags
 const getMember = cache(async (id: string) => {
   const { supabase } = await getViewer();
-  const { data } = await supabase.from("profiles").select("id, full_name, headline, bio, location, website, avatar_url, member_type, role, status, created_at").eq("id", id).maybeSingle();
-  return data as Profile | null;
+  const { data } = await supabase.from("profiles").select("id, full_name, headline, bio, location, website, avatar_url, member_type, profile_type, role, status, created_at").eq("id", id).maybeSingle();
+  return data as (Profile & { profile_type: keyof typeof PROFILE_TYPES }) | null;
 });
 
 const photo = (m: Profile) => m.avatar_url ?? (DEMO_IMAGES ? demoAvatar(m.id) : null);
@@ -57,14 +62,32 @@ export default async function MemberPage({
   if (!member) notFound();
   const isMe = id === userId;
 
-  const [links, posts, listingRows, countRow, otherRows, mutualRow] = await Promise.all([
+  // visiting someone else's profile counts as a view (the database skips private browsers and blocked pairs)
+  if (userId && !isMe) await supabase.rpc("record_profile_view", { p_id: id });
+
+  const [links, posts, listingRows, countRow, otherRows, mutualRow, detailRows, followerRow, followRow, recRows, askedRows, myRecRows] = await Promise.all([
     getLinks(),
     fetchPosts(supabase, userId, { authorId: id, page }),
     supabase.from("companies").select("slug, name, category, logo_url").eq("owner_id", id).order("created_at").limit(4),
     supabase.rpc("connection_count", { member: id }),
     supabase.from("profiles").select(AUTHOR_FIELDS).neq("id", id).order("created_at", { ascending: false }).limit(8),
     userId && !isMe ? supabase.rpc("mutual_connections", { other: id }) : null,
+    supabase.rpc("get_profile_details", { p_ids: [id] }),
+    supabase.rpc("follower_count", { member: id }),
+    userId && !isMe ? supabase.from("follows").select("followee_id").eq("follower_id", userId).eq("followee_id", id).maybeSingle() : null,
+    supabase.from("recommendations").select("id, author_id, relationship, body, hidden, created_at, author:profiles!recommendations_author_id_fkey(id, full_name, headline)").eq("subject_id", id).order("created_at", { ascending: false }).limit(20),
+    isMe && userId ? supabase.from("recommendation_requests").select("requester_id, requester:profiles!recommendation_requests_requester_id_fkey(full_name)").eq("asked_id", userId) : null,
+    userId && !isMe ? supabase.from("recommendation_requests").select("requester_id").eq("requester_id", userId).eq("asked_id", id).maybeSingle() : null,
   ]);
+  const details = ((detailRows.data ?? [])[0] ?? null) as (Details & { user_id: string }) | null;
+  const followers = typeof followerRow.data === "number" ? followerRow.data : null;
+  const following = !!followRow?.data;
+  const recs = ((recRows.data ?? []) as unknown as Rec[]).filter((r) => !r.hidden || isMe || r.author_id === userId);
+  const alreadyAsked = !!myRecRows?.data;
+  const requests = ((askedRows?.data ?? []) as unknown as { requester_id: string; requester: { full_name: string } | null }[]);
+  const myRec = recs.find((r) => r.author_id === userId);
+  const candidates: Candidate[] =
+    userId && !isMe ? (((await supabase.rpc("intro_candidates", { p_target: id })).data ?? []) as Candidate[]) : [];
   const link = links.get(id) ?? "none";
   const listings = (listingRows.data ?? []) as Listing[];
   const connections = typeof countRow.data === "number" ? countRow.data : null;
@@ -151,6 +174,7 @@ export default async function MemberPage({
                 <h1 className="text-2xl font-semibold leading-tight">{member.full_name || "Member"}</h1>
                 {degree && <span className="text-sm text-muted-foreground">· {DEGREE_LABEL[degree]}</span>}
                 <TierBadge type={member.member_type} />
+                {member.profile_type && member.profile_type !== "owner" && <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold">{PROFILE_TYPES[member.profile_type]}</span>}
                 {member.status === "suspended" && <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[11px] font-semibold text-white">Suspended</span>}
               </div>
               {member.headline && <p className="mt-1 text-base leading-snug">{member.headline}</p>}
@@ -201,6 +225,11 @@ export default async function MemberPage({
                   {connections >= 500 ? "500+" : connections} {connections === 1 ? "connection" : "connections"}
                 </p>
               )}
+              {followers !== null && followers > 0 && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {followers} {followers === 1 ? "follower" : "followers"}
+                </p>
+              )}
               {mutual > 0 && (
                 <p className="mt-1 text-sm text-muted-foreground">
                   {mutual} mutual {mutual === 1 ? "connection" : "connections"}
@@ -248,6 +277,7 @@ export default async function MemberPage({
                 ) : (
                   <ConnectButton otherId={id} initial={link} signedIn={!!userId} variant="solid" />
                 )}
+                <FollowButton otherId={id} initial={following} signedIn={!!userId} />
                 {site && (
                   <a href={site} target="_blank" rel="noreferrer nofollow" className={outline}>
                     Visit my website
@@ -284,6 +314,82 @@ export default async function MemberPage({
         <section className={section}>
           <h2 className="text-xl font-semibold">About</h2>
           <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed">{member.bio}</p>
+        </section>
+      )}
+
+
+      {details && (details.helps_with.length > 0 || details.needs.length > 0 || details.availability.length > 0) && (
+        <section className={section}>
+          <h2 className="text-xl font-semibold">How I can help</h2>
+          <dl className="mt-3 grid gap-4 text-sm sm:grid-cols-2">
+            {details.helps_with.length > 0 && (
+              <div>
+                <dt className="font-semibold">Helps with</dt>
+                <dd className="mt-1.5 flex flex-wrap gap-1.5">{details.helps_with.map((t) => <span key={t} className="rounded-full bg-muted px-2.5 py-1">{t}</span>)}</dd>
+              </div>
+            )}
+            {details.needs.length > 0 && (
+              <div>
+                <dt className="font-semibold">Looking for</dt>
+                <dd className="mt-1.5 flex flex-wrap gap-1.5">{details.needs.map((t) => <span key={t} className="rounded-full bg-muted px-2.5 py-1">{t}</span>)}</dd>
+              </div>
+            )}
+            {details.availability.length > 0 && (
+              <div>
+                <dt className="font-semibold">Free to chat</dt>
+                <dd className="mt-1.5 text-muted-foreground">{details.availability.join(", ")}</dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      )}
+
+      {details && Object.keys(details.social_links ?? {}).length > 0 && (
+        <section className={section}>
+          <h2 className="text-xl font-semibold">Find me online</h2>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {SOCIAL_NETWORKS.filter(([k]) => details.social_links[k]).map(([k, label]) => (
+              <li key={k}>
+                <a href={details.social_links[k]} target="_blank" rel="noreferrer nofollow" className="press inline-flex h-8 items-center rounded-xl border px-3 text-sm font-semibold hover:bg-muted">
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {!isMe && userId && candidates.length > 0 && link !== "connected" && (
+        <section className={section}>
+          <h2 className="text-xl font-semibold">Get a warm introduction</h2>
+          <p className="mb-3 mt-1 text-sm text-muted-foreground">You and {member.full_name.split(" ")[0] || "this member"} both know someone. Ask them to make the introduction.</p>
+          <IntroButton targetId={id} name={member.full_name.split(" ")[0] || "this member"} candidates={candidates} />
+        </section>
+      )}
+
+      {(recs.length > 0 || (!isMe && link === "connected") || requests.length > 0) && (
+        <section className={section}>
+          <h2 className="text-xl font-semibold">Recommendations</h2>
+          {isMe && requests.length > 0 && <p className="mt-1 text-sm text-muted-foreground">{requests.map((r) => r.requester?.full_name ?? "A member").join(", ")} asked you for a recommendation.</p>}
+          <ul className="mt-2 divide-y">
+            {recs.map((r) => (
+              <li key={r.id} className="py-4">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed">{r.body}</p>
+                <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+                  <Link href={`/members/${r.author_id}`} className="font-semibold text-foreground hover:underline">{r.author?.full_name || "Member"}</Link>
+                  <span>{RELATIONSHIPS[r.relationship]} · {new Date(r.created_at).toLocaleDateString("en-CA", { year: "numeric", month: "short" })}</span>
+                  {r.hidden && <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold">Hidden from your profile</span>}
+                  <RecActions id={r.id} subjectId={id} hidden={r.hidden} isSubject={isMe} isAuthor={r.author_id === userId} />
+                </p>
+              </li>
+            ))}
+          </ul>
+          {!isMe && link === "connected" && (
+            <div className="mt-3 flex flex-wrap items-start gap-2">
+              <RecommendForm subjectId={id} name={member.full_name.split(" ")[0] || "them"} existing={myRec ? { relationship: myRec.relationship, body: myRec.body } : undefined} />
+              {!alreadyAsked && <RequestRecButton askedId={id} name={member.full_name.split(" ")[0] || "them"} />}
+            </div>
+          )}
         </section>
       )}
 

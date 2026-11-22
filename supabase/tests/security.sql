@@ -386,6 +386,8 @@ insert into connections (requester_id, addressee_id) values (auth.uid(), :e1);
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
 update connections set status = 'accepted' where addressee_id = auth.uid() and requester_id = :e4;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('go-between offered for the person you want to meet', (select count(*) = 1 from intro_candidates(:e4) where id = :e1));
+select t.expect('nobody offered for someone you cannot reach', (select count(*) = 0 from intro_candidates(:e5)));
 select t.expect_denied('intro must go through someone you are connected to', $$insert into intro_requests (requester_id, via_id, target_id, note) values (auth.uid(), '00000000-0000-0000-0000-0000000001e4', '00000000-0000-0000-0000-0000000001e1', 'hi')$$);
 insert into intro_requests (requester_id, via_id, target_id, note) values (auth.uid(), :e1, :e4, 'Could you introduce me?');
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e4';
@@ -394,6 +396,7 @@ select t.expect('only the go-between can answer an intro', (select count(*) = 0 
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
 update intro_requests set status = 'accepted', note = 'changed' where via_id = auth.uid();
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('once asked, the go-between is no longer offered', (select count(*) = 0 from intro_candidates(:e4)));
 select t.expect('accepting an intro sends the connection request, note unchanged', (select (select count(*) from connections where requester_id = :e2 and addressee_id = :e4 and status = 'pending') = 1 and note = 'Could you introduce me?' from intro_requests));
 
 -- who viewed my profile: free plan sees 2 names of 3

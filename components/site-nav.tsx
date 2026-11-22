@@ -13,10 +13,12 @@ import {
   HelpCircle,
   Info,
   Home,
+  Eye,
   LayoutGrid,
   LogOut,
   Menu,
   Search,
+  Settings,
   Shield,
   Store,
   Users,
@@ -325,6 +327,14 @@ export function SiteNav({
                     <Link href="/profile/edit" className={MENU_ROW}>
                       <Edit3 className="w-3.5 h-3.5 text-zinc-400" />
                       <span>Edit profile &amp; headline</span>
+                    </Link>
+                    <Link href="/profile/views" className={MENU_ROW}>
+                      <Eye className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Who viewed your profile</span>
+                    </Link>
+                    <Link href="/settings" className={MENU_ROW}>
+                      <Settings className="w-3.5 h-3.5 text-zinc-400" />
+                      <span>Settings &amp; privacy</span>
                     </Link>
                     <Link href="/feed?saved=1" className={MENU_ROW}>
                       <Bookmark className="w-3.5 h-3.5 text-zinc-400" />

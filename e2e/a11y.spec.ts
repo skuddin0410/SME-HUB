@@ -4,6 +4,8 @@ import { memberCookie, PUBLIC_PAGES } from "./personas";
 
 // Accessibility: no serious or critical problems, in light and dark, as a visitor and as a member.
 const PAGES = [...PUBLIC_PAGES, "/feed", "/members", "/groups", "/businesses"];
+// pages that only exist for a signed-in member
+const MEMBER_PAGES = ["/settings", "/profile/views", "/profile/edit"];
 
 async function scan(page: import("@playwright/test").Page) {
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
@@ -12,7 +14,7 @@ async function scan(page: import("@playwright/test").Page) {
 
 for (const dark of [false, true]) {
   for (const signedIn of [false, true]) {
-    for (const path of PAGES) {
+    for (const path of signedIn ? [...PAGES, ...MEMBER_PAGES] : PAGES) {
       test(`${path} ${dark ? "dark" : "light"} ${signedIn ? "member" : "visitor"} has no serious accessibility problems`, async ({ page, context, baseURL }) => {
         if (signedIn) await context.addCookies([memberCookie(baseURL!)]);
         await page.addInitScript((d) => { try { localStorage.setItem("smbhub.theme", d ? "dark" : "light"); } catch {} }, dark);

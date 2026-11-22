@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Bookmark, ChevronRight, Facebook, Instagram, Linkedin, MessageCircle, Store, Twitter, UsersRound, Youtube } from "lucide-react";
 import { AUTHOR_FIELDS, getViewer, type Author } from "@/lib/hub";
 import { SOCIAL } from "@/lib/site";
+import { profileStrength } from "@/lib/profile-extra";
 import { BLOG } from "@/lib/content";
 import { AvatarImg, GroupLogo, Thumb } from "@/components/hub-client";
 import { ComposeLink, JoinGroupButton } from "@/components/feed-client";
@@ -19,27 +20,21 @@ const SOCIALS = [
 // design: docs/design/feed.html
 const SHOW_ALL = "mt-3.5 pt-2.5 border-t border-[#E5E5E8] w-full flex items-center justify-between text-xs font-semibold text-zinc-800 hover:text-blue-600 transition-colors";
 const QUICK_ROW = "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-zinc-800 hover:bg-[#F5F5F6] hover:text-zinc-900 transition-colors";
-const PROFILE_FIELDS = [
-  ["avatar_url", "Add a photo"],
-  ["headline", "Add headline"],
-  ["location", "Add your city"],
-  ["bio", "Write an about"],
-  ["website", "Add your website"],
-  ["full_name", "Add your name"],
-] as const;
 
 /** Right rail: identity card with profile strength and counts (the profile card sits on the right, unlike LinkedIn). */
 export async function ProfileCard() {
   const { supabase, userId, profile } = await getViewer();
   if (!profile || !userId) return <FoundingCard />;
 
-  const [connections, posts] = await Promise.all([
+  const [connections, posts, details, businesses, recs] = await Promise.all([
     supabase.rpc("connection_count", { member: userId }),
     supabase.from("posts").select("id", { count: "exact", head: true }).eq("author_id", userId),
+    supabase.from("profile_details").select("helps_with, needs").eq("user_id", userId).maybeSingle(),
+    supabase.from("companies").select("id", { count: "exact", head: true }).eq("owner_id", userId),
+    supabase.from("recommendations").select("id", { count: "exact", head: true }).eq("subject_id", userId).eq("hidden", false),
   ]);
-  const missing = PROFILE_FIELDS.filter(([f]) => !profile[f]);
-  const step = Math.round(100 / PROFILE_FIELDS.length);
-  const done = Math.round(((PROFILE_FIELDS.length - missing.length) / PROFILE_FIELDS.length) * 100);
+  const strength = profileStrength({ ...profile, helps_with: details.data?.helps_with, needs: details.data?.needs, has_business: (businesses.count ?? 0) > 0, recommendations: recs.count ?? 0 });
+  const done = strength.percent;
 
   return (
     <>
@@ -78,7 +73,7 @@ export async function ProfileCard() {
               </div>
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-[11px] text-zinc-500">
-                  {missing[0][1]} (+{step}%)
+                  {strength.next} (+{strength.step}%)
                 </span>
                 <Link href="/profile/edit" className="text-[11px] font-semibold text-blue-600 hover:underline">
                   Complete →
@@ -94,6 +89,9 @@ export async function ProfileCard() {
                 <span className="font-display font-bold text-sm text-blue-600">{(connections.data as number | null) ?? 0}</span>
                 <span className="text-[10px] text-zinc-400 group-hover:text-blue-600">Grow</span>
               </span>
+            </Link>
+            <Link href="/profile/views" className="col-span-2 mt-3 border-t border-[#E5E5E8] pt-3 text-[11px] font-semibold text-blue-600 hover:underline">
+              Who viewed your profile →
             </Link>
             <ComposeLink className="pl-3 text-left group">
               <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-900 transition-colors">Your posts</span>

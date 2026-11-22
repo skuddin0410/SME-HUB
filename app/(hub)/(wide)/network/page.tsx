@@ -4,6 +4,7 @@ import { AUTHOR_FIELDS, requireUser, type Author } from "@/lib/hub";
 import { AvatarImg } from "@/components/hub-client";
 import { ConnectButton, Invitations, Suggestions, type Person } from "@/components/network-client";
 import { GroupsCard, SocialCard } from "@/components/rails";
+import { IntroAnswer } from "@/components/profile-extras";
 
 export const metadata = { title: "My network", robots: { index: false } };
 
@@ -22,6 +23,15 @@ export default async function NetworkPage() {
     supabase.from("group_members").select("group_id", { count: "exact", head: true }).eq("user_id", userId),
   ]);
   const rows = (linksRes.data ?? []) as unknown as Row[];
+  // people asking me to introduce them to one of my connections
+  const introRows = (
+    await supabase
+      .from("intro_requests")
+      .select("id, note, requester:profiles!intro_requests_requester_id_fkey(id, full_name), target:profiles!intro_requests_target_id_fkey(id, full_name)")
+      .eq("via_id", userId)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+  ).data as unknown as { id: string; note: string; requester: { id: string; full_name: string }; target: { id: string; full_name: string } }[] | null;
   const incoming = rows.filter((r) => r.status === "pending" && r.addressee_id === userId).map((r) => r.requester);
   const sent = rows.filter((r) => r.status === "pending" && r.requester_id === userId).map((r) => r.addressee);
   const connected = rows.filter((r) => r.status === "accepted").map((r) => (r.requester_id === userId ? r.addressee : r.requester));
@@ -74,6 +84,22 @@ export default async function NetworkPage() {
 
       <main className="flex min-w-0 flex-col gap-2">
         <Invitations people={incoming} />
+
+        {(introRows ?? []).length > 0 && (
+          <section className="panel" aria-labelledby="intros">
+            <h2 id="intros" className="px-4 py-3 text-base font-semibold">Introduction requests ({introRows!.length})</h2>
+            {introRows!.map((r) => (
+              <div key={r.id} className="flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3">
+                <p className="min-w-0 text-sm">
+                  <Link href={`/members/${r.requester.id}`} className="font-semibold hover:underline">{r.requester.full_name}</Link> would like to meet{" "}
+                  <Link href={`/members/${r.target.id}`} className="font-semibold hover:underline">{r.target.full_name}</Link>.
+                  <span className="mt-1 block text-muted-foreground">{r.note}</span>
+                </p>
+                <IntroAnswer id={r.id} />
+              </div>
+            ))}
+          </section>
+        )}
 
         {nearby.length > 0 && <Suggestions title={`People you may know in ${city}`} people={nearby} signedIn visible={4} />}
         <Suggestions title={nearby.length ? "More people on SMB Hub" : "People you may know"} people={others} signedIn />

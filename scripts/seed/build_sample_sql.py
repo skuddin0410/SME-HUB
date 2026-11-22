@@ -78,6 +78,20 @@ def main():
     sql.append("update profiles p set is_sample = true, founding_number = null, full_name = s.name, headline = s.headline, "
                "location = s.city, bio = s.bio, plan = s.plan, member_type = s.member_type, avatar_url = s.avatar\n"
                "from s_members s join auth.users u on u.email = s.email where p.id = u.id;")
+    # ---------- profile type, helps with, looking for and availability (Phase 2) ----------
+    avail = members.get("AVAIL", {})
+    type_of = {"makers": "maker", "account": "provider", "legal": "provider", "design": "provider", "trades": "provider", "logistics": "provider"}
+    arr = lambda items: "array[" + ", ".join(q(i) for i in items) + "]::text[]" if items else "'{}'::text[]"
+    detail_rows = []
+    for m in people:
+        detail_rows.append((m["id"], type_of.get(m.get("is", ""), "owner"), arr(m.get("helps", [])), arr(m.get("needs", [])), arr(avail.get(m["id"], []))))
+    sql.append("create temp table s_details (key text, ptype text, helps text[], needs text[], avail text[]) on commit drop;")
+    sql.append("insert into s_details values\n  " + ",\n  ".join(f"({q(k)}, {q(t)}, {h}, {n}, {a})" for k, t, h, n, a in detail_rows) + ";")
+    sql.append("update profiles p set profile_type = d.ptype from s_details d join s_members s on s.key = d.key "
+               "join auth.users u on u.email = s.email where p.id = u.id;")
+    sql.append("insert into profile_details (user_id, helps_with, needs, availability)\n"
+               "select u.id, d.helps, d.needs, d.avail from s_details d join s_members s on s.key = d.key join auth.users u on u.email = s.email\n"
+               "on conflict (user_id) do nothing;")
     sql.append("create temp table s_ids on commit drop as select s.key, u.id from s_members s join auth.users u on u.email = s.email;")
 
     # ---------- groups and members ----------
