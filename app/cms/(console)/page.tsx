@@ -23,11 +23,11 @@ function DailyBars({ title, data, field }: { title: string; data: Overview["seri
   const bw = (W - gap * (values.length - 1)) / values.length;
   return (
     <figure className="min-w-0">
-      <figcaption className="flex items-baseline justify-between text-[12.5px]">
+      <figcaption className="flex items-baseline justify-between text-[0.8438rem]">
         <span className="font-semibold text-zinc-800">{title}</span>
         <span className="tabular-nums text-zinc-500">{total.toLocaleString("en-CA")} in 30 days</span>
       </figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 h-[72px] w-full" role="img" aria-label={`${title}: ${total} in the last 30 days`}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 h-[4.5rem] w-full" role="img" aria-label={`${title}: ${total} in the last 30 days`}>
         <line x1="0" x2={W} y1={H - 0.5} y2={H - 0.5} stroke="#E4E4E7" />
         {data.map((d, i) => {
           const h = d[field] ? Math.max(3, (d[field] / max) * (H - 4)) : 0;
@@ -43,7 +43,7 @@ function DailyBars({ title, data, field }: { title: string; data: Overview["seri
           );
         })}
       </svg>
-      <div className="mt-1 flex justify-between text-[10.5px] text-zinc-400">
+      <div className="mt-1 flex justify-between text-[0.6875rem] text-zinc-400">
         <span>{fmtDate(data[0]?.day)}</span>
         <span>Today</span>
       </div>
@@ -102,7 +102,7 @@ export default async function CmsDashboard() {
           flush
           title="Live activity"
           actions={
-            <Link href="/cms/activity" className="text-[12.5px] font-semibold text-blue-600 hover:underline">
+            <Link href="/cms/activity" className="text-[0.8438rem] font-semibold text-blue-600 hover:underline">
               See all
             </Link>
           }
@@ -115,19 +115,19 @@ export default async function CmsDashboard() {
             flush
             title="Open reports"
             actions={
-              <Link href="/cms/reports" className="text-[12.5px] font-semibold text-blue-600 hover:underline">
+              <Link href="/cms/reports" className="text-[0.8438rem] font-semibold text-blue-600 hover:underline">
                 Review
               </Link>
             }
           >
             {(reports ?? []).length === 0 ? (
-              <p className="px-4 py-6 text-center text-[13px] text-zinc-500">No open reports.</p>
+              <p className="px-4 py-6 text-center text-[0.875rem] text-zinc-500">No open reports.</p>
             ) : (
               <ul className="divide-y divide-zinc-100">
                 {(reports ?? []).map((r) => (
-                  <li key={r.id} className="px-4 py-3 text-[13px]">
+                  <li key={r.id} className="px-4 py-3 text-[0.875rem]">
                     <p className="line-clamp-2 text-zinc-900">“{r.reason || "No reason given"}”</p>
-                    <p className="mt-0.5 text-[12px] text-zinc-500">
+                    <p className="mt-0.5 text-[0.8125rem] text-zinc-500">
                       {r.post_id ? "Post" : "Member"} · {fmtDate(r.created_at)}
                     </p>
                   </li>
@@ -139,7 +139,7 @@ export default async function CmsDashboard() {
           <Card flush title="Newest members">
             <ul className="divide-y divide-zinc-100">
               {(newest ?? []).map((m) => (
-                <li key={m.id} className="flex items-center gap-3 px-4 py-2.5 text-[13px]">
+                <li key={m.id} className="flex items-center gap-3 px-4 py-2.5 text-[0.875rem]">
                   <div className="min-w-0 flex-1">
                     <Person person={m} sub={m.headline || `Joined ${fmtDate(m.created_at)}`} />
                   </div>
@@ -150,11 +150,11 @@ export default async function CmsDashboard() {
           </Card>
 
           <Card title="Members by plan">
-            <ul className="grid gap-2 text-[13px]">
+            <ul className="grid gap-2 text-[0.875rem]">
               {Object.entries(MEMBER_TYPES).map(([k, label]) => {
                 const n = o.plans[k] ?? 0;
                 return (
-                  <li key={k} className="grid grid-cols-[110px_1fr_40px] items-center gap-3">
+                  <li key={k} className="grid grid-cols-[6.875rem_1fr_2.5rem] items-center gap-3">
                     <span className="text-zinc-700">{label}</span>
                     <span className="h-2 rounded-full bg-zinc-100">
                       <span className="block h-2 rounded-full bg-blue-600" style={{ width: `${o.members ? (n / o.members) * 100 : 0}%` }} />

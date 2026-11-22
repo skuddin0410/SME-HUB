@@ -59,11 +59,11 @@ export function Logo({ href = "/feed", onDark = false }: { onDark?: boolean; hre
 export type NavNote = { id: string; actor: string; text: string; href: string; ago: string; unread: boolean };
 type Me = { id: string; full_name: string; avatar_url: string | null; headline?: string | null } | null;
 
-const TAB_ON = "h-8 px-2.5 sm:px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 bg-[#18181B] text-white transition-all";
-const TAB_OFF = "h-8 px-2.5 sm:px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center gap-1.5 text-zinc-800 hover:text-zinc-950 hover:bg-white/70 transition-all";
+const TAB_ON = "h-8 px-2.5 sm:px-3.5 rounded-full text-[0.875rem] font-medium whitespace-nowrap flex items-center gap-1.5 bg-[#18181B] text-white transition-all";
+const TAB_OFF = "h-8 px-2.5 sm:px-3.5 rounded-full text-[0.875rem] font-medium whitespace-nowrap flex items-center gap-1.5 text-zinc-800 hover:text-zinc-950 hover:bg-white/70 transition-all";
 const POPOVER = "absolute right-0 mt-2.5 bg-white rounded-2xl border border-[#E5E5E8] shadow-popover z-50 fade-in";
-const MENU_BTN = "h-8 px-2.5 rounded-full text-[12.5px] font-medium whitespace-nowrap flex items-center gap-1.5 text-zinc-800 hover:text-zinc-950 hover:bg-zinc-100/80 transition-all";
-const MENU_BTN_ON = "h-8 px-2.5 rounded-full text-[12.5px] font-semibold whitespace-nowrap flex items-center gap-1.5 bg-zinc-100 text-zinc-950 transition-all";
+const MENU_BTN = "h-8 px-2.5 rounded-full text-[0.8438rem] font-medium whitespace-nowrap flex items-center gap-1.5 text-zinc-800 hover:text-zinc-950 hover:bg-zinc-100/80 transition-all";
+const MENU_BTN_ON = "h-8 px-2.5 rounded-full text-[0.8438rem] font-semibold whitespace-nowrap flex items-center gap-1.5 bg-zinc-100 text-zinc-950 transition-all";
 const MENU_ROW = "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-800 hover:bg-[#F5F5F6] text-left";
 
 /** Opens the command palette from anywhere (the left rail's quick links use it too). */
@@ -137,7 +137,7 @@ export function SiteNav({
       active: pathname.startsWith("/network"),
       extra:
         requests > 0 ? (
-          <span className="px-1.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80 leading-tight">{requests > 99 ? "99+" : requests}</span>
+          <span className="px-1.5 rounded-full text-[0.6562rem] font-semibold bg-blue-50 text-blue-700 border border-blue-200/80 leading-tight">{requests > 99 ? "99+" : requests}</span>
         ) : null,
     },
     { href: "/businesses", label: "Business Directory", icon: Building2, active: pathname.startsWith("/businesses"), extra: null as React.ReactNode },
@@ -145,20 +145,20 @@ export function SiteNav({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E5E5E8]">
-      <div ref={bar} className="max-w-[1360px] mx-auto px-3 sm:px-6 lg:px-8 h-[62px] flex items-center justify-between gap-2 sm:gap-3">
+      <div ref={bar} className="max-w-[85rem] mx-auto px-3 sm:px-6 lg:px-8 h-[3.875rem] flex items-center justify-between gap-2 sm:gap-3">
         {/* left: brand and search */}
         <div className="flex items-center gap-3.5 shrink-0">
           <Logo />
           <button
             type="button"
             onClick={() => setPalette(true)}
-            className="hidden lg:flex items-center justify-between gap-2 w-[200px] 2xl:w-[210px] h-9 px-3.5 rounded-full bg-[#F7F7F8] hover:bg-[#EFEFF1] border border-[#E5E5E8] hover:border-zinc-300 text-[13px] text-zinc-500 transition-colors shrink-0"
+            className="hidden lg:flex items-center justify-between gap-2 w-[12.5rem] 2xl:w-[13.125rem] h-9 px-3.5 rounded-full bg-[#F7F7F8] hover:bg-[#EFEFF1] border border-[#E5E5E8] hover:border-zinc-300 text-[0.875rem] text-zinc-500 transition-colors shrink-0"
           >
             <span className="flex items-center gap-2 min-w-0">
               <Search className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
               <span className="truncate">Search</span>
             </span>
-            <kbd className="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium bg-white border border-[#E5E5E8] rounded-md text-zinc-500">⌘K</kbd>
+            <kbd className="shrink-0 inline-flex items-center px-1.5 py-0.5 text-[0.6562rem] font-mono font-medium bg-white border border-[#E5E5E8] rounded-md text-zinc-500">⌘K</kbd>
           </button>
           <button
             type="button"
@@ -205,7 +205,7 @@ export function SiteNav({
               <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "about" ? "rotate-180" : ""}`} />
             </button>
             {open === "about" && (
-              <div className={`${POPOVER} w-[min(680px,calc(100vw-2rem))] p-4 grid grid-cols-[1fr_1fr_1.35fr] gap-4`}>
+              <div className={`${POPOVER} w-[min(42.5rem,calc(100vw-2rem))] p-4 grid grid-cols-[1fr_1fr_1.35fr] gap-4`}>
                 <MegaColumn title="About SMB Hub" items={ABOUT_MENU} />
                 <MegaColumn title="SMB resources" items={RESOURCES_MENU} />
                 <MegaColumn title="Province-wide resources" items={PROVINCE_MENU} dense />
@@ -220,7 +220,7 @@ export function SiteNav({
               <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "explore" ? "rotate-180" : ""}`} />
             </button>
             {open === "explore" && (
-              <div className={`${POPOVER} w-[min(520px,calc(100vw-2rem))] p-4 grid grid-cols-[1.2fr_1fr] gap-4`}>
+              <div className={`${POPOVER} w-[min(32.5rem,calc(100vw-2rem))] p-4 grid grid-cols-[1.2fr_1fr] gap-4`}>
                 <MegaColumn title="Explore the Hub" items={EXPLORE_MENU} />
                 <div className="flex flex-col gap-4">
                   <MegaColumn title="Policies & help" items={POLICY_MENU} />
@@ -228,7 +228,7 @@ export function SiteNav({
                     <span className="flex items-center gap-1.5 text-xs font-display font-bold text-amber-900">
                       <Crown className="w-3.5 h-3.5 text-amber-600" /> Membership plans
                     </span>
-                    <span className="mt-0.5 block text-[11px] leading-snug text-amber-800/80">More connections, company pages and featured offers.</span>
+                    <span className="mt-0.5 block text-[0.75rem] leading-snug text-amber-800/80">More connections, company pages and featured offers.</span>
                   </Link>
                 </div>
               </div>
@@ -266,7 +266,7 @@ export function SiteNav({
               >
                 <Bell className="w-4 h-4" />
                 {unreadNow > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white text-[9px] font-bold leading-4 text-center ring-2 ring-white">
+                  <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white text-[0.5938rem] font-bold leading-4 text-center ring-2 ring-white">
                     {unreadNow > 9 ? "9+" : unreadNow}
                   </span>
                 )}
@@ -283,7 +283,7 @@ export function SiteNav({
                           setOpen(null);
                           markNotificationsRead().then(() => router.refresh()).catch(() => {});
                         }}
-                        className="text-[11px] font-medium text-blue-600 hover:underline"
+                        className="text-[0.75rem] font-medium text-blue-600 hover:underline"
                       >
                         Mark all read
                       </button>
@@ -297,11 +297,11 @@ export function SiteNav({
                           {n.unread && <span className="mr-1.5 inline-block w-1.5 h-1.5 rounded-full bg-indigo-600 align-middle" />}
                           <span className="font-semibold">{n.actor}</span> {n.text}
                         </p>
-                        <span className="text-[10px] text-zinc-400 mt-1 block">{n.ago}</span>
+                        <span className="text-[0.6562rem] text-zinc-400 mt-1 block">{n.ago}</span>
                       </Link>
                     ))}
                   </div>
-                  <Link href="/notifications" className="mt-1 block rounded-xl px-2 py-2 text-center text-[11px] font-semibold text-zinc-800 hover:bg-[#F5F5F6]">
+                  <Link href="/notifications" className="mt-1 block rounded-xl px-2 py-2 text-center text-[0.75rem] font-semibold text-zinc-800 hover:bg-[#F5F5F6]">
                     See all notifications
                   </Link>
                 </div>
@@ -315,14 +315,14 @@ export function SiteNav({
                   className="h-8 pl-1 pr-2.5 rounded-full border border-[#E5E5E8] bg-white hover:bg-zinc-50 flex items-center gap-1.5 whitespace-nowrap transition-all"
                 >
                   <AvatarImg person={me} size={24} />
-                  <span className="hidden sm:inline text-[12.5px] font-medium text-zinc-800">Me</span>
+                  <span className="hidden sm:inline text-[0.8438rem] font-medium text-zinc-800">Me</span>
                   <ChevronDown className="w-3 h-3 text-zinc-400 shrink-0" />
                 </button>
                 {open === "me" && (
                   <div className={`${POPOVER} w-60 p-2`}>
                     <Link href={`/members/${me.id}`} className="block px-3 py-2 border-b border-[#F5F5F6] mb-1 rounded-t-xl hover:bg-[#F5F5F6]/60">
                       <span className="block text-xs font-display font-bold text-zinc-900 truncate">{me.full_name}</span>
-                      <span className="block text-[11px] text-zinc-500 truncate">{me.headline || "View your profile"}</span>
+                      <span className="block text-[0.75rem] text-zinc-500 truncate">{me.headline || "View your profile"}</span>
                     </Link>
                     <Link href="/profile/edit" className={MENU_ROW}>
                       <Edit3 className="w-3.5 h-3.5 text-zinc-400" />
@@ -369,7 +369,7 @@ export function SiteNav({
               <Link
                 href="/membership-plans"
                 aria-label="Upgrade plan"
-                className="hidden sm:inline-flex h-8 px-2.5 xl:px-3.5 rounded-full bg-gradient-to-b from-amber-50 to-amber-100/80 border border-amber-300/80 hover:border-amber-400 text-amber-900 text-[12.5px] font-semibold whitespace-nowrap items-center gap-1.5 shadow-[0_1px_2px_rgba(180,83,9,0.08)] transition-all shrink-0"
+                className="hidden sm:inline-flex h-8 px-2.5 xl:px-3.5 rounded-full bg-gradient-to-b from-amber-50 to-amber-100/80 border border-amber-300/80 hover:border-amber-400 text-amber-900 text-[0.8438rem] font-semibold whitespace-nowrap items-center gap-1.5 shadow-[0_1px_0.125rem_rgba(180,83,9,0.08)] transition-all shrink-0"
               >
                 <Crown className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                 <span className="hidden xl:inline">
@@ -400,14 +400,14 @@ export function SiteNav({
       </div>
 
       {mobile && (
-        <div className="lg:hidden max-h-[calc(100vh-62px)] overflow-y-auto border-t border-[#E5E5E8] bg-white p-4 space-y-4 fade-in">
+        <div className="lg:hidden max-h-[calc(100vh-3.875rem)] overflow-y-auto border-t border-[#E5E5E8] bg-white p-4 space-y-4 fade-in">
           <button
             type="button"
             onClick={() => {
               setMobile(false);
               setPalette(true);
             }}
-            className="flex w-full items-center gap-2 h-9 px-3.5 rounded-full bg-[#F7F7F8] border border-[#E5E5E8] text-[13px] text-zinc-500"
+            className="flex w-full items-center gap-2 h-9 px-3.5 rounded-full bg-[#F7F7F8] border border-[#E5E5E8] text-[0.875rem] text-zinc-500"
           >
             <Search className="w-3.5 h-3.5 text-zinc-400" />
             Search SMB Hub...
@@ -447,13 +447,13 @@ export function SiteNav({
 function MegaColumn({ title, items, dense = false }: { title: string; items: NavItem[]; dense?: boolean }) {
   return (
     <div className="min-w-0">
-      <p className="px-2 pb-1.5 text-[10.5px] font-bold uppercase tracking-wider text-zinc-400">{title}</p>
+      <p className="px-2 pb-1.5 text-[0.6875rem] font-bold uppercase tracking-wider text-zinc-400">{title}</p>
       <ul className={dense ? "grid grid-cols-1 gap-px" : "grid gap-0.5"}>
         {items.map((i) => (
           <li key={i.href}>
             <Link
               href={i.href}
-              className={`block rounded-lg px-2 ${dense ? "py-1 text-[12px]" : "py-1.5 text-[12.5px]"} text-zinc-800 hover:bg-[#F5F5F6] hover:text-zinc-950 truncate transition-colors`}
+              className={`block rounded-lg px-2 ${dense ? "py-1 text-[0.8125rem]" : "py-1.5 text-[0.8438rem]"} text-zinc-800 hover:bg-[#F5F5F6] hover:text-zinc-950 truncate transition-colors`}
             >
               {i.label}
             </Link>
@@ -467,7 +467,7 @@ function MegaColumn({ title, items, dense = false }: { title: string; items: Nav
 function MenuColumn({ title, items }: { title: string; items: NavItem[] }) {
   return (
     <div>
-      <p className="px-1 pb-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">{title}</p>
+      <p className="px-1 pb-1 text-[0.75rem] font-semibold uppercase tracking-wider text-zinc-400">{title}</p>
       {items.map((i) => (
         <Link key={i.href} href={i.href} className="block rounded-xl px-2 py-1.5 text-sm text-zinc-800 hover:bg-[#F5F5F6]">
           {i.label}
@@ -549,7 +549,7 @@ export function CommandPalette({ onClose, signedIn }: { onClose: () => void; sig
             aria-label="Search"
             className="flex-1 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none bg-transparent"
           />
-          <button type="button" onClick={onClose} className="px-2 py-0.5 rounded bg-[#F5F5F6] text-[10px] font-mono text-zinc-500">
+          <button type="button" onClick={onClose} className="px-2 py-0.5 rounded bg-[#F5F5F6] text-[0.6562rem] font-mono text-zinc-500">
             ESC
           </button>
         </form>
@@ -558,7 +558,7 @@ export function CommandPalette({ onClose, signedIn }: { onClose: () => void; sig
           {shown.map((c) => (
             <button key={c.label} type="button" onClick={c.run} className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-[#F5F5F6] transition-colors">
               <span className="text-xs font-medium text-zinc-900 truncate">{c.label}</span>
-              <span className="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded bg-[#F5F5F6] text-zinc-500">{c.type}</span>
+              <span className="shrink-0 text-[0.6562rem] font-semibold px-2 py-0.5 rounded bg-[#F5F5F6] text-zinc-500">{c.type}</span>
             </button>
           ))}
         </div>

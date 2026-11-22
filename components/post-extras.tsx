@@ -54,7 +54,7 @@ export function PollView({ postId, poll, signedIn }: { postId: string; poll: Pol
           </span>
         </button>
       ))}
-      <p className="text-[11px] text-zinc-500" role="status">
+      <p className="text-[0.75rem] text-zinc-500" role="status">
         {error ?? `${total} ${total === 1 ? "vote" : "votes"} · ${closed ? "Poll closed" : `Closes ${new Date(poll.closesAt).toLocaleDateString("en-CA", { month: "short", day: "numeric" })}`}`}
       </p>
     </div>
@@ -69,7 +69,7 @@ export function QuoteEmbed({ quoted }: { quoted: QuotedPost }) {
         <AvatarImg person={quoted.author} size={20} />
         {quoted.author.full_name || "Member"}
       </span>
-      {quoted.title && <span className="mt-1 block text-[13px] font-semibold text-zinc-900">{quoted.title}</span>}
+      {quoted.title && <span className="mt-1 block text-[0.875rem] font-semibold text-zinc-900">{quoted.title}</span>}
       <span className="mt-1 line-clamp-3 block whitespace-pre-wrap text-xs leading-relaxed text-zinc-700">{quoted.body}</span>
     </Link>
   );

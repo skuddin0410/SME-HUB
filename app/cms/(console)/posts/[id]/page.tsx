@@ -41,11 +41,11 @@ export default async function CmsPost({ params }: { params: Promise<{ id: string
 
   return (
     <>
-      <Link href="/cms/posts" className="inline-flex items-center gap-1 text-[12.5px] font-medium text-zinc-500 hover:text-zinc-900">
+      <Link href="/cms/posts" className="inline-flex items-center gap-1 text-[0.8438rem] font-medium text-zinc-500 hover:text-zinc-900">
         <ArrowLeft className="h-3.5 w-3.5" /> All posts
       </Link>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22.5rem]">
         <div className="flex min-w-0 flex-col gap-5">
           <Card
             title={<Person person={author} sub={`${author?.headline || "Member"} · ${fmtDate(post.created_at, true)}`} size={36} />}
@@ -57,21 +57,21 @@ export default async function CmsPost({ params }: { params: Promise<{ id: string
               </span>
             }
           >
-            <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-zinc-900">{post.body}</p>
+            <p className="whitespace-pre-wrap text-[0.9375rem] leading-relaxed text-zinc-900">{post.body}</p>
             {post.image_url && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={post.image_url} alt="" className="mt-4 max-h-[420px] w-full rounded-xl border border-zinc-200 object-cover" />
+              <img src={post.image_url} alt="" className="mt-4 max-h-[26.25rem] w-full rounded-xl border border-zinc-200 object-cover" />
             )}
           </Card>
 
           <Card title="Edit post">
             <form action={cmsUpdatePost.bind(null, post.id)} className="grid gap-3">
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                 Text
                 <textarea name="body" defaultValue={post.body} rows={5} maxLength={5000} className={`${INPUT} h-auto py-2`} />
               </label>
               <div className="flex flex-wrap items-end gap-3">
-                <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+                <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                   Type
                   <select name="kind" defaultValue={post.kind} className={SELECT}>
                     {["update", "question", "win", "offer", "hiring", "intro"].map((k) => (
@@ -79,7 +79,7 @@ export default async function CmsPost({ params }: { params: Promise<{ id: string
                     ))}
                   </select>
                 </label>
-                <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+                <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                   Who can see it
                   <select name="visibility" defaultValue={post.visibility} className={SELECT}>
                     <option value="public">Everyone</option>
@@ -102,7 +102,7 @@ export default async function CmsPost({ params }: { params: Promise<{ id: string
                   <li key={c.id} className="flex items-start gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">
                       <Person person={c.author as unknown as Who} sub={fmtDate(c.created_at, true)} size={28} />
-                      <p className="mt-1.5 whitespace-pre-wrap pl-[38px] text-[13px] text-zinc-800">{c.body}</p>
+                      <p className="mt-1.5 whitespace-pre-wrap pl-[2.375rem] text-[0.875rem] text-zinc-800">{c.body}</p>
                     </div>
                     <form action={cmsDeleteComment.bind(null, c.id)}>
                       <ConfirmSubmit className={`${BTN_DANGER} h-8 px-2.5`} confirm="Delete this comment?">Delete</ConfirmSubmit>
@@ -149,7 +149,7 @@ export default async function CmsPost({ params }: { params: Promise<{ id: string
             <Card flush title="Who reacted">
               <ul className="max-h-72 divide-y divide-zinc-100 overflow-y-auto">
                 {(reactions ?? []).map((r, i) => (
-                  <li key={i} className="flex items-center gap-2 px-4 py-2 text-[13px]">
+                  <li key={i} className="flex items-center gap-2 px-4 py-2 text-[0.875rem]">
                     <div className="min-w-0 flex-1">
                       <Person person={r.user as unknown as Who} size={24} />
                     </div>
@@ -166,9 +166,9 @@ export default async function CmsPost({ params }: { params: Promise<{ id: string
             ) : (
               <ul className="divide-y divide-zinc-100">
                 {(reports ?? []).map((r) => (
-                  <li key={r.id} className="px-4 py-3 text-[13px]">
+                  <li key={r.id} className="px-4 py-3 text-[0.875rem]">
                     <p className="text-zinc-900">“{r.reason || "No reason given"}”</p>
-                    <p className="mt-0.5 text-[12px] text-zinc-500">
+                    <p className="mt-0.5 text-[0.8125rem] text-zinc-500">
                       {(r.reporter as unknown as Who | null)?.full_name ?? "A member"} · {fmtDate(r.created_at)} · {r.status}
                     </p>
                   </li>

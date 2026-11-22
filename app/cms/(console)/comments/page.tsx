@@ -27,7 +27,7 @@ export default async function CmsComments({ searchParams }: { searchParams: Prom
     <>
       <PageHeader title="Comments" description="Replies on every post, newest first." />
       <Filters reset="/cms/comments">
-        <input name="q" defaultValue={q} placeholder="Words in the comment" aria-label="Search comments" className={`${INPUT} min-w-[240px] flex-1`} />
+        <input name="q" defaultValue={q} placeholder="Words in the comment" aria-label="Search comments" className={`${INPUT} min-w-[15rem] flex-1`} />
       </Filters>
       <Card flush>
         {rows.length === 0 ? (
@@ -47,9 +47,9 @@ export default async function CmsComments({ searchParams }: { searchParams: Prom
               <tbody>
                 {rows.map((c) => (
                   <tr key={c.id} className="hover:bg-zinc-50/70">
-                    <td className={`${TD} max-w-[360px]`}><span className="line-clamp-2 text-zinc-900">{c.body}</span></td>
-                    <td className={`${TD} max-w-[200px]`}><Person person={c.author} size={28} /></td>
-                    <td className={`${TD} max-w-[260px]`}>
+                    <td className={`${TD} max-w-[22.5rem]`}><span className="line-clamp-2 text-zinc-900">{c.body}</span></td>
+                    <td className={`${TD} max-w-[12.5rem]`}><Person person={c.author} size={28} /></td>
+                    <td className={`${TD} max-w-[16.25rem]`}>
                       <Link href={`/cms/posts/${c.post_id}`} className="line-clamp-1 text-zinc-600 hover:underline">{c.post?.body ?? "Post"}</Link>
                     </td>
                     <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(c.created_at, true)}</td>

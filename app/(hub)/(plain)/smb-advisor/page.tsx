@@ -37,11 +37,11 @@ export default async function SmbAdvisorPage() {
         text="Accountants, lawyers, consultants and coaches who work with Canadian small businesses. Connect with an advisor, ask a question in the feed, or message them directly."
       >
         <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-[12px] font-semibold text-blue-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-[0.8125rem] font-semibold text-blue-700">
             <BadgeCheck className="h-3.5 w-3.5" />
             {advisors.length} {advisors.length === 1 ? "advisor" : "advisors"} on SMB Hub
           </span>
-          <Link href="/members?type=advisor" className="rounded-full border border-[#E5E5E8] px-3 py-1.5 text-[12px] font-semibold text-zinc-800 hover:bg-[#F5F5F6]">
+          <Link href="/members?type=advisor" className="rounded-full border border-[#E5E5E8] px-3 py-1.5 text-[0.8125rem] font-semibold text-zinc-800 hover:bg-[#F5F5F6]">
             Search all members
           </Link>
         </div>
@@ -58,8 +58,8 @@ export default async function SmbAdvisorPage() {
       )}
 
       <section className="rounded-3xl border border-[#E5E5E8] bg-white p-6 shadow-card">
-        <h2 className="font-display text-[16px] font-bold text-zinc-950">Become an SMB Advisor</h2>
-        <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-zinc-600">
+        <h2 className="font-display text-[1.0625rem] font-bold text-zinc-950">Become an SMB Advisor</h2>
+        <p className="mt-1 max-w-2xl text-[0.875rem] leading-relaxed text-zinc-600">
           For experts who serve small businesses. The plan includes everything in SMB Elite, an SMB Advisor badge on your profile and posts, and:
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -68,12 +68,12 @@ export default async function SmbAdvisorPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#E5E5E8] bg-white text-blue-600">
                 <Icon className="h-4 w-4" />
               </span>
-              <h3 className="mt-2.5 text-[13px] font-bold text-zinc-950">{title}</h3>
-              <p className="mt-0.5 text-[12px] leading-snug text-zinc-500">{text}</p>
+              <h3 className="mt-2.5 text-[0.875rem] font-bold text-zinc-950">{title}</h3>
+              <p className="mt-0.5 text-[0.8125rem] leading-snug text-zinc-500">{text}</p>
             </div>
           ))}
         </div>
-        <Link href="/membership-plans" className="mt-5 inline-flex h-10 items-center rounded-full bg-blue-600 px-5 text-[13px] font-semibold text-white hover:bg-blue-700">
+        <Link href="/membership-plans" className="mt-5 inline-flex h-10 items-center rounded-full bg-blue-600 px-5 text-[0.875rem] font-semibold text-white hover:bg-blue-700">
           See the SMB Advisor plan
         </Link>
       </section>

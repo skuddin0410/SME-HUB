@@ -38,7 +38,7 @@ export default async function CmsBusinesses({ searchParams }: { searchParams: Pr
     <>
       <PageHeader title="Business listings" description="Company pages members list in the business directory." />
       <Filters reset="/cms/businesses">
-        <input name="q" defaultValue={q} placeholder="Business name, category or description" aria-label="Search businesses" className={`${INPUT} min-w-[240px] flex-1`} />
+        <input name="q" defaultValue={q} placeholder="Business name, category or description" aria-label="Search businesses" className={`${INPUT} min-w-[15rem] flex-1`} />
       </Filters>
       {rows.length === 0 ? (
         <Card><Empty>No business listings match.</Empty></Card>
@@ -58,7 +58,7 @@ export default async function CmsBusinesses({ searchParams }: { searchParams: Pr
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-zinc-950">{c.name}</p>
-                    <p className="text-[12.5px] text-zinc-500">
+                    <p className="text-[0.8438rem] text-zinc-500">
                       {c.category || "No category"} · listed {fmtDate(c.created_at)} · {avg ? `${avg}★ from ${ratings.length} reviews` : "no reviews"}
                     </p>
                     <div className="mt-2"><Person person={c.owner} sub="Owner" size={26} /></div>
@@ -71,12 +71,12 @@ export default async function CmsBusinesses({ searchParams }: { searchParams: Pr
                   </span>
                 </div>
                 <details className="mt-3 rounded-xl border border-zinc-200 bg-zinc-50/60">
-                  <summary className="cursor-pointer px-3 py-2 text-[12.5px] font-semibold text-zinc-700">Edit listing</summary>
+                  <summary className="cursor-pointer px-3 py-2 text-[0.8438rem] font-semibold text-zinc-700">Edit listing</summary>
                   <form action={cmsUpdateCompany.bind(null, c.id)} className="grid gap-3 p-3 sm:grid-cols-2">
-                    <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">Name<input name="name" defaultValue={c.name} required maxLength={120} className={INPUT} /></label>
-                    <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">Category<input name="category" defaultValue={c.category ?? ""} maxLength={80} className={INPUT} /></label>
-                    <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700 sm:col-span-2">Website<input name="website" defaultValue={c.website ?? ""} maxLength={200} className={INPUT} /></label>
-                    <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700 sm:col-span-2">Description<textarea name="description" defaultValue={c.description ?? ""} rows={4} maxLength={3000} className={`${INPUT} h-auto py-2`} /></label>
+                    <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">Name<input name="name" defaultValue={c.name} required maxLength={120} className={INPUT} /></label>
+                    <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">Category<input name="category" defaultValue={c.category ?? ""} maxLength={80} className={INPUT} /></label>
+                    <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700 sm:col-span-2">Website<input name="website" defaultValue={c.website ?? ""} maxLength={200} className={INPUT} /></label>
+                    <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700 sm:col-span-2">Description<textarea name="description" defaultValue={c.description ?? ""} rows={4} maxLength={3000} className={`${INPUT} h-auto py-2`} /></label>
                     <div><ConfirmSubmit className={BTN_PRIMARY}>Save listing</ConfirmSubmit></div>
                   </form>
                 </details>

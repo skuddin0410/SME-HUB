@@ -152,12 +152,12 @@ export default async function MemberPage({
         />
       )}
       <section className="panel">
-        <Cover seed={member.id} className="aspect-[4/1] min-h-[120px] rounded-t-lg" />
+        <Cover seed={member.id} className="aspect-[4/1] min-h-[7.5rem] rounded-t-lg" />
         <div className="relative px-6 pb-6">
-          <span className="absolute -top-[112px] left-6 hidden rounded-full border-4 border-white bg-white sm:block">
+          <span className="absolute -top-[7rem] left-6 hidden rounded-full border-4 border-white bg-white sm:block">
             <AvatarImg person={member} size={152} />
           </span>
-          <span className="absolute -top-[60px] left-4 rounded-full border-4 border-white bg-white sm:hidden">
+          <span className="absolute -top-[3.75rem] left-4 rounded-full border-4 border-white bg-white sm:hidden">
             <AvatarImg person={member} size={104} />
           </span>
           <div className="flex h-14 items-start justify-end pt-4">
@@ -168,14 +168,14 @@ export default async function MemberPage({
             )}
           </div>
 
-          <div className="grid gap-x-10 gap-y-3 md:grid-cols-[minmax(0,1fr)_232px]">
+          <div className="grid gap-x-10 gap-y-3 md:grid-cols-[minmax(0,1fr)_14.5rem]">
             <div>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <h1 className="text-2xl font-semibold leading-tight">{member.full_name || "Member"}</h1>
                 {degree && <span className="text-sm text-muted-foreground">· {DEGREE_LABEL[degree]}</span>}
                 <TierBadge type={member.member_type} />
-                {member.profile_type && member.profile_type !== "owner" && <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold">{PROFILE_TYPES[member.profile_type]}</span>}
-                {member.status === "suspended" && <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[11px] font-semibold text-white">Suspended</span>}
+                {member.profile_type && member.profile_type !== "owner" && <span className="rounded-full bg-muted px-2 py-0.5 text-[0.75rem] font-semibold">{PROFILE_TYPES[member.profile_type]}</span>}
+                {member.status === "suspended" && <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[0.75rem] font-semibold text-white">Suspended</span>}
               </div>
               {member.headline && <p className="mt-1 text-base leading-snug">{member.headline}</p>}
               <div className="mt-2 flex flex-wrap items-center gap-x-1.5 text-sm text-muted-foreground">
@@ -378,7 +378,7 @@ export default async function MemberPage({
                 <p className="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
                   <Link href={`/members/${r.author_id}`} className="font-semibold text-foreground hover:underline">{r.author?.full_name || "Member"}</Link>
                   <span>{RELATIONSHIPS[r.relationship]} · {new Date(r.created_at).toLocaleDateString("en-CA", { year: "numeric", month: "short" })}</span>
-                  {r.hidden && <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold">Hidden from your profile</span>}
+                  {r.hidden && <span className="rounded-full bg-muted px-2 py-0.5 text-[0.75rem] font-semibold">Hidden from your profile</span>}
                   <RecActions id={r.id} subjectId={id} hidden={r.hidden} isSubject={isMe} isAuthor={r.author_id === userId} />
                 </p>
               </li>

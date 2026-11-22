@@ -19,7 +19,7 @@ export function TierBadge({ type, always = false }: { type: Profile["member_type
     elite: "bg-blue-950 text-white border-blue-900",
     advisor: "bg-zinc-100 text-zinc-800 border-zinc-200",
   }[type];
-  return <span className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border ${tone}`}>{MEMBER_TYPES[type]}</span>;
+  return <span className={`px-2 py-0.5 rounded-md text-[0.6562rem] font-semibold border ${tone}`}>{MEMBER_TYPES[type]}</span>;
 }
 
 const KIND_CHIP = {
@@ -56,7 +56,7 @@ const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Co
 /** One post in the feed (design: docs/design/feed.html). */
 export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
   const own = post.author.id === viewer.userId;
-  const chip = "px-2 py-0.5 rounded-md text-[10px] font-semibold border";
+  const chip = "px-2 py-0.5 rounded-md text-[0.6562rem] font-semibold border";
   return (
     <article id={`post-${post.id}`} className="panel panel-hover p-4 sm:p-5 space-y-3.5 fade-in">
       <div className="flex items-start justify-between gap-3">
@@ -77,11 +77,11 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-1.5">
               {post.business ? (
-                <Link href={`/businesses/${post.business.slug}`} className="font-display font-bold text-[14px] text-zinc-900 truncate hover:underline">
+                <Link href={`/businesses/${post.business.slug}`} className="font-display font-bold text-[0.9375rem] text-zinc-900 truncate hover:underline">
                   {post.business.name}
                 </Link>
               ) : (
-                <Link href={`/members/${post.author.id}`} className="font-display font-bold text-[14px] text-zinc-900 truncate hover:underline">
+                <Link href={`/members/${post.author.id}`} className="font-display font-bold text-[0.9375rem] text-zinc-900 truncate hover:underline">
                   {post.author.full_name || "Member"}
                 </Link>
               )}
@@ -107,12 +107,12 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
               )}
             </p>
             <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-              <Link href={`/posts/${post.id}`} className="text-[11px] text-zinc-400 hover:underline">
+              <Link href={`/posts/${post.id}`} className="text-[0.75rem] text-zinc-400 hover:underline">
                 {timeAgo(post.created_at)}
               </Link>
               {!post.business && <TierBadge type={post.author.member_type} always />}
               {post.kind !== "update" && <span className={`${chip} ${KIND_CHIP[post.kind]}`}>{KINDS[post.kind].label}</span>}
-              {post.edited_at && <span className="text-[11px] text-zinc-400">(edited)</span>}
+              {post.edited_at && <span className="text-[0.75rem] text-zinc-400">(edited)</span>}
               {post.profile_pinned && (
                 <span className={`${chip} bg-zinc-100 text-zinc-700 border-zinc-200 inline-flex items-center gap-1`}>
                   <Pin className="h-2.5 w-2.5" /> Pinned on profile
@@ -143,13 +143,13 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
           <img src={post.cover_url} alt="" loading="lazy" className="h-44 w-full object-cover" />
         </div>
       )}
-      {post.title && <h3 className="font-display text-[17px] font-bold leading-snug text-zinc-900">{post.title}</h3>}
+      {post.title && <h3 className="font-display text-[1.125rem] font-bold leading-snug text-zinc-900">{post.title}</h3>}
       <PostBody text={post.body} />
       {post.quoted && <QuoteEmbed quoted={post.quoted} />}
       {post.poll && <PollView postId={post.id} poll={post.poll} signedIn={!!viewer.userId} />}
       {post.image_url && (
         <div className="rounded-xl overflow-hidden border border-[#E5E5E8] bg-zinc-100">
-          <img src={post.image_url} alt="" loading="lazy" className="w-full max-h-[360px] object-cover" />
+          <img src={post.image_url} alt="" loading="lazy" className="w-full max-h-[22.5rem] object-cover" />
         </div>
       )}
       <PostActions

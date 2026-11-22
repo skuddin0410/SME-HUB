@@ -39,15 +39,15 @@ export default async function CmsMember({ params }: { params: Promise<{ id: stri
 
   return (
     <>
-      <Link href="/cms/members" className="inline-flex items-center gap-1 text-[12.5px] font-medium text-zinc-500 hover:text-zinc-900">
+      <Link href="/cms/members" className="inline-flex items-center gap-1 text-[0.8438rem] font-medium text-zinc-500 hover:text-zinc-900">
         <ArrowLeft className="h-3.5 w-3.5" /> All members
       </Link>
 
       <section className="flex flex-wrap items-center gap-4 rounded-2xl border border-zinc-200 bg-white p-5">
         <AvatarImg person={m} size={64} />
         <div className="min-w-0 flex-1">
-          <h1 className="font-jakarta text-[22px] font-extrabold tracking-tight text-zinc-950">{m.full_name || "Member"}</h1>
-          <p className="text-[13px] text-zinc-600">{m.headline || "No headline"}</p>
+          <h1 className="font-jakarta text-[1.4688rem] font-extrabold tracking-tight text-zinc-950">{m.full_name || "Member"}</h1>
+          <p className="text-[0.875rem] text-zinc-600">{m.headline || "No headline"}</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             <Badge tone={PLAN_TONE[m.member_type]}>{MEMBER_TYPES[m.member_type]}</Badge>
             {m.status === "suspended" ? <Badge tone="rose">Suspended</Badge> : <Badge tone="green">Active</Badge>}
@@ -72,31 +72,31 @@ export default async function CmsMember({ params }: { params: Promise<{ id: stri
         </div>
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_23.75rem]">
         <div className="flex min-w-0 flex-col gap-5">
           <Card title="Edit profile">
             <form action={cmsUpdateMember.bind(null, m.id)} className="grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                 Full name
                 <input name="full_name" defaultValue={m.full_name} maxLength={80} className={INPUT} />
               </label>
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                 City / location
                 <input name="location" defaultValue={m.location} maxLength={80} className={INPUT} />
               </label>
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700 sm:col-span-2">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700 sm:col-span-2">
                 Headline
                 <input name="headline" defaultValue={m.headline} maxLength={160} className={INPUT} />
               </label>
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700 sm:col-span-2">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700 sm:col-span-2">
                 Website
                 <input name="website" defaultValue={bio?.website ?? ""} maxLength={200} className={INPUT} />
               </label>
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700 sm:col-span-2">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700 sm:col-span-2">
                 About
                 <textarea name="bio" defaultValue={bio?.bio ?? ""} maxLength={2000} rows={4} className={`${INPUT} h-auto py-2`} />
               </label>
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                 Plan
                 <select name="member_type" defaultValue={m.member_type} className={SELECT}>
                   {Object.entries(MEMBER_TYPES).map(([v, l]) => (
@@ -104,7 +104,7 @@ export default async function CmsMember({ params }: { params: Promise<{ id: stri
                   ))}
                 </select>
               </label>
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                 Role
                 <select name="role" defaultValue={m.role} disabled={self} className={`${SELECT} disabled:opacity-50`}>
                   <option value="member">Member</option>
@@ -113,7 +113,7 @@ export default async function CmsMember({ params }: { params: Promise<{ id: stri
               </label>
               <div className="flex items-center gap-2 sm:col-span-2">
                 <ConfirmSubmit className={BTN_PRIMARY}>Save changes</ConfirmSubmit>
-                {self && <span className="text-[12px] text-zinc-500">You cannot change your own role.</span>}
+                {self && <span className="text-[0.8125rem] text-zinc-500">You cannot change your own role.</span>}
               </div>
             </form>
           </Card>
@@ -121,20 +121,20 @@ export default async function CmsMember({ params }: { params: Promise<{ id: stri
           <Card
             flush
             title={`Posts (${m.posts})`}
-            actions={<Link href={`/cms/posts?author=${m.id}`} className="text-[12.5px] font-semibold text-blue-600 hover:underline">All posts</Link>}
+            actions={<Link href={`/cms/posts?author=${m.id}`} className="text-[0.8438rem] font-semibold text-blue-600 hover:underline">All posts</Link>}
           >
             {(posts ?? []).length === 0 ? (
               <Empty>No posts yet.</Empty>
             ) : (
               <ul className="divide-y divide-zinc-100">
                 {(posts ?? []).map((p) => (
-                  <li key={p.id} className="flex items-start gap-3 px-4 py-3 text-[13px]">
+                  <li key={p.id} className="flex items-start gap-3 px-4 py-3 text-[0.875rem]">
                     <Link href={`/cms/posts/${p.id}`} className="min-w-0 flex-1 text-zinc-900 hover:underline">
                       <span className="line-clamp-2">{p.body}</span>
                     </Link>
                     <Badge>{p.kind}</Badge>
                     {p.pinned_at && <Badge tone="blue">Pinned</Badge>}
-                    <span className="whitespace-nowrap text-[12px] text-zinc-500">{fmtDate(p.created_at)}</span>
+                    <span className="whitespace-nowrap text-[0.8125rem] text-zinc-500">{fmtDate(p.created_at)}</span>
                   </li>
                 ))}
               </ul>
@@ -155,7 +155,7 @@ export default async function CmsMember({ params }: { params: Promise<{ id: stri
                 ["Email confirmed", m.email_confirmed_at ? fmtDate(m.email_confirmed_at, true) : "Not yet"],
                 ["Joined", fmtDate(m.created_at, true)],
                 ["Last sign-in", m.last_sign_in_at ? `${timeAgo(m.last_sign_in_at)} (${fmtDate(m.last_sign_in_at, true)})` : "Never"],
-                ["Member id", <code key="i" className="text-[11.5px] text-zinc-500">{m.id}</code>],
+                ["Member id", <code key="i" className="text-[0.7812rem] text-zinc-500">{m.id}</code>],
               ]}
             />
           </Card>
@@ -172,7 +172,7 @@ export default async function CmsMember({ params }: { params: Promise<{ id: stri
                       {(groups ?? []).map((g) => {
                         const grp = g.group as unknown as { id: string; name: string } | null;
                         return grp ? (
-                          <Link key={grp.id} href={`/cms/groups/${grp.id}`} className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[12px] hover:bg-zinc-200">
+                          <Link key={grp.id} href={`/cms/groups/${grp.id}`} className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-[0.8125rem] hover:bg-zinc-200">
                             {grp.name}{g.role === "admin" ? " (admin)" : ""}
                           </Link>
                         ) : null;
@@ -207,9 +207,9 @@ export default async function CmsMember({ params }: { params: Promise<{ id: stri
                 </form>
               )}
               {self ? (
-                <p className="text-[12.5px] text-zinc-500">This is your own account.</p>
+                <p className="text-[0.8438rem] text-zinc-500">This is your own account.</p>
               ) : m.role === "admin" ? (
-                <p className="text-[12.5px] text-zinc-500">Change their role to Member before deleting this account.</p>
+                <p className="text-[0.8438rem] text-zinc-500">Change their role to Member before deleting this account.</p>
               ) : (
                 <form action={cmsDeleteMember.bind(null, m.id)}>
                   <ConfirmSubmit

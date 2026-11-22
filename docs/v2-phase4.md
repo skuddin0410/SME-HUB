@@ -34,3 +34,6 @@ The eight businesses from the design hand-off are in the live database (`supabas
 - Unit tests: 101 passing (helpers for hours, prices and links).
 - Database security tests: 295 passing (`bash supabase/tests/run.sh`).
 - Browser tests: 227 passing, including accessibility (light and dark, visitor and member) and every screen width.
+
+## Type and sizes
+All text, widths, heights and grid sizes in the hub use rem, so they follow the browser text size. The type scale is about 7% larger than before (body 15px, small labels 14px at the default size). The scale lives in `tailwind.config.ts` (fontSize) and the body in `app/globals.css`. Email templates keep px because mail apps need it.

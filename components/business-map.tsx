@@ -68,7 +68,7 @@ export function BusinessMap({ cities, token, base }: { cities: BusinessCity[]; t
     <section className="panel p-4" aria-label="Business map">
       {token && !failed ? (
         <>
-          <div ref={box} role="region" aria-label="Map of business cities" className="h-[420px] w-full overflow-hidden rounded-lg bg-muted" />
+          <div ref={box} role="region" aria-label="Map of business cities" className="h-[26.25rem] w-full overflow-hidden rounded-lg bg-muted" />
           <details className="mt-3 text-sm">
             <summary className="cursor-pointer font-semibold">Show as a list</summary>
             {list}

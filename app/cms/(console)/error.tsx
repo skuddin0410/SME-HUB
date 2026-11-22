@@ -9,8 +9,8 @@ export default function CmsError({ error, reset }: { error: Error & { digest?: s
       <p className="flex items-center gap-2 font-semibold text-rose-700">
         <AlertTriangle className="h-4 w-4" /> That did not work
       </p>
-      <p className="mt-1 text-[13px] text-zinc-600">{error.message || "Something went wrong on the server."}</p>
-      <button type="button" onClick={reset} className="mt-4 h-9 rounded-lg bg-zinc-900 px-3 text-[13px] font-semibold text-white">
+      <p className="mt-1 text-[0.875rem] text-zinc-600">{error.message || "Something went wrong on the server."}</p>
+      <button type="button" onClick={reset} className="mt-4 h-9 rounded-lg bg-zinc-900 px-3 text-[0.875rem] font-semibold text-white">
         Try again
       </button>
     </div>

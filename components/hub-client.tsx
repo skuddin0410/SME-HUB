@@ -132,7 +132,7 @@ export function PostBody({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div>
-      <p className={cx("text-[13.5px] text-zinc-900 leading-[1.6] whitespace-pre-line break-words", long && !open && "line-clamp-5")}>{text}</p>
+      <p className={cx("text-[0.9062rem] text-zinc-900 leading-[1.6] whitespace-pre-line break-words", long && !open && "line-clamp-5")}>{text}</p>
       {long && (
         <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-xs font-semibold text-blue-600 hover:underline">
           {open ? "Show less" : "See more"}
@@ -159,11 +159,11 @@ export function NavLink({
   const active = href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
   const styles = {
     top: cx(
-      "relative flex h-14 min-w-[68px] flex-col items-center justify-center gap-0.5 border-b-2 px-2 text-[11px] font-medium transition-colors",
+      "relative flex h-14 min-w-[4.25rem] flex-col items-center justify-center gap-0.5 border-b-2 px-2 text-[0.75rem] font-medium transition-colors",
       active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground",
     ),
     bottom: cx(
-      "relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium",
+      "relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[0.75rem] font-medium",
       active ? "text-primary" : "text-muted-foreground",
     ),
     side: cx(
@@ -176,7 +176,7 @@ export function NavLink({
       <span className="relative">
         {children}
         {badge > 0 && (
-          <span className="absolute -right-2.5 -top-1.5 min-w-[16px] rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-4 text-white">
+          <span className="absolute -right-2.5 -top-1.5 min-w-[1rem] rounded-full bg-rose-600 px-1 text-center text-[0.6562rem] font-semibold leading-4 text-white">
             {badge > 9 ? "9+" : badge}
           </span>
         )}
@@ -345,7 +345,7 @@ export function Composer({
             <button
               type="button"
               onClick={() => expand()}
-              className="w-full text-left px-4 py-2.5 rounded-xl bg-[#F5F5F6]/80 hover:bg-[#ECE9E2] border border-[#E5E5E8] text-xs sm:text-[13px] text-zinc-500 transition-colors"
+              className="w-full text-left px-4 py-2.5 rounded-xl bg-[#F5F5F6]/80 hover:bg-[#ECE9E2] border border-[#E5E5E8] text-xs sm:text-[0.875rem] text-zinc-500 transition-colors"
             >
               {placeholder ?? "Start a post, ask a question, or share a win..."}
             </button>
@@ -353,7 +353,7 @@ export function Composer({
             <div className="space-y-3 fade-in">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] font-medium text-zinc-500">Post tag:</span>
+                  <span className="text-[0.75rem] font-medium text-zinc-500">Post tag:</span>
                   <select value={kind} onChange={(e) => setKind(e.target.value as Kind)} aria-label="Post tag" className={SMALL_SELECT}>
                     {KIND_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>
@@ -390,7 +390,7 @@ export function Composer({
                 maxLength={120}
                 placeholder="Title (optional)"
                 aria-label="Post title"
-                className="w-full rounded-xl border border-[#E5E5E8] bg-[#F5F5F6]/60 p-2.5 text-[13px] font-semibold text-zinc-900 placeholder-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600"
+                className="w-full rounded-xl border border-[#E5E5E8] bg-[#F5F5F6]/60 p-2.5 text-[0.875rem] font-semibold text-zinc-900 placeholder-zinc-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600"
               />
               <textarea
                 ref={textRef}
@@ -400,13 +400,13 @@ export function Composer({
                 rows={3}
                 onChange={(e) => setCount(e.target.value.length)}
                 placeholder={kind === "update" ? "Share a practical lesson, wholesale milestone, supplier question, or B2B offer with Canadian founders..." : KINDS[kind].prompt}
-                className="w-full p-3 rounded-xl bg-[#F5F5F6]/60 border border-[#E5E5E8] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 text-[13px] text-zinc-900 placeholder-zinc-400 resize-none leading-relaxed"
+                className="w-full p-3 rounded-xl bg-[#F5F5F6]/60 border border-[#E5E5E8] focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600/15 focus:border-blue-600 text-[0.875rem] text-zinc-900 placeholder-zinc-400 resize-none leading-relaxed"
               />
 
               {photo.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{photo.error}</p>}
               {photo.preview && (
                 <div className="relative rounded-xl overflow-hidden border border-[#E5E5E8] bg-zinc-100">
-                  <img src={photo.preview} alt="Selected image" className={cx("w-full max-h-[360px] object-cover", photo.busy && "opacity-60")} />
+                  <img src={photo.preview} alt="Selected image" className={cx("w-full max-h-[22.5rem] object-cover", photo.busy && "opacity-60")} />
                   <button
                     type="button"
                     aria-label="Remove image"
@@ -429,7 +429,7 @@ export function Composer({
                   <span>{photo.busy ? "Uploading…" : photo.preview ? "Change photo" : "Add photo"}</span>
                 </button>
                 <div className="flex items-center gap-2">
-                  <span className={cx("hidden sm:inline text-[11px]", count > 4800 ? "text-rose-600" : "text-zinc-400")}>{count}/5000</span>
+                  <span className={cx("hidden sm:inline text-[0.75rem]", count > 4800 ? "text-rose-600" : "text-zinc-400")}>{count}/5000</span>
                   <button type="button" onClick={collapse} className="px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:bg-[#F5F5F6]">
                     Cancel
                   </button>
@@ -657,7 +657,7 @@ function ReactionButton({
           {particles.map((p) => (
             <span
               key={p.id}
-              className={cx("react-particle absolute -translate-x-1/2 -translate-y-1/2", kind === "celebrate" ? "rounded-[1.5px]" : "leading-none")}
+              className={cx("react-particle absolute -translate-x-1/2 -translate-y-1/2", kind === "celebrate" ? "rounded-[0.0938rem]" : "leading-none")}
               style={
                 {
                   "--dx": `${p.dx}px`,
@@ -780,7 +780,7 @@ export function PostActions({
 
         <div className="flex items-center gap-1">
           {note && (
-            <span role="status" className="mr-1 fade-in rounded-full bg-zinc-900 px-2.5 py-1 text-[11px] font-medium text-white">
+            <span role="status" className="mr-1 fade-in rounded-full bg-zinc-900 px-2.5 py-1 text-[0.75rem] font-medium text-white">
               {note}
             </span>
           )}

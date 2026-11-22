@@ -43,18 +43,18 @@ export async function ProfileCard() {
         <div className="px-4 pb-4">
           <div className="-mt-8 mb-3 flex items-end justify-between">
             <Link href={`/members/${userId}`} className="relative">
-              <span className="block w-16 h-16 rounded-2xl overflow-hidden border-[3px] border-white shadow-sm bg-zinc-100 [&_img]:!rounded-none [&_span]:!rounded-none">
+              <span className="block w-16 h-16 rounded-2xl overflow-hidden border-[0.1875rem] border-white shadow-sm bg-zinc-100 [&_img]:!rounded-none [&_span]:!rounded-none">
                 <AvatarImg person={profile} size={58} />
               </span>
               <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" title="Online now" />
             </Link>
-            <Link href="/profile/edit" className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-[#F5F5F6] hover:bg-[#E5E5E8] text-zinc-800 transition-colors">
+            <Link href="/profile/edit" className="text-[0.75rem] font-medium px-2.5 py-1 rounded-lg bg-[#F5F5F6] hover:bg-[#E5E5E8] text-zinc-800 transition-colors">
               Edit
             </Link>
           </div>
 
           <div>
-            <Link href={`/members/${userId}`} className="block font-display font-bold text-[15px] text-zinc-900 leading-snug hover:underline">
+            <Link href={`/members/${userId}`} className="block font-display font-bold text-[1rem] text-zinc-900 leading-snug hover:underline">
               {profile.full_name}
             </Link>
             <Link href="/profile/edit" className="mt-0.5 block text-left text-xs text-zinc-500 hover:text-blue-600 transition-colors">
@@ -72,10 +72,10 @@ export async function ProfileCard() {
                 <div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500" style={{ width: `${done}%` }} />
               </div>
               <div className="mt-2 flex items-center justify-between">
-                <span className="text-[11px] text-zinc-500">
+                <span className="text-[0.75rem] text-zinc-500">
                   {strength.next} (+{strength.step}%)
                 </span>
-                <Link href="/profile/edit" className="text-[11px] font-semibold text-blue-600 hover:underline">
+                <Link href="/profile/edit" className="text-[0.75rem] font-semibold text-blue-600 hover:underline">
                   Complete →
                 </Link>
               </div>
@@ -84,20 +84,20 @@ export async function ProfileCard() {
 
           <div className="mt-3.5 pt-3.5 border-t border-[#E5E5E8] grid grid-cols-2 divide-x divide-[#E5E5E8]">
             <Link href="/network" className="pr-3 text-left group">
-              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-900 transition-colors">Connections</span>
+              <span className="block text-[0.75rem] text-zinc-500 group-hover:text-zinc-900 transition-colors">Connections</span>
               <span className="flex items-baseline justify-between mt-0.5">
                 <span className="font-display font-bold text-sm text-blue-600">{(connections.data as number | null) ?? 0}</span>
-                <span className="text-[10px] text-zinc-400 group-hover:text-blue-600">Grow</span>
+                <span className="text-[0.6562rem] text-zinc-400 group-hover:text-blue-600">Grow</span>
               </span>
             </Link>
-            <Link href="/profile/views" className="col-span-2 mt-3 border-t border-[#E5E5E8] pt-3 text-[11px] font-semibold text-blue-600 hover:underline">
+            <Link href="/profile/views" className="col-span-2 mt-3 border-t border-[#E5E5E8] pt-3 text-[0.75rem] font-semibold text-blue-600 hover:underline">
               Who viewed your profile →
             </Link>
             <ComposeLink className="pl-3 text-left group">
-              <span className="block text-[11px] text-zinc-500 group-hover:text-zinc-900 transition-colors">Your posts</span>
+              <span className="block text-[0.75rem] text-zinc-500 group-hover:text-zinc-900 transition-colors">Your posts</span>
               <span className="flex items-baseline justify-between mt-0.5">
                 <span className="font-display font-bold text-sm text-zinc-900">{posts.count ?? 0}</span>
-                <span className="text-[10px] text-zinc-400 group-hover:text-blue-600">+ New</span>
+                <span className="text-[0.6562rem] text-zinc-400 group-hover:text-blue-600">+ New</span>
               </span>
             </ComposeLink>
           </div>
@@ -112,7 +112,7 @@ export function ArticlesCard() {
     <div className="panel p-4">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-display font-bold text-xs uppercase tracking-wider text-zinc-500">Recent Articles</h3>
-        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[#F5F5F6] text-zinc-600">CA Editorial</span>
+        <span className="text-[0.6562rem] font-medium px-1.5 py-0.5 rounded bg-[#F5F5F6] text-zinc-600">CA Editorial</span>
       </div>
       <div className="space-y-2.5">
         {BLOG.slice(0, 6).map((a) => (
@@ -120,7 +120,7 @@ export function ArticlesCard() {
             <Thumb src={a.image} className="w-10 h-10 rounded-lg shrink-0 border border-[#E5E5E8]" />
             <span className="min-w-0 flex-1">
               <span className="text-xs font-medium text-zinc-900 group-hover:text-blue-600 leading-snug line-clamp-2 transition-colors">{a.title}</span>
-              <span className="text-[10px] text-zinc-400 mt-0.5 block">CanadianSME Magazine</span>
+              <span className="text-[0.6562rem] text-zinc-400 mt-0.5 block">CanadianSME Magazine</span>
             </span>
           </Link>
         ))}
@@ -146,9 +146,9 @@ export async function ActiveMembersCard() {
           <span className="relative flex h-2 w-2">
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <h3 className="font-display font-bold text-[13px] text-zinc-900">Newest Members</h3>
+          <h3 className="font-display font-bold text-[0.875rem] text-zinc-900">Newest Members</h3>
         </div>
-        <span className="text-[11px] text-zinc-400">Say hello</span>
+        <span className="text-[0.75rem] text-zinc-400">Say hello</span>
       </div>
       <div className="grid grid-cols-5 gap-2.5">
         {members.map((m) => (
@@ -182,8 +182,8 @@ export async function GroupsCard() {
   return (
     <div className="panel p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display font-bold text-[13px] text-zinc-900">Groups to Explore</h3>
-        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F5F5F6] text-zinc-600">Canada</span>
+        <h3 className="font-display font-bold text-[0.875rem] text-zinc-900">Groups to Explore</h3>
+        <span className="text-[0.6562rem] font-semibold px-2 py-0.5 rounded-full bg-[#F5F5F6] text-zinc-600">Canada</span>
       </div>
       <div className="space-y-2.5">
         {groups.map((g) => {
@@ -194,14 +194,14 @@ export async function GroupsCard() {
                 <GroupLogo seed={g.slug} name={g.name} size={36} className="!rounded-xl border border-[#E5E5E8]" />
                 <span className="min-w-0">
                   <span className="block text-xs font-semibold text-zinc-900 truncate">{g.name}</span>
-                  <span className="block text-[11px] text-zinc-500">
+                  <span className="block text-[0.75rem] text-zinc-500">
                     {members} {members === 1 ? "member" : "members"}
                     {g.is_private ? " • private" : ""}
                   </span>
                 </span>
               </Link>
               {g.is_private ? (
-                <Link href={`/groups/${g.slug}`} className="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F5F5F6] hover:bg-zinc-900 text-zinc-800 hover:text-white transition-all">
+                <Link href={`/groups/${g.slug}`} className="shrink-0 px-2.5 py-1 rounded-lg text-[0.75rem] font-semibold bg-[#F5F5F6] hover:bg-zinc-900 text-zinc-800 hover:text-white transition-all">
                   View
                 </Link>
               ) : (
@@ -224,8 +224,8 @@ export function SocialCard() {
   return (
     <div className="panel p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <span className="font-display font-bold text-[13px] text-zinc-900">Follow Us on Social Media</span>
-        <span className="text-[10px] font-medium text-zinc-400">@canadiansme</span>
+        <span className="font-display font-bold text-[0.875rem] text-zinc-900">Follow Us on Social Media</span>
+        <span className="text-[0.6562rem] font-medium text-zinc-400">@canadiansme</span>
       </div>
       <div className="flex items-center justify-between gap-1.5">
         {SOCIALS.map(({ label, href, icon: Icon }) => (
@@ -248,7 +248,7 @@ export function SocialCard() {
 /** Profile-style pages: a wide main column and one right column. */
 export function TwoCol({ children, aside }: { children: React.ReactNode; aside: React.ReactNode }) {
   return (
-    <div className="max-w-[1360px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+    <div className="max-w-[85rem] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
       <main className="lg:col-span-9 flex min-w-0 flex-col gap-4">{children}</main>
       <aside className="lg:col-span-3 hidden space-y-4 lg:block">{aside}</aside>
     </div>
@@ -261,12 +261,12 @@ export function VisitorCard() {
     <div className="panel overflow-hidden">
       <div className="h-16 bg-gradient-to-r from-zinc-800 via-zinc-800 to-zinc-700" />
       <div className="p-4 space-y-2">
-        <p className="font-display font-bold text-[15px] text-zinc-900 leading-snug">Where Canadian business owners meet.</p>
+        <p className="font-display font-bold text-[1rem] text-zinc-900 leading-snug">Where Canadian business owners meet.</p>
         <p className="text-xs text-zinc-500">Ask questions, share what is working and find the people who can help you grow.</p>
         <Link href="/auth/sign-up" className="block w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold text-center shadow-sm transition-colors">
           Join free
         </Link>
-        <Link href="/auth/login" className="block text-center text-[11px] font-medium text-blue-600 hover:underline">
+        <Link href="/auth/login" className="block text-center text-[0.75rem] font-medium text-blue-600 hover:underline">
           I already have an account
         </Link>
       </div>
@@ -291,7 +291,7 @@ export async function QuickLinks() {
           <span>Messages</span>
         </span>
         <span className="flex items-center gap-1.5">
-          {unread > 0 && <span className="px-1.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-600">{unread}</span>}
+          {unread > 0 && <span className="px-1.5 rounded-full text-[0.6562rem] font-semibold bg-rose-50 text-rose-600">{unread}</span>}
           <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
         </span>
       </Link>
@@ -314,7 +314,7 @@ export async function QuickLinks() {
           <Bookmark className="w-4 h-4 text-zinc-400" />
           <span>Saved bookmarks</span>
         </span>
-        <span className="text-[11px] font-semibold text-zinc-400">{saved.count ?? 0}</span>
+        <span className="text-[0.75rem] font-semibold text-zinc-400">{saved.count ?? 0}</span>
       </Link>
     </div>
   );
@@ -324,10 +324,10 @@ export async function QuickLinks() {
 export function FoundingCard() {
   return (
     <div className="rounded-2xl bg-zinc-950 p-5 text-white dark:bg-[#262C3A]">
-      <span className="inline-block rounded-md bg-[#D42A2A] px-2 py-0.5 text-[11px] font-semibold">Founding Member</span>
+      <span className="inline-block rounded-md bg-[#D42A2A] px-2 py-0.5 text-[0.75rem] font-semibold">Founding Member</span>
       <p className="mt-3 font-display text-lg font-bold leading-snug">Be one of the first 500 members.</p>
-      <p className="mt-2 text-[13px] leading-relaxed text-white/80">Join now and keep a permanent Founding Member badge on your profile.</p>
-      <Link href="/auth/sign-up" className="mt-4 inline-flex h-9 items-center rounded-full bg-white px-4 text-[13px] font-semibold text-zinc-900 hover:bg-zinc-100">
+      <p className="mt-2 text-[0.875rem] leading-relaxed text-white/80">Join now and keep a permanent Founding Member badge on your profile.</p>
+      <Link href="/auth/sign-up" className="mt-4 inline-flex h-9 items-center rounded-full bg-white px-4 text-[0.875rem] font-semibold text-zinc-900 hover:bg-zinc-100">
         Claim my badge
       </Link>
     </div>

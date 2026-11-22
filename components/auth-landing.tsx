@@ -44,10 +44,10 @@ function strengthLevel(v: string) {
   return n === 0 ? 0 : n < 6 ? 1 : n < 9 ? 2 : n < 12 ? 3 : 4;
 }
 
-const TAB_ON = "relative z-10 py-2 rounded-full text-[13px] font-semibold text-slate-950 transition-colors";
-const TAB_OFF = "relative z-10 py-2 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-900 transition-colors";
+const TAB_ON = "relative z-10 py-2 rounded-full text-[0.875rem] font-semibold text-slate-950 transition-colors";
+const TAB_OFF = "relative z-10 py-2 rounded-full text-[0.875rem] font-medium text-slate-600 hover:text-slate-900 transition-colors";
 const SECONDARY =
-  "w-full h-11 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-800 flex items-center justify-center gap-2 transition-colors disabled:opacity-60";
+  "w-full h-11 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-[0.875rem] font-semibold text-slate-800 flex items-center justify-center gap-2 transition-colors disabled:opacity-60";
 const SSO =
   "h-10 px-3 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 flex items-center justify-center gap-2 transition-colors disabled:opacity-60";
 
@@ -263,7 +263,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
               id="auth-province"
               value={province}
               onChange={(e) => setProvince(e.target.value)}
-              className="w-full h-11 px-3 rounded-full bg-slate-50/90 border border-slate-200 text-[13px] font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600"
+              className="w-full h-11 px-3 rounded-full bg-slate-50/90 border border-slate-200 text-[0.875rem] font-semibold text-slate-800 focus:bg-white focus:outline-none focus:border-blue-600"
             >
               {PROVINCES.map(([code, label]) => (
                 <option key={code} value={code} title={label}>
@@ -310,7 +310,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
 
         {isJoin && (
           <div className="mt-2 space-y-1 auth-fade-in">
-            <div className="flex items-center justify-between text-[11px]">
+            <div className="flex items-center justify-between text-[0.75rem]">
               <span className="text-slate-500">Password strength</span>
               <span className={`font-semibold ${STRENGTH[level].text}`}>{STRENGTH[level].label}</span>
             </div>
@@ -342,7 +342,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
             {magic === "busy" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4 text-slate-500" />}
             <span>Email me a one-time sign-in link</span>
           </button>
-          <p className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
+          <p className="flex items-center justify-center gap-1.5 text-[0.75rem] text-slate-500">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             Encrypted sign-in • Your data is stored in Canada
           </p>
@@ -357,7 +357,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
       <div className="flex-1 space-y-4">
         <div role="tablist" aria-label="Sign in or join" className="relative grid grid-cols-2 p-1 rounded-full bg-slate-100/90 border border-slate-200/70">
           <div
-            className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-white transition-transform duration-200 ease-out"
+            className="absolute top-1 bottom-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-white transition-transform duration-200 ease-out"
             style={{ transform: isJoin ? "translateX(100%)" : "translateX(0%)" }}
           />
           <button type="button" role="tab" aria-selected={!isJoin} onClick={() => setMode("signin")} className={isJoin ? TAB_OFF : TAB_ON}>
@@ -381,7 +381,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
 
         <div className="relative flex items-center py-0.5">
           <div className="flex-grow border-t border-slate-200/80" />
-          <span className="shrink mx-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">Or continue with email</span>
+          <span className="shrink mx-3 text-[0.6562rem] font-bold uppercase tracking-wider text-slate-400">Or continue with email</span>
           <div className="flex-grow border-t border-slate-200/80" />
         </div>
 
@@ -389,7 +389,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
       </div>
 
       <div className="pt-4 mt-4 border-t border-slate-100 text-center space-y-2">
-        <p className="text-[11px] text-slate-500 leading-relaxed">
+        <p className="text-[0.75rem] text-slate-500 leading-relaxed">
           By continuing, you agree to the SMB Hub{" "}
           <Link href="/policies/terms" className="underline hover:text-slate-800">
             Terms
@@ -428,7 +428,7 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
   );
 
   return (
-    <main className="flex-1 max-w-[1280px] w-full mx-auto px-6 lg:px-8 py-8 lg:py-9 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch content-center">
+    <main className="flex-1 max-w-[80rem] w-full mx-auto px-6 lg:px-8 py-8 lg:py-9 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch content-center">
       {/* left: badge, heading and the sign-in / join card */}
       <div className="flex flex-col w-full">
         <div>
@@ -437,10 +437,10 @@ export function AuthLanding({ initialMode, notice }: { initialMode: "signin" | "
             <span className="text-xs font-bold text-slate-800">CA</span>
             <span className="text-xs font-medium text-slate-600">Canada&apos;s Professional Network</span>
           </div>
-          <h1 className="font-jakarta font-extrabold text-4xl xl:text-[44px] leading-[1.08] tracking-tight text-slate-900 whitespace-nowrap">
+          <h1 className="font-jakarta font-extrabold text-4xl xl:text-[2.9375rem] leading-[1.08] tracking-tight text-slate-900 whitespace-nowrap">
             Build with Canada.
           </h1>
-          <p className="mt-2 mb-5 text-[14.5px] leading-relaxed text-slate-600">
+          <p className="mt-2 mb-5 text-[0.9688rem] leading-relaxed text-slate-600">
             Connect, learn, and grow with entrepreneurs, professionals, and business leaders across Canada.
           </p>
         </div>

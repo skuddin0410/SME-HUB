@@ -14,7 +14,7 @@ export default async function CmsStaff() {
   return (
     <>
       <PageHeader title="Admins" description="People who can sign in to this CMS and manage the hub." />
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_21.25rem]">
         <Card flush>
           {admins.length === 0 ? (
             <Empty>No admins.</Empty>
@@ -24,13 +24,13 @@ export default async function CmsStaff() {
               <tbody>
                 {admins.map((a) => (
                   <tr key={a.id}>
-                    <td className={`${TD} max-w-[240px]`}><Person person={a} sub={a.id === me.id ? "You" : a.headline} /></td>
+                    <td className={`${TD} max-w-[15rem]`}><Person person={a} sub={a.id === me.id ? "You" : a.headline} /></td>
                     <td className={`${TD} text-zinc-700`}>{a.email}</td>
                     <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(a.created_at)}</td>
                     <td className={`${TD} whitespace-nowrap text-zinc-600`}>{timeAgo(a.last_sign_in_at)}</td>
                     <td className={`${TD} text-right`}>
                       {a.id === me.id ? (
-                        <span className="text-[12px] text-zinc-400">—</span>
+                        <span className="text-[0.8125rem] text-zinc-400">—</span>
                       ) : (
                         <form action={cmsRevokeAdmin.bind(null, a.id)}>
                           <ConfirmSubmit className={`${BTN_DANGER} h-8 px-2.5`} confirm={`Remove CMS access for ${a.full_name}? Their hub account stays.`}>Remove access</ConfirmSubmit>
@@ -45,12 +45,12 @@ export default async function CmsStaff() {
         </Card>
         <Card title="Add an admin">
           <form action={cmsGrantAdmin} className="grid gap-3">
-            <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+            <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
               Their SMB Hub email
               <input name="email" type="email" required placeholder="name@canadiansme.ca" className={INPUT} />
             </label>
             <ConfirmSubmit className={BTN_PRIMARY} confirm="Give this person full CMS access?">Give CMS access</ConfirmSubmit>
-            <p className="text-[12px] leading-relaxed text-zinc-500">They must already have a hub account. Admins can edit and delete anything, so add only people you trust.</p>
+            <p className="text-[0.8125rem] leading-relaxed text-zinc-500">They must already have a hub account. Admins can edit and delete anything, so add only people you trust.</p>
           </form>
         </Card>
       </div>

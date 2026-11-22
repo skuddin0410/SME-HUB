@@ -47,8 +47,8 @@ export default async function CmsReviews({ searchParams }: { searchParams: Promi
                         <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" /> {r.rating}
                       </span>
                     </td>
-                    <td className={`${TD} max-w-[360px]`}><span className="line-clamp-2 text-zinc-800">{r.body || "No text"}</span></td>
-                    <td className={`${TD} max-w-[200px]`}><Person person={r.author} size={26} /></td>
+                    <td className={`${TD} max-w-[22.5rem]`}><span className="line-clamp-2 text-zinc-800">{r.body || "No text"}</span></td>
+                    <td className={`${TD} max-w-[12.5rem]`}><Person person={r.author} size={26} /></td>
                     <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(r.created_at)}</td>
                     <td className={`${TD} text-right`}>
                       <form action={cmsDeleteReview.bind(null, r.company_id, r.author_id)}>

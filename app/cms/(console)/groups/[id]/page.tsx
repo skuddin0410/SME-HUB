@@ -24,18 +24,18 @@ export default async function CmsGroup({ params }: { params: Promise<{ id: strin
 
   return (
     <>
-      <Link href="/cms/groups" className="inline-flex items-center gap-1 text-[12.5px] font-medium text-zinc-500 hover:text-zinc-900">
+      <Link href="/cms/groups" className="inline-flex items-center gap-1 text-[0.8438rem] font-medium text-zinc-500 hover:text-zinc-900">
         <ArrowLeft className="h-3.5 w-3.5" /> All groups
       </Link>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-jakarta text-[22px] font-extrabold tracking-tight text-zinc-950">{g.name}</h1>
+        <h1 className="font-jakarta text-[1.4688rem] font-extrabold tracking-tight text-zinc-950">{g.name}</h1>
         <span className="flex gap-2">
           <Link href={`/cms/posts?group=${g.id}`} className={BTN_OUTLINE}>{posts ?? 0} posts</Link>
           <a href={`${hub}/groups/${g.slug}`} target="_blank" rel="noreferrer" className={BTN_OUTLINE}><ExternalLink className="h-3.5 w-3.5" /> View on hub</a>
         </span>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22.5rem]">
         <div className="flex min-w-0 flex-col gap-5">
           <Card flush title={`Members (${(members ?? []).length})`}>
             {(members ?? []).length === 0 ? (
@@ -56,7 +56,7 @@ export default async function CmsGroup({ params }: { params: Promise<{ id: strin
                     if (!u) return null;
                     return (
                       <tr key={u.id}>
-                        <td className={`${TD} max-w-[280px]`}><Person person={u} sub={u.headline} size={28} /></td>
+                        <td className={`${TD} max-w-[17.5rem]`}><Person person={u} sub={u.headline} size={28} /></td>
                         <td className={TD}>{m.role === "admin" ? <Badge tone="violet">Group admin</Badge> : <Badge>Member</Badge>}</td>
                         <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(m.created_at)}</td>
                         <td className={`${TD} text-right`}>
@@ -83,7 +83,7 @@ export default async function CmsGroup({ params }: { params: Promise<{ id: strin
                 {(invites ?? []).map((i, n) => {
                   const u = i.user as unknown as Who;
                   return (
-                    <li key={n} className="flex items-center gap-3 px-4 py-2.5 text-[13px]">
+                    <li key={n} className="flex items-center gap-3 px-4 py-2.5 text-[0.875rem]">
                       <div className="min-w-0 flex-1"><Person person={u} sub={`Invited by ${(i.by as unknown as Who | null)?.full_name ?? "a member"} · ${fmtDate(i.created_at)}`} size={28} /></div>
                       <form action={cmsCancelInvite.bind(null, g.id, u.id)}>
                         <ConfirmSubmit className={`${BTN_OUTLINE} h-8 px-2.5`}>Cancel invite</ConfirmSubmit>
@@ -98,19 +98,19 @@ export default async function CmsGroup({ params }: { params: Promise<{ id: strin
 
         <div className="flex flex-col gap-5">
           <Card title="Details">
-            <Facts rows={[["Created by", <Person key="c" person={g.creator as unknown as Who} size={24} />], ["Created", fmtDate(g.created_at, true)], ["Address", <code key="s" className="text-[12px]">/groups/{g.slug}</code>]]} />
+            <Facts rows={[["Created by", <Person key="c" person={g.creator as unknown as Who} size={24} />], ["Created", fmtDate(g.created_at, true)], ["Address", <code key="s" className="text-[0.8125rem]">/groups/{g.slug}</code>]]} />
           </Card>
           <Card title="Edit group">
             <form action={cmsUpdateGroup.bind(null, g.id)} className="grid gap-3">
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                 Name
                 <input name="name" defaultValue={g.name} required minLength={3} maxLength={80} className={INPUT} />
               </label>
-              <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+              <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
                 Description
                 <textarea name="description" defaultValue={g.description ?? ""} rows={4} maxLength={600} className={`${INPUT} h-auto py-2`} />
               </label>
-              <label className="flex items-center gap-2 text-[13px] text-zinc-700">
+              <label className="flex items-center gap-2 text-[0.875rem] text-zinc-700">
                 <input type="checkbox" name="is_private" defaultChecked={g.is_private} className="h-4 w-4 rounded border-zinc-300" /> Private (invite only)
               </label>
               <ConfirmSubmit className={BTN_PRIMARY}>Save changes</ConfirmSubmit>

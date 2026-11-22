@@ -43,7 +43,7 @@ export function LiveSync() {
     <span
       role="status"
       title={state === "live" ? "Changes on the hub appear here automatically" : "Live updates are not connected. Refresh the page to see new changes."}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-semibold ${
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.7812rem] font-semibold ${
         state === "live" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : state === "offline" ? "border-rose-200 bg-rose-50 text-rose-700" : "border-zinc-200 bg-zinc-50 text-zinc-600"
       }`}
     >
@@ -64,7 +64,7 @@ export function CmsNav({ groups }: { groups: { title: string; items: NavItem[] }
     <nav aria-label="CMS" className="flex flex-col gap-4">
       {groups.map((g) => (
         <div key={g.title}>
-          <p className="px-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-zinc-400">{g.title}</p>
+          <p className="px-3 pb-1 text-[0.6875rem] font-bold uppercase tracking-wider text-zinc-400">{g.title}</p>
           <ul className="grid gap-0.5">
             {g.items.map((i) => {
               const on = active(i.href);
@@ -73,14 +73,14 @@ export function CmsNav({ groups }: { groups: { title: string; items: NavItem[] }
                   <Link
                     href={i.href}
                     aria-current={on ? "page" : undefined}
-                    className={`flex h-8 items-center gap-2.5 rounded-lg px-3 text-[13px] transition-colors ${
+                    className={`flex h-8 items-center gap-2.5 rounded-lg px-3 text-[0.875rem] transition-colors ${
                       on ? "bg-zinc-900 font-semibold text-white" : "text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950"
                     }`}
                   >
                     <span className={on ? "text-white" : "text-zinc-500"}>{i.icon}</span>
                     <span className="flex-1 truncate">{i.label}</span>
                     {!!i.badge && (
-                      <span className={`rounded-full px-1.5 text-[10.5px] font-bold leading-[18px] ${on ? "bg-white text-zinc-900" : "bg-rose-600 text-white"}`}>{i.badge}</span>
+                      <span className={`rounded-full px-1.5 text-[0.6875rem] font-bold leading-[1.125rem] ${on ? "bg-white text-zinc-900" : "bg-rose-600 text-white"}`}>{i.badge}</span>
                     )}
                   </Link>
                 </li>

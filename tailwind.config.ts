@@ -11,6 +11,17 @@ export default {
   ],
   theme: {
     extend: {
+      // type scale in rem, about 7% larger than Tailwind's default (sm = 15px at the default root size)
+      fontSize: {
+        xs: ["0.8125rem", { lineHeight: "1.4" }],
+        sm: ["0.9375rem", { lineHeight: "1.45" }],
+        base: ["1.0625rem", { lineHeight: "1.5" }],
+        lg: ["1.1875rem", { lineHeight: "1.5" }],
+        xl: ["1.3125rem", { lineHeight: "1.4" }],
+        "2xl": ["1.5625rem", { lineHeight: "1.3" }],
+        "3xl": ["1.9375rem", { lineHeight: "1.2" }],
+        "4xl": ["2.3125rem", { lineHeight: "1.15" }],
+      },
       // sign-in and join screens (design: docs/design/auth.html)
       fontFamily: {
         inter: ["Inter", "-apple-system", "BlinkMacSystemFont", "sans-serif"],

@@ -55,7 +55,7 @@ export default async function AdminOverview() {
 
       <section className="panel p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-[15px] font-semibold">Last {DAYS} days</h2>
+          <h2 className="text-[1rem] font-semibold">Last {DAYS} days</h2>
           <p className="flex gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary" /> New members</span>
             <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-sky-400" /> Posts</span>
@@ -76,7 +76,7 @@ export default async function AdminOverview() {
       </section>
 
       <section className="panel divide-y">
-        <h2 className="px-5 py-3 text-[15px] font-semibold">Newest members</h2>
+        <h2 className="px-5 py-3 text-[1rem] font-semibold">Newest members</h2>
         {newMembers.map((m) => (
           <div key={m.id} className="flex items-center justify-between gap-3 px-5 py-3">
             <PersonLine person={m} size={38} />

@@ -26,7 +26,7 @@ export function ActivityList({ events, people, compact = false }: { events: CmsE
         return (
           <li key={e.id} className="flex items-center gap-3 px-4 py-2.5">
             {who ? <AvatarImg person={who} size={28} /> : <span className="h-7 w-7 shrink-0 rounded-full bg-zinc-100" />}
-            <div className="min-w-0 flex-1 text-[13px]">
+            <div className="min-w-0 flex-1 text-[0.875rem]">
               <p className="truncate text-zinc-900">
                 {who && (
                   <Link href={`/cms/members/${who.id}`} className="font-semibold hover:underline">
@@ -42,10 +42,10 @@ export function ActivityList({ events, people, compact = false }: { events: CmsE
                   line
                 )}
               </p>
-              {!compact && typeof e.data.body === "string" && <p className="truncate text-[12px] text-zinc-500">“{e.data.body}”</p>}
+              {!compact && typeof e.data.body === "string" && <p className="truncate text-[0.8125rem] text-zinc-500">“{e.data.body}”</p>}
             </div>
             {!compact && (e.source === "cms" ? <Badge tone="violet">admin</Badge> : <Badge tone={TONE[e.action] ?? "zinc"}>{e.action}</Badge>)}
-            <time dateTime={e.at} title={fmtDate(e.at, true)} className="w-16 shrink-0 text-right text-[11.5px] tabular-nums text-zinc-500">
+            <time dateTime={e.at} title={fmtDate(e.at, true)} className="w-16 shrink-0 text-right text-[0.7812rem] tabular-nums text-zinc-500">
               {timeAgo(e.at)}
             </time>
           </li>

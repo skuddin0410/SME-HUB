@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ];
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[240px_minmax(0,1fr)]">
+    <div className="min-h-screen md:grid md:grid-cols-[15rem_minmax(0,1fr)]">
       <aside className="flex flex-col gap-1 p-4 md:sticky md:top-0 md:h-screen" style={{ background: "hsl(var(--ink))" }}>
         <div className="mb-4 px-1">
           <Logo onDark href="/admin" />
@@ -32,7 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <nav className="flex gap-1 overflow-x-auto md:flex-col" aria-label="Admin">
           {nav.map(({ href, label, icon: Icon, badge }) => (
             <NavLink key={href} href={href} label={label} badge={badge} variant="side">
-              <Icon className="h-[18px] w-[18px]" />
+              <Icon className="h-[1.125rem] w-[1.125rem]" />
             </NavLink>
           ))}
         </nav>

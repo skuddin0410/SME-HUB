@@ -113,7 +113,7 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <span className="text-[11.5px] font-semibold text-slate-800 whitespace-nowrap">Built for Canadian founders &amp; owners</span>
+          <span className="text-[0.7812rem] font-semibold text-slate-800 whitespace-nowrap">Built for Canadian founders &amp; owners</span>
         </div>
         <div className="inline-flex items-center p-1 rounded-full bg-white border border-[#E5E5E8]" role="tablist" aria-label="City">
           {CITIES.map((c, i) => (
@@ -125,8 +125,8 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
               onClick={() => go(i)}
               className={
                 i === index
-                  ? "px-2.5 py-1 rounded-full text-[11.5px] font-semibold bg-slate-900 text-white whitespace-nowrap transition-all"
-                  : "px-2.5 py-1 rounded-full text-[11.5px] font-medium text-slate-600 hover:text-slate-950 whitespace-nowrap transition-all"
+                  ? "px-2.5 py-1 rounded-full text-[0.7812rem] font-semibold bg-slate-900 text-white whitespace-nowrap transition-all"
+                  : "px-2.5 py-1 rounded-full text-[0.7812rem] font-medium text-slate-600 hover:text-slate-950 whitespace-nowrap transition-all"
               }
             >
               {c.city}
@@ -138,7 +138,7 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
       {/* cards 2-4: the reel, featured hub and city circle at fixed heights, so photos never stretch */}
       <div className="grid grid-cols-12 gap-4 shrink-0">
         {/* the reel */}
-        <div className="col-span-12 sm:col-span-7 relative rounded-3xl overflow-hidden group cursor-pointer shadow-auth-card border border-[#E5E5E8] bg-zinc-200 flex flex-col justify-between h-[480px] lg:h-[420px] xl:h-[480px]">
+        <div className="col-span-12 sm:col-span-7 relative rounded-3xl overflow-hidden group cursor-pointer shadow-auth-card border border-[#E5E5E8] bg-zinc-200 flex flex-col justify-between h-[30rem] lg:h-[26.25rem] xl:h-[30rem]">
           <img
             src={UNSPLASH(story.person, 900)}
             alt=""
@@ -162,7 +162,7 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
               <button
                 type="button"
                 onClick={() => setStopped((s) => !s)}
-                className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold tracking-wide hover:bg-black/60 transition-colors"
+                className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white text-[0.6562rem] font-bold tracking-wide hover:bg-black/60 transition-colors"
               >
                 <span className={`flex items-end gap-0.5 h-3 ${paused ? "eq-paused" : ""}`} aria-hidden="true">
                   <span className="w-0.5 h-3 bg-emerald-400 rounded-full eq-bar-1" />
@@ -202,16 +202,16 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <h3 className="font-jakarta font-bold text-[14.5px] text-white truncate">{story.city} founders</h3>
-                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9.5px] font-semibold bg-white/20 backdrop-blur-md text-white border border-white/25 shrink-0">
+                    <h3 className="font-jakarta font-bold text-[0.9688rem] text-white truncate">{story.city} founders</h3>
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[0.625rem] font-semibold bg-white/20 backdrop-blur-md text-white border border-white/25 shrink-0">
                       <BadgeCheck className="w-2.5 h-2.5 text-emerald-300" />
                       <span>Open circle</span>
                     </span>
                   </div>
-                  <p className="text-[11.5px] text-white/85 truncate">Founders &amp; owners • {story.region}</p>
+                  <p className="text-[0.7812rem] text-white/85 truncate">Founders &amp; owners • {story.region}</p>
                 </div>
               </div>
-              <p className="mt-2 text-[12px] font-medium text-white/95 line-clamp-2 leading-snug">&ldquo;{story.quote}&rdquo;</p>
+              <p className="mt-2 text-[0.8125rem] font-medium text-white/95 line-clamp-2 leading-snug">&ldquo;{story.quote}&rdquo;</p>
             </div>
             <div className="flex flex-col items-center gap-1 shrink-0">
               <button
@@ -222,22 +222,22 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
               >
                 <span className="text-sm leading-none">👏</span>
               </button>
-              <span className="text-[10.5px] font-bold text-white drop-shadow">Clap</span>
+              <span className="text-[0.6875rem] font-bold text-white drop-shadow">Clap</span>
             </div>
           </div>
         </div>
 
         {/* featured hub and city circle */}
-        <div className="col-span-12 sm:col-span-5 grid grid-rows-2 gap-4 h-[480px] lg:h-[420px] xl:h-[480px]">
+        <div className="col-span-12 sm:col-span-5 grid grid-rows-2 gap-4 h-[30rem] lg:h-[26.25rem] xl:h-[30rem]">
           <Link href="/groups" className="relative rounded-3xl overflow-hidden group cursor-pointer border border-[#E5E5E8] shadow-auth-card flex flex-col justify-between p-3.5">
             <img src={UNSPLASH(story.hub, 800)} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20" />
             <div className="relative z-10 flex items-center justify-between gap-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-[9.5px] font-bold uppercase tracking-wider border border-white/20">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-[0.625rem] font-bold uppercase tracking-wider border border-white/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                 <span>FEATURED HUB</span>
               </span>
-              <span className="px-2.5 py-1 rounded-full bg-white/95 group-hover:bg-white text-slate-950 text-[10.5px] font-bold transition-all whitespace-nowrap">Explore ↗</span>
+              <span className="px-2.5 py-1 rounded-full bg-white/95 group-hover:bg-white text-slate-950 text-[0.6875rem] font-bold transition-all whitespace-nowrap">Explore ↗</span>
             </div>
             <div className="relative z-10 space-y-1">
               <div className="flex items-center gap-2">
@@ -248,9 +248,9 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
                       <img key={c.city} src={UNSPLASH(c.person, 64)} alt="" className="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
                     ))}
                 </div>
-                <span className="text-[11px] font-bold text-white truncate">{story.hubTitle}</span>
+                <span className="text-[0.75rem] font-bold text-white truncate">{story.hubTitle}</span>
               </div>
-              <p className="font-jakarta font-bold text-[12.5px] text-white/95 leading-snug line-clamp-2">{story.hubCaption}</p>
+              <p className="font-jakarta font-bold text-[0.8438rem] text-white/95 leading-snug line-clamp-2">{story.hubCaption}</p>
             </div>
           </Link>
 
@@ -258,7 +258,7 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
             <img src={UNSPLASH(story.mini, 700)} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/20" />
             <div className="relative z-10 flex items-center justify-between gap-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-[10px] font-semibold border border-white/15 truncate">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-md text-white text-[0.6562rem] font-semibold border border-white/15 truncate">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                 <span className="truncate">City circle • Open to all</span>
               </span>
@@ -271,14 +271,14 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
                       <img key={c.city} src={UNSPLASH(c.person, 64)} alt="" className="w-5 h-5 rounded-full ring-1 ring-white object-cover" />
                     ))}
                   </div>
-                  <span className="text-[10px] font-semibold text-white/90">Free to join</span>
+                  <span className="text-[0.6562rem] font-semibold text-white/90">Free to join</span>
                 </div>
-                <h4 className="font-jakarta font-bold text-[13px] text-white leading-tight truncate">{story.city} Founders Circle</h4>
+                <h4 className="font-jakarta font-bold text-[0.875rem] text-white leading-tight truncate">{story.city} Founders Circle</h4>
               </div>
               <button
                 type="button"
                 onClick={onJoin}
-                className="shrink-0 px-3 py-1.5 rounded-full bg-white hover:bg-blue-50 text-slate-950 text-[10.5px] font-bold transition-all whitespace-nowrap"
+                className="shrink-0 px-3 py-1.5 rounded-full bg-white hover:bg-blue-50 text-slate-950 text-[0.6875rem] font-bold transition-all whitespace-nowrap"
               >
                 Join 👋
               </button>
@@ -294,8 +294,8 @@ export function AuthShowcase({ onJoin }: { onJoin: () => void }) {
             <span className="w-8 h-8 rounded-xl bg-white border border-[#E5E5E8] flex items-center justify-center">
               <f.icon className={`w-4 h-4 ${f.tint}`} />
             </span>
-            <h4 className="mt-2.5 font-jakarta font-bold text-[13px] text-slate-950">{f.title}</h4>
-            <p className="mt-0.5 text-[11.5px] leading-snug text-slate-500">{f.body}</p>
+            <h4 className="mt-2.5 font-jakarta font-bold text-[0.875rem] text-slate-950">{f.title}</h4>
+            <p className="mt-0.5 text-[0.7812rem] leading-snug text-slate-500">{f.body}</p>
           </div>
         ))}
       </div>

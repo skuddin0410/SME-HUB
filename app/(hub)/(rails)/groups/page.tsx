@@ -69,7 +69,7 @@ export default async function GroupsPage() {
 
       {userId ? (
         <details className="panel p-4">
-          <summary className="cursor-pointer text-[15px] font-semibold">Start a new group</summary>
+          <summary className="cursor-pointer text-[1rem] font-semibold">Start a new group</summary>
           <form action={createGroup} className="mt-4 flex animate-rise flex-col gap-3">
             <input name="name" required maxLength={80} placeholder="Group name" aria-label="Group name" className="field" />
             <textarea name="description" rows={2} maxLength={500} placeholder="What is this group about?" aria-label="Description" className="field" />

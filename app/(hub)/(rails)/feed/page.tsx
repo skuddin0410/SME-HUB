@@ -82,9 +82,9 @@ async function firstWeekSteps(viewer: Awaited<ReturnType<typeof getViewer>>): Pr
 function VisitorHero() {
   return (
     <section className="panel p-6 sm:p-8">
-      <p className="text-[12px] font-semibold uppercase tracking-[.06em] text-[#8E1717] dark:text-[#FFB4B4]">Canada&apos;s small business community</p>
-      <h1 className="mt-3 font-display text-[clamp(28px,4.2vw,44px)] font-extrabold leading-[1.05] tracking-tight text-zinc-900">Get known. Get answers. Get customers.</h1>
-      <p className="mt-3 max-w-[52ch] text-[16px] leading-relaxed text-zinc-500">
+      <p className="text-[0.8125rem] font-semibold uppercase tracking-[.06em] text-[#8E1717] dark:text-[#FFB4B4]">Canada&apos;s small business community</p>
+      <h1 className="mt-3 font-display text-[clamp(1.75rem,4.2vw,2.75rem)] font-extrabold leading-[1.05] tracking-tight text-zinc-900">Get known. Get answers. Get customers.</h1>
+      <p className="mt-3 max-w-[52ch] text-[1.0625rem] leading-relaxed text-zinc-500">
         A free community for Canadian small-business owners, from the team behind CanadianSME Small Business Magazine.
       </p>
       <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -172,7 +172,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           <Link
             href={href({ ...keep, sort: latest ? undefined : "latest" })}
             title={latest ? "Showing newest first. Switch to Top Signal" : "Showing what members found most useful. Switch to Latest"}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-[#E5E5E8] text-[11px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-[#E5E5E8] text-[0.75rem] font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
           >
             {latest ? <Clock className="w-3 h-3 text-blue-600" /> : <Sparkles className="w-3 h-3 text-amber-500" />}
             <span>{latest ? "Latest" : "Top Signal"}</span>

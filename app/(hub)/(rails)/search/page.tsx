@@ -41,7 +41,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
 
       {members.length > 0 && (
         <section className="panel p-4">
-          <h2 className="mb-3 text-[15px] font-semibold">People</h2>
+          <h2 className="mb-3 text-[1rem] font-semibold">People</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {members.map((m) => (
               <PersonLine key={m.id} person={m} degree={degrees.get(m.id)} />
@@ -51,7 +51,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       )}
       {companies.length > 0 && (
         <section className="panel p-4">
-          <h2 className="mb-3 text-[15px] font-semibold">Businesses</h2>
+          <h2 className="mb-3 text-[1rem] font-semibold">Businesses</h2>
           <ul className="grid gap-x-3 gap-y-2 sm:grid-cols-2">
             {companies.map((c) => (
               <li key={c.slug} className="min-w-0">
@@ -66,7 +66,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       )}
       {groupRows.length > 0 && (
         <section className="panel p-4">
-          <h2 className="mb-3 text-[15px] font-semibold">Groups</h2>
+          <h2 className="mb-3 text-[1rem] font-semibold">Groups</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {groupRows.map((g) => (
               <GroupLine key={g.slug} group={{ ...g, members: g.group_members[0]?.count ?? 0 }} />

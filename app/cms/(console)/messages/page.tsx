@@ -22,11 +22,11 @@ export default async function CmsMessages({ searchParams }: { searchParams: Prom
   return (
     <>
       <PageHeader title="Messages" description="Direct-message activity between members." />
-      <p className="flex items-start gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-[12.5px] text-zinc-600">
+      <p className="flex items-start gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-[0.8438rem] text-zinc-600">
         <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-500" />
         Message text is private to the two members. The CMS shows who is talking, how many messages and when, never what was said. To act on abuse, use Reports or suspend the member.
       </p>
-      {member && <p className="text-[12.5px] text-zinc-600">Showing one member&apos;s conversations. <Link href="/cms/messages" className="font-semibold text-blue-600 hover:underline">Show all</Link></p>}
+      {member && <p className="text-[0.8438rem] text-zinc-600">Showing one member&apos;s conversations. <Link href="/cms/messages" className="font-semibold text-blue-600 hover:underline">Show all</Link></p>}
       <Card flush>
         {rows.length === 0 ? (
           <Empty>No direct messages yet.</Empty>
@@ -37,8 +37,8 @@ export default async function CmsMessages({ searchParams }: { searchParams: Prom
               <tbody>
                 {rows.map((c) => (
                   <tr key={`${c.member_a}:${c.member_b}`}>
-                    <td className={`${TD} max-w-[240px]`}><Person person={people.get(c.member_a)} size={28} /></td>
-                    <td className={`${TD} max-w-[240px]`}><Person person={people.get(c.member_b)} size={28} /></td>
+                    <td className={`${TD} max-w-[15rem]`}><Person person={people.get(c.member_a)} size={28} /></td>
+                    <td className={`${TD} max-w-[15rem]`}><Person person={people.get(c.member_b)} size={28} /></td>
                     <td className={`${TD} text-right tabular-nums`}>{c.messages}</td>
                     <td className={`${TD} text-right`}>{c.unread ? <Badge tone="amber">{c.unread}</Badge> : <span className="text-zinc-400">0</span>}</td>
                     <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(c.first_at)}</td>

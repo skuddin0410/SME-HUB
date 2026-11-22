@@ -127,7 +127,7 @@ export function PersonCard({
 }) {
   return (
     <div className="panel group relative flex animate-rise flex-col overflow-hidden text-center transition-shadow duration-200 hover:shadow-lg">
-      <Cover seed={person.id} className="h-[62px]" />
+      <Cover seed={person.id} className="h-[3.875rem]" />
       {onDismiss && (
         <button
           type="button"
@@ -138,7 +138,7 @@ export function PersonCard({
           <X className="h-4 w-4" />
         </button>
       )}
-      <Link href={`/members/${person.id}`} className="relative mx-auto -mt-[50px] rounded-full ring-2 ring-white">
+      <Link href={`/members/${person.id}`} className="relative mx-auto -mt-[3.125rem] rounded-full ring-2 ring-white">
         <AvatarImg person={person} size={104} />
       </Link>
       <div className="flex flex-1 flex-col px-3 pb-3 pt-2">
@@ -146,7 +146,7 @@ export function PersonCard({
           {person.full_name || "Member"}
           {degree && <span className="text-xs font-normal text-muted-foreground"> · {degree === 1 ? "1st" : degree === 2 ? "2nd" : "3rd+"}</span>}
         </Link>
-        <p className="mt-0.5 line-clamp-2 min-h-[40px] text-sm leading-5 text-muted-foreground">{person.headline || "SMB Hub member"}</p>
+        <p className="mt-0.5 line-clamp-2 min-h-[2.5rem] text-sm leading-5 text-muted-foreground">{person.headline || "SMB Hub member"}</p>
         <p className="mb-2 mt-auto pt-2 text-xs text-muted-foreground">
           {note ?? (person.member_type !== "owner" ? MEMBER_LABEL[person.member_type] : person.location || " ")}
         </p>

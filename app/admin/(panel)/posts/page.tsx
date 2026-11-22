@@ -20,7 +20,7 @@ export default async function AdminPosts({ searchParams }: { searchParams: Promi
         {posts.length === 0 && <p className="px-5 py-8 text-center text-sm text-muted-foreground">No posts yet.</p>}
         {posts.map((p) => (
           <div key={p.id} className="flex flex-wrap items-start gap-3 px-4 py-3">
-            <div className="min-w-[220px] flex-1">
+            <div className="min-w-[13.75rem] flex-1">
               <p className="text-xs text-muted-foreground">
                 <Link href={`/members/${p.author.id}`} className="font-semibold text-foreground hover:underline">
                   {p.author.full_name || "Member"}

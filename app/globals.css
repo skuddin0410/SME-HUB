@@ -75,11 +75,12 @@
 }
 
 @layer base {
-  /* Inter for text, Plus Jakarta Sans (font-display) for names and headings. 14px body. */
+  /* Inter for text, Plus Jakarta Sans (font-display) for names and headings. 15px body (0.9375rem). */
+  html { font-size: 100%; }
   body {
     font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 14px;
-    line-height: 1.42857;
+    font-size: 0.9375rem;
+    line-height: 1.45;
   }
   h1, h2, h3 { font-weight: 600; letter-spacing: 0; }
   :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
@@ -87,11 +88,11 @@
 
 @layer components {
   /* bento card: the one card style used across the hub */
-  .panel { @apply border bg-white; border-color: #E5E5E8; border-radius: 16px; box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 4px 12px -4px rgba(24, 24, 27, 0.04); transition: border-color 0.18s ease, box-shadow 0.18s ease; }
+  .panel { @apply border bg-white; border-color: #E5E5E8; border-radius: 1rem; box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04), 0 4px 12px -4px rgba(24, 24, 27, 0.04); transition: border-color 0.18s ease, box-shadow 0.18s ease; }
   .panel-hover:hover { border-color: #D4D4D8; box-shadow: 0 4px 16px -4px rgba(24, 24, 27, 0.08), 0 1px 3px rgba(24, 24, 27, 0.05); }
-  .rail { @apply sticky self-start overflow-y-auto; top: 86px; max-height: calc(100vh - 98px); scrollbar-width: none; }
+  .rail { @apply sticky self-start overflow-y-auto; top: 5.375rem; max-height: calc(100vh - 6.125rem); scrollbar-width: none; }
   .rail::-webkit-scrollbar { display: none; }
-  .field { @apply w-full rounded-xl border border-[#E5E5E8] bg-[#F5F5F6]/60 px-3.5 py-2.5 text-[13px] text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/15; }
+  .field { @apply w-full rounded-xl border border-[#E5E5E8] bg-[#F5F5F6]/60 px-3.5 py-2.5 text-[0.875rem] text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-600/15; }
   .press { @apply transition active:scale-[0.97]; }
   .lift { @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-xl; }
   .cover { background: linear-gradient(120deg, hsl(var(--ink)), hsl(var(--primary)) 85%, hsl(205 90% 60%)); }

@@ -10,7 +10,7 @@ import { StickyRail } from "@/components/sticky-rail";
  */
 export default function RailsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex-1 max-w-[1360px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="flex-1 max-w-[85rem] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         <aside className="lg:col-span-3 hidden lg:block">
           <StickyRail pinned className="space-y-4 -mx-1 px-1 pb-1">

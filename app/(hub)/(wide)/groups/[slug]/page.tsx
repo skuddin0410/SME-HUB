@@ -80,7 +80,7 @@ export default async function GroupPage({
           <div className="min-w-0">
             <GroupLogo seed={slug} name={group.name} size={64} className="relative -mt-8 !rounded-xl ring-4 !ring-white" />
             <h1 className="mt-2 text-2xl font-bold">{group.name}</h1>
-            <p className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-[0.875rem] text-muted-foreground">
               {group.is_private && <Lock className="h-3 w-3" />}
               {group.is_private ? "Private group" : "Public group"}, {count} {count === 1 ? "member" : "members"}
             </p>

@@ -40,7 +40,7 @@ export default async function CmsReports({ searchParams }: { searchParams: Promi
     <Link
       href={v === "open" ? "/cms/reports" : `/cms/reports?status=${v}`}
       aria-current={status === v ? "page" : undefined}
-      className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold ${status === v ? "bg-zinc-900 text-white" : "text-zinc-600 hover:bg-zinc-100"}`}
+      className={`rounded-lg px-3 py-1.5 text-[0.875rem] font-semibold ${status === v ? "bg-zinc-900 text-white" : "text-zinc-600 hover:bg-zinc-100"}`}
     >
       {label}
     </Link>
@@ -60,19 +60,19 @@ export default async function CmsReports({ searchParams }: { searchParams: Promi
               <Card key={r.id}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-2 text-[12px] text-zinc-500">
+                    <p className="flex flex-wrap items-center gap-2 text-[0.8125rem] text-zinc-500">
                       {r.status === "open" ? <Badge tone="rose">Open</Badge> : <Badge tone="green">Resolved</Badge>}
                       <span>Reported {r.post_id ? "a post" : "a member"} · {fmtDate(r.created_at, true)} · by</span>
                       <Person person={r.reporter} size={20} />
                     </p>
-                    <p className="mt-2 text-[14px] font-medium text-zinc-900">“{r.reason || "No reason given"}”</p>
+                    <p className="mt-2 text-[0.9375rem] font-medium text-zinc-900">“{r.reason || "No reason given"}”</p>
                     {r.post ? (
                       <Link href={`/cms/posts/${r.post.id}`} className="mt-3 block rounded-xl border border-zinc-200 bg-zinc-50 p-3 hover:bg-zinc-100">
                         <Person person={r.post.author} size={24} />
-                        <span className="mt-1.5 line-clamp-3 block text-[13px] text-zinc-800">{r.post.body}</span>
+                        <span className="mt-1.5 line-clamp-3 block text-[0.875rem] text-zinc-800">{r.post.body}</span>
                       </Link>
                     ) : r.post_id ? (
-                      <p className="mt-3 text-[12.5px] text-zinc-500">The post has been deleted.</p>
+                      <p className="mt-3 text-[0.8438rem] text-zinc-500">The post has been deleted.</p>
                     ) : (
                       <div className="mt-3"><Person person={r.profile} sub="Reported member" /></div>
                     )}

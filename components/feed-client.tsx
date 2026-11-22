@@ -49,7 +49,7 @@ export function JoinGroupButton({ groupId, initial, signedIn }: { groupId: strin
         }
       }}
       className={
-        "shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all " +
+        "shrink-0 px-2.5 py-1 rounded-lg text-[0.75rem] font-semibold transition-all " +
         (joined ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-[#F5F5F6] hover:bg-zinc-900 text-zinc-800 hover:text-white")
       }
     >

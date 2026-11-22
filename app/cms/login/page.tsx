@@ -35,7 +35,7 @@ function CmsLoginForm() {
     <form onSubmit={submit} className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-7 shadow-xl">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/brand/smb-hub-logo.png" alt="SMB Hub" width={874} height={224} className="h-8 w-auto" />
-      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-2.5 py-1 text-[11px] font-semibold text-white">
+      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-2.5 py-1 text-[0.75rem] font-semibold text-white">
         <ShieldCheck className="h-3.5 w-3.5" /> CMS
       </span>
       <h1 className="mt-4 text-2xl font-bold">SMB Hub CMS</h1>

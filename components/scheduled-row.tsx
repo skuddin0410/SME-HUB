@@ -26,7 +26,7 @@ export function ScheduledRow({ id, title, body, scheduledAt }: { id: string; tit
     });
   return (
     <li className="panel space-y-2 p-4">
-      <p className="text-[11px] font-semibold text-blue-700">
+      <p className="text-[0.75rem] font-semibold text-blue-700">
         Goes live {new Date(scheduledAt).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}
       </p>
       {title && <p className="font-display text-sm font-bold text-zinc-900">{title}</p>}

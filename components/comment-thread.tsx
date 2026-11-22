@@ -88,8 +88,8 @@ export function CommentThread({
             <Link href={`/members/${c.author.id}`} className="truncate text-xs font-bold text-zinc-900 hover:underline">
               {c.author.full_name || "Member"}
             </Link>
-            {c.author.headline && <span className="truncate text-[10px] text-zinc-500">• {c.author.headline}</span>}
-            {c.edited_at && <span className="text-[10px] text-zinc-400">(edited)</span>}
+            {c.author.headline && <span className="truncate text-[0.6562rem] text-zinc-500">• {c.author.headline}</span>}
+            {c.edited_at && <span className="text-[0.6562rem] text-zinc-400">(edited)</span>}
           </div>
           <div className="flex items-center gap-2 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
             {own && canEdit(c.created_at) && (
@@ -114,7 +114,7 @@ export function CommentThread({
           <p className="text-xs text-zinc-800 mt-1 leading-relaxed whitespace-pre-wrap break-words">{c.body}</p>
         )}
         {!isReply && me && !closed && (
-          <button type="button" onClick={() => { setReplyTo(replyTo === c.id ? null : c.id); setDraft(""); }} className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-zinc-500 hover:text-zinc-900">
+          <button type="button" onClick={() => { setReplyTo(replyTo === c.id ? null : c.id); setDraft(""); }} className="mt-1.5 inline-flex items-center gap-1 text-[0.75rem] font-medium text-zinc-500 hover:text-zinc-900">
             <Reply className="h-3 w-3" /> Reply
           </button>
         )}

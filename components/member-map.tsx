@@ -67,7 +67,7 @@ export function MemberMap({ cities, token, query }: { cities: CityCount[]; token
     <section className="panel p-4" aria-label="Member map" data-query={query}>
       {token && !failed ? (
         <>
-          <div ref={box} role="region" aria-label="Map of member cities" className="h-[420px] w-full overflow-hidden rounded-lg bg-muted" />
+          <div ref={box} role="region" aria-label="Map of member cities" className="h-[26.25rem] w-full overflow-hidden rounded-lg bg-muted" />
           <details className="mt-3 text-sm">
             <summary className="cursor-pointer font-semibold">Show as a list</summary>
             {list}

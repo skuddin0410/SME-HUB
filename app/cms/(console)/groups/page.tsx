@@ -36,10 +36,10 @@ export default async function CmsGroups({ searchParams }: { searchParams: Promis
   return (
     <>
       <PageHeader title="Groups" description="Every group and circle, with members and posts." />
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_21.25rem]">
         <div className="flex min-w-0 flex-col gap-4">
           <Filters reset="/cms/groups">
-            <input name="q" defaultValue={q} placeholder="Group name or description" aria-label="Search groups" className={`${INPUT} min-w-[220px] flex-1`} />
+            <input name="q" defaultValue={q} placeholder="Group name or description" aria-label="Search groups" className={`${INPUT} min-w-[13.75rem] flex-1`} />
           </Filters>
           <Card flush>
             {rows.length === 0 ? (
@@ -59,14 +59,14 @@ export default async function CmsGroups({ searchParams }: { searchParams: Promis
                   <tbody>
                     {rows.map((g) => (
                       <tr key={g.id} className="hover:bg-zinc-50/70">
-                        <td className={`${TD} max-w-[340px]`}>
+                        <td className={`${TD} max-w-[21.25rem]`}>
                           <Link href={`/cms/groups/${g.id}`} className="flex items-center gap-1.5 font-semibold text-zinc-900 hover:underline">
                             {g.is_private && <Lock className="h-3.5 w-3.5 text-zinc-500" aria-label="Private" />}
                             {g.name}
                           </Link>
-                          <span className="line-clamp-1 text-[12px] text-zinc-500">{g.description || "No description"}</span>
+                          <span className="line-clamp-1 text-[0.8125rem] text-zinc-500">{g.description || "No description"}</span>
                         </td>
-                        <td className={`${TD} max-w-[200px]`}><Person person={g.creator} size={26} /></td>
+                        <td className={`${TD} max-w-[12.5rem]`}><Person person={g.creator} size={26} /></td>
                         <td className={`${TD} text-right tabular-nums`}>{g.group_members[0]?.count ?? 0}</td>
                         <td className={`${TD} text-right tabular-nums`}>{g.posts[0]?.count ?? 0}</td>
                         <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(g.created_at)}</td>
@@ -81,19 +81,19 @@ export default async function CmsGroups({ searchParams }: { searchParams: Promis
         </div>
         <Card title="Create a group">
           <form action={cmsCreateGroup} className="grid gap-3">
-            <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+            <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
               Name
               <input name="name" required minLength={3} maxLength={80} placeholder="Toronto Founders" className={INPUT} />
             </label>
-            <label className="grid gap-1 text-[12.5px] font-medium text-zinc-700">
+            <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
               Description
               <textarea name="description" rows={3} maxLength={600} className={`${INPUT} h-auto py-2`} />
             </label>
-            <label className="flex items-center gap-2 text-[13px] text-zinc-700">
+            <label className="flex items-center gap-2 text-[0.875rem] text-zinc-700">
               <input type="checkbox" name="is_private" className="h-4 w-4 rounded border-zinc-300" /> Private (invite only)
             </label>
             <ConfirmSubmit className={BTN_PRIMARY}>Create group</ConfirmSubmit>
-            <p className="text-[12px] text-zinc-500">You become its first member. It appears on the hub straight away. <Badge>live</Badge></p>
+            <p className="text-[0.8125rem] text-zinc-500">You become its first member. It appears on the hub straight away. <Badge>live</Badge></p>
           </form>
         </Card>
       </div>

@@ -27,10 +27,10 @@ export default async function CmsAudit({ searchParams }: { searchParams: Promise
                 {events.map((e) => (
                   <tr key={e.id}>
                     <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(e.at, true)}</td>
-                    <td className={`${TD} max-w-[200px]`}><Person person={people.get(e.actor_id ?? "")} size={26} /></td>
+                    <td className={`${TD} max-w-[12.5rem]`}><Person person={people.get(e.actor_id ?? "")} size={26} /></td>
                     <td className={`${TD} font-medium text-zinc-900`}>{e.action.replace(".", " → ").replace(/_/g, " ")}</td>
-                    <td className={`${TD} text-zinc-600`}>{e.entity.replace(/_/g, " ")} <code className="text-[11px] text-zinc-400">{(e.entity_id ?? "").slice(0, 8)}</code></td>
-                    <td className={`${TD} max-w-[320px] truncate text-[12px] text-zinc-500`}>{Object.keys(e.data).length ? JSON.stringify(e.data) : "—"}</td>
+                    <td className={`${TD} text-zinc-600`}>{e.entity.replace(/_/g, " ")} <code className="text-[0.75rem] text-zinc-400">{(e.entity_id ?? "").slice(0, 8)}</code></td>
+                    <td className={`${TD} max-w-[20rem] truncate text-[0.8125rem] text-zinc-500`}>{Object.keys(e.data).length ? JSON.stringify(e.data) : "—"}</td>
                   </tr>
                 ))}
               </tbody>

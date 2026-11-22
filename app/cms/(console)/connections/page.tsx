@@ -36,7 +36,7 @@ export default async function CmsConnections({ searchParams }: { searchParams: P
         </select>
         {member && <input type="hidden" name="member" value={member} />}
       </Filters>
-      {member && <p className="text-[12.5px] text-zinc-600">Showing one member&apos;s connections. <Link href="/cms/connections" className="font-semibold text-blue-600 hover:underline">Show all</Link></p>}
+      {member && <p className="text-[0.8438rem] text-zinc-600">Showing one member&apos;s connections. <Link href="/cms/connections" className="font-semibold text-blue-600 hover:underline">Show all</Link></p>}
       <Card flush>
         {rows.length === 0 ? (
           <Empty>No connections match.</Empty>
@@ -47,8 +47,8 @@ export default async function CmsConnections({ searchParams }: { searchParams: P
               <tbody>
                 {rows.map((c) => (
                   <tr key={`${c.requester_id}:${c.addressee_id}`}>
-                    <td className={`${TD} max-w-[240px]`}><Person person={c.requester} size={28} /></td>
-                    <td className={`${TD} max-w-[240px]`}><Person person={c.addressee} size={28} /></td>
+                    <td className={`${TD} max-w-[15rem]`}><Person person={c.requester} size={28} /></td>
+                    <td className={`${TD} max-w-[15rem]`}><Person person={c.addressee} size={28} /></td>
                     <td className={TD}>{c.status === "accepted" ? <Badge tone="green">Connected</Badge> : <Badge tone="amber">Pending</Badge>}</td>
                     <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(c.created_at)}</td>
                     <td className={`${TD} text-right`}>

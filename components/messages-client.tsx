@@ -149,7 +149,7 @@ export function MessagingApp({
   );
 
   return (
-    <div className="panel flex h-[calc(100vh-108px)] min-h-[480px] flex-col overflow-hidden">
+    <div className="panel flex h-[calc(100vh-6.75rem)] min-h-[30rem] flex-col overflow-hidden">
       <div className="flex items-center gap-3 border-b px-4 py-2">
         <h1 className="text-base font-semibold">Messaging</h1>
         <label className="relative hidden w-56 sm:block">
@@ -172,7 +172,7 @@ export function MessagingApp({
         {pill("connections", "Connections")}
       </div>
 
-      <div className="grid min-h-0 flex-1 md:grid-cols-[312px_minmax(0,1fr)]">
+      <div className="grid min-h-0 flex-1 md:grid-cols-[19.5rem_minmax(0,1fr)]">
         <div className={cx("min-h-0 overflow-y-auto border-r", active ? "hidden md:block" : "block")}>
           {pendingShare && <p className="bg-primary/10 px-4 py-2 text-xs font-semibold text-primary">Choose who to send this post to.</p>}
           {filter !== "connections" &&
@@ -197,7 +197,7 @@ export function MessagingApp({
                     {t.last.body}
                   </span>
                 </span>
-                {t.unread > 0 && <span className="rounded-full bg-primary px-1.5 text-[11px] font-semibold leading-[18px] text-white">{t.unread}</span>}
+                {t.unread > 0 && <span className="rounded-full bg-primary px-1.5 text-[0.75rem] font-semibold leading-[1.125rem] text-white">{t.unread}</span>}
               </button>
             ))}
           {filter !== "connections" && listed.length === 0 && (

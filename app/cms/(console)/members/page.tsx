@@ -37,10 +37,10 @@ export default async function CmsMembers({ searchParams }: { searchParams: Promi
   return (
     <>
       <PageHeader title="Members" description="Every account on the hub, with its email, plan, status and activity." />
-      {sp.deleted && <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-[13px] text-emerald-800">The account was deleted.</p>}
+      {sp.deleted && <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-[0.875rem] text-emerald-800">The account was deleted.</p>}
       <Filters reset="/cms/members">
         <label className="sr-only" htmlFor="m-q">Search</label>
-        <input id="m-q" name="q" defaultValue={params.q} placeholder="Name, email, headline or city" className={`${INPUT} min-w-[220px] flex-1`} />
+        <input id="m-q" name="q" defaultValue={params.q} placeholder="Name, email, headline or city" className={`${INPUT} min-w-[13.75rem] flex-1`} />
         <select name="plan" defaultValue={params.plan} aria-label="Plan" className={SELECT}>
           <option value="">Any plan</option>
           {Object.entries(MEMBER_TYPES).map(([v, l]) => (
@@ -85,7 +85,7 @@ export default async function CmsMembers({ searchParams }: { searchParams: Promi
               <tbody>
                 {rows.map((m) => (
                   <tr key={m.id} className="hover:bg-zinc-50/70">
-                    <td className={`${TD} max-w-[280px]`}>
+                    <td className={`${TD} max-w-[17.5rem]`}>
                       <Person person={m} sub={m.headline || m.location || undefined} />
                     </td>
                     <td className={TD}>
@@ -97,7 +97,7 @@ export default async function CmsMembers({ searchParams }: { searchParams: Promi
                         )}
                         <a href={`mailto:${m.email}`} className="truncate text-zinc-800 hover:underline">{m.email}</a>
                       </span>
-                      {m.provider !== "email" && <span className="text-[11.5px] capitalize text-zinc-500">via {m.provider}</span>}
+                      {m.provider !== "email" && <span className="text-[0.7812rem] capitalize text-zinc-500">via {m.provider}</span>}
                     </td>
                     <td className={TD}>
                       <Badge tone={PLAN_TONE[m.member_type]}>{MEMBER_TYPES[m.member_type]}</Badge>
@@ -120,7 +120,7 @@ export default async function CmsMembers({ searchParams }: { searchParams: Promi
         )}
       </Card>
       <Pager page={page} size={CMS_PAGE} shown={rows.length} total={total} path="/cms/members" params={params} />
-      <p className="text-[12px] text-zinc-500">
+      <p className="text-[0.8125rem] text-zinc-500">
         Tip: open a member to edit their profile, change plan or status, or delete the account. <Link href="/cms/staff" className="font-semibold text-blue-600 hover:underline">Manage admins</Link>
       </p>
     </>

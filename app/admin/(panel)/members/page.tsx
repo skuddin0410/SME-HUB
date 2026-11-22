@@ -31,7 +31,7 @@ export default async function AdminMembers({
     <>
       <h1 className="text-2xl font-bold">Members</h1>
       <form className="panel flex flex-wrap gap-2 p-3">
-        <input name="q" defaultValue={q} placeholder="Search by name or headline" aria-label="Search members" className="field min-w-[180px] flex-1" />
+        <input name="q" defaultValue={q} placeholder="Search by name or headline" aria-label="Search members" className="field min-w-[11.25rem] flex-1" />
         <select name="status" defaultValue={status} aria-label="Status" className="rounded-xl border border-input bg-white px-3 text-sm">
           <option value="">Any status</option>
           <option value="active">Active</option>
@@ -44,7 +44,7 @@ export default async function AdminMembers({
         {members.length === 0 && <p className="px-5 py-8 text-center text-sm text-muted-foreground">No members match.</p>}
         {members.map((m) => (
           <form key={m.id} action={adminUpdateMember.bind(null, m.id)} className="flex flex-wrap items-center gap-3 px-4 py-3">
-            <Link href={`/members/${m.id}`} className="flex min-w-[200px] flex-1 items-center gap-3">
+            <Link href={`/members/${m.id}`} className="flex min-w-[12.5rem] flex-1 items-center gap-3">
               <AvatarImg person={m} size={38} />
               <span className="min-w-0">
                 <span className="block truncate text-sm font-semibold hover:underline">{m.full_name || "Member"}</span>

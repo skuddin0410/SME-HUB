@@ -16,8 +16,8 @@ const NAV = [
   { href: "/membership-plans", label: "Plans" },
 ];
 
-const NAV_ON = "px-3.5 py-1.5 rounded-full text-[13px] font-semibold bg-blue-50 text-blue-700";
-const NAV_OFF = "px-3.5 py-1.5 rounded-full text-[13px] font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors";
+const NAV_ON = "px-3.5 py-1.5 rounded-full text-[0.875rem] font-semibold bg-blue-50 text-blue-700";
+const NAV_OFF = "px-3.5 py-1.5 rounded-full text-[0.875rem] font-medium text-slate-600 hover:text-slate-950 hover:bg-slate-100/80 transition-colors";
 
 /** Header buttons switch the form in place on the sign-in page instead of reloading it. */
 export const AUTH_MODE_EVENT = "smbhub:auth-mode";
@@ -48,7 +48,7 @@ export function AuthChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col justify-between auth-grid-bg text-slate-900 font-inter text-base leading-normal antialiased selection:bg-blue-600/15 selection:text-blue-700">
       <header className="sticky top-0 z-40 w-full bg-white/85 backdrop-blur-md border-b border-slate-200/80">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+        <div className="max-w-[80rem] mx-auto px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
           <Link href="/auth/login" aria-label="SMB Hub home" className="flex items-center shrink-0 group">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/smb-hub-logo.png" alt="SMB Hub" width={874} height={224} className="h-8 w-auto group-hover:opacity-90 transition-opacity" />
@@ -75,19 +75,19 @@ export function AuthChrome({ children }: { children: React.ReactNode }) {
                 <Search className="w-3.5 h-3.5 text-slate-400" />
                 <span>Search</span>
               </span>
-              <kbd className="px-1.5 py-0.5 text-[10px] font-mono bg-white border border-slate-200 rounded text-slate-500">⌘K</kbd>
+              <kbd className="px-1.5 py-0.5 text-[0.6562rem] font-mono bg-white border border-slate-200 rounded text-slate-500">⌘K</kbd>
             </button>
             <Link
               href="/auth/login"
               onClick={authButton("signin")}
-              className="h-9 px-4 inline-flex items-center rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-[13px] font-semibold text-slate-800 whitespace-nowrap transition-colors"
+              className="h-9 px-4 inline-flex items-center rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-[0.875rem] font-semibold text-slate-800 whitespace-nowrap transition-colors"
             >
               Sign in
             </Link>
             <Link
               href="/auth/sign-up"
               onClick={authButton("signup")}
-              className="h-9 px-4 inline-flex items-center rounded-full bg-blue-600 hover:bg-blue-700 text-[13px] font-semibold text-white whitespace-nowrap transition-all"
+              className="h-9 px-4 inline-flex items-center rounded-full bg-blue-600 hover:bg-blue-700 text-[0.875rem] font-semibold text-white whitespace-nowrap transition-all"
             >
               Join now
             </Link>
@@ -98,7 +98,7 @@ export function AuthChrome({ children }: { children: React.ReactNode }) {
       <ToastProvider>{children}</ToastProvider>
 
       <footer className="w-full border-t border-slate-200/70 bg-white/60">
-        <div className="max-w-[1280px] mx-auto px-6 lg:px-8 py-4 flex items-center justify-start gap-x-3 gap-y-1 flex-wrap text-xs text-slate-500">
+        <div className="max-w-[80rem] mx-auto px-6 lg:px-8 py-4 flex items-center justify-start gap-x-3 gap-y-1 flex-wrap text-xs text-slate-500">
           <span>SMB Hub, by Cmarketing Inc. © {new Date().getFullYear()}</span>
           <span className="text-slate-300">|</span>
           <Link href="/about" className="hover:text-slate-900">

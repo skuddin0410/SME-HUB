@@ -57,7 +57,7 @@ export default async function CmsPosts({ searchParams }: { searchParams: Promise
     <>
       <PageHeader title="Posts" description="Every post on the hub, including private and group posts." />
       <Filters reset="/cms/posts">
-        <input name="q" defaultValue={params.q} placeholder="Words in the post" aria-label="Search posts" className={`${INPUT} min-w-[220px] flex-1`} />
+        <input name="q" defaultValue={params.q} placeholder="Words in the post" aria-label="Search posts" className={`${INPUT} min-w-[13.75rem] flex-1`} />
         <select name="kind" defaultValue={params.kind} aria-label="Type" className={SELECT}>
           <option value="">Any type</option>
           {KINDS.map((k) => (
@@ -72,7 +72,7 @@ export default async function CmsPosts({ searchParams }: { searchParams: Promise
         {params.group && <input type="hidden" name="group" value={params.group} />}
       </Filters>
       {(params.author || params.group) && (
-        <p className="text-[12.5px] text-zinc-600">
+        <p className="text-[0.8438rem] text-zinc-600">
           Showing posts {params.author ? "by one member" : "in one group"}. <Link href="/cms/posts" className="font-semibold text-blue-600 hover:underline">Show all posts</Link>
         </p>
       )}
@@ -100,7 +100,7 @@ export default async function CmsPosts({ searchParams }: { searchParams: Promise
                   const s = stats.get(p.id);
                   return (
                     <tr key={p.id} className="hover:bg-zinc-50/70">
-                      <td className={`${TD} max-w-[380px]`}>
+                      <td className={`${TD} max-w-[23.75rem]`}>
                         <Link href={`/cms/posts/${p.id}`} className="block hover:underline">
                           <span className="line-clamp-2 text-zinc-900">{p.body}</span>
                         </Link>
@@ -111,7 +111,7 @@ export default async function CmsPosts({ searchParams }: { searchParams: Promise
                           {p.pinned_at && <Badge tone="blue">pinned</Badge>}
                         </span>
                       </td>
-                      <td className={`${TD} max-w-[200px]`}>
+                      <td className={`${TD} max-w-[12.5rem]`}>
                         <Person person={p.author} size={28} />
                       </td>
                       <td className={`${TD} text-zinc-600`}>

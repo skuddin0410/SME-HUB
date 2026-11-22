@@ -64,7 +64,7 @@ export function ComposerOptions({ onBusy }: { onBusy?: (busy: boolean) => void }
 
       {poll && (
         <fieldset className="space-y-2 rounded-xl border border-[#E5E5E8] bg-[#F5F5F6]/50 p-3">
-          <legend className="px-1 text-[11px] font-semibold text-zinc-700">Poll options</legend>
+          <legend className="px-1 text-[0.75rem] font-semibold text-zinc-700">Poll options</legend>
           {options.map((o, i) => (
             <div key={i} className="flex items-center gap-2">
               <input
@@ -89,7 +89,7 @@ export function ComposerOptions({ onBusy }: { onBusy?: (busy: boolean) => void }
                 <Plus className="h-3 w-3" /> Add option
               </button>
             ) : (
-              <span className="text-[11px] text-zinc-500">Up to {FEED.pollMax} options</span>
+              <span className="text-[0.75rem] text-zinc-500">Up to {FEED.pollMax} options</span>
             )}
             <label className="flex items-center gap-1.5 text-xs text-zinc-600">
               Closes after
@@ -109,7 +109,7 @@ export function ComposerOptions({ onBusy }: { onBusy?: (busy: boolean) => void }
         <label className="flex flex-wrap items-center gap-2 text-xs text-zinc-700">
           Publish on
           <input type="datetime-local" name="scheduled_local" required className={`${FIELD} !w-auto`} aria-label="Publish date and time" />
-          <span className="text-[11px] text-zinc-500">Up to {FEED.scheduleMaxDays} days ahead, in your time zone.</span>
+          <span className="text-[0.75rem] text-zinc-500">Up to {FEED.scheduleMaxDays} days ahead, in your time zone.</span>
         </label>
       )}
     </div>
