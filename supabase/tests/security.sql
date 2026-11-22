@@ -867,3 +867,39 @@ insert into groups (slug, name, created_by) values ('bobs-open', 'Open Club', au
 select t.expect('with approval switched off a new public group is live at once', (select status = 'active' from groups where slug = 'bobs-open'));
 reset role; set request.jwt.claim.sub = '';
 update group_settings set create_public = 'approval';
+
+-- ===== plans and billing (phase 6) =====
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-000000000e03', 'ivy@x.ca');
+select t.expect('a signed-in member cannot apply a billing event', (select count(*) = 0 from pg_proc p where proname = 'apply_subscription' and has_function_privilege('authenticated', p.oid, 'execute')));
+select t.expect('a visitor cannot apply a billing event', (select count(*) = 0 from pg_proc p where proname = 'apply_subscription' and has_function_privilege('anon', p.oid, 'execute')));
+create temp table r1 as select apply_subscription('evt_1', 'customer.subscription.created', '2026-11-01 10:00+00', '00000000-0000-0000-0000-000000000e03', 'cus_1', 'sub_1', 'advisor', 'year', 'active', '2027-11-01 10:00+00', false) as res;
+select t.expect('a new paid subscription raises the plan', (select res = 'applied' from r1) and (select plan = 'advisor' from profiles where id = '00000000-0000-0000-0000-000000000e03'));
+select t.expect('the same event twice changes nothing', apply_subscription('evt_1', 'customer.subscription.created', '2026-11-01 10:00+00', '00000000-0000-0000-0000-000000000e03', 'cus_1', 'sub_1', 'advisor', 'year', 'active', '2027-11-01 10:00+00', false) = 'duplicate');
+select t.expect('the customer is remembered', (select stripe_customer_id = 'cus_1' from billing_customers where user_id = '00000000-0000-0000-0000-000000000e03'));
+
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e03';
+insert into groups (slug, name, is_private, created_by) values ('ivy-1', 'Ivy 1', true, auth.uid()), ('ivy-2', 'Ivy 2', true, auth.uid()), ('ivy-3', 'Ivy 3', true, auth.uid());
+select t.expect('an Advisor holds three private groups', (select count(*) = 3 from groups where created_by = auth.uid() and is_private and status = 'active'));
+select t.expect('a member can read their own subscription', (select count(*) = 1 from subscriptions));
+select t.expect_denied('a member cannot write a subscription', $$update subscriptions set plan = 'advisor'$$);
+reset role; set request.jwt.claim.sub = '';
+
+select apply_subscription('evt_0', 'customer.subscription.updated', '2026-10-01 10:00+00', '00000000-0000-0000-0000-000000000e03', 'cus_1', 'sub_1', 'plus', 'month', 'active', '2026-12-01 10:00+00', false) as r \gset
+select t.expect('an older event arriving late is ignored', :'r' = 'stale' and (select plan = 'advisor' from profiles where id = '00000000-0000-0000-0000-000000000e03'));
+select apply_subscription('evt_2', 'customer.subscription.updated', '2026-11-10 10:00+00', '00000000-0000-0000-0000-000000000e03', 'cus_1', 'sub_1', 'plus', 'month', 'active', '2026-12-10 10:00+00', false) as r \gset
+select t.expect('a downgrade to Plus keeps one private group and archives the rest', :'r' = 'applied' and (select count(*) = 1 from groups where created_by = '00000000-0000-0000-0000-000000000e03' and status = 'active') and (select count(*) = 2 from groups where created_by = '00000000-0000-0000-0000-000000000e03' and status = 'archived'));
+select t.expect('nothing is deleted on a downgrade', (select count(*) = 3 from groups where created_by = '00000000-0000-0000-0000-000000000e03'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e03';
+select t.expect_denied('an archived private group cannot come back above the plan limit', $$update groups set status = 'active' where created_by = auth.uid() and status = 'archived'$$);
+reset role; set request.jwt.claim.sub = '';
+select apply_subscription('evt_3', 'customer.subscription.updated', '2026-11-12 10:00+00', '00000000-0000-0000-0000-000000000e03', 'cus_1', 'sub_1', 'plus', 'month', 'past_due', '2026-12-10 10:00+00', false) as r \gset
+select t.expect('a late payment keeps the plan', :'r' = 'applied' and (select plan = 'plus' from profiles where id = '00000000-0000-0000-0000-000000000e03'));
+select apply_subscription('evt_4', 'customer.subscription.updated', '2026-11-13 10:00+00', '00000000-0000-0000-0000-000000000e03', 'cus_1', 'sub_old', 'plus', 'month', 'canceled', null, false) as r \gset
+select t.expect('the end of an old subscription does not touch a newer one', :'r' = 'stale' and (select plan = 'plus' from profiles where id = '00000000-0000-0000-0000-000000000e03'));
+select apply_subscription('evt_5', 'customer.subscription.updated', '2026-11-20 10:00+00', '00000000-0000-0000-0000-000000000e03', 'cus_1', 'sub_1', 'plus', 'month', 'canceled', null, false) as r \gset
+select t.expect('cancelling returns the member to Free and archives all private groups', :'r' = 'applied' and (select plan = 'free' from profiles where id = '00000000-0000-0000-0000-000000000e03') and (select count(*) = 0 from groups where created_by = '00000000-0000-0000-0000-000000000e03' and status = 'active'));
+select apply_subscription('evt_6', 'customer.subscription.updated', '2026-11-21 10:00+00', '00000000-0000-0000-0000-000000000e03', 'cus_1', 'sub_2', 'advisor', 'month', 'incomplete', null, false) as r \gset
+select t.expect('a half-finished checkout changes nothing yet', :'r' = 'applied' and (select plan = 'free' from profiles where id = '00000000-0000-0000-0000-000000000e03'));
+select t.expect('an event for an unknown member is recorded and skipped', apply_subscription('evt_7', 'customer.subscription.created', '2026-11-21 10:00+00', '00000000-0000-0000-0000-00000000ffff', 'cus_9', 'sub_9', 'plus', 'month', 'active', null, false) = 'unknown member');
+select t.expect('every event is on record', (select count(*) = 8 from billing_events));

@@ -76,13 +76,3 @@ export const CONTACT = {
   emails: ["support@smehub.ca", "info@canadiansme.ca"],
 };
 
-export const PLANS = [
-  { key: "free", name: "Free", monthly: 0, yearly: 0, blurb: "Join the conversation and start building your network.",
-    features: ["Up to 100 connections", "Join business groups", "Free articles and guides", "Listen to podcasts", "Register for events", "Community mentorship"] },
-  { key: "plus", name: "SMB Plus", monthly: 25, yearly: 250, blurb: "Put your business on the map.",
-    features: ["Everything in Free", "Up to 250 connections", "1 company page", "Publish 2 articles a month", "CanadianSME events discount", "Add your exclusive offers"] },
-  { key: "elite", name: "SMB Elite", monthly: 50, yearly: 500, blurb: "More reach, more pages, your own groups.", featured: true,
-    features: ["Everything in SMB Plus", "Up to 500 connections", "2 company pages", "Publish 5 articles a month", "Create your own groups", "Featured offers and promotions"] },
-  { key: "advisor", name: "SMB Advisor", monthly: 200, yearly: 2000, blurb: "For experts who serve small businesses.",
-    features: ["Everything in SMB Elite", "Up to 1,000 connections", "3 company pages", "Publish 10 articles a month", "Host events and sell courses", "Podcast interview and advertorial", "SMB Advisor badge"] },
-] as const;

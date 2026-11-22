@@ -354,9 +354,9 @@ export function SiteNav({
                         <span>Admin panel</span>
                       </Link>
                     )}
-                    <Link href="/membership-plans" className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-amber-700 hover:bg-amber-50 text-left">
+                    <Link href="/billing" className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-amber-700 hover:bg-amber-50 text-left">
                       <Crown className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Upgrade to SMB Elite</span>
+                      <span>Plan and billing</span>
                     </Link>
                     <div className="my-1 border-t border-[#F5F5F6]" />
                     <span className="flex items-center gap-2 px-3 rounded-xl text-xs font-medium text-rose-600 hover:bg-rose-50">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Building2, ExternalLink, FileText, Flag, LayoutDashboard, Users, UsersRound } from "lucide-react";
+import { Building2, CreditCard, ExternalLink, FileText, Flag, LayoutDashboard, Users, UsersRound } from "lucide-react";
 import { requireStaff } from "@/lib/hub";
 import { AvatarImg, NavLink, SignOutButton } from "@/components/hub-client";
 import { Logo } from "@/components/site-nav";
@@ -20,6 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/reports", label: "Reports", icon: Flag, badge: openReports ?? 0 },
     { href: "/admin/groups", label: "Groups", icon: UsersRound, badge: 0 },
     { href: "/admin/businesses", label: "Businesses", icon: Building2, badge: 0 },
+    { href: "/admin/billing", label: "Billing", icon: CreditCard, badge: 0 },
   ];
 
   return (
