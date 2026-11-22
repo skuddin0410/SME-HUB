@@ -19,7 +19,7 @@ grant usage on schema t to anon, authenticated;
 insert into auth.users (id, email) values
  ('00000000-0000-0000-0000-00000000000a','alice@x.ca'), ('00000000-0000-0000-0000-00000000000b','bob@x.ca'),
  ('00000000-0000-0000-0000-00000000000c','carol@x.ca'), ('00000000-0000-0000-0000-00000000000d','dave@x.ca');
-update profiles set member_type = 'plus' where id = '00000000-0000-0000-0000-00000000000a';
+update profiles set member_type = 'plus', plan = 'plus' where id = '00000000-0000-0000-0000-00000000000a';
 update profiles set role = 'admin' where id = '00000000-0000-0000-0000-00000000000d';
 \set a '''00000000-0000-0000-0000-00000000000a'''
 \set b '''00000000-0000-0000-0000-00000000000b'''
@@ -789,3 +789,81 @@ insert into business_photos (company_id, url) select id, 'https://picsum.photos/
 set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb1';
 select t.expect_denied('a business can have at most 30 photos', $$insert into business_photos (company_id, url) select id, 'https://picsum.photos/seed/extra/800/600' from companies where slug = 'maple-test'$$);
 reset role; set request.jwt.claim.sub = '';
+
+-- ===== groups (phase 5) =====
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-000000000e01','gina@x.ca'), ('00000000-0000-0000-0000-000000000e02','hugo@x.ca');
+\set d '\'00000000-0000-0000-0000-00000000000d\''
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e01';
+insert into groups (slug, name, created_by, category) values ('bobs-club', 'Bob Club', auth.uid(), 'Community');
+select t.expect('a new public group waits for the team (pending)', (select status = 'pending' and category = 'Community' from groups where slug = 'bobs-club'));
+select t.expect_denied('a free member cannot start a private group', $$insert into groups (slug, name, is_private, created_by) values ('bob-priv', 'Bob Private', true, auth.uid())$$);
+select t.expect_denied('a group creator cannot approve their own group', $$update groups set status = 'active' where slug = 'bobs-club'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e02';
+select t.expect('a pending group is hidden from other members', (select count(*) = 0 from groups where slug = 'bobs-club'));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect_denied('Plus allows one private group, so a second is refused', $$insert into groups (slug, name, is_private, created_by) values ('alice-priv-2', 'Second', true, auth.uid())$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+select t.expect('the team sees a pending group', (select count(*) = 1 from groups where slug = 'bobs-club'));
+update groups set status = 'active' where slug = 'bobs-club';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e02';
+select t.expect('an approved group is visible to everyone', (select count(*) = 1 from groups where slug = 'bobs-club'));
+select t.expect('a public group is open to join by default', (select join_mode = 'open' from groups where slug = 'bobs-club'));
+-- join by request
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e01';
+update groups set join_mode = 'request', rules = 'Be kind. No ads.' where slug = 'bobs-club';
+select t.expect('the group admin sets the joining mode and rules', (select join_mode = 'request' and rules = 'Be kind. No ads.' from groups where slug = 'bobs-club'));
+select t.expect_denied('an admin cannot make the group private', $$update groups set is_private = true where slug = 'bobs-club'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e02';
+select t.expect_denied('cannot join a request-only group directly', $$insert into group_members (group_id, user_id) select id, auth.uid() from groups where slug = 'bobs-club'$$);
+insert into group_join_requests (group_id, user_id, message) select id, auth.uid(), 'I run a bakery' from groups where slug = 'bobs-club';
+select t.expect('a member can ask to join', (select count(*) = 1 from group_join_requests));
+select t.expect_denied('cannot ask for someone else', $$insert into group_join_requests (group_id, user_id) select id, '00000000-0000-0000-0000-00000000000a' from groups where slug = 'bobs-club'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect('a stranger cannot read join requests', (select count(*) = 0 from group_join_requests));
+select t.expect_denied('a non-moderator cannot approve a request', $$select decide_group_request((select id from groups where slug = 'bobs-club'), '00000000-0000-0000-0000-000000000e02', true)$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e01';
+select t.expect('the admin sees the request', (select count(*) = 1 from group_join_requests where status = 'pending'));
+select decide_group_request((select id from groups where slug = 'bobs-club'), '00000000-0000-0000-0000-000000000e02', true);
+select t.expect('approving a request adds the member', (select count(*) = 1 from group_members where user_id = '00000000-0000-0000-0000-000000000e02' and group_id = (select id from groups where slug = 'bobs-club')));
+select t.expect_denied('an answered request cannot be answered again', $$select decide_group_request((select id from groups where slug = 'bobs-club'), '00000000-0000-0000-0000-000000000e02', false)$$);
+-- moderators
+update group_members set role = 'moderator' where user_id = '00000000-0000-0000-0000-000000000e02';
+select t.expect('the admin makes a moderator', (select role = 'moderator' from group_members where user_id = '00000000-0000-0000-0000-000000000e02' and group_id = (select id from groups where slug = 'bobs-club')));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+insert into group_join_requests (group_id, user_id) select id, auth.uid() from groups where slug = 'bobs-club';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e02';
+select decide_group_request((select id from groups where slug = 'bobs-club'), '00000000-0000-0000-0000-00000000000a', true);
+select t.expect('a moderator approves a request', (select count(*) = 1 from group_members where user_id = '00000000-0000-0000-0000-00000000000a' and group_id = (select id from groups where slug = 'bobs-club')));
+delete from group_members where user_id = '00000000-0000-0000-0000-000000000e01' and group_id = (select id from groups where slug = 'bobs-club');
+select t.expect('a moderator cannot remove the admin', (select count(*) = 1 from group_members where user_id = '00000000-0000-0000-0000-000000000e01' and group_id = (select id from groups where slug = 'bobs-club')));
+update group_members set role = 'moderator' where user_id = '00000000-0000-0000-0000-00000000000a';
+select t.expect('a moderator cannot hand out moderator roles', (select role = 'member' from group_members where user_id = '00000000-0000-0000-0000-00000000000a' and group_id = (select id from groups where slug = 'bobs-club')));
+delete from group_members where user_id = '00000000-0000-0000-0000-00000000000a' and group_id = (select id from groups where slug = 'bobs-club');
+select t.expect('a moderator removes a member', (select count(*) = 0 from group_members where user_id = '00000000-0000-0000-0000-00000000000a' and group_id = (select id from groups where slug = 'bobs-club')));
+-- message all members
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e02';
+select t.expect_denied('a moderator cannot message all members', $$select message_group_members((select id from groups where slug = 'bobs-club'), 'Hello all')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e01';
+select t.expect('the admin messages all members', message_group_members((select id from groups where slug = 'bobs-club'), 'Welcome to the club') = 1);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e02';
+select t.expect('members receive the message as a direct message', (select count(*) = 1 from messages where recipient_id = auth.uid() and body = 'Welcome to the club'));
+-- archive
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e01';
+insert into posts (author_id, body, group_id) select auth.uid(), 'club post', id from groups where slug = 'bobs-club';
+update groups set status = 'archived' where slug = 'bobs-club';
+select t.expect('the admin archives the group', (select status = 'archived' from groups where slug = 'bobs-club'));
+select t.expect_denied('an archived group takes no new posts', $$insert into posts (author_id, body, group_id) select auth.uid(), 'late', id from groups where slug = 'bobs-club'$$);
+select t.expect_denied('the admin cannot reject their own group', $$update groups set status = 'rejected' where slug = 'bobs-club'$$);
+select t.expect_denied('only the team changes a group address', $$update groups set slug = 'taken' where slug = 'bobs-club'$$);
+-- settings
+update group_settings set create_public = 'all';
+select t.expect('a member cannot change group settings', (select create_public = 'approval' from group_settings));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+update group_settings set create_public = 'all';
+select t.expect('an admin changes group settings', (select create_public = 'all' from group_settings));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000e01';
+insert into groups (slug, name, created_by) values ('bobs-open', 'Open Club', auth.uid());
+select t.expect('with approval switched off a new public group is live at once', (select status = 'active' from groups where slug = 'bobs-open'));
+reset role; set request.jwt.claim.sub = '';
+update group_settings set create_public = 'approval';

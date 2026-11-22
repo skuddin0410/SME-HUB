@@ -87,6 +87,13 @@ http
     if (url.pathname === "/rest/v1/rpc/business_follower_count") return res.end("3");
     if (url.pathname === "/rest/v1/rpc/business_is_open") return res.end("true");
     if (url.pathname === "/rest/v1/business_settings") return one(SETTINGS);
+    const GSET = { create_private: "paid", create_public: "approval", priv_join: "request", layout: "grid", header: "side", card: { cat: true, desc: true, count: true, act: true, host: true }, head: { type: true, priv: true, desc: true, faces: true, act: true }, def_cover: "nodes", msg_all: true, archive: true, types: ["Topic", "Industry", "Community", "City or region", "Private circle"] };
+    const GROUP = (over) => ({ id: "00000000-0000-4000-8000-0000000000f1", slug: "retail-owners", name: "Retail owners", description: "Shop talk for Canadian retailers.", is_private: false, category: "Industry", cover: "awning", rules: "Be kind.", join_mode: "open", status: "active", created_by: AUTHOR.id, group_members: [{ count: 12 }], host: { full_name: "Priya Raman" }, ...over });
+    if (url.pathname === "/rest/v1/group_settings") return one(GSET);
+    if (url.pathname === "/rest/v1/groups") {
+      if (url.searchParams.get("slug") === "eq.retail-owners") return one(GROUP());
+      return res.end(JSON.stringify([GROUP(), GROUP({ id: "00000000-0000-4000-8000-0000000000f2", slug: "private-circle", name: "Founders circle", category: "Private circle", is_private: true, join_mode: "request", cover: "nodes" })]));
+    }
     if (url.pathname === "/rest/v1/companies" && (url.searchParams.get("slug") === "eq.maple-demo" || url.searchParams.get("id") === `eq.${BIZ_ID}`)) return one(BIZ);
     if (url.pathname === "/rest/v1/business_services") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000d1", name: "Wholesale boxes", description: "Weekly delivery to cafes.", photo_url: null, price_type: "from", price: 60 }, { id: "00000000-0000-4000-8000-0000000000d2", name: "Custom cakes", description: "", photo_url: null, price_type: "quote", price: null }]));
     if (url.pathname === "/rest/v1/business_photos") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000e1", url: "https://picsum.photos/seed/e2e-photo/800/600", caption: "Fresh from the oven", position: 0 }]));
