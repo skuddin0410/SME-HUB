@@ -19,7 +19,7 @@ for (const width of SCREEN_WIDTHS) {
 test("header shows Home, Network and Business Directory, and the messaging dock opens", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/feed", { waitUntil: "domcontentloaded" });
-  const nav = page.getByRole("navigation", { name: "Workspace Navigation" });
+  const nav = page.getByRole("navigation", { name: "Main" });
   for (const name of ["Home", "Network", "Business Directory"]) await expect(nav.getByRole("link", { name })).toBeVisible();
   const dock = page.getByRole("complementary", { name: "Messaging" });
   await expect(dock).toBeVisible();
@@ -30,6 +30,7 @@ test("header shows Home, Network and Business Directory, and the messaging dock 
 test("dark mode switches, is remembered after a reload, and still fits", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/feed", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: /\bMe$/ }).click();
   await page.getByRole("button", { name: /Switch to dark mode/ }).click();
   await expect(page.locator("html")).toHaveClass(/dark/);
   await page.reload({ waitUntil: "domcontentloaded" });

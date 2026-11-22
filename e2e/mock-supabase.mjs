@@ -82,6 +82,7 @@ http
         { id: "00000000-0000-4000-8000-0000000000c2", slug: "asante-demo", name: "Asante Demo Legal", category: "Legal", description: "Contracts and leases.", logo_url: null, cover_url: null, city: "Calgary", province: "AB", kind: "service", rating: null, reviews: 0, followers: 0, is_open: false, claimable: true },
       ]));
     }
+    if (url.pathname === "/rest/v1/rpc/directory_facets") return res.end(JSON.stringify({ total: 4, open_now: 1, categories: [{ category: "Food & Drink", n: 2 }, { category: "Retail", n: 2 }], provinces: ["AB", "ON"], cities: [{ city: "Toronto", province: "ON" }, { city: "Calgary", province: "AB" }] }));
     if (url.pathname === "/rest/v1/rpc/business_map_cities") return res.end(JSON.stringify([{ city: "Toronto", province: "ON", businesses: 3 }, { city: "Calgary", province: "AB", businesses: 1 }]));
     if (url.pathname === "/rest/v1/rpc/business_contact") return res.end(JSON.stringify([{ street: "12 Queen St", postal: "M5V 1A1", email: "hello@maple.example.ca", phone: "(416) 555-0100", whatsapp: null }]));
     if (url.pathname === "/rest/v1/rpc/business_follower_count") return res.end("3");

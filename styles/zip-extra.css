@@ -1,0 +1,34 @@
+/* links inside the guide's menus (the guide used buttons that navigated by script) */
+.zip .menu a,.zip .menu .themerow,.zip .menu .signout{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;text-align:left;padding:0 12px;border:0;background:none;border-radius:8px;cursor:pointer;color:var(--ink);text-decoration:none;font-size:14px}
+.zip .menu a:hover,.zip .menu .themerow:hover,.zip .menu .signout:hover{background:var(--surface-2)}
+.zip .menu .signout{color:#B42318}
+.zip .menu a>span{display:block}
+.zip .mega a.mlink{border:0;background:none;text-align:left;padding:6px 0;font-size:13px;color:var(--ink);text-decoration:none;display:block}
+.zip .mega a.mlink:hover{color:var(--accent)}
+.zip .mega a.promo{display:block;margin-top:auto;text-decoration:none}
+.zip .spill{cursor:text}
+@media(max-width:1100px){.zip .menu a,.zip .menu .themerow,.zip .menu .signout{min-height:32px;padding:0 10px;border-radius:5px;font-size:13px}}
+.zip .spill span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+button.spill{font:inherit;color:#A1A1AA}
+.zip .vsw a{all:unset;cursor:pointer;padding:7px 12px;display:flex;color:var(--muted);font-size:14px}.zip .vsw a[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.zip .vsw a:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.zip a.sw{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:13.5px}
+.zip a.sw i{flex:0 0 38px;height:22px;border-radius:11px;background:#C9C9CF;position:relative;transition:background .15s}
+.zip a.sw i:after{content:"";position:absolute;left:2px;top:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s}
+.zip a.sw[aria-checked="true"] i{background:var(--accent)}.zip a.sw[aria-checked="true"] i:after{left:18px}
+.zip a.bdcat,.zip a.chip{text-decoration:none}
+.zip .spill span{color:#6B6B73!important}
+.dark .zip .spill span{color:#B4BAC7!important}
+/* links standing in for the guide's toggle buttons use aria-current instead of aria-pressed */
+.zip .chip[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:#FFFFFF;font-weight:600}
+.zip .bdcat[aria-current="true"]{border-color:var(--accent);background:#EFF6FF;color:#1D4ED8}.dark .zip .bdcat[aria-current="true"]{background:#172554;color:#BFDBFE}
+.zip .vsw a{color:#52525B}.dark .zip .vsw a{color:#C9CDD6}
+.zip .vsw a[aria-current="true"]{background:var(--ink);color:var(--bg)}
+.zip .art span span{color:#6B6B73}.dark .zip .art span span{color:#A9AFBC}
+.zip .me,.zip .me span{color:var(--ink)}
+.dark .zip .tag.badge{background:#B42318}
+.zip .logo img.on-dark{display:none}.dark .zip .logo img.on-light{display:none}.dark .zip .logo img.on-dark{display:block}
+.zip footer.big img.on-dark{display:none}.dark .zip footer.big img.on-light{display:none}.dark .zip footer.big img.on-dark{display:block}
+.dark .zip .btn.line{color:var(--link);border-color:var(--link)}
+.dark .zip .bzopen.open{color:#4ADE80}.dark .zip .bzopen.closed{color:#F87171}
+.dark .zip .act.blue{color:var(--link)}

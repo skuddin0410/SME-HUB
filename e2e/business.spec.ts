@@ -5,7 +5,7 @@ import { memberCookie } from "./personas";
 
 test("the directory shows businesses with rating, city and open-now", async ({ page }) => {
   await page.goto("/businesses");
-  await expect(page.getByRole("heading", { name: "Explore businesses" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /Find a Canadian small business/ })).toBeVisible();
   const card = page.getByRole("link", { name: /Maple Demo Bakery/ });
   await expect(card).toContainText("Toronto, ON");
   await expect(card).toContainText("Open now");
@@ -14,14 +14,14 @@ test("the directory shows businesses with rating, city and open-now", async ({ p
 
 test("the directory switches between grid, list and map", async ({ page }) => {
   await page.goto("/businesses");
-  const views = page.getByRole("navigation", { name: "Directory view" });
+  const views = page.getByRole("group", { name: "View" });
   // a click can land while the page is still hydrating, so retry until the address changes
   await expect(async () => {
-    await views.getByRole("link", { name: "list" }).click();
+    await views.getByRole("link", { name: "List" }).click();
     await expect(page).toHaveURL(/view=list/, { timeout: 3000 });
   }).toPass();
   await expect(async () => {
-    await views.getByRole("link", { name: "map" }).click();
+    await views.getByRole("link", { name: "Map" }).click();
     await expect(page).toHaveURL(/view=map/, { timeout: 3000 });
   }).toPass();
   // no map token in tests, so the cities show as a list

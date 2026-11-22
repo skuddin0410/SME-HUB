@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { AUTHOR_FIELDS, getViewer, type Author } from "@/lib/hub";
 import { CONTACT, EVENTS } from "@/lib/site";
-import { Logo, SiteNav, type NavNote } from "@/components/site-nav";
+import type { NavNote } from "@/components/site-nav";
+import { ZipHeader } from "@/components/zip/header";
+import "@/styles/zip.css";
+import "@/styles/zip-extra.css";
 import { HideOn } from "@/components/hide-on";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 
@@ -99,7 +102,8 @@ export default async function HubShell({ children }: { children: React.ReactNode
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white">
         Skip to content
       </a>
-      <SiteNav
+      <div className="zip" style={{ display: "contents" }}>
+      <ZipHeader
         me={profile ? { id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url, headline: profile.headline } : null}
         isStaff={isStaff}
         requests={requests.count ?? 0}
@@ -107,6 +111,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
         unread={unread.count ?? 0}
         notes={notes}
       />
+      </div>
 
       {profile?.status === "suspended" && (
         <p className="bg-rose-600 px-3 py-2 text-center text-sm text-white">
@@ -118,66 +123,51 @@ export default async function HubShell({ children }: { children: React.ReactNode
         {children}
       </div>
 
-      {/* the feed carries its own small footer in the right rail */}
       <HideOn paths={["/feed"]}>
-      <footer className="mt-8 border-t border-[#E5E5E8] bg-white">
-        <div className="mx-auto grid max-w-[96rem] gap-8 px-4 sm:px-6 lg:px-8 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
-          <div>
-            <Logo />
-            <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-              A place for small business owners and entrepreneurs to connect and trade experience, tools and advice, from
-              financing to expansion.
-            </p>
-          </div>
-          <div>
-            <h2 className="mb-3 text-sm font-semibold">Explore</h2>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+        <div className="zip" style={{ display: "contents" }}>
+        <footer className="big">
+          <div className="wrap">
+            <div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="on-light" src="/brand/zip-logo.webp" alt="SMB Hub" width={117} height={30} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="on-dark" src="/brand/smb-hub-logo-on-dark.png" alt="SMB Hub" width={117} height={30} />
+              <span>A place for small business owners and entrepreneurs to connect and trade experience, tools and advice, from financing to expansion.</span>
+            </div>
+            <div>
+              <h3>Explore</h3>
               {FOOTER_LINKS.map(([label, href]) => (
-                <li key={href}>
-                  <Link href={href} className="hover:text-primary hover:underline">
-                    {label}
-                  </Link>
-                </li>
+                <Link key={href} href={href}>
+                  {label}
+                </Link>
               ))}
-            </ul>
-          </div>
-          <div>
-            <h2 className="mb-3 text-sm font-semibold">CanadianSME Events</h2>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            </div>
+            <div>
+              <h3>CanadianSME Events</h3>
               {EVENTS.map((e) => (
-                <li key={e.href}>
-                  <a href={e.href} target="_blank" rel="noreferrer" className="hover:text-primary hover:underline">
-                    {e.label}
-                  </a>
-                </li>
+                <a key={e.href} href={e.href} target="_blank" rel="noreferrer">
+                  {e.label}
+                </a>
               ))}
-            </ul>
-          </div>
-          <div>
-            <h2 className="mb-3 text-sm font-semibold">Contact</h2>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>{CONTACT.address}</li>
+            </div>
+            <div>
+              <h3>Contact</h3>
+              <span>{CONTACT.address}</span>
               {CONTACT.phones.map((p) => (
-                <li key={p}>
-                  <a href={`tel:${p.replace(/\s/g, "")}`} className="hover:text-primary hover:underline">
-                    {p}
-                  </a>
-                </li>
+                <a key={p} href={`tel:${p.replace(/\s/g, "")}`}>
+                  {p}
+                </a>
               ))}
               {CONTACT.emails.map((e) => (
-                <li key={e}>
-                  <a href={`mailto:${e}`} className="hover:text-primary hover:underline">
-                    {e}
-                  </a>
-                </li>
+                <a key={e} href={`mailto:${e}`}>
+                  {e}
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
+        </footer>
+        <div className="copy">All rights reserved. © {new Date().getFullYear()} Cmarketing Inc.</div>
         </div>
-        <p className="border-t px-4 py-4 text-center text-xs text-muted-foreground">
-          All rights reserved. © {new Date().getFullYear()} Cmarketing Inc.
-        </p>
-      </footer>
       </HideOn>
 
       {profile && userId && <div aria-hidden className="hidden h-12 md:block" />}

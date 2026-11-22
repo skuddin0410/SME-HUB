@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Sparkles, Clock } from "lucide-react";
 import { fetchPosts, getViewer } from "@/lib/hub";
 import { FEED } from "@/lib/feed-rules";
@@ -78,33 +79,13 @@ async function firstWeekSteps(viewer: Awaited<ReturnType<typeof getViewer>>): Pr
   ];
 }
 
-/** What a visitor sees first on the home page. */
-function VisitorHero() {
-  return (
-    <section className="panel p-6 sm:p-8">
-      <p className="text-[0.8125rem] font-semibold uppercase tracking-[.06em] text-[#8E1717] dark:text-[#FFB4B4]">Canada&apos;s small business community</p>
-      <h1 className="mt-3 font-display text-[clamp(1.75rem,4.2vw,2.75rem)] font-extrabold leading-[1.05] tracking-tight text-zinc-900">Get known. Get answers. Get customers.</h1>
-      <p className="mt-3 max-w-[52ch] text-[1.0625rem] leading-relaxed text-zinc-500">
-        A free community for Canadian small-business owners, from the team behind CanadianSME Small Business Magazine.
-      </p>
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        <Link href="/auth/sign-up" className="inline-flex h-11 items-center rounded-full bg-blue-600 px-6 text-sm font-semibold text-white hover:bg-blue-700">
-          Join free
-        </Link>
-        <Link href="/membership-plans" className="text-sm font-medium text-blue-600 underline underline-offset-2">
-          See what members get
-        </Link>
-      </div>
-    </section>
-  );
-}
-
 export default async function FeedPage({ searchParams }: { searchParams: Promise<Params> }) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
   const kind = params.kind && params.kind in KINDS ? (params.kind as Kind) : undefined;
   const latest = params.sort === "latest";
   const viewer = await getViewer();
+  if (!viewer.userId) redirect("/");
   const saved = params.saved === "1" && !!viewer.userId;
   const compose = params.compose && params.compose in KINDS ? (params.compose as Kind) : undefined;
   const scope = viewer.userId && SCOPES.some((x) => x.key && x.key === params.scope) ? params.scope : undefined;
@@ -129,7 +110,6 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      {!viewer.userId && <VisitorHero />}
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week} />}
       <Composer me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} />
 
