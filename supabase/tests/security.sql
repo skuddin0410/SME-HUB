@@ -903,3 +903,14 @@ select apply_subscription('evt_6', 'customer.subscription.updated', '2026-11-21 
 select t.expect('a half-finished checkout changes nothing yet', :'r' = 'applied' and (select plan = 'free' from profiles where id = '00000000-0000-0000-0000-000000000e03'));
 select t.expect('an event for an unknown member is recorded and skipped', apply_subscription('evt_7', 'customer.subscription.created', '2026-11-21 10:00+00', '00000000-0000-0000-0000-00000000ffff', 'cus_9', 'sub_9', 'plus', 'month', 'active', null, false) = 'unknown member');
 select t.expect('every event is on record', (select count(*) = 8 from billing_events));
+
+-- founding offer
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-000000000e04', 'jo@x.ca'), ('00000000-0000-0000-0000-000000000e05', 'kim@x.ca');
+select t.expect('250 founding places are open at the start', founding_offer_left() = 250);
+select apply_subscription('evt_f1', 'customer.subscription.created', '2026-11-22 10:00+00', '00000000-0000-0000-0000-000000000e04', 'cus_f1', 'sub_f1', 'plus', 'year', 'active', '2027-11-22 10:00+00', false, true) as r \gset
+select t.expect('a founding sign-up takes a place', :'r' = 'applied' and founding_offer_left() = 249);
+select apply_subscription('evt_f2', 'customer.subscription.updated', '2026-11-23 10:00+00', '00000000-0000-0000-0000-000000000e04', 'cus_f1', 'sub_f1', 'plus', 'year', 'active', '2027-11-22 10:00+00', false, false) as r \gset
+select t.expect('the same member never takes a second place, and keeps theirs', :'r' = 'applied' and founding_offer_left() = 249 and (select founding_offer from subscriptions where user_id = '00000000-0000-0000-0000-000000000e04'));
+select apply_subscription('evt_f3', 'customer.subscription.created', '2026-11-24 10:00+00', '00000000-0000-0000-0000-000000000e05', 'cus_f5', 'sub_f5', 'plus', 'year', 'active', '2027-11-24 10:00+00', false, false) as r \gset
+select t.expect('a normal Plus sign-up takes no founding place', :'r' = 'applied' and not (select founding_offer from subscriptions where user_id = '00000000-0000-0000-0000-000000000e05'));
+select t.expect('anyone can see how many founding places are left', (select count(*) = 1 from pg_proc p where proname = 'founding_offer_left' and has_function_privilege('anon', p.oid, 'execute')));

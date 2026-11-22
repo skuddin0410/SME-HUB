@@ -3,45 +3,73 @@ export type PlanKey = "free" | "plus" | "advisor";
 export type Interval = "month" | "year";
 
 export const PLAN_INFO = {
-  free: { name: "Free", blurb: "Join the conversation and start building your network.", month: 0, year: 0 },
-  plus: { name: "Plus", blurb: "More reach for your company and your voice.", month: 19, year: 190 },
-  advisor: { name: "Advisor", blurb: "For experts who serve small businesses.", month: null, year: 1990 },
+  free: { name: "Free", forWho: "For every small-business owner. Free for as long as you like.", month: 0, year: 0 },
+  plus: { name: "Plus", forWho: "For owners who want more customers to see them.", month: 19, year: 190 },
+  advisor: { name: "Advisor", forWho: "For accountants, lawyers, consultants and coaches who serve small businesses.", month: null, year: 1990 },
 } as const;
 
+/** A line starting with "=" is a heading inside the list. Wording is from the design guide. */
 export const PLAN_FEATURES: Record<PlanKey, string[]> = {
   free: [
     "Profile, connections and messages",
-    "One company listing",
-    "Join any group and read every article",
+    "One company listing in the directory",
+    "Join any group, read every article",
     "Post questions, wins, jobs and introductions",
-    "Blog posts reviewed before they go live",
-    "3 people to meet every day and warm introductions",
+    "Write blog posts (reviewed before they go live)",
+    "3 people to meet every day, and warm introductions",
     "10 AI questions a month",
-    "See 2 names in “who viewed my profile”",
   ],
   plus: [
-    "Everything in Free",
+    "=Everything in Free, and:",
     "Featured company listing, shown first",
-    "2 offers a month to all members",
-    "Host 1 private group",
-    "Blog posts published straight away",
-    "Shown more often in daily suggestions",
-    "100 AI questions a month plus grant application help",
+    "Post 2 offers a month to all members",
+    "Host 1 private group of your own",
+    "Publish blog posts straight away",
+    "Shown more often in other members\u2019 daily suggestions",
+    "100 AI questions a month, plus grant application help",
     "Discounts on CanadianSME events",
-    "The full profile-viewer list",
   ],
   advisor: [
-    "Everything in Plus",
-    "SMB Advisor badge",
+    "=Everything in Plus, and:",
+    "SMB Advisor badge on your profile and posts",
     "A place on the Advisors page and in the feed slider",
-    "Members book free intro calls",
-    "4 offers a month",
-    "Host 3 private groups",
+    "Members book free intro calls with you",
+    "Post 4 offers a month",
+    "Host 3 private groups, such as a client circle",
     "Host events and sell courses",
     "One podcast interview and one advertorial a year",
     "AI leads: members asking about your specialty",
   ],
 };
+
+/** The comparison table. "g" starts a group; 1 is a tick, 0 a dash, text is shown as is. */
+export type CompareRow = ["g", string] | [string, string | 0 | 1, string | 0 | 1, string | 0 | 1];
+export const COMPARE: CompareRow[] = [
+  ["g", "Take part"],
+  ["Profile, connections and messages", 1, 1, 1],
+  ["Join groups and live sessions", 1, 1, 1],
+  ["Post questions, wins, jobs and introductions", 1, 1, 1],
+  ["Post offers to members", "None", "2 a month", "4 a month"],
+  ["Ask for a new public group", 1, 1, 1],
+  ["Host a private group", 0, "1 group", "3 groups"],
+  ["Write blog posts", "After review", "Straight away", "Straight away"],
+  ["g", "Get found"],
+  ["Company listing in the directory", "Standard", "Featured", "Featured"],
+  ["Made in Canada Pavilion listing", 1, 1, 1],
+  ["SMB Advisor badge and Advisors page", 0, 0, 1],
+  ["Shown in the advisor slider in the feed", 0, 0, 1],
+  ["g", "AI tools"],
+  ["People to meet and warm introductions", 1, 1, 1],
+  ["Shown more often in daily suggestions", 0, 1, 1],
+  ["Ask the Hub AI", "10 a month", "100 a month", "100 a month"],
+  ["AI Profile Builder rewrites", "5 a day", "Unlimited", "Unlimited"],
+  ["Grant application help", 0, 1, 1],
+  ["AI leads for your specialty", 0, 0, 1],
+  ["g", "Events and media"],
+  ["Discounts on CanadianSME events", 0, 1, 1],
+  ["Host events and sell courses", 0, 0, 1],
+  ["Podcast interview and advertorial", 0, 0, "1 each a year"],
+];
 
 /** Plain-language meaning of each plan limit, for the comparison table. */
 export const LIMIT_ROWS: { key: string; label: string; unit?: string }[] = [
@@ -116,6 +144,7 @@ export type RpcArgs = {
   p_status: string;
   p_period_end: string | null;
   p_cancel: boolean;
+  p_founding: boolean;
 };
 
 /** Returns null for an event we do not act on (an unknown price, a different event type). */
@@ -138,5 +167,6 @@ export function eventToArgs(ev: StripeSubEvent, env: PriceEnv): RpcArgs | null {
     p_status: ev.type === "customer.subscription.deleted" ? "canceled" : sub.status,
     p_period_end: end ? new Date(end * 1000).toISOString() : null,
     p_cancel: !!sub.cancel_at_period_end,
+    p_founding: sub.metadata?.founding === "1",
   };
 }

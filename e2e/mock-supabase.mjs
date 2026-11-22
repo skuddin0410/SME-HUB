@@ -90,6 +90,7 @@ http
     const GSET = { create_private: "paid", create_public: "approval", priv_join: "request", layout: "grid", header: "side", card: { cat: true, desc: true, count: true, act: true, host: true }, head: { type: true, priv: true, desc: true, faces: true, act: true }, def_cover: "nodes", msg_all: true, archive: true, types: ["Topic", "Industry", "Community", "City or region", "Private circle"] };
     const GROUP = (over) => ({ id: "00000000-0000-4000-8000-0000000000f1", slug: "retail-owners", name: "Retail owners", description: "Shop talk for Canadian retailers.", is_private: false, category: "Industry", cover: "awning", rules: "Be kind.", join_mode: "open", status: "active", created_by: AUTHOR.id, group_members: [{ count: 12 }], host: { full_name: "Priya Raman" }, ...over });
     if (url.pathname === "/rest/v1/plan_limits") return res.end(JSON.stringify([["offers_per_month", 0, 2, 4], ["private_groups", 0, 1, 3], ["ai_per_month", 10, 100, 100], ["viewer_names", 2, null, null], ["daily_matches", 3, 5, 5]].flatMap(([key, f, p, a]) => [{ plan: "free", key, value: f }, { plan: "plus", key, value: p }, { plan: "advisor", key, value: a }])));
+    if (url.pathname === "/rest/v1/rpc/founding_offer_left") return res.end("212");
     if (url.pathname === "/rest/v1/group_settings") return one(GSET);
     if (url.pathname === "/rest/v1/groups") {
       if (url.searchParams.get("slug") === "eq.retail-owners") return one(GROUP());

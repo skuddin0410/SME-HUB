@@ -14,7 +14,7 @@ async function origin() {
 }
 
 /** Sends the member to Stripe Checkout for a plan. */
-export async function startCheckout(plan: "plus" | "advisor", interval: Interval) {
+export async function startCheckout(plan: "plus" | "advisor", interval: Interval, founding = false) {
   const { supabase, userId, profile } = await requireUser();
   const stripe = getStripe();
   const price = priceFor(plan, interval, process.env);
@@ -29,14 +29,22 @@ export async function startCheckout(plan: "plus" | "advisor", interval: Interval
   // someone already paying changes plan in the billing portal, so they are never charged twice
   if (sub && ["active", "trialing", "past_due"].includes(sub.status as string) && customer) redirect("/billing?manage=1");
 
+  // the founding price is a Stripe coupon, offered only on Plus yearly while places are left
+  let coupon: string | undefined;
+  if (founding) {
+    const { data: left } = await supabase.rpc("founding_offer_left");
+    coupon = process.env.STRIPE_COUPON_FOUNDING;
+    if (plan !== "plus" || interval !== "year" || !coupon || !((left as number | null) ?? 0)) redirect("/membership-plans?billing=founding");
+  }
+
   const base = await origin();
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     line_items: [{ price, quantity: 1 }],
     client_reference_id: userId,
     ...(customer ? { customer: customer.stripe_customer_id as string } : { customer_email: (profile as { email?: string } | null)?.email }),
-    subscription_data: { metadata: { user_id: userId } },
-    allow_promotion_codes: true,
+    subscription_data: { metadata: { user_id: userId, ...(coupon ? { founding: "1" } : {}) } },
+    ...(coupon ? { discounts: [{ coupon }] } : { allow_promotion_codes: true }),
     success_url: `${base}/billing?status=success`,
     cancel_url: `${base}/membership-plans?billing=cancelled`,
   });

@@ -3,29 +3,31 @@ import { memberCookie } from "./personas";
 
 // Phase 6: the plans page, and the webhook before Stripe is connected.
 
-test("the plans page shows three plans, yearly by default, and what each allows", async ({ page }) => {
+test("the plans page matches the design: monthly first, three plans, Founding offer", async ({ page }) => {
   await page.goto("/membership-plans");
-  await expect(page.getByRole("heading", { name: "Membership plans" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Join free. Upgrade when it pays for itself." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Plus", exact: true })).toBeVisible();
-  await expect(page.getByText("$190")).toBeVisible();
+  await expect(page.getByText("Or $190 a year, 2 months free")).toBeVisible();
   await expect(page.getByText("$1,990")).toBeVisible();
-  const table = page.getByRole("table");
-  await expect(table.getByRole("row", { name: /Private groups/ })).toContainText("Not included");
-  await expect(table.getByRole("row", { name: /Profile viewers/ })).toContainText("All");
-  await page.getByRole("link", { name: "Monthly" }).click();
-  await expect(page.getByText("$19", { exact: true })).toBeVisible();
-  await expect(page.getByText("Advisor is billed yearly.")).toBeVisible();
+  await expect(page.getByText("Founding Member offer: Plus for $99 in year one")).toBeVisible();
+  await page.getByRole("link", { name: /Pay yearly/ }).click();
+  await expect(page.getByText("Works out to under $16 a month")).toBeVisible();
 });
 
-test("the plans page explains what happens on a downgrade and the Founding badge", async ({ page }) => {
+test("the plans page has the comparison table, the fit guide and the questions", async ({ page }) => {
   await page.goto("/membership-plans");
-  await expect(page.getByText("Nothing you made is deleted")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Founding Member" })).toBeVisible();
+  const table = page.getByRole("table");
+  await expect(table.getByRole("row", { name: /Host a private group/ })).toContainText("3 groups");
+  await expect(table.getByRole("row", { name: /Post offers to members/ })).toContainText("None");
+  await expect(page.getByText("Stay on Free if…")).toBeVisible();
+  await expect(page.getByText("Is the free plan really free?")).toBeVisible();
+  await expect(page.getByText("Partner plans start at $5,000 a year")).toBeVisible();
 });
 
 test("a visitor is sent to sign up to upgrade", async ({ page }) => {
   await page.goto("/membership-plans");
-  await expect(page.getByRole("link", { name: "Sign up to upgrade" })).toHaveCount(2);
+  await expect(page.getByRole("link", { name: "Upgrade to Plus" })).toHaveAttribute("href", "/auth/sign-up");
+  await expect(page.getByRole("link", { name: "Apply as an Advisor" })).toBeVisible();
 });
 
 test("the Stripe webhook refuses to work until Stripe is connected", async ({ request }) => {

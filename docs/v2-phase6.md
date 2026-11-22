@@ -16,6 +16,12 @@
 - keeps the plan while a payment is only late (`past_due`), changes nothing for a half-finished checkout (`incomplete`), and returns the member to Free when cancelled or unpaid.
 A database error returns 500, so Stripe retries.
 
+## Founding Member offer (from the design)
+Plus for $99 in year one for the first 250 who upgrade. The discount is the Stripe coupon above; the database counts who used it (`subscriptions.founding_offer`, `founding_offer_left()`), and the banner and button disappear at 250. The badge itself (first 500 members) is separate and already built.
+
+## The Plans page follows the design
+The wording, pill toggle (monthly first), cards, Founding banner, grouped comparison table, "Which plan fits you?", questions and the partner band come from the zip (`plans()` in code/index.html). One deliberate difference: the answer to "How do I pay?" now says card through Stripe, because checkout exists.
+
 ## Downgrade rules
 Nothing is deleted. When a plan drops, private groups above the new limit are archived (the oldest are kept): readable, no new posts. An archived private group cannot be restored while the member is at their limit. Offers already posted stay; new ones follow the new limit.
 
@@ -27,6 +33,7 @@ Nothing is deleted. When a plan drops, private groups above the new limit are ar
 | `STRIPE_PRICE_PLUS_MONTHLY` | price id of Plus, monthly, CAD 19 |
 | `STRIPE_PRICE_PLUS_YEARLY` | price id of Plus, yearly, CAD 190 |
 | `STRIPE_PRICE_ADVISOR_YEARLY` | price id of Advisor, yearly, CAD 1,990 |
+| `STRIPE_COUPON_FOUNDING` | a Stripe coupon, once, CAD 91 off (Plus yearly becomes $99 in year one) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project settings → API (service role). Server only, used only by the webhook |
 
 In Stripe: create the three prices; add a webhook endpoint `https://<site>/api/stripe/webhook` listening to `customer.subscription.created`, `customer.subscription.updated` and `customer.subscription.deleted`; turn on the Customer portal (allow cancel, card update, plan change between the prices).

@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Facebook, Instagram, Linkedin, Plus, Twitter } from "lucide-react";
 import type { FullPage, Org } from "@/lib/smehub";
-import { SectionAside } from "@/components/section-aside";
 
 // The resource-centre and business-guide pages from smehub.ca, with the same content, laid out in the
 // hub's design: a white hero card, the key points as accordions, then one card per organisation,
@@ -78,7 +77,7 @@ export function SmehubPage({ page }: { page: FullPage }) {
   return (
     <div className="flex-1 mx-auto w-full max-w-[96rem] px-4 py-6 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
-        <main className="flex min-w-0 flex-col gap-5 lg:col-span-8">
+        <main className="flex min-w-0 flex-col gap-5 mx-auto w-full max-w-4xl lg:col-span-12">
           <section className={`${CARD} relative grid items-center gap-6 overflow-hidden p-6 sm:p-8 md:grid-cols-[minmax(0,1fr)_15rem]`}>
             <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-600 via-red-500 to-blue-600" />
             <div>
@@ -115,9 +114,6 @@ export function SmehubPage({ page }: { page: FullPage }) {
             ))}
           </section>
         </main>
-        <aside className="sticky top-[4.875rem] hidden lg:col-span-4 lg:block">
-          <SectionAside />
-        </aside>
       </div>
     </div>
   );
