@@ -257,8 +257,11 @@ export function Composer({
   groupId,
   placeholder,
   initialKind,
+  businesses = [],
 }: {
   me: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
+  /** published business pages this member may post as */
+  businesses?: { id: string; name: string }[];
   groupId?: string;
   placeholder?: string;
   /** open on this post type straight away (for example from ?compose=win) */
@@ -358,6 +361,16 @@ export function Composer({
                       </option>
                     ))}
                   </select>
+                  {businesses.length > 0 && !groupId && (
+                    <select name="business_id" defaultValue="" aria-label="Post as" className={SMALL_SELECT}>
+                      <option value="">Post as me</option>
+                      {businesses.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          Post as {b.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   {!groupId && (
                     <select name="visibility" defaultValue="public" aria-label="Who can see this post" className={SMALL_SELECT}>
                       <option value="public">🌐 Anyone</option>

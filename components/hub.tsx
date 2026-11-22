@@ -61,14 +61,30 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
     <article id={`post-${post.id}`} className="panel panel-hover p-4 sm:p-5 space-y-3.5 fade-in">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
-          <Link href={`/members/${post.author.id}`} className="shrink-0 [&_img]:ring-[#E5E5E8]">
-            <AvatarImg person={post.author} size={40} />
-          </Link>
+          {post.business ? (
+            <Link href={`/businesses/${post.business.slug}`} className="shrink-0">
+              {post.business.logo_url ? (
+                <img src={post.business.logo_url} alt="" className="h-10 w-10 rounded-lg object-cover ring-1 ring-[#E5E5E8]" />
+              ) : (
+                <span className="cover flex h-10 w-10 items-center justify-center rounded-lg text-base font-semibold text-white">{post.business.name.charAt(0)}</span>
+              )}
+            </Link>
+          ) : (
+            <Link href={`/members/${post.author.id}`} className="shrink-0 [&_img]:ring-[#E5E5E8]">
+              <AvatarImg person={post.author} size={40} />
+            </Link>
+          )}
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-1.5">
-              <Link href={`/members/${post.author.id}`} className="font-display font-bold text-[14px] text-zinc-900 truncate hover:underline">
-                {post.author.full_name || "Member"}
-              </Link>
+              {post.business ? (
+                <Link href={`/businesses/${post.business.slug}`} className="font-display font-bold text-[14px] text-zinc-900 truncate hover:underline">
+                  {post.business.name}
+                </Link>
+              ) : (
+                <Link href={`/members/${post.author.id}`} className="font-display font-bold text-[14px] text-zinc-900 truncate hover:underline">
+                  {post.author.full_name || "Member"}
+                </Link>
+              )}
               {post.group && (
                 <span className="text-xs text-zinc-500">
                   posted in{" "}
@@ -78,12 +94,23 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
                 </span>
               )}
             </div>
-            <p className="text-xs text-zinc-500 truncate">{post.author.headline || "SMB Hub member"}</p>
+            <p className="text-xs text-zinc-500 truncate">
+              {post.business ? (
+                <>
+                  Business page · posted by{" "}
+                  <Link href={`/members/${post.author.id}`} className="hover:underline">
+                    {post.author.full_name || "a team member"}
+                  </Link>
+                </>
+              ) : (
+                post.author.headline || "SMB Hub member"
+              )}
+            </p>
             <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
               <Link href={`/posts/${post.id}`} className="text-[11px] text-zinc-400 hover:underline">
                 {timeAgo(post.created_at)}
               </Link>
-              <TierBadge type={post.author.member_type} always />
+              {!post.business && <TierBadge type={post.author.member_type} always />}
               {post.kind !== "update" && <span className={`${chip} ${KIND_CHIP[post.kind]}`}>{KINDS[post.kind].label}</span>}
               {post.edited_at && <span className="text-[11px] text-zinc-400">(edited)</span>}
               {post.profile_pinned && (
@@ -106,7 +133,7 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
           </div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          {!own && <ConnectButton otherId={post.author.id} initial={post.link} signedIn={!!viewer.userId} variant="text" />}
+          {!own && !post.business && <ConnectButton otherId={post.author.id} initial={post.link} signedIn={!!viewer.userId} variant="text" />}
           <SaveButton postId={post.id} initial={post.saved} signedIn={!!viewer.userId} />
           <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} />
         </div>

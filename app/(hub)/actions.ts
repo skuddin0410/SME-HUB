@@ -64,9 +64,11 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   if (wantsPoll && !pollOptions) return { error: `A poll needs ${FEED.pollMin} to ${FEED.pollMax} options of up to ${FEED.pollOptionMax} characters.` };
   const pollDays = Math.min(30, Math.max(1, Number(text(form, "poll_days")) || 3));
 
+  // posting as a business page: the database checks the member's role on that page and that it is published
+  const business_id = text(form, "business_id") ? uuid(text(form, "business_id")) : null;
   const { data, error } = await supabase
     .from("posts")
-    .insert({ author_id: userId, body, visibility, kind, group_id: groupId, image_url, cover_url, title, comments_closed, scheduled_at, quoted_post_id })
+    .insert({ author_id: userId, body, visibility: business_id ? "public" : visibility, kind, group_id: business_id ? null : groupId, business_id, image_url, cover_url, title, comments_closed, scheduled_at, quoted_post_id })
     .select("id")
     .single();
   if (error) return { error: error.message };
@@ -422,71 +424,6 @@ export async function markNotificationRead(id: string) {
   uuid(id);
   const { supabase, userId } = await requireUser();
   await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id).eq("user_id", userId);
-}
-
-// ---------- businesses ----------
-const LISTING_LIMIT: Record<Profile["member_type"], number> = { owner: 0, plus: 1, elite: 2, advisor: 3 };
-
-export async function saveBusiness(_prev: FormState, form: FormData): Promise<FormState> {
-  const { supabase, userId, profile, isStaff } = await requireUser();
-  if (!profile) return { error: "Finish your profile first." };
-  const id = text(form, "id") ? uuid(text(form, "id")) : "";
-  const name = text(form, "name");
-  if (!name) return { error: "Add the business name." };
-  const fields: Record<string, string> = {
-    name,
-    category: text(form, "category"),
-    description: text(form, "description"),
-    website: text(form, "website"),
-  };
-
-  const logo = ownUpload(form, "logo_url", userId);
-  if (logo) fields.logo_url = logo;
-
-  if (id) {
-    const { error } = await supabase.from("companies").update(fields).eq("id", id);
-    if (error) return { error: error.message };
-  } else {
-    const { count } = await supabase.from("companies").select("id", { count: "exact", head: true }).eq("owner_id", userId);
-    const limit = isStaff ? 99 : LISTING_LIMIT[profile.member_type];
-    if ((count ?? 0) >= limit) {
-      return {
-        error: limit === 0 ? "Business listings are part of the paid plans. See Upgrade to add yours." : `Your plan includes ${limit} business ${limit === 1 ? "listing" : "listings"}. Upgrade to add more.`,
-      };
-    }
-    const slug = `${slugify(name)}-${crypto.randomUUID().slice(0, 4)}`;
-    const { error } = await supabase.from("companies").insert({ ...fields, slug, owner_id: userId });
-    if (error) return { error: error.message };
-  }
-  revalidatePath("/", "layout");
-  redirect("/businesses/mine");
-}
-
-export async function deleteBusiness(companyId: string) {
-  uuid(companyId);
-  const { supabase } = await requireUser();
-  fail((await supabase.from("companies").delete().eq("id", companyId)).error);
-  revalidatePath("/", "layout");
-}
-
-// ---------- business reviews ----------
-export async function saveReview(companyId: string, rating: number, body: string) {
-  uuid(companyId);
-  const { supabase, userId } = await requireUser();
-  const stars = Math.min(5, Math.max(1, Math.round(Number(rating) || 0)));
-  const { error } = await supabase
-    .from("company_reviews")
-    .upsert({ company_id: companyId, author_id: userId, rating: stars, body: body.trim().slice(0, 1000) });
-  if (error) throw new Error("Could not save your review.");
-  revalidatePath("/businesses", "layout");
-}
-
-export async function deleteReview(companyId: string, authorId: string) {
-  uuid(companyId);
-  uuid(authorId);
-  const { supabase } = await requireUser();
-  fail((await supabase.from("company_reviews").delete().eq("company_id", companyId).eq("author_id", authorId)).error);
-  revalidatePath("/businesses", "layout");
 }
 
 // ---------- private-group invitations ----------

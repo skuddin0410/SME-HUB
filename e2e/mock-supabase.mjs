@@ -70,6 +70,35 @@ http
       res.setHeader("content-range", "0-0/1");
       return res.end(JSON.stringify([{ post_id: POST_ID, closes_at: new Date(Date.now() + 3 * 86400_000).toISOString(), poll_options: [{ id: "00000000-0000-4000-8000-0000000000b1", label: "Six boxes", votes: 3, position: 1 }, { id: "00000000-0000-4000-8000-0000000000b2", label: "Twelve boxes", votes: 1, position: 2 }] }]));
     }
+    // businesses: a directory with two pages, one published business with services and a review
+    const BIZ_ID = "00000000-0000-4000-8000-0000000000c1";
+    const SETTINGS = { create_mode: "all", member_limit: 3, pub_approval: true, review_approval: false, criteria: ["Quality", "Value", "Communication"], categories: ["Food & Drink", "Legal", "Retail", "Other"], tabs: { photos: true, events: true, jobs: true, shop: true } };
+    const BIZ = { id: BIZ_ID, slug: "maple-demo", name: "Maple Demo Bakery", category: "Food & Drink", description: "Small-batch bread and pastry.", about: "Small-batch bread, pastry and wholesale boxes for local cafes.", website: "https://maple.example.ca", logo_url: null, cover_url: null, kind: "storefront", status: "published", city: "Toronto", province: "ON", tz: "America/Toronto", service_area: "Greater Toronto Area", booking_url: "", primary_action: "message", appointments: false, hours: { mon: [["09:00", "17:00"]], tue: [["09:00", "17:00"]] }, closures: [], social: {}, claimable: false, owner_id: MEMBER.id, show_address: true, show_email: true, show_phone: true, show_whatsapp: false, updated_at: new Date().toISOString(), created_at: new Date().toISOString() };
+    const wantsObject = String(req.headers.accept).includes("vnd.pgrst.object");
+    const one = (row) => res.end(JSON.stringify(wantsObject ? row : [row]));
+    if (url.pathname === "/rest/v1/rpc/search_businesses") {
+      return res.end(JSON.stringify([
+        { id: BIZ_ID, slug: "maple-demo", name: "Maple Demo Bakery", category: "Food & Drink", description: "Small-batch bread and pastry.", logo_url: null, cover_url: null, city: "Toronto", province: "ON", kind: "storefront", rating: 4.5, reviews: 2, followers: 3, is_open: true, claimable: false },
+        { id: "00000000-0000-4000-8000-0000000000c2", slug: "asante-demo", name: "Asante Demo Legal", category: "Legal", description: "Contracts and leases.", logo_url: null, cover_url: null, city: "Calgary", province: "AB", kind: "service", rating: null, reviews: 0, followers: 0, is_open: false, claimable: true },
+      ]));
+    }
+    if (url.pathname === "/rest/v1/rpc/business_map_cities") return res.end(JSON.stringify([{ city: "Toronto", province: "ON", businesses: 3 }, { city: "Calgary", province: "AB", businesses: 1 }]));
+    if (url.pathname === "/rest/v1/rpc/business_contact") return res.end(JSON.stringify([{ street: "12 Queen St", postal: "M5V 1A1", email: "hello@maple.example.ca", phone: "(416) 555-0100", whatsapp: null }]));
+    if (url.pathname === "/rest/v1/rpc/business_follower_count") return res.end("3");
+    if (url.pathname === "/rest/v1/rpc/business_is_open") return res.end("true");
+    if (url.pathname === "/rest/v1/business_settings") return one(SETTINGS);
+    if (url.pathname === "/rest/v1/companies" && (url.searchParams.get("slug") === "eq.maple-demo" || url.searchParams.get("id") === `eq.${BIZ_ID}`)) return one(BIZ);
+    if (url.pathname === "/rest/v1/business_services") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000d1", name: "Wholesale boxes", description: "Weekly delivery to cafes.", photo_url: null, price_type: "from", price: 60 }, { id: "00000000-0000-4000-8000-0000000000d2", name: "Custom cakes", description: "", photo_url: null, price_type: "quote", price: null }]));
+    if (url.pathname === "/rest/v1/business_team" && member) {
+      const sel = url.searchParams.get("select") || "";
+      if (sel.includes("member:profiles")) return res.end(JSON.stringify([{ user_id: MEMBER.id, role: "owner", member: { full_name: MEMBER.full_name } }]));
+      if (sel.includes("company:companies")) return res.end(JSON.stringify([{ role: "owner", company: { id: BIZ_ID, slug: "maple-demo", name: BIZ.name, category: BIZ.category, status: "published", owner_id: MEMBER.id } }]));
+      return one({ role: "owner" });
+    }
+    if (url.pathname === "/rest/v1/company_reviews" && (url.searchParams.get("select") || "").includes("criteria")) {
+      return res.end(JSON.stringify([{ rating: 5, body: "Best sourdough in the city.", created_at: new Date(Date.now() - 86400_000).toISOString(), criteria: { Quality: 5, Value: 5, Communication: 5 }, status: "published", author: AUTHOR }]));
+    }
+    if (url.pathname === "/rest/v1/business_review_replies") return res.end(JSON.stringify([{ review_author_id: AUTHOR.id, body: "Thank you, see you Saturday!" }]));
     if (url.pathname.startsWith("/rest/v1/rpc/")) return res.end("null");
     if (url.pathname.startsWith("/rest/v1/")) {
       res.setHeader("content-range", "*/0");

@@ -30,6 +30,7 @@ export type Post = {
   kind: "update" | "question" | "win" | "offer" | "hiring" | "intro";
   group_id: string | null;
   author: Author;
+  business: { id: string; name: string; slug: string; logo_url: string | null } | null;
   group: { name: string; slug: string } | null;
   likes: number;
   comments: number;
@@ -116,7 +117,7 @@ export async function requireStaff() {
   return { ...viewer, userId: viewer.userId, profile: viewer.profile as Profile };
 }
 
-const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, title, cover_url, edited_at, comments_closed, profile_pinned, status, scheduled_at, quoted_post_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
+const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, title, cover_url, edited_at, comments_closed, profile_pinned, status, scheduled_at, quoted_post_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), business:companies!posts_business_id_fkey(id, name, slug, logo_url), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
 
 type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link" | "counts" | "saved" | "quoted" | "poll"> & {
   quoted_post_id: string | null;
@@ -128,7 +129,7 @@ type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" 
 export async function fetchPosts(
   supabase: Supabase,
   userId: string | null,
-  opts: { page?: number; before?: { createdAt: string; id: string }; mine?: boolean; reactedBy?: string; groupsOnly?: boolean; connectionsOnly?: boolean; followingOnly?: boolean; scheduledBy?: string; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string } = {},
+  opts: { page?: number; before?: { createdAt: string; id: string }; mine?: boolean; reactedBy?: string; groupsOnly?: boolean; connectionsOnly?: boolean; followingOnly?: boolean; scheduledBy?: string; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string; businessId?: string } = {},
 ): Promise<Post[]> {
   const page = Math.max(1, opts.page ?? 1);
   const size = opts.limit ?? PAGE_SIZE;
@@ -166,6 +167,7 @@ export async function fetchPosts(
   }
   if (opts.groupsOnly) query = query.not("group_id", "is", null);
   if (opts.groupId) query = query.eq("group_id", opts.groupId);
+  if (opts.businessId) query = query.eq("business_id", opts.businessId);
   if (opts.authorId) query = query.eq("author_id", opts.authorId);
   if (opts.postId) query = query.eq("id", opts.postId);
   if (opts.kind) query = query.eq("kind", opts.kind);

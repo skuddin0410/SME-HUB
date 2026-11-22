@@ -7,6 +7,7 @@ import { KINDS, type Kind } from "@/lib/demo";
 import { Empty, PostCard } from "@/components/hub";
 import { Composer } from "@/components/hub-client";
 import { FirstWeek, type WeekStep } from "@/components/first-week";
+import { getPostingBusinesses } from "@/lib/business-server";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({ title: "Feed", description: "What Canadian small business owners are posting: questions, wins, offers and hiring.", path: "/feed" });
@@ -130,7 +131,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
     <>
       {!viewer.userId && <VisitorHero />}
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week} />}
-      <Composer me={viewer.profile} initialKind={compose} />
+      <Composer me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} />
 
       {viewer.userId && !saved && (
         <nav className="flex flex-wrap items-center gap-1.5" aria-label="Whose posts">

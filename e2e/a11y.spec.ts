@@ -3,9 +3,9 @@ import { expect, test } from "@playwright/test";
 import { memberCookie, PUBLIC_PAGES } from "./personas";
 
 // Accessibility: no serious or critical problems, in light and dark, as a visitor and as a member.
-const PAGES = [...PUBLIC_PAGES, "/feed", "/members", "/members?view=map", "/groups", "/businesses"];
+const PAGES = [...PUBLIC_PAGES, "/feed", "/members", "/members?view=map", "/groups", "/businesses", "/businesses?view=list", "/businesses?view=map", "/businesses/maple-demo", "/businesses/maple-demo?tab=services", "/businesses/maple-demo?tab=about", "/businesses/maple-demo?tab=reviews"];
 // pages that only exist for a signed-in member
-const MEMBER_PAGES = ["/settings", "/profile/views", "/profile/edit"];
+const MEMBER_PAGES = ["/settings", "/profile/views", "/profile/edit", "/businesses/mine", "/businesses/mine/maple-demo", "/businesses/mine/maple-demo/inbox", "/businesses/messages"];
 
 async function scan(page: import("@playwright/test").Page) {
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();

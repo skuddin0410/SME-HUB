@@ -2,27 +2,28 @@ import Link from "next/link";
 import { requireUser } from "@/lib/hub";
 import { PageTitle } from "@/components/hub";
 import { SubmitButton } from "@/components/hub-client";
-import { BusinessForm, type BusinessValues } from "@/components/business-form";
-import { deleteBusiness } from "@/app/(hub)/actions";
+import { BusinessForm } from "@/components/business-form";
+import { deleteBusiness } from "@/app/(hub)/business-actions";
+import { ROLES, STATUS_LABEL, type Role } from "@/lib/business";
+import { getBusinessSettings } from "@/lib/business-server";
 
-const LIMITS = { owner: 0, plus: 1, elite: 2, advisor: 3 };
+type Row = { role: Role; company: { id: string; slug: string; name: string; category: string; status: string; owner_id: string } };
 
-export default async function MyBusinessesPage({ searchParams }: { searchParams: Promise<{ edit?: string }> }) {
-  const { edit } = await searchParams;
-  const { supabase, userId, profile, isStaff } = await requireUser();
+export default async function MyBusinessesPage() {
+  const { supabase, userId, isStaff } = await requireUser();
+  const settings = await getBusinessSettings();
   const { data } = await supabase
-    .from("companies")
-    .select("id, name, category, description, website")
-    .eq("owner_id", userId)
-    .order("created_at");
-  const mine = (data ?? []) as Required<BusinessValues>[];
-  const editing = mine.find((c) => c.id === edit);
-  const limit = isStaff ? 99 : LIMITS[profile?.member_type ?? "owner"];
-  const canAdd = mine.length < limit;
+    .from("business_team")
+    .select("role, company:companies!inner(id, slug, name, category, status, owner_id)")
+    .eq("user_id", userId)
+    .neq("company.status", "deleted");
+  const mine = (data ?? []) as unknown as Row[];
+  const owned = mine.filter((r) => r.company.owner_id === userId).length;
+  const canAdd = isStaff || owned < settings.member_limit;
 
   return (
     <>
-      <PageTitle title="My business listings">
+      <PageTitle title="My business pages">
         <Link href="/businesses" className="text-sm font-semibold text-primary hover:underline">
           See the directory
         </Link>
@@ -30,46 +31,51 @@ export default async function MyBusinessesPage({ searchParams }: { searchParams:
 
       {mine.length > 0 && (
         <section className="panel divide-y">
-          {mine.map((c) => (
+          {mine.map(({ role, company: c }) => (
             <div key={c.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{c.name}</p>
-                <p className="text-xs text-muted-foreground">{c.category || "No category"}</p>
+                <p className="text-xs text-muted-foreground">
+                  {c.category || "No category"} · {STATUS_LABEL[c.status] ?? c.status} · You are {ROLES[role].toLowerCase()}
+                </p>
               </div>
               <div className="flex gap-2">
-                <Link href={`/businesses/mine?edit=${c.id}`} className="press rounded-full border border-input bg-white px-3 py-1.5 text-sm font-semibold hover:bg-muted">
-                  Edit
+                <Link href={`/businesses/${c.slug}`} className="press rounded-full border border-input bg-white px-3 py-1.5 text-sm font-semibold hover:bg-muted">
+                  View
                 </Link>
-                <form action={deleteBusiness.bind(null, c.id)}>
-                  <SubmitButton tone="danger" className="!px-3 !py-1.5">
-                    Delete
-                  </SubmitButton>
-                </form>
+                {(role === "owner" || role === "manager") && (
+                  <Link href={`/businesses/mine/${c.slug}`} className="press rounded-full border border-input bg-white px-3 py-1.5 text-sm font-semibold hover:bg-muted">
+                    Manage
+                  </Link>
+                )}
+                {role === "responder" && (
+                  <Link href={`/businesses/mine/${c.slug}/inbox`} className="press rounded-full border border-input bg-white px-3 py-1.5 text-sm font-semibold hover:bg-muted">
+                    Inbox
+                  </Link>
+                )}
+                {c.owner_id === userId && (
+                  <form action={deleteBusiness.bind(null, c.id)}>
+                    <SubmitButton tone="danger" className="!px-3 !py-1.5">
+                      Delete
+                    </SubmitButton>
+                  </form>
+                )}
               </div>
             </div>
           ))}
         </section>
       )}
 
-      {editing ? (
+      {canAdd ? (
         <section className="panel p-5">
-          <h2 className="mb-4 text-base font-semibold">Edit {editing.name}</h2>
-          <BusinessForm key={editing.id} values={editing} />
-        </section>
-      ) : canAdd ? (
-        <section className="panel p-5">
-          <h2 className="mb-4 text-base font-semibold">Add a business</h2>
-          <BusinessForm />
+          <h2 className="mb-1 text-base font-semibold">Add a business</h2>
+          <p className="mb-4 text-sm text-muted-foreground">Start with the basics. You can add hours, services and contact details next.</p>
+          <BusinessForm categories={settings.categories} />
         </section>
       ) : (
         <section className="panel p-6 text-center">
-          <p className="text-base font-semibold">
-            {limit === 0 ? "Business listings come with the paid plans" : `Your plan includes ${limit} ${limit === 1 ? "listing" : "listings"}`}
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">Upgrade to put {limit === 0 ? "your business" : "more businesses"} in the directory.</p>
-          <Link href="/membership-plans" className="press mt-4 inline-block rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-white">
-            See plans
-          </Link>
+          <p className="text-base font-semibold">You have reached the limit of {settings.member_limit} business {settings.member_limit === 1 ? "page" : "pages"}</p>
+          <p className="mt-1 text-sm text-muted-foreground">Delete a page you no longer need, or contact the team.</p>
         </section>
       )}
     </>

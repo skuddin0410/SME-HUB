@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!, { auth: { persistSession: false } });
   const [members, companies, groups] = await Promise.all([
     supabase.from("profiles").select("id, created_at").eq("status", "active").order("created_at", { ascending: false }).limit(20000),
-    supabase.from("companies").select("slug, created_at").limit(20000),
+    supabase.from("companies").select("slug, updated_at").eq("status", "published").limit(20000),
     supabase.from("groups").select("slug, created_at").eq("is_private", false).limit(5000),
   ]);
 
@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...[...fixed, ...stories, ...reference].map((path) => ({ url: `${SITE_URL}${path}` })),
     ...(members.data ?? []).map((m) => ({ url: `${SITE_URL}/members/${m.id}`, lastModified: m.created_at as string })),
-    ...(companies.data ?? []).map((c) => ({ url: `${SITE_URL}/businesses/${c.slug}`, lastModified: c.created_at as string })),
+    ...(companies.data ?? []).map((c) => ({ url: `${SITE_URL}/businesses/${c.slug}`, lastModified: c.updated_at as string })),
     ...(groups.data ?? []).map((g) => ({ url: `${SITE_URL}/groups/${g.slug}`, lastModified: g.created_at as string })),
   ];
 }
