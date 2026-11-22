@@ -54,7 +54,7 @@ export function AuthChrome({ children }: { children: React.ReactNode }) {
             <img src="/brand/smb-hub-logo.png" alt="SMB Hub" width={874} height={224} className="h-8 w-auto group-hover:opacity-90 transition-opacity" />
           </Link>
 
-          <nav aria-label="Primary Marketing Navigation" className="hidden lg:flex items-center gap-1">
+          <nav aria-label="Primary Marketing Navigation" className="hidden lg:flex min-w-0 items-center gap-0.5 xl:gap-1">
             {NAV.map(({ href, label }, i) => {
               const active = i === 0 && pathname.startsWith("/auth");
               return (
@@ -69,7 +69,7 @@ export function AuthChrome({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={() => setPalette(true)}
-              className="hidden sm:flex items-center justify-between gap-2 w-40 md:w-44 h-9 px-3 rounded-full bg-slate-100/90 hover:bg-slate-200/70 border border-slate-200/90 text-xs text-slate-500 transition-colors"
+              className="hidden sm:flex items-center justify-between gap-2 w-40 md:w-32 xl:w-44 h-9 px-3 rounded-full bg-slate-100/90 hover:bg-slate-200/70 border border-slate-200/90 text-xs text-slate-500 transition-colors"
             >
               <span className="flex items-center gap-1.5">
                 <Search className="w-3.5 h-3.5 text-slate-400" />

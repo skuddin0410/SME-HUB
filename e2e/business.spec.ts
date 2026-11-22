@@ -14,10 +14,16 @@ test("the directory shows businesses with rating, city and open-now", async ({ p
 
 test("the directory switches between grid, list and map", async ({ page }) => {
   await page.goto("/businesses");
-  await page.getByRole("navigation", { name: "Directory view" }).getByRole("link", { name: "list" }).click();
-  await expect(page).toHaveURL(/view=list/);
-  await page.getByRole("navigation", { name: "Directory view" }).getByRole("link", { name: "map" }).click();
-  await expect(page).toHaveURL(/view=map/);
+  const views = page.getByRole("navigation", { name: "Directory view" });
+  // a click can land while the page is still hydrating, so retry until the address changes
+  await expect(async () => {
+    await views.getByRole("link", { name: "list" }).click();
+    await expect(page).toHaveURL(/view=list/, { timeout: 3000 });
+  }).toPass();
+  await expect(async () => {
+    await views.getByRole("link", { name: "map" }).click();
+    await expect(page).toHaveURL(/view=map/, { timeout: 3000 });
+  }).toPass();
   // no map token in tests, so the cities show as a list
   await expect(page.getByRole("list", { name: "Businesses by city" })).toContainText("Toronto, ON");
 });
