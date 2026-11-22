@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import { memberCookie, PUBLIC_PAGES } from "./personas";
 
 // Accessibility: no serious or critical problems, in light and dark, as a visitor and as a member.
-const PAGES = [...PUBLIC_PAGES, "/feed", "/members", "/members?view=map", "/groups", "/businesses", "/businesses?view=list", "/businesses?view=map", "/businesses/maple-demo", "/businesses/maple-demo?tab=services", "/businesses/maple-demo?tab=about", "/businesses/maple-demo?tab=reviews"];
+const PAGES = [...PUBLIC_PAGES, "/feed", "/members", "/members?view=map", "/groups", "/businesses", "/businesses?view=list", "/businesses?view=map", "/businesses/maple-demo", "/businesses/maple-demo?tab=services", "/businesses/maple-demo?tab=about", "/businesses/maple-demo?tab=reviews", "/businesses/maple-demo?tab=photos", "/businesses/maple-demo?tab=shop", "/businesses/maple-demo?tab=events", "/businesses/maple-demo?tab=jobs"];
 // pages that only exist for a signed-in member
 const MEMBER_PAGES = ["/settings", "/profile/views", "/profile/edit", "/businesses/mine", "/businesses/mine/maple-demo", "/businesses/mine/maple-demo/inbox", "/businesses/messages"];
 

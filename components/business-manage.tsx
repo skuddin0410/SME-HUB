@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useRef } from "react";
-import { addTeamMember, claimBusiness, replyInquiry, saveBusinessDetails, saveBusinessSettings, saveService, sendInquiry, type BizState } from "@/app/(hub)/business-actions";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { addTeamMember, claimBusiness, replyInquiry, saveBusinessDetails, saveBusinessSettings, saveEvent, saveJob, savePhoto, saveProduct, saveService, sendInquiry, type BizState } from "@/app/(hub)/business-actions";
 import { SubmitButton } from "@/components/hub-client";
 import { Notice } from "@/components/business-form";
 import { ACTIONS, DAYS, DAY_LABEL, PRICE_TYPES, ROLES, SOCIALS, type BusinessSettings, type Hours } from "@/lib/business";
@@ -316,6 +316,157 @@ export function SettingsForm({ s }: { s: BusinessSettings }) {
       </label>
       <Notice state={state} />
       <SubmitButton className="self-start">Save settings</SubmitButton>
+    </form>
+  );
+}
+
+/** Runs the form action, then clears the form once it saved (for "add another" forms). */
+function useAddForm(action: (fd: FormData) => void | Promise<void>, state: BizState) {
+  const ref = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (state.ok) ref.current?.reset();
+  }, [state]);
+  return { ref, action };
+}
+
+export function PhotoForm({ companyId }: { companyId: string }) {
+  const [state, action] = useActionState<BizState, FormData>(savePhoto, {});
+  const photo = useImageUpload("post");
+  const f = useAddForm(action, state);
+  return (
+    <form ref={f.ref} action={f.action} className="grid gap-3 sm:grid-cols-2">
+      <input type="hidden" name="company_id" value={companyId} />
+      <input type="hidden" name="url" value={photo.url} />
+      <label className={label}>
+        Photo
+        <input type="file" accept="image/*" required className="text-sm font-normal" onChange={(e) => photo.pick(e.target.files?.[0])} />
+        {photo.busy && <span className="text-xs font-normal text-muted-foreground">Uploading…</span>}
+      </label>
+      <label className={label}>
+        Caption (optional)
+        <input name="caption" maxLength={140} className="field font-normal" />
+      </label>
+      {photo.error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 sm:col-span-2">{photo.error}</p>}
+      <div className="flex items-center gap-3 sm:col-span-2">
+        <SubmitButton disabled={photo.busy || !photo.url}>Add photo</SubmitButton>
+        <Notice state={state} />
+      </div>
+    </form>
+  );
+}
+
+export function ProductForm({ companyId }: { companyId: string }) {
+  const [state, action] = useActionState<BizState, FormData>(saveProduct, {});
+  const photo = useImageUpload("post");
+  const f = useAddForm(action, state);
+  return (
+    <form ref={f.ref} action={f.action} className="grid gap-3 sm:grid-cols-2">
+      <input type="hidden" name="company_id" value={companyId} />
+      <input type="hidden" name="photo_url" value={photo.url} />
+      <label className={label}>
+        Product
+        <input name="name" required maxLength={80} className="field font-normal" />
+      </label>
+      <label className={label}>
+        Price (CAD)
+        <input name="price" required inputMode="decimal" className="field font-normal" />
+      </label>
+      <label className={`${label} sm:col-span-2`}>
+        Short description
+        <input name="description" maxLength={300} className="field font-normal" />
+      </label>
+      <label className={label}>
+        Photo (optional)
+        <input type="file" accept="image/*" className="text-sm font-normal" onChange={(e) => photo.pick(e.target.files?.[0])} />
+      </label>
+      <label className={`${check} self-end`}>
+        <input type="checkbox" name="sold_out" /> Sold out
+      </label>
+      <div className="flex items-center gap-3 sm:col-span-2">
+        <SubmitButton disabled={photo.busy}>Add product</SubmitButton>
+        <Notice state={state} />
+      </div>
+    </form>
+  );
+}
+
+export function JobForm({ companyId }: { companyId: string }) {
+  const [state, action] = useActionState<BizState, FormData>(saveJob, {});
+  const f = useAddForm(action, state);
+  return (
+    <form ref={f.ref} action={f.action} className="grid gap-3 sm:grid-cols-2">
+      <input type="hidden" name="company_id" value={companyId} />
+      <label className={label}>
+        Job title
+        <input name="title" required maxLength={100} className="field font-normal" />
+      </label>
+      <label className={label}>
+        Type
+        <select name="job_type" className="field font-normal">
+          {["full-time", "part-time", "contract", "seasonal", "internship"].map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className={label}>
+        Where
+        <input name="location" maxLength={100} placeholder="Toronto, ON or Remote" className="field font-normal" />
+      </label>
+      <label className={label}>
+        How to apply (link)
+        <input name="apply_url" maxLength={200} className="field font-normal" />
+      </label>
+      <label className={`${label} sm:col-span-2`}>
+        About the job
+        <textarea name="description" rows={3} maxLength={1500} className="field font-normal" />
+      </label>
+      <div className="flex items-center gap-3 sm:col-span-2">
+        <SubmitButton>Post job</SubmitButton>
+        <Notice state={state} />
+      </div>
+    </form>
+  );
+}
+
+export function EventForm({ companyId }: { companyId: string }) {
+  const [state, action] = useActionState<BizState, FormData>(saveEvent, {});
+  const f = useAddForm(action, state);
+  const [offset, setOffset] = useState("0");
+  useEffect(() => setOffset(String(new Date().getTimezoneOffset())), []);
+  return (
+    <form ref={f.ref} action={f.action} className="grid gap-3 sm:grid-cols-2">
+      <input type="hidden" name="company_id" value={companyId} />
+      <input type="hidden" name="tz_offset" value={offset} />
+      <label className={`${label} sm:col-span-2`}>
+        Event name
+        <input name="title" required maxLength={100} className="field font-normal" />
+      </label>
+      <label className={label}>
+        Starts
+        <input name="starts_local" type="datetime-local" required className="field font-normal" />
+      </label>
+      <label className={label}>
+        Ends (optional)
+        <input name="ends_local" type="datetime-local" className="field font-normal" />
+      </label>
+      <label className={label}>
+        Where
+        <input name="location" maxLength={120} className="field font-normal" />
+      </label>
+      <label className={label}>
+        Link (optional)
+        <input name="url" maxLength={200} className="field font-normal" />
+      </label>
+      <label className={`${label} sm:col-span-2`}>
+        About the event
+        <textarea name="description" rows={2} maxLength={1000} className="field font-normal" />
+      </label>
+      <div className="flex items-center gap-3 sm:col-span-2">
+        <SubmitButton>Add event</SubmitButton>
+        <Notice state={state} />
+      </div>
     </form>
   );
 }

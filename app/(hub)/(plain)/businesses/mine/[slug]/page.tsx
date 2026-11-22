@@ -4,8 +4,8 @@ import { getLinks, requireUser } from "@/lib/hub";
 import { PageTitle } from "@/components/hub";
 import { SubmitButton } from "@/components/hub-client";
 import { BusinessForm } from "@/components/business-form";
-import { DetailsForm, ServiceForm, TeamAdd, type DetailsValues } from "@/components/business-manage";
-import { deleteService, removeTeamMember, setTeamRole, submitBusiness } from "@/app/(hub)/business-actions";
+import { DetailsForm, EventForm, JobForm, PhotoForm, ProductForm, ServiceForm, TeamAdd, type DetailsValues } from "@/components/business-manage";
+import { deleteEvent, deleteJob, deletePhoto, deleteProduct, deleteService, removeTeamMember, setTeamRole, submitBusiness } from "@/app/(hub)/business-actions";
 import { ROLES, ROLE_CAN, STATUS_LABEL, money } from "@/lib/business";
 import { getBusinessSettings } from "@/lib/business-server";
 
@@ -31,6 +31,20 @@ export default async function ManageBusinessPage({ params }: { params: Promise<{
   if (!canEdit) notFound();
   const isOwner = isStaff || role === "owner";
   const settings = await getBusinessSettings();
+  const [photos, products, jobs, events] = await Promise.all([
+    settings.tabs.photos ? supabase.from("business_photos").select("id, url, caption").eq("company_id", c.id).order("position").order("created_at") : { data: [] },
+    settings.tabs.shop ? supabase.from("business_products").select("id, name, price, available").eq("company_id", c.id).order("position").order("created_at") : { data: [] },
+    settings.tabs.jobs ? supabase.from("business_jobs").select("id, title, job_type, open").eq("company_id", c.id).order("created_at", { ascending: false }) : { data: [] },
+    settings.tabs.events ? supabase.from("business_events").select("id, title, starts_at").eq("company_id", c.id).order("starts_at") : { data: [] },
+  ]);
+  const Row = ({ label, remove }: { label: React.ReactNode; remove: () => Promise<void> }) => (
+    <li className="flex items-center justify-between gap-3 py-2 text-sm">
+      <span className="min-w-0 truncate">{label}</span>
+      <form action={remove}>
+        <SubmitButton tone="danger" className="!px-3 !py-1">Remove</SubmitButton>
+      </form>
+    </li>
+  );
 
   // people the owner can add: their connections who are not on the team yet
   const onTeam = new Set(((team ?? []) as { user_id: string }[]).map((t) => t.user_id));
@@ -97,6 +111,46 @@ export default async function ManageBusinessPage({ params }: { params: Promise<{
         </ul>
         <ServiceForm companyId={c.id} />
       </section>
+
+      {settings.tabs.photos && (
+        <section className="panel p-5">
+          <h2 className="mb-3 text-base font-semibold">Photos</h2>
+          <ul className="mb-4 divide-y">
+            {((photos.data ?? []) as { id: string; caption: string }[]).map((x) => <Row key={x.id} label={x.caption || "Photo"} remove={deletePhoto.bind(null, x.id)} />)}
+          </ul>
+          <PhotoForm companyId={c.id} />
+        </section>
+      )}
+
+      {settings.tabs.shop && (
+        <section className="panel p-5">
+          <h2 className="mb-3 text-base font-semibold">Shop</h2>
+          <ul className="mb-4 divide-y">
+            {((products.data ?? []) as { id: string; name: string; price: number; available: boolean }[]).map((x) => <Row key={x.id} label={`${x.name} · ${money(x.price)}${x.available ? "" : " · sold out"}`} remove={deleteProduct.bind(null, x.id)} />)}
+          </ul>
+          <ProductForm companyId={c.id} />
+        </section>
+      )}
+
+      {settings.tabs.jobs && (
+        <section className="panel p-5">
+          <h2 className="mb-3 text-base font-semibold">Jobs</h2>
+          <ul className="mb-4 divide-y">
+            {((jobs.data ?? []) as { id: string; title: string; job_type: string }[]).map((x) => <Row key={x.id} label={`${x.title} · ${x.job_type}`} remove={deleteJob.bind(null, x.id)} />)}
+          </ul>
+          <JobForm companyId={c.id} />
+        </section>
+      )}
+
+      {settings.tabs.events && (
+        <section className="panel p-5">
+          <h2 className="mb-3 text-base font-semibold">Events</h2>
+          <ul className="mb-4 divide-y">
+            {((events.data ?? []) as { id: string; title: string; starts_at: string }[]).map((x) => <Row key={x.id} label={`${x.title} · ${new Date(x.starts_at).toLocaleDateString("en-CA", { timeZone: c.tz })}`} remove={deleteEvent.bind(null, x.id)} />)}
+          </ul>
+          <EventForm companyId={c.id} />
+        </section>
+      )}
 
       <section className="panel p-5">
         <h2 className="mb-3 text-base font-semibold">Team</h2>

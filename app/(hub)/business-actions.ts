@@ -156,6 +156,86 @@ export async function deleteService(serviceId: string) {
   refresh();
 }
 
+// ---------- photos, shop, jobs and events ----------
+async function saveRow(table: string, form: FormData, row: Record<string, unknown>): Promise<BizState> {
+  const { supabase } = await requireUser();
+  const id = text(form, "id") ? uuid(text(form, "id")) : "";
+  const { error } = id ? await supabase.from(table).update(row).eq("id", id) : await supabase.from(table).insert({ ...row, company_id: uuid(text(form, "company_id")) });
+  if (error) return { error: wrap(error.message) };
+  refresh();
+  return { ok: true };
+}
+
+async function removeRow(table: string, id: string) {
+  uuid(id);
+  const { supabase } = await requireUser();
+  const { error } = await supabase.from(table).delete().eq("id", id);
+  if (error) throw new Error(wrap(error.message));
+  refresh();
+}
+
+export async function savePhoto(_prev: BizState, form: FormData): Promise<BizState> {
+  const { userId } = await requireUser();
+  const url = ownUpload(form, "url", userId);
+  if (!url) return { error: "Choose a photo to upload." };
+  return saveRow("business_photos", form, { url, caption: text(form, "caption").slice(0, 140) });
+}
+export const deletePhoto = async (id: string) => removeRow("business_photos", id);
+
+export async function saveProduct(_prev: BizState, form: FormData): Promise<BizState> {
+  const { userId } = await requireUser();
+  const name = text(form, "name").slice(0, 80);
+  const price = Number(text(form, "price"));
+  if (!name) return { error: "Name the product." };
+  if (text(form, "price") === "" || Number.isNaN(price) || price < 0) return { error: "Add a price." };
+  const row: Record<string, unknown> = { name, price, description: text(form, "description").slice(0, 300), available: !flag(form, "sold_out") };
+  const photo = ownUpload(form, "photo_url", userId);
+  if (photo) row.photo_url = photo;
+  return saveRow("business_products", form, row);
+}
+export const deleteProduct = async (id: string) => removeRow("business_products", id);
+
+export async function saveJob(_prev: BizState, form: FormData): Promise<BizState> {
+  const title = text(form, "title").slice(0, 100);
+  if (!title) return { error: "Add the job title." };
+  const type = ["full-time", "part-time", "contract", "seasonal", "internship"].includes(text(form, "job_type")) ? text(form, "job_type") : "full-time";
+  return saveRow("business_jobs", form, {
+    title,
+    job_type: type,
+    description: text(form, "description").slice(0, 1500),
+    location: text(form, "location").slice(0, 100),
+    apply_url: websiteUrl(text(form, "apply_url")).slice(0, 200),
+    open: !flag(form, "closed"),
+  });
+}
+export const deleteJob = async (id: string) => removeRow("business_jobs", id);
+
+export async function saveEvent(_prev: BizState, form: FormData): Promise<BizState> {
+  const title = text(form, "title").slice(0, 100);
+  if (!title) return { error: "Add the event name." };
+  // a local date-time plus the browser's offset in minutes becomes one exact moment
+  const offset = Number(text(form, "tz_offset")) || 0;
+  const at = (key: string) => {
+    if (!text(form, key)) return null;
+    const when = new Date(`${text(form, key)}:00Z`);
+    return Number.isNaN(when.getTime()) ? undefined : new Date(when.getTime() + offset * 60_000).toISOString();
+  };
+  const starts = at("starts_local");
+  const ends = at("ends_local");
+  if (!starts) return { error: "Choose when the event starts." };
+  if (ends === undefined) return { error: "That end time does not look right." };
+  if (ends && ends < starts) return { error: "The event cannot end before it starts." };
+  return saveRow("business_events", form, {
+    title,
+    starts_at: starts,
+    ends_at: ends,
+    description: text(form, "description").slice(0, 1000),
+    location: text(form, "location").slice(0, 120),
+    url: websiteUrl(text(form, "url")).slice(0, 200),
+  });
+}
+export const deleteEvent = async (id: string) => removeRow("business_events", id);
+
 // ---------- team ----------
 export async function addTeamMember(_prev: BizState, form: FormData): Promise<BizState> {
   const { supabase } = await requireUser();

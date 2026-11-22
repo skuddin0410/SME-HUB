@@ -8,6 +8,7 @@ Branch `v2`. Database migrations 0021 to 0023 (live). Tracker rows 39 to 48.
 - **Add a business** (`/businesses/mine`): five quick details (name, category, type, city and province, what it does), then **Manage** (`/businesses/mine/[slug]`) for hours, contacts with a show/hide switch each, services, team, and publishing.
 - **Team roles**: Owner (everything), Manager (edit, post, answer), Editor (post as the business), Responder (answer messages).
 - **Post as the business** from the feed composer ("Post as ..."). The post shows the business name and logo, with the team member named underneath.
+- **Photos, Shop, Events and Jobs tabs** (migration 0024). Owners and managers add them from the manage page; staff switch each tab on or off in settings. Limits: 30 photos, 60 products, 20 jobs, 40 events. Shop is a catalogue with a message-to-order form; checkout comes in Phase 6.
 - **Shared inbox** (`/businesses/mine/[slug]/inbox`) and **My messages** (`/businesses/messages`): messages and quote requests, one thread per conversation.
 - **Reviews by criteria** (Quality, Value, Communication by default); the overall score is the average. Team members cannot review their own page. Owners and managers can reply once per review.
 
@@ -25,9 +26,11 @@ Branch `v2`. Database migrations 0021 to 0023 (live). Tracker rows 39 to 48.
 Per-page title, description, canonical and social image; `LocalBusiness` structured data (address and contacts only when shown, opening hours, rating); the sitemap lists published pages only.
 
 ## Existing data
-Migration 0023 moved the six existing companies: city and province from the owner's profile location, and old categories mapped to the new list. They stay published. The eight sample businesses in the design hand-off are not added to the live database, because their owners are made-up people.
+Migration 0023 moved the six existing companies: city and province from the owner's profile location, and old categories mapped to the new list. They stay published.
+
+The eight businesses from the design hand-off are in the live database (`supabase/seed/business_sample.sql`, safe to run again): the six existing pages are filled in, Morgan Home Renovations is added, and Lakeshore Catering Co. is a claimable listing owned by the admin account. Each has services; Maple Bakery also has photos, a shop item, reviews, followers and one post as the business; Northside Logistics has a job. All of it is demo data: `supabase/seed/remove_sample.sql` removes it, including Lakeshore, before launch.
 
 ## Checks
 - Unit tests: 101 passing (helpers for hours, prices and links).
-- Database security tests: 287 passing (`bash supabase/tests/run.sh`).
-- Browser tests: 200 passing, including accessibility (light and dark, visitor and member) and every screen width.
+- Database security tests: 295 passing (`bash supabase/tests/run.sh`).
+- Browser tests: 227 passing, including accessibility (light and dark, visitor and member) and every screen width.

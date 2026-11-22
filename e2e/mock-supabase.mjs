@@ -89,6 +89,10 @@ http
     if (url.pathname === "/rest/v1/business_settings") return one(SETTINGS);
     if (url.pathname === "/rest/v1/companies" && (url.searchParams.get("slug") === "eq.maple-demo" || url.searchParams.get("id") === `eq.${BIZ_ID}`)) return one(BIZ);
     if (url.pathname === "/rest/v1/business_services") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000d1", name: "Wholesale boxes", description: "Weekly delivery to cafes.", photo_url: null, price_type: "from", price: 60 }, { id: "00000000-0000-4000-8000-0000000000d2", name: "Custom cakes", description: "", photo_url: null, price_type: "quote", price: null }]));
+    if (url.pathname === "/rest/v1/business_photos") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000e1", url: "https://picsum.photos/seed/e2e-photo/800/600", caption: "Fresh from the oven", position: 0 }]));
+    if (url.pathname === "/rest/v1/business_products") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000e2", name: "Shortbread gift box", description: "Twelve cookies.", photo_url: null, price: 28, available: true, position: 0 }]));
+    if (url.pathname === "/rest/v1/business_jobs") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000e3", title: "Night baker", description: "Start at 10pm.", job_type: "full-time", location: "Toronto, ON", apply_url: "", open: true, created_at: new Date().toISOString() }]));
+    if (url.pathname === "/rest/v1/business_events") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000e4", title: "Holiday tasting", description: "Try the trays.", starts_at: "2030-12-05T15:00:00Z", ends_at: "2030-12-05T17:00:00Z", location: "Queen St E", url: "" }]));
     if (url.pathname === "/rest/v1/business_team" && member) {
       const sel = url.searchParams.get("select") || "";
       if (sel.includes("member:profiles")) return res.end(JSON.stringify([{ user_id: MEMBER.id, role: "owner", member: { full_name: MEMBER.full_name } }]));

@@ -38,6 +38,18 @@ test("a business page shows tabs, services, hours and the owner's reply", async 
   await expect(page.getByText("Thank you, see you Saturday!")).toBeVisible();
 });
 
+test("photos, shop, events and jobs tabs show what the business added", async ({ page }) => {
+  await page.goto("/businesses/maple-demo?tab=photos");
+  await expect(page.getByText("Fresh from the oven")).toBeVisible();
+  await page.goto("/businesses/maple-demo?tab=shop");
+  await expect(page.getByText("Shortbread gift box")).toBeVisible();
+  await expect(page.getByText("$28.00")).toBeVisible();
+  await page.goto("/businesses/maple-demo?tab=events");
+  await expect(page.getByText("Holiday tasting")).toBeVisible();
+  await page.goto("/businesses/maple-demo?tab=jobs");
+  await expect(page.getByText("Night baker")).toBeVisible();
+});
+
 test("the business page marks itself for search engines", async ({ page }) => {
   await page.goto("/businesses/maple-demo");
   const ld = await page.locator('script[type="application/ld+json"]').first().textContent();

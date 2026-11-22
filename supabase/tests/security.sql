@@ -768,3 +768,24 @@ select t.expect('open now: an overnight shift is open at 02:00 the next morning'
 select t.expect('open now: a holiday closure closes the day', not business_is_open('{"mon": [["09:00","17:00"]]}', '[{"date":"2026-11-23"}]', 'America/Toronto', '2026-11-23 15:00+00'));
 select t.expect('the map lists cities with counts only', (select count(*) >= 1 and bool_and(city <> '') from business_map_cities('', '')));
 reset role; set request.jwt.claim.sub = '';
+
+-- photos, shop, jobs and events tabs
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb1';
+insert into business_photos (company_id, url, caption) select id, 'https://picsum.photos/seed/maple1/800/600', 'Fresh loaves' from companies where slug = 'maple-test';
+insert into business_products (company_id, name, price) select id, 'Shortbread box', 28 from companies where slug = 'maple-test';
+insert into business_jobs (company_id, title, job_type) select id, 'Baker', 'full-time' from companies where slug = 'maple-test';
+insert into business_events (company_id, title, starts_at) select id, 'Open house', '2026-12-05 15:00+00' from companies where slug = 'maple-test';
+select t.expect('the owner adds a photo, a product, a job and an event', (select count(*) = 1 from business_photos) and (select count(*) = 1 from business_products) and (select count(*) = 1 from business_jobs) and (select count(*) = 1 from business_events));
+select t.expect_denied('a photo must be one of our files', $$insert into business_photos (company_id, url) select id, 'https://evil.example/x.jpg' from companies where slug = 'maple-test'$$);
+select t.expect_denied('a product cannot have a negative price', $$insert into business_products (company_id, name, price) select id, 'Bad', -1 from companies where slug = 'maple-test'$$);
+select t.expect_denied('an event cannot end before it starts', $$insert into business_events (company_id, title, starts_at, ends_at) select id, 'Odd', '2026-12-05 15:00+00', '2026-12-05 10:00+00' from companies where slug = 'maple-test'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb3';
+select t.expect_denied('an editor cannot add a product', $$insert into business_products (company_id, name, price) select id, 'Nope', 5 from companies where slug = 'maple-test'$$);
+reset role; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000a99'; set role authenticated;
+select t.expect_denied('a stranger cannot add a job', $$insert into business_jobs (company_id, title) select id, 'Hacker' from companies where slug = 'maple-test'$$);
+select t.expect('anyone can read the tabs of a published page', (select count(*) = 1 from business_photos) and (select count(*) = 1 from business_jobs));
+reset role; set request.jwt.claim.sub = '';
+insert into business_photos (company_id, url) select id, 'https://picsum.photos/seed/p' || g || '/800/600' from companies, generate_series(1, 29) g where slug = 'maple-test';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb1';
+select t.expect_denied('a business can have at most 30 photos', $$insert into business_photos (company_id, url) select id, 'https://picsum.photos/seed/extra/800/600' from companies where slug = 'maple-test'$$);
+reset role; set request.jwt.claim.sub = '';

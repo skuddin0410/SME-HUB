@@ -37,8 +37,8 @@ type Company = {
   owner_id: string;
 };
 
-const TABS = ["feed", "services", "about", "reviews"] as const;
-type Tab = (typeof TABS)[number];
+const ALL_TABS = ["feed", "services", "about", "reviews", "photos", "shop", "events", "jobs"] as const;
+type Tab = (typeof ALL_TABS)[number];
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -61,14 +61,16 @@ export default async function BusinessPage({ params, searchParams }: { params: P
   const { slug } = await params;
   const { tab: rawTab } = await searchParams;
   if (!/^[a-z0-9-]{1,80}$/.test(slug)) notFound();
-  const tab: Tab = (TABS as readonly string[]).includes(rawTab ?? "") ? (rawTab as Tab) : "feed";
   const { supabase, userId, profile, isStaff } = await getViewer();
+  const settings = await getBusinessSettings();
+  // photos, shop, events and jobs only show when staff keep that tab switched on
+  const TABS = ALL_TABS.filter((t) => !(t in settings.tabs) || settings.tabs[t as keyof typeof settings.tabs]);
+  const tab: Tab = (TABS as readonly string[]).includes(rawTab ?? "") ? (rawTab as Tab) : "feed";
 
   const { data } = await supabase.from("companies").select("*").eq("slug", slug).maybeSingle();
   const company = data as unknown as Company | null;
   if (!company) notFound();
 
-  const settings = await getBusinessSettings();
   const [roleRes, contactRes, followers, openRes, servicesRes, reviewRes, replyRes, claimRes, followRes] = await Promise.all([
     userId ? supabase.from("business_team").select("role").eq("company_id", company.id).eq("user_id", userId).maybeSingle() : Promise.resolve({ data: null }),
     supabase.rpc("business_contact", { cid: company.id }),
@@ -92,6 +94,12 @@ export default async function BusinessPage({ params, searchParams }: { params: P
   const reviews: Review[] = ((reviewRes.data ?? []) as unknown as (Omit<Review, "reply">)[]).map((r) => ({ ...r, criteria: r.criteria ?? {}, reply: replies.get(r.author.id) ?? null }));
   const visibleReviews = reviews.filter((r) => r.status === "published");
   const average = visibleReviews.length ? visibleReviews.reduce((n, r) => n + r.rating, 0) / visibleReviews.length : 0;
+  const tabRows = async (table: string, select: string, order: string, asc = true) =>
+    ((await supabase.from(table).select(select).eq("company_id", company.id).order(order, { ascending: asc }).limit(60)).data ?? []) as unknown as Record<string, any>[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  const photos = tab === "photos" ? await tabRows("business_photos", "id, url, caption", "position") : [];
+  const products = tab === "shop" ? await tabRows("business_products", "id, name, description, photo_url, price, available", "position") : [];
+  const events = tab === "events" ? await tabRows("business_events", "id, title, description, starts_at, ends_at, location, url", "starts_at") : [];
+  const jobs = tab === "jobs" ? await tabRows("business_jobs", "id, title, description, job_type, location, apply_url, open", "created_at", false) : [];
   const posts = tab === "feed" ? await fetchPosts(supabase, userId, { businessId: company.id, limit: 20 }) : [];
   const site = company.website && (company.website.startsWith("http") ? company.website : `https://${company.website}`);
   const me: Author | null = profile ? { id: profile.id, full_name: profile.full_name, headline: profile.headline, avatar_url: profile.avatar_url, member_type: profile.member_type } : null;
@@ -316,6 +324,79 @@ export default async function BusinessPage({ params, searchParams }: { params: P
             )}
           </section>
         </>
+      )}
+
+      {tab === "photos" && (
+        <section className="panel p-4">
+          {photos.length === 0 && <p className="text-sm text-muted-foreground">No photos yet.</p>}
+          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {photos.map((x) => (
+              <li key={x.id}>
+                <img src={x.url} alt={x.caption || `Photo from ${company.name}`} loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" />
+                {x.caption && <p className="mt-1 text-xs text-muted-foreground">{x.caption}</p>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {tab === "shop" && (
+        <section className="panel divide-y">
+          {products.length === 0 && <p className="p-5 text-sm text-muted-foreground">Nothing in the shop yet.</p>}
+          {products.map((x) => (
+            <div key={x.id} className="flex gap-3 px-4 py-3">
+              {x.photo_url && <img src={x.photo_url} alt="" className="h-20 w-20 shrink-0 rounded-lg object-cover" />}
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">{x.name}</p>
+                {x.description && <p className="text-sm text-muted-foreground">{x.description}</p>}
+                {!x.available && <p className="mt-1 text-xs font-semibold text-rose-700">Sold out</p>}
+              </div>
+              <p className="shrink-0 text-sm font-semibold">{money(x.price)}</p>
+            </div>
+          ))}
+          {published && userId && !onTeam && (
+            <div className="p-4">
+              <h2 className="mb-1 text-base font-semibold">Want to order?</h2>
+              <p className="mb-2 text-sm text-muted-foreground">Message the business to place an order or ask about delivery.</p>
+              <InquiryForm companyId={company.id} />
+            </div>
+          )}
+        </section>
+      )}
+
+      {tab === "events" && (
+        <section className="panel divide-y">
+          {events.length === 0 && <p className="p-5 text-sm text-muted-foreground">No events yet.</p>}
+          {events.map((x) => {
+            const when = new Date(x.starts_at as string);
+            const past = when.getTime() < Date.now();
+            return (
+              <div key={x.id} className={`px-4 py-3 ${past ? "opacity-70" : ""}`}>
+                <p className="text-sm font-semibold">{x.title}{past && <span className="ml-2 text-xs font-normal text-muted-foreground">Past event</span>}</p>
+                <p className="text-sm text-muted-foreground">
+                  {when.toLocaleString("en-CA", { dateStyle: "full", timeStyle: "short", timeZone: company.tz })}
+                  {x.location ? ` · ${x.location}` : ""}
+                </p>
+                {x.description && <p className="mt-1 whitespace-pre-wrap text-sm">{x.description}</p>}
+                {x.url && <a href={x.url} target="_blank" rel="noreferrer nofollow" className="mt-1 inline-block text-sm font-semibold text-primary hover:underline">More details</a>}
+              </div>
+            );
+          })}
+        </section>
+      )}
+
+      {tab === "jobs" && (
+        <section className="panel divide-y">
+          {jobs.filter((x) => x.open).length === 0 && <p className="p-5 text-sm text-muted-foreground">No open jobs right now.</p>}
+          {jobs.filter((x) => x.open).map((x) => (
+            <div key={x.id} className="px-4 py-3">
+              <p className="text-sm font-semibold">{x.title}</p>
+              <p className="text-sm capitalize text-muted-foreground">{x.job_type}{x.location ? ` · ${x.location}` : ""}</p>
+              {x.description && <p className="mt-1 whitespace-pre-wrap text-sm">{x.description}</p>}
+              {x.apply_url && <a href={x.apply_url} target="_blank" rel="noreferrer nofollow" className="mt-1 inline-block text-sm font-semibold text-primary hover:underline">How to apply</a>}
+            </div>
+          ))}
+        </section>
       )}
 
       {tab === "reviews" && <Reviews companyId={company.id} criteria={settings.criteria} initial={reviews} me={me} canReview={published && !onTeam} canReply={canReply} isStaff={isStaff} />}
