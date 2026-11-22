@@ -32,11 +32,16 @@ insert into connections (requester_id, addressee_id) values (auth.uid(), :b);
 insert into groups (slug, name, is_private, created_by) values ('secret','Secret', true, auth.uid());
 insert into posts (author_id, body, group_id) select auth.uid(), 'grp', id from groups;
 insert into companies (owner_id, slug, name) values (auth.uid(), 'alice-co', 'Alice Co');
+reset role; set request.jwt.claim.sub = ''; update companies set status = 'published' where slug = 'alice-co';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
 update profiles set role = 'admin', member_type = 'advisor', status = 'active' where id = auth.uid();
 select t.expect('member cannot promote self or change own plan', (select role = 'member' and member_type = 'plus' from profiles where id = auth.uid()));
 update posts set pinned_at = now() where body = 'pub';
 select t.expect('member cannot pin a post', (select pinned_at is null from posts where body = 'pub'));
-select t.expect_denied('plan limit: second listing on SMB Plus', $$insert into companies (owner_id, slug, name) values (auth.uid(), 'alice-2', 'Second')$$);
+insert into companies (owner_id, slug, name) values (auth.uid(), 'alice-2', 'Second'), (auth.uid(), 'alice-3', 'Third');
+select t.expect_denied('limit per member: a fourth business page is refused', $$insert into companies (owner_id, slug, name) values (auth.uid(), 'alice-4', 'Fourth')$$);
+reset role; set request.jwt.claim.sub = ''; delete from companies where slug in ('alice-2', 'alice-3');
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
 select t.expect_denied('cannot review own business', $$insert into company_reviews (company_id, author_id, rating) select id, auth.uid(), 5 from companies$$);
 select t.expect_denied('post image must be in our storage', $$insert into posts (author_id, body, image_url) values (auth.uid(), 'x', 'https://evil.example/track.png')$$);
 select t.expect_denied('avatar must be in our storage', $$update profiles set avatar_url = 'https://evil.example/a.png' where id = auth.uid()$$);
@@ -54,7 +59,11 @@ insert into messages (sender_id, recipient_id, body) values (auth.uid(), :a, 'he
 select t.expect_denied('cannot join a private group uninvited', $$insert into group_members (group_id, user_id) select id, auth.uid() from groups$$);
 select t.expect_denied('cannot post as someone else', $$insert into posts (author_id, body) values ('00000000-0000-0000-0000-00000000000a', 'forged')$$);
 select t.expect_denied('cannot send a message as someone else', $$insert into messages (sender_id, recipient_id, body) values ('00000000-0000-0000-0000-00000000000a', auth.uid(), 'forged')$$);
-select t.expect_denied('free plan: no business listing', $$insert into companies (owner_id, slug, name) values (auth.uid(), 'bob-co', 'Bob Co')$$);
+reset role; set request.jwt.claim.sub = ''; update business_settings set create_mode = 'paid';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+select t.expect_denied('when business pages are paid-only, the free plan is refused', $$insert into companies (owner_id, slug, name) values (auth.uid(), 'bob-co', 'Bob Co')$$);
+reset role; set request.jwt.claim.sub = ''; update business_settings set create_mode = 'all';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
 select t.expect_denied('cannot invite self into a group', $$insert into group_invites (group_id, user_id, invited_by) select id, auth.uid(), auth.uid() from groups$$);
 update companies set name = 'Hacked' where slug = 'alice-co';
 delete from posts where body = 'pub';
@@ -600,4 +609,162 @@ reset role; reset app.now;
 set role anon; set request.jwt.claim.sub = '';
 select t.expect_denied('a visitor cannot create a poll', $$select add_poll((select id from posts where body = 'g-poll'), array['a','b'], now() + interval '1 day')$$);
 select t.expect('a visitor can read poll results on a public post', (select sum(votes) = 1 from poll_options where post_id = (select id from posts where body = 'g-poll')));
+reset role; set request.jwt.claim.sub = '';
+
+-- ===== Phase 4: business profiles =====
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email) values
+ ('00000000-0000-0000-0000-000000000bb1','owen@x.ca'), ('00000000-0000-0000-0000-000000000bb2','mia@x.ca'), ('00000000-0000-0000-0000-000000000bb3','ed@x.ca'),
+ ('00000000-0000-0000-0000-000000000bb4','ivan@x.ca'), ('00000000-0000-0000-0000-000000000bb5','sue@x.ca'), ('00000000-0000-0000-0000-000000000bb6','tom@x.ca');
+\set o1 '''00000000-0000-0000-0000-000000000bb1'''
+\set o2 '''00000000-0000-0000-0000-000000000bb2'''
+\set o3 '''00000000-0000-0000-0000-000000000bb3'''
+\set o4 '''00000000-0000-0000-0000-000000000bb4'''
+\set o5 '''00000000-0000-0000-0000-000000000bb5'''
+\set o6 '''00000000-0000-0000-0000-000000000bb6'''
+-- a staff member (moderator) for approvals
+insert into team_roles (user_id, role) values (:o5, 'moderator');
+
+-- owen (o1) adds a business; new pages start as drafts
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb1';
+insert into companies (owner_id, slug, name, category, city, province, kind, show_address, show_email, show_phone, hours, status)
+  values (auth.uid(), 'maple-test', 'Maple Test Bakery', 'Food & Drink', 'Toronto', 'on', 'storefront', false, false, true,
+          '{"mon": [["09:00","17:00"]], "tue": [["20:00","04:00"]]}', 'published');
+select t.expect('a new page starts as a draft even if the member asks for published', (select status = 'draft' and province = 'ON' from companies where slug = 'maple-test'));
+select t.expect('the owner is on the team automatically', (select role = 'owner' from business_team where user_id = auth.uid()));
+select t.expect_denied('a member cannot publish a page when approval is required', $$update companies set status = 'published' where slug = 'maple-test'$$);
+select t.expect_denied('a member cannot reject or approve their own page', $$update companies set status = 'rejected' where slug = 'maple-test'$$);
+select t.expect_denied('category must come from the list', $$update companies set category = 'Made up' where slug = 'maple-test'$$);
+insert into business_private (company_id, street, postal, email, phone, whatsapp) select id, '268 Queen St E', 'M4M 1J8', 'secret@maple.ca', '(416) 555-0124', '(416) 555-0125' from companies where slug = 'maple-test';
+select t.expect('the owner reads the private details', (select count(*) = 1 from business_private));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+select t.expect('a draft page is invisible to other members', (select count(*) = 0 from companies where slug = 'maple-test'));
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('a draft page is invisible to visitors', (select count(*) = 0 from companies where slug = 'maple-test'));
+
+-- submit, then the team approves
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb1';
+update companies set status = 'pending' where slug = 'maple-test';
+select t.expect('the owner can submit for approval', (select status = 'pending' from companies where slug = 'maple-test'));
+select t.expect_denied('a submitted page cannot go straight to published', $$update companies set status = 'published' where slug = 'maple-test'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb5';
+update companies set status = 'published' where slug = 'maple-test';
+select t.expect('the team can approve a page', (select status = 'published' from companies where slug = 'maple-test'));
+
+-- hidden contacts never leave the database unless the page shows them
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('a visitor sees the published page', (select count(*) = 1 from companies where slug = 'maple-test'));
+select t.expect('a visitor cannot read the private table', (select count(*) = 0 from business_private));
+select t.expect('contact: phone is shown, address and email stay hidden',
+  (select phone = '(416) 555-0124' and street is null and postal is null and email is null and whatsapp is null from business_contact((select id from companies where slug = 'maple-test'))));
+reset role; set request.jwt.claim.sub = '';
+update companies set show_address = true, show_email = true where slug = 'maple-test';
+set role anon;
+select t.expect('contact: address and email appear once the owner shows them',
+  (select street = '268 Queen St E' and email = 'secret@maple.ca' and whatsapp is null from business_contact((select id from companies where slug = 'maple-test'))));
+reset role; update companies set show_address = false, show_email = false where slug = 'maple-test';
+
+-- team roles
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb1';
+insert into business_team (company_id, user_id, role) select id, :o2, 'manager' from companies where slug = 'maple-test';
+insert into business_team (company_id, user_id, role) select id, :o3, 'editor' from companies where slug = 'maple-test';
+insert into business_team (company_id, user_id, role) select id, :o4, 'responder' from companies where slug = 'maple-test';
+select t.expect_denied('only a person''s role below owner can be given', $$insert into business_team (company_id, user_id, role) select id, '00000000-0000-0000-0000-000000000a99', 'owner' from companies where slug = 'maple-test'$$);
+select t.expect_denied('the owner row cannot be removed', $$delete from business_team where role = 'owner'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+update companies set about = 'Managed by Mia' where slug = 'maple-test';
+select t.expect('a manager can edit details', (select about = 'Managed by Mia' from companies where slug = 'maple-test'));
+select t.expect('a manager reads the private details', (select count(*) = 1 from business_private));
+select t.expect_denied('a manager cannot add team members', $$insert into business_team (company_id, user_id, role) select id, '00000000-0000-0000-0000-000000000a99', 'editor' from companies where slug = 'maple-test'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb3';
+update companies set about = 'Editor overreach' where slug = 'maple-test';
+select t.expect('an editor cannot edit details', (select about = 'Managed by Mia' from companies where slug = 'maple-test'));
+select t.expect('an editor cannot read private details', (select count(*) = 0 from business_private));
+
+-- posting as the business
+insert into posts (author_id, body, business_id) select auth.uid(), 'Fresh trays today', id from companies where slug = 'maple-test';
+select t.expect('an editor can post as the business', (select count(*) = 1 from posts where body = 'Fresh trays today' and business_id is not null));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb4';
+select t.expect_denied('an inbox-only member cannot post as the business', $$insert into posts (author_id, body, business_id) select auth.uid(), 'nope', id from companies where slug = 'maple-test'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+select t.expect_denied('a non-team member cannot post as a business they do not belong to', $$insert into posts (author_id, body, business_id) select auth.uid(), 'x', id from companies where slug = 'alice-co'$$);
+
+-- services and follows
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+insert into business_services (company_id, name, price_type, price) select id, 'Office trays', 'from', 120 from companies where slug = 'maple-test';
+select t.expect_denied('a priced service needs a price', $$insert into business_services (company_id, name, price_type) select id, 'No price', 'fixed' from companies where slug = 'maple-test'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb3';
+select t.expect_denied('an editor cannot add services', $$insert into business_services (company_id, name, price_type) select id, 'Nope', 'quote' from companies where slug = 'maple-test'$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb5';
+insert into business_follows (company_id, user_id) select id, auth.uid() from companies where slug = 'maple-test';
+select t.expect('a follower is counted', (select business_follower_count(id) = 1 from companies where slug = 'maple-test'));
+select t.expect_denied('cannot follow on behalf of someone else', $$insert into business_follows (company_id, user_id) select id, '00000000-0000-0000-0000-000000000bb3' from companies where slug = 'maple-test'$$);
+
+-- reviews by criteria
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb1';
+select t.expect_denied('the owner cannot review their own page', $$insert into company_reviews (company_id, author_id, rating, criteria) select id, auth.uid(), 5, '{"Quality": 5}' from companies where slug = 'maple-test'$$);
+select t.expect_denied('a team member cannot review the page either', format($q$insert into company_reviews (company_id, author_id, rating) select id, %L, 5 from companies where slug = 'maple-test'$q$, :o2));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb5';
+insert into company_reviews (company_id, author_id, rating, criteria, body) select id, auth.uid(), 1, '{"Quality": 5, "Value": 4, "Communication": 3}', 'Great' from companies where slug = 'maple-test';
+select t.expect('the overall rating is the average of the criteria', (select rating = 4 from company_reviews where author_id = auth.uid() and body = 'Great'));
+delete from company_reviews where body = 'Great';
+select t.expect_denied('an unknown criterion is refused', $$insert into company_reviews (company_id, author_id, rating, criteria) select id, auth.uid(), 3, '{"Speed": 5}' from companies where slug = 'maple-test'$$);
+select t.expect_denied('each criterion is 1 to 5', $$insert into company_reviews (company_id, author_id, rating, criteria) select id, auth.uid(), 3, '{"Quality": 9}' from companies where slug = 'maple-test'$$);
+reset role; set request.jwt.claim.sub = ''; update business_settings set review_approval = true;
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb6';
+insert into company_reviews (company_id, author_id, rating, criteria, body) select id, auth.uid(), 3, '{"Quality": 3}', 'Needs approval' from companies where slug = 'maple-test';
+select t.expect('with review approval on, a new review waits', (select status = 'pending' from company_reviews where body = 'Needs approval'));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+select t.expect('a pending review is hidden from the public but a manager can see it', (select count(*) = 1 from company_reviews where body = 'Needs approval'));
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('a pending review is hidden from visitors', (select count(*) = 0 from company_reviews where body = 'Needs approval'));
+reset role; update business_settings set review_approval = false;
+-- reply
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+insert into business_review_replies (company_id, review_author_id, author_id, body) select company_id, author_id, auth.uid(), 'Thank you' from company_reviews where body = 'Needs approval';
+select t.expect('a manager can reply to a review', (select count(*) = 1 from business_review_replies));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb3';
+reset role; select id as maplecid from companies where slug = 'maple-test' \gset
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb3';
+select t.expect_denied('an editor cannot reply to a review', format($q$insert into business_review_replies (company_id, review_author_id, author_id, body) values (%L, %L, %L, 'x')$q$, :'maplecid', :o6, :o3));
+
+-- shared inbox
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb5';
+insert into business_inquiries (company_id, sender_id, kind) select id, auth.uid(), 'quote' from companies where slug = 'maple-test';
+insert into business_inquiry_messages (inquiry_id, author_id, body) select id, auth.uid(), 'Quote for 40 people?' from business_inquiries;
+select t.expect('the sender is not "as the business"', (select not as_business from business_inquiry_messages));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb4';
+select t.expect('an inbox member sees the inquiry', (select count(*) = 1 from business_inquiries));
+insert into business_inquiry_messages (inquiry_id, author_id, body, as_business) select id, auth.uid(), 'Yes, $900', false from business_inquiries;
+select t.expect('a team reply is marked as the business and the inquiry is answered', (select count(*) = 1 from business_inquiry_messages where as_business) and (select status = 'answered' from business_inquiries));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb3';
+select t.expect('an editor cannot read the inbox', (select count(*) = 0 from business_inquiries) and (select count(*) = 0 from business_inquiry_messages));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+reset role; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000a99'; set role authenticated;
+select t.expect('a stranger cannot read the inbox', (select count(*) = 0 from business_inquiries) and (select count(*) = 0 from business_inquiry_messages));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb1';
+select t.expect_denied('the owner cannot message their own business', $$insert into business_inquiries (company_id, sender_id) select id, auth.uid() from companies where slug = 'maple-test'$$);
+
+-- claims
+reset role; set request.jwt.claim.sub = '';
+insert into companies (owner_id, slug, name, category, city, province, status, claimable) values (:o5, 'lakeshore-test', 'Lakeshore Catering', 'Catering & Events', 'Toronto', 'ON', 'published', true);
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+select t.expect_denied('a listing that is not claimable cannot be claimed', $$insert into business_claims (company_id, user_id, evidence) select id, auth.uid(), 'I own this business, see my website' from companies where slug = 'maple-test'$$);
+select t.expect_denied('a claim needs some evidence', $$insert into business_claims (company_id, user_id, evidence) select id, auth.uid(), 'mine' from companies where slug = 'lakeshore-test'$$);
+insert into business_claims (company_id, user_id, evidence) select id, auth.uid(), 'I own this business, see my website lakeshore.ca' from companies where slug = 'lakeshore-test';
+select t.expect_denied('only the team can decide a claim', $$select decide_claim((select id from business_claims limit 1), true)$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb5';
+select decide_claim((select id from business_claims limit 1), true);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000bb2';
+select t.expect('an approved claim hands the page to the claimant', (select owner_id = :o2 and not claimable from companies where slug = 'lakeshore-test') and (select role = 'owner' from business_team where user_id = auth.uid() and company_id = (select id from companies where slug = 'lakeshore-test')));
+
+-- directory search and open-now
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('search finds published businesses by city and category', (select count(*) = 2 from search_businesses('', '', 'ON', 'Toronto', '', false, 'name', 24, 0)));
+select t.expect('search filters by category', (select count(*) = 1 from search_businesses('', 'Food & Drink', '', '', '', false, 'name', 24, 0)));
+select t.expect('open now: Monday 10:00 Toronto is open', business_is_open('{"mon": [["09:00","17:00"]]}', '[]', 'America/Toronto', '2026-11-23 15:00+00'));
+select t.expect('open now: Monday 18:00 Toronto is closed', not business_is_open('{"mon": [["09:00","17:00"]]}', '[]', 'America/Toronto', '2026-11-23 23:00+00'));
+select t.expect('open now: an overnight shift is open at 02:00 the next morning', business_is_open('{"mon": [["20:00","04:00"]]}', '[]', 'America/Toronto', '2026-11-24 07:00+00'));
+select t.expect('open now: a holiday closure closes the day', not business_is_open('{"mon": [["09:00","17:00"]]}', '[{"date":"2026-11-23"}]', 'America/Toronto', '2026-11-23 15:00+00'));
+select t.expect('the map lists cities with counts only', (select count(*) >= 1 and bool_and(city <> '') from business_map_cities('', '')));
 reset role; set request.jwt.claim.sub = '';
