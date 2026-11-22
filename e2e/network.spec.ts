@@ -47,6 +47,15 @@ test("directory filters go into the address and the results show", async ({ page
   await expect(page).toHaveURL(/avail=Evenings/);
 });
 
+test("directory map view lists cities with counts when no map token is set", async ({ page }) => {
+  await page.goto("/members?view=map", { waitUntil: "domcontentloaded" });
+  const list = page.getByRole("list", { name: "Members by city" });
+  await expect(list.getByText("Toronto, ON")).toBeVisible();
+  await expect(list.getByRole("link", { name: /Montréal, QC/ })).toHaveAttribute("href", /q=Montr/);
+  await page.getByRole("link", { name: "List", exact: true }).click();
+  await expect(page).not.toHaveURL(/view=map/);
+});
+
 test("your own profile has Edit and no Follow button", async ({ page }) => {
   await page.goto(`/members/${ME}`, { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("link", { name: "Edit profile" }).first()).toBeVisible();
@@ -62,7 +71,7 @@ test("the account menu links to settings and who viewed", async ({ page }) => {
 });
 
 for (const width of SCREEN_WIDTHS) {
-  for (const path of ["/settings", "/profile/views", "/profile/edit", "/members"]) {
+  for (const path of ["/settings", "/profile/views", "/profile/edit", "/members", "/members?view=map"]) {
     test(`${path} fits a ${width}px screen`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(path, { waitUntil: "domcontentloaded" });

@@ -47,6 +47,9 @@ http
     if (url.pathname === "/rest/v1/rpc/my_profile_viewers") {
       return res.end(JSON.stringify([{ viewer_id: null, last_at: new Date().toISOString(), shown: false }, { viewer_id: null, last_at: new Date().toISOString(), shown: false }]));
     }
+    if (url.pathname === "/rest/v1/rpc/member_map_cities") {
+      return res.end(JSON.stringify([{ location: "Toronto, ON", members: 4 }, { location: "Montréal, QC", members: 2 }, { location: "Tiny Town, MB", members: 1 }]));
+    }
     if (url.pathname === "/rest/v1/rpc/search_members") {
       return res.end(JSON.stringify([
         { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", location: "Toronto, ON", avatar_url: null, profile_type: "owner", founding_number: 1, helps_with: ["Wholesale"] },

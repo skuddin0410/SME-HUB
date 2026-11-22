@@ -414,6 +414,17 @@ select t.expect_denied('views table is not readable directly', $$select 1/(selec
 reset role; set request.jwt.claim.sub = ''; update profiles set plan = 'plus' where id = :e1; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
 select t.expect('paid plan sees every name', (select count(*) filter (where shown) = 3 from my_profile_viewers()));
 
+-- member map: cities and counts only, and a member's own location privacy applies
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+reset role; update profiles set location = 'Montréal, QC' where id in (:e1, :e4); set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('map counts members per city', (select coalesce(sum(members), 0) >= 2 from member_map_cities() where location = 'Montréal, QC'));
+reset role; insert into profile_details (user_id, visibility) values (:e4, '{"location":"only"}') on conflict (user_id) do update set visibility = '{"location":"only"}'; set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
+select t.expect('a member who hides their city is not on the map', (select sum(members) = 1 from member_map_cities() where location = 'Montréal, QC'));
+select t.expect('map can be narrowed to a province', (select count(*) = 0 from member_map_cities(null, 'ON') where location = 'Montréal, QC'));
+reset role; delete from profile_details where user_id = :e4; set role authenticated;
+
 -- search ignores accents and respects hidden fields
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
 select t.expect('Montreal finds Montréal', (select count(*) = 1 from search_members('montreal') where id = :e1));

@@ -12,12 +12,12 @@ What members get, and where it lives. All rules are in the database (`0016`, `00
 | Warm introductions | Profile page, answered on `/network` | Ask a mutual connection to introduce you. 5 a day. Accepting sends a pending connection request. |
 | Who viewed my profile | `/profile/views`, link on the profile card | 30-day chart. Free plan sees 2 names, paid plans see all. Private browsing hides you and your own list. |
 | Profile strength | Profile card | `lib/profile-extra.ts`, ten steps, unit tested. |
+| Member directory and map | `/members`, `/members?view=map` | Map shows one circle per city (cities and counts only, each member's location privacy applied by `member_map_cities()`). Needs `NEXT_PUBLIC_MAPBOX_TOKEN` in Amplify; without it the same cities show as a list. |
 | Member directory | `/members` | `search_members()`: name, headline, city, type, province, helps with, availability. Ignores accents and case. |
 | Privacy and account | `/settings` | Data download (JSON), delete account. No secret key in the website. |
 
 ## Not in this phase
 
-- **Directory map.** Needs a maps provider. Waiting on your choice (Mapbox suggested).
 - **Notification settings.** Notifications are built in Phase 8; their settings arrive with them.
 - **Deleting a business owner's account.** Their listings go with them for now; the rule for shared ownership is decided in Phase 10.
 

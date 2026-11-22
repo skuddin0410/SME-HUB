@@ -3,6 +3,8 @@ import { Empty, PageTitle, Pager } from "@/components/hub";
 import { SubmitButton } from "@/components/hub-client";
 import { PersonCard, type Person } from "@/components/network-client";
 import { pageMeta } from "@/lib/seo";
+import Link from "next/link";
+import { MemberMap, type CityCount } from "@/components/member-map";
 import { AVAILABILITY, PROFILE_TYPES, PROVINCES } from "@/lib/profile-extra";
 
 export const metadata = pageMeta({ title: "Members", description: "Meet Canadian small business owners, advisors and professionals on SMB Hub.", path: "/members" });
@@ -20,13 +22,18 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
   const help = one(sp.help).trim().slice(0, 60);
   const avail = one(sp.avail);
   const page = Math.max(1, Number(one(sp.page)) || 1);
+  const map = one(sp.view) === "map";
   const { supabase, userId } = await getViewer();
 
   // the database applies each member's privacy choices, accents and case do not matter
+  const typeArg = type in PROFILE_TYPES ? type : null;
+  const provinceArg = (PROVINCES as readonly string[]).includes(province) ? province : null;
+  // the map shows cities and counts only, with each member's own location privacy applied by the database
+  const cityRows = map ? ((await supabase.rpc("member_map_cities", { p_type: typeArg, p_province: provinceArg })).data ?? []) as CityCount[] : [];
   const { data } = await supabase.rpc("search_members", {
     q,
-    p_type: type in PROFILE_TYPES ? type : null,
-    p_province: (PROVINCES as readonly string[]).includes(province) ? province : null,
+    p_type: typeArg,
+    p_province: provinceArg,
     p_help: help || null,
     p_avail: (AVAILABILITY as readonly string[]).includes(avail) ? avail : null,
     p_limit: SIZE,
@@ -38,7 +45,8 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
   const members: Person[] = rows.filter((m) => m.id !== userId).map((m) => ({ ...m, member_type: tier.get(m.id) ?? "owner" }));
   const [links, degrees] = await Promise.all([getLinks(), getDegrees(supabase, userId, members.map((m) => m.id))]);
 
-  const qs = new URLSearchParams({ q, type, province, help, avail }).toString();
+  const qs = new URLSearchParams({ q, type, province, help, avail, ...(map ? { view: "map" } : {}) }).toString();
+  const viewLink = (to: "list" | "map") => `/members?${new URLSearchParams({ q, type, province, help, avail, ...(to === "map" ? { view: "map" } : {}) }).toString()}`;
   const select = "rounded-lg border border-input bg-white px-3 text-sm";
   return (
     <>
@@ -58,8 +66,18 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
           <option value="">Any time</option>
           {AVAILABILITY.map((a) => <option key={a} value={a}>{a}</option>)}
         </select>
+        {map && <input type="hidden" name="view" value="map" />}
         <SubmitButton className="sm:col-span-2">Search</SubmitButton>
       </form>
+
+      <nav aria-label="Directory view" className="flex gap-2">
+        {(["list", "map"] as const).map((v) => (
+          <Link key={v} href={viewLink(v)} aria-current={(v === "map") === map ? "page" : undefined} className={`press rounded-xl border px-4 py-1.5 text-sm font-semibold ${(v === "map") === map ? "border-primary bg-primary/10 text-foreground" : "hover:bg-muted"}`}>
+            {v === "map" ? "Map" : "List"}
+          </Link>
+        ))}
+      </nav>
+      {map && <MemberMap cities={cityRows} token={process.env.NEXT_PUBLIC_MAPBOX_TOKEN} query={q} />}
 
       {members.length === 0 && <Empty title="No members match that search">Try a different name or clear the filters.</Empty>}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
