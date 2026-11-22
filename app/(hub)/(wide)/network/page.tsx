@@ -47,7 +47,7 @@ export default async function NetworkPage() {
   const manage = "flex items-center justify-between rounded px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
 
   return (
-    <div className="mx-auto grid max-w-[85rem] items-start gap-6 px-4 sm:px-6 lg:px-8 py-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+    <div className="mx-auto grid max-w-[96rem] items-start gap-6 px-4 sm:px-6 lg:px-8 py-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
       <aside className="rail hidden space-y-2 lg:block">
         <section className="panel p-4">
           <h1 className="text-xl font-semibold">Network overview</h1>

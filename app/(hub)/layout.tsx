@@ -121,7 +121,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
       {/* the feed carries its own small footer in the right rail */}
       <HideOn paths={["/feed"]}>
       <footer className="mt-8 border-t border-[#E5E5E8] bg-white">
-        <div className="mx-auto grid max-w-[85rem] gap-8 px-4 sm:px-6 lg:px-8 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+        <div className="mx-auto grid max-w-[96rem] gap-8 px-4 sm:px-6 lg:px-8 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
             <Logo />
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">
@@ -180,6 +180,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
       </footer>
       </HideOn>
 
+      {profile && userId && <div aria-hidden className="hidden h-12 md:block" />}
       {profile && userId && <MessagingDock me={{ id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url }} threads={threads} unread={inbox.count ?? 0} />}
     </div>
   );

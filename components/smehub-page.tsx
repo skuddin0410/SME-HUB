@@ -76,7 +76,7 @@ export function SmehubPage({ page }: { page: FullPage }) {
   const [first, second] = page.heads;
   const guide = page.path.startsWith("/guides/");
   return (
-    <div className="flex-1 mx-auto w-full max-w-[85rem] px-4 py-6 sm:px-6 lg:px-8">
+    <div className="flex-1 mx-auto w-full max-w-[96rem] px-4 py-6 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
         <main className="flex min-w-0 flex-col gap-5 lg:col-span-8">
           <section className={`${CARD} relative grid items-center gap-6 overflow-hidden p-6 sm:p-8 md:grid-cols-[minmax(0,1fr)_15rem]`}>

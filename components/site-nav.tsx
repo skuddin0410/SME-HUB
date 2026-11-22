@@ -145,7 +145,7 @@ export function SiteNav({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white border-b border-[#E5E5E8]">
-      <div ref={bar} className="max-w-[85rem] mx-auto px-3 sm:px-6 lg:px-8 h-[3.875rem] flex items-center justify-between gap-2 sm:gap-3">
+      <div ref={bar} className="max-w-[96rem] mx-auto px-3 sm:px-6 lg:px-8 h-[3.875rem] flex items-center justify-between gap-2 sm:gap-3">
         {/* left: brand and search */}
         <div className="flex items-center gap-3.5 shrink-0">
           <Logo />
@@ -199,9 +199,9 @@ export function SiteNav({
         {/* right: the smehub.ca menus (About, Explore, Help), then notifications, me, upgrade */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <div className="relative hidden lg:block shrink-0">
-            <button type="button" onClick={() => toggle("about")} aria-label="About" title="About" aria-expanded={open === "about"} className={open === "about" ? MENU_BTN_ON : MENU_BTN}>
+            <button type="button" onClick={() => toggle("about")} aria-label="About" aria-expanded={open === "about"} className={open === "about" ? MENU_BTN_ON : MENU_BTN}>
               <Info className="w-3.5 h-3.5 shrink-0" />
-              <span className="sr-only">About</span>
+              <span className="hidden navfull:inline">About</span>
               <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "about" ? "rotate-180" : ""}`} />
             </button>
             {open === "about" && (
@@ -214,9 +214,9 @@ export function SiteNav({
           </div>
 
           <div className="relative hidden lg:block shrink-0">
-            <button type="button" onClick={() => toggle("explore")} aria-label="Explore" title="Explore" aria-expanded={open === "explore"} className={open === "explore" ? MENU_BTN_ON : MENU_BTN}>
+            <button type="button" onClick={() => toggle("explore")} aria-label="Explore" aria-expanded={open === "explore"} className={open === "explore" ? MENU_BTN_ON : MENU_BTN}>
               <LayoutGrid className="w-3.5 h-3.5 shrink-0" />
-              <span className="sr-only">Explore</span>
+              <span className="hidden navfull:inline">Explore</span>
               <ChevronDown className={`w-3 h-3 shrink-0 transition-transform ${open === "explore" ? "rotate-180" : ""}`} />
             </button>
             {open === "explore" && (
@@ -235,9 +235,9 @@ export function SiteNav({
             )}
           </div>
 
-          <Link href="/help" aria-label="Help" title="Help" className={`hidden lg:inline-flex ${pathname.startsWith("/help") ? MENU_BTN_ON : MENU_BTN}`}>
+          <Link href="/help" aria-label="Help" className={`hidden lg:inline-flex ${pathname.startsWith("/help") ? MENU_BTN_ON : MENU_BTN}`}>
             <HelpCircle className="w-3.5 h-3.5 shrink-0" />
-            <span className="sr-only">Help</span>
+            <span className="hidden navfull:inline">Help</span>
           </Link>
 
           <div className="h-4 w-px bg-[#E5E5E8] mx-0.5 hidden sm:block shrink-0" />

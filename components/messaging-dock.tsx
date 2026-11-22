@@ -37,7 +37,7 @@ export function MessagingDock({ me, threads, unread }: { me: { id: string; full_
   if (pathname.startsWith("/messages")) return null;
 
   return (
-    <aside aria-label="Messaging" className="fixed bottom-0 right-4 z-30 hidden w-[20rem] md:block lg:right-8">
+    <aside aria-label="Messaging" className="msg-dock fixed bottom-0 z-30 hidden md:block">
       <div className="overflow-hidden rounded-t-2xl border border-b-0 border-[#E5E5E8] bg-white shadow-popover">
         <button type="button" onClick={flip} aria-expanded={open} className="flex h-12 w-full items-center gap-2.5 px-3.5 text-left hover:bg-[#F5F5F6]">
           <span className="relative">

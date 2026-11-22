@@ -278,3 +278,13 @@
 .dark .to-white, .dark .via-white { --tw-gradient-to: hsl(var(--card)); }
 .dark img { filter: brightness(0.92); }
 .dark .no-dim img, .dark img.no-dim { filter: none; }
+
+/* Messaging pop-up: sits in the right rail column (same right edge and width as the rail cards),
+   so it lines up with the page at every screen size instead of floating over the cards. */
+.msg-dock { right: 1rem; width: 20rem; }
+@media (min-width: 64rem) {
+  .msg-dock {
+    right: max(2rem, calc((100vw - 96rem) / 2 + 2rem));
+    width: clamp(14rem, calc((min(100vw, 96rem) - 4rem - 13.75rem) / 4 + 2.5rem), 24rem);
+  }
+}

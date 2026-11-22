@@ -11,6 +11,8 @@ export default {
   ],
   theme: {
     extend: {
+      // width at which the top bar has room for the About, Explore and Help names
+      screens: { navfull: "87.5rem" },
       // type scale in rem, about 7% larger than Tailwind's default (sm = 15px at the default root size)
       fontSize: {
         xs: ["0.8125rem", { lineHeight: "1.4" }],
