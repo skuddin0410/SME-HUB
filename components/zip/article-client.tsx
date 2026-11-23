@@ -1,0 +1,58 @@
+"use client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toggleArticleMark } from "@/app/(hub)/actions";
+import { Ic } from "@/components/zip/ic";
+
+type Kind = "saved" | "helpful" | "insightful";
+
+function useMark(item: string, kind: Kind, initial: boolean, signedIn: boolean) {
+  const router = useRouter();
+  const [on, setOn] = useState(initial);
+  const flip = () => {
+    if (!signedIn) return router.push("/auth/sign-up");
+    const next = !on;
+    setOn(next);
+    toggleArticleMark(item, kind, next).catch(() => setOn(!next));
+  };
+  return [on, flip] as const;
+}
+
+export function SaveBtn({ item, saved, signedIn }: { item: string; saved: boolean; signedIn: boolean }) {
+  const [on, flip] = useMark(item, "saved", saved, signedIn);
+  return (
+    <button type="button" className="act" aria-pressed={on} aria-label={on ? "Saved" : "Save for later"} onClick={flip}>
+      <Ic n="bookmark" s={15} fill={on ? "currentColor" : "none"} />
+      {on ? "Saved" : "Save"}
+    </button>
+  );
+}
+
+export function ReactBtn({ item, kind, mine, count, signedIn }: { item: string; kind: "helpful" | "insightful"; mine: boolean; count: number; signedIn: boolean }) {
+  const [on, flip] = useMark(item, kind, mine, signedIn);
+  const n = count - (mine ? 1 : 0) + (on ? 1 : 0);
+  return (
+    <button type="button" className="act" aria-pressed={on} onClick={flip}>
+      <span aria-hidden="true">{kind === "helpful" ? "👍" : "💡"}</span>
+      {kind === "helpful" ? "Helpful" : "Insightful"} {n}
+    </button>
+  );
+}
+
+export function ShareLink() {
+  const [done, setDone] = useState(false);
+  return (
+    <button
+      type="button"
+      className="act"
+      onClick={() => {
+        navigator.clipboard?.writeText(window.location.href).catch(() => {});
+        setDone(true);
+        setTimeout(() => setDone(false), 2000);
+      }}
+    >
+      <Ic n="send" s={15} />
+      {done ? "Link copied" : "Share"}
+    </button>
+  );
+}

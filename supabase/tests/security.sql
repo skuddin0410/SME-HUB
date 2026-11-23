@@ -936,3 +936,14 @@ set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000
 select t.expect_denied('a member cannot add advisor details for themselves', $$insert into advisor_profiles (user_id, field) values ('00000000-0000-0000-0000-00000000000c','Legal')$$);
 select t.expect('advisor details are public to read', (select count(*) >= 0 from advisor_profiles));
 reset role;
+
+-- article_marks (0034): private rows, public counts
+reset role;
+select t.expect('anon cannot read article marks', not has_table_privilege('anon', 'article_marks', 'select'));
+select t.expect('anyone can read helpful counts', (select count(*) = 1 from pg_proc p where proname = 'article_mark_counts' and has_function_privilege('anon', p.oid, 'execute')));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect_denied('a mark must name a real section', $$insert into article_marks (user_id, item, kind) values (auth.uid(), 'other/x', 'saved')$$);
+select t.expect_denied('cannot mark for another member', $$insert into article_marks (user_id, item, kind) values ('00000000-0000-0000-0000-00000000000b', 'blog/x', 'saved')$$);
+insert into article_marks (user_id, item, kind) values (auth.uid(), 'blog/x', 'helpful');
+select t.expect('a member sees their own mark', (select count(*) = 1 from article_marks));
+select t.expect('the count shows it', (select n = 1 from article_mark_counts('blog/x') where kind = 'helpful'));

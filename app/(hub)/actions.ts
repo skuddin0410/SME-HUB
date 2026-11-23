@@ -454,3 +454,13 @@ export async function setRsvp(eventId: string, on: boolean) {
   fail((await q).error);
   revalidatePath("/events");
 }
+
+/** Save a piece for later, or mark it helpful or insightful. Marking again takes the mark off. */
+export async function toggleArticleMark(item: string, kind: "saved" | "helpful" | "insightful", on: boolean) {
+  if (!/^(blog|news|podcast)\/[a-z0-9-]{1,200}$/.test(item) || !["saved", "helpful", "insightful"].includes(kind)) throw new Error("Not found");
+  const { supabase, userId } = await requireUser();
+  const q = on
+    ? supabase.from("article_marks").upsert({ user_id: userId, item, kind }, { ignoreDuplicates: true })
+    : supabase.from("article_marks").delete().eq("user_id", userId).eq("item", item).eq("kind", kind);
+  fail((await q).error);
+}

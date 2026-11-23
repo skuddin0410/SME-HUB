@@ -89,3 +89,9 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip article.post a.small,.zip article.post .row>.small{color:var(--muted)!important}
 .zip .pstats a.small{color:var(--muted)!important}
 .zip .pcard .linkbtn,.zip .gs4 .linkbtn{color:var(--link)}
+
+/* article pages: contrast */
+.zip .arthead .eyebrow{color:var(--link)!important}
+.zip .acat{color:var(--link)!important}
+.zip .arthead p.muted,.zip .artfeat .muted{color:var(--ink)!important;opacity:.82!important}
+.zip .band p{color:#E8EAF0!important}
