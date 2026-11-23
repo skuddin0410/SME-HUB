@@ -11,6 +11,8 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: `http://127.0.0.1:${port}`,
+    // the page's short fade-ins would otherwise be caught half-way by contrast checks and quick clicks
+    reducedMotion: "reduce",
     launchOptions: process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH, args: ["--no-sandbox"] } : {},
   },
   webServer: [

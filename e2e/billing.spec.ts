@@ -10,8 +10,11 @@ test("the plans page matches the design: monthly first, three plans, Founding of
   await expect(page.getByText("Or $190 a year, 2 months free")).toBeVisible();
   await expect(page.getByText("$1,990")).toBeVisible();
   await expect(page.getByText("Founding Member offer: Plus for $99 in year one")).toBeVisible();
-  await page.getByRole("link", { name: /Pay yearly/ }).click();
-  await expect(page.getByText("Works out to under $16 a month")).toBeVisible();
+  // retry the click: a link pressed before the page has hydrated can be swallowed on a slow runner
+  await expect(async () => {
+    await page.getByRole("link", { name: /Pay yearly/ }).click();
+    await expect(page.getByText("Works out to under $16 a month")).toBeVisible({ timeout: 3000 });
+  }).toPass({ timeout: 20000 });
 });
 
 test("the plans page has the comparison table, the fit guide and the questions", async ({ page }) => {

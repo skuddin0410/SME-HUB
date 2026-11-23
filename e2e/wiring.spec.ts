@@ -179,4 +179,17 @@ test.describe("saved settings change the live pages", () => {
       }
     }
   });
+
+  test.describe("motion", () => {
+    test("pages ease in, and stay still for people who ask for less motion", async ({ page, context, baseURL }) => {
+      await context.addCookies([memberCookie(baseURL!)]);
+      for (const [motion, expectNone] of [["no-preference", false], ["reduce", true]] as const) {
+        await page.emulateMedia({ reducedMotion: motion });
+        await page.goto("/hashtags", { waitUntil: "domcontentloaded" });
+        await page.getByRole("heading", { name: "Hashtags", exact: true }).waitFor();
+        const name = await page.locator(".zip > .wrap").first().evaluate((el) => getComputedStyle(el).animationName);
+        expect(name === "none").toBe(expectNone);
+      }
+    });
+  });
 });

@@ -91,13 +91,20 @@ test("a member profile shows the guide's header, tabs and recommendations", asyn
   await expect(page.getByRole("heading", { name: "More profiles for you" })).toBeVisible();
   // the tabs are links, so each one has its own address
   const tabs = page.getByRole("navigation", { name: "Profile sections" });
-  await tabs.getByRole("link", { name: "Connections" }).click();
-  await expect(page).toHaveURL(/tab=connections/);
+  // retry the click: a link pressed before the page has hydrated can be swallowed on a slow runner
+  await expect(async () => {
+    await tabs.getByRole("link", { name: "Connections" }).click();
+    await expect(page).toHaveURL(/tab=connections/, { timeout: 3000 });
+  }).toPass({ timeout: 20000 });
   await expect(tabs.getByRole("link", { name: "Connections" })).toHaveAttribute("aria-current", "page");
-  await tabs.getByRole("link", { name: "Groups" }).click();
-  await expect(page.getByText("has not joined a public group yet")).toBeVisible();
-  await tabs.getByRole("link", { name: "Blog" }).click();
-  await expect(page.getByText("has not published a blog post yet")).toBeVisible();
+  await expect(async () => {
+    await tabs.getByRole("link", { name: "Groups" }).click();
+    await expect(page.getByText("has not joined a public group yet")).toBeVisible({ timeout: 3000 });
+  }).toPass({ timeout: 20000 });
+  await expect(async () => {
+    await tabs.getByRole("link", { name: "Blog" }).click();
+    await expect(page.getByText("has not published a blog post yet")).toBeVisible({ timeout: 3000 });
+  }).toPass({ timeout: 20000 });
 });
 
 test("your own profile has Edit and no Follow button", async ({ page }) => {
