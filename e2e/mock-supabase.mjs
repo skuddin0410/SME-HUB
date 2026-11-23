@@ -20,6 +20,7 @@ const MEMBER = {
 };
 const port = Number(process.env.MOCK_SUPABASE_PORT || 54398);
 
+const MODSET = { types: { post: { on: true, auto: true, hide: 3 }, comment: { on: true, auto: true, hide: 3 }, photo: { on: true, auto: true, hide: 2 }, group: { on: true, auto: false, hide: 5 }, blog: { on: true, auto: true, hide: 3 }, blogc: { on: true, auto: true, hide: 3 } }, member_report: true, blocking: true, sus_blocks: { on: true, n: 5 }, sus_reports: { on: true, n: 10 }, email_on: true, email_subject: "[SMB Hub] {{user.name}} was suspended", email_body: "Review in Moderation." };
 http
   .createServer((req, res) => {
     const url = new URL(req.url, "http://localhost");
@@ -31,6 +32,24 @@ http
     if (process.env.MOCK_LOG) console.log(req.method, req.url.slice(0, 90), String(req.headers.authorization).slice(0, 20));
     const token = String(req.headers.authorization || "").replace(/^Bearer /, "");
     const member = token.startsWith("ey");
+    let sub = MEMBER.id;
+    try { sub = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString()).sub || MEMBER.id; } catch {}
+    const staff = member && sub.endsWith("0002");
+    if (staff) {
+      const STAFF = { ...MEMBER, id: sub, full_name: "Team Lead", role: "admin" };
+      if (url.pathname === "/auth/v1/user") return res.end(JSON.stringify({ id: sub, aud: "authenticated", role: "authenticated", email: "team@example.test", app_metadata: {}, user_metadata: {}, created_at: MEMBER.created_at }));
+      if (url.pathname === "/rest/v1/profiles" && url.searchParams.get("id") === `eq.${sub}`) return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? STAFF : [STAFF]));
+      if (url.pathname === "/rest/v1/reports") return res.end(JSON.stringify([
+        { id: "r1", reason: "Spam or disguised advertising", created_at: "2026-11-19T09:00:00Z", post_id: "00000000-0000-4000-8000-0000000000a1", profile_id: null, reporter: { full_name: "Sara Haddad" } },
+        { id: "r2", reason: "Scam or fraud", created_at: "2026-11-19T10:00:00Z", post_id: "00000000-0000-4000-8000-0000000000a1", profile_id: null, reporter: { full_name: "Kwame Asante" } },
+        { id: "r3", reason: "Harassment", created_at: "2026-11-12T10:00:00Z", post_id: null, profile_id: "00000000-0000-4000-8000-0000000000b1", reporter: { full_name: "Luc Bouchard" } },
+      ]));
+      if (url.pathname === "/rest/v1/blocks") return res.end(JSON.stringify([{ blocked_id: "00000000-0000-4000-8000-0000000000b1" }]));
+      if (url.pathname === "/rest/v1/posts" && (url.searchParams.get("id") || "").startsWith("in.")) return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000a1", title: null, body: "GROW YOUR BUSINESS FAST!!! 10,000 new followers in 7 days", hidden_at: null, author: { id: "x", full_name: "Growth Deals Daily", avatar_url: null } }]));
+      if (url.pathname === "/rest/v1/profiles" && (url.searchParams.get("id") || "").startsWith("in.")) return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000b1", full_name: "Marcus Webb", headline: "Consultant", avatar_url: null, status: "active" }]));
+      if (url.pathname === "/rest/v1/mod_settings") return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? MODSET : [MODSET]));
+      if (url.pathname === "/rest/v1/report_categories") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000c1", name: "Scam or fraud", description: "Fake offers.", show: "both" }]));
+    }
     if (member && url.pathname === "/auth/v1/user") {
       return res.end(JSON.stringify({ id: MEMBER.id, aud: "authenticated", role: "authenticated", email: "member@example.test", app_metadata: {}, user_metadata: {}, created_at: MEMBER.created_at }));
     }

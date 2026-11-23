@@ -29,7 +29,7 @@ const HUB_MENU: NavItem[] = [
 ];
 
 const TEAM_MENU: [string, NavItem[]][] = [
-  ["Community", [{ label: "Moderation", href: "/admin/reports" }]],
+  ["Community", [{ label: "Moderation", href: "/moderation" }]],
   [
     "Settings",
     [

@@ -483,13 +483,13 @@ set request.jwt.claim.sub = '';
 -- ===== Phase 3: feed =====
 reset role; set request.jwt.claim.sub = '';
 insert into auth.users (id, email) values
- ('00000000-0000-0000-0000-0000000001f1','gina@x.ca'), ('00000000-0000-0000-0000-0000000001f2','hugo@x.ca'), ('00000000-0000-0000-0000-0000000001f3','ivy@x.ca');
-\set f1 '''00000000-0000-0000-0000-0000000001f1'''
-\set f2 '''00000000-0000-0000-0000-0000000001f2'''
-\set f3 '''00000000-0000-0000-0000-0000000001f3'''
+ ('00000000-0000-0000-0000-0000000005f1','gina@x.ca'), ('00000000-0000-0000-0000-0000000005f2','hugo@x.ca'), ('00000000-0000-0000-0000-0000000005f3','ivy@x.ca');
+\set f1 '''00000000-0000-0000-0000-0000000005f1'''
+\set f2 '''00000000-0000-0000-0000-0000000005f2'''
+\set f3 '''00000000-0000-0000-0000-0000000005f3'''
 
 -- gina (f1) posts in every visibility; ivy (f3) is her connection, hugo (f2) a stranger
-set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f1';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f1';
 insert into posts (author_id, body, visibility, title) values
   (auth.uid(), 'g-public', 'public', 'A title'), (auth.uid(), 'g-members', 'members', ''), (auth.uid(), 'g-conn', 'connections', ''), (auth.uid(), 'g-only', 'private', '');
 select t.expect('post keeps its title', (select count(*) = 1 from posts where body = 'g-public' and title = 'A title'));
@@ -497,19 +497,19 @@ select t.expect_denied('title is capped at 120 characters', $$insert into posts 
 select t.expect_denied('cover must be in our storage', $$insert into posts (author_id, body, cover_url) values (auth.uid(), 'x', 'https://evil.example/c.png')$$);
 insert into posts (author_id, body, cover_url) values (auth.uid(), 'g-cover', 'https://kjxbjqcmtjopamxyojzs.supabase.co/storage/v1/object/public/media/x/cover-1.jpg');
 select t.expect('cover in our storage is fine', (select count(*) = 1 from posts where body = 'g-cover'));
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f3';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f3';
 insert into connections (requester_id, addressee_id) values (auth.uid(), :f1);
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f1';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f1';
 update connections set status = 'accepted' where addressee_id = auth.uid();
 
 -- visibility is enforced by the database
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 select t.expect('stranger sees public and members posts only', (select array_agg(body order by body) = array['g-cover','g-members','g-public'] from posts where author_id = :f1));
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f3';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f3';
 select t.expect('connection also sees the connections post, not the private one', (select array_agg(body order by body) = array['g-conn','g-cover','g-members','g-public'] from posts where author_id = :f1));
 set role anon; set request.jwt.claim.sub = '';
 select t.expect('visitor sees public posts only', (select array_agg(body order by body) = array['g-cover','g-public'] from posts where author_id = :f1));
-set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f1';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f1';
 select t.expect('author sees all of their own', (select count(*) = 5 from posts where author_id = :f1));
 
 -- scheduled posts
@@ -517,17 +517,17 @@ select t.expect_denied('cannot schedule in the past', $$insert into posts (autho
 select t.expect_denied('cannot schedule more than 90 days ahead', $$insert into posts (author_id, body, scheduled_at) values (auth.uid(), 'far', now() + interval '91 days')$$);
 insert into posts (author_id, body, scheduled_at) values (auth.uid(), 'g-later', now() + interval '1 day');
 select t.expect('a scheduled post is marked scheduled', (select status = 'scheduled' from posts where body = 'g-later'));
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 select t.expect('nobody else can see a scheduled post', (select count(*) = 0 from posts where body = 'g-later'));
 reset role; set request.jwt.claim.sub = ''; select t.expect('the job publishes nothing before the time', publish_due_posts() = 0);
 set app.now = '2030-01-01 00:00+00';
 select t.expect('the job publishes the due post', publish_due_posts() = 1);
 select t.expect('running the job again publishes nothing more', publish_due_posts() = 0);
 reset app.now;
-set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 select t.expect('once published everyone can see it', (select count(*) = 1 from posts where body = 'g-later'));
 select t.expect_denied('members cannot run the publishing job', $$select publish_due_posts()$$);
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f1';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f1';
 insert into posts (author_id, body, scheduled_at) values (auth.uid(), 'g-now', now() + interval '2 days');
 update posts set scheduled_at = null where body = 'g-now';
 select t.expect('publishing now from the scheduled list works', (select status = 'published' and scheduled_at is null from posts where body = 'g-now'));
@@ -539,7 +539,7 @@ select t.expect_denied('a published post cannot go back to scheduled', $$update 
 -- edit window and pinning
 update posts set body = 'g-public edited' where body = 'g-public';
 select t.expect('author can edit inside the window and it is marked edited', (select edited_at is not null from posts where body = 'g-public edited'));
-reset role; select set_config('app.now', (now() + interval '11 minutes')::text, false); set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f1';
+reset role; select set_config('app.now', (now() + interval '11 minutes')::text, false); set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f1';
 select t.expect_denied('editing after the window is refused', $$update posts set body = 'too late' where body = 'g-public edited'$$);
 update posts set visibility = 'members', comments_closed = true where body = 'g-public edited';
 select t.expect('visibility and closing comments are allowed any time', (select visibility = 'members' and comments_closed from posts where body = 'g-public edited'));
@@ -547,7 +547,7 @@ update posts set profile_pinned = true where body = 'g-public edited';
 select t.expect('author can pin a post to their profile', (select count(*) = 1 from posts where profile_pinned and author_id = :f1));
 select t.expect_denied('only one profile pin at a time', $$update posts set profile_pinned = true where body = 'g-members'$$);
 reset role; reset app.now; set role authenticated;
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 update posts set profile_pinned = true, body = 'hijack', comments_closed = true where body = 'g-members';
 select t.expect('nobody else can change or pin a member''s post', (select profile_pinned = false and body = 'g-members' and not comments_closed from posts where body = 'g-members'));
 
@@ -556,13 +556,13 @@ insert into posts (author_id, body, quoted_post_id) select auth.uid(), 'h-quote'
 select t.expect('a visible post can be quoted', (select count(*) = 1 from posts where body = 'h-quote' and quoted_post_id is not null));
 reset role; select id as gconn from posts where body = 'g-conn' \gset
 select id as gonly from posts where body = 'g-only' \gset
-set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 select t.expect_denied('a post you cannot see cannot be quoted', format($q$insert into posts (author_id, body, quoted_post_id) values (auth.uid(), 'h-peek', %L)$q$, :'gconn'));
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f3';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f3';
 select t.expect_denied('quoting someone''s private post is refused', format($q$insert into posts (author_id, body, quoted_post_id) values (auth.uid(), 'i-peek', %L)$q$, :'gonly'));
 
 -- six reactions
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 do $$ declare k text; pid uuid; begin
   select id into pid from posts where body = 'g-members';
   foreach k in array array['like','celebrate','support','love','insight','funny'] loop
@@ -574,7 +574,7 @@ select t.expect('all six reactions are accepted', (select kind = 'funny' from re
 select t.expect_denied('an unknown reaction is refused', $$update reactions set kind = 'angry' where user_id = auth.uid()$$);
 
 -- threaded comments
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 insert into comments (post_id, author_id, body) select id, auth.uid(), 'top' from posts where body = 'g-members';
 insert into comments (post_id, author_id, body, parent_id) select post_id, auth.uid(), 'reply', id from comments where body = 'top';
 select t.expect('a reply sits under its comment', (select count(*) = 1 from comments r join comments c on c.id = r.parent_id where r.body = 'reply' and c.body = 'top'));
@@ -582,35 +582,35 @@ select t.expect_denied('no replies to replies', $$insert into comments (post_id,
 select t.expect_denied('a reply must be on the same post', $$insert into comments (post_id, author_id, body, parent_id) select (select id from posts where body = 'g-cover'), auth.uid(), 'elsewhere', id from comments where body = 'top'$$);
 update comments set body = 'top edited' where body = 'top';
 select t.expect('own comment can be edited inside the window', (select edited_at is not null from comments where body = 'top edited'));
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f3';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f3';
 update comments set body = 'tampered' where body = 'top edited';
 select t.expect('nobody else can edit a comment', (select count(*) = 0 from comments where body = 'tampered'));
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
-reset role; select set_config('app.now', (now() + interval '11 minutes')::text, false); set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
+reset role; select set_config('app.now', (now() + interval '11 minutes')::text, false); set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 select t.expect_denied('editing a comment after the window is refused', $$update comments set body = 'late' where body = 'top edited'$$);
-reset role; reset app.now; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+reset role; reset app.now; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 select t.expect_denied('no new comments once comments are closed', $$insert into comments (post_id, author_id, body) select id, auth.uid(), 'nope' from posts where body = 'g-public edited'$$);
 
 -- polls
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f1';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f1';
 insert into posts (author_id, body) values (auth.uid(), 'g-poll');
 select t.expect_denied('a poll needs two options', $$select add_poll((select id from posts where body = 'g-poll'), array['only one'], now() + interval '1 day')$$);
 select t.expect_denied('a poll has at most ten options', $$select add_poll((select id from posts where body = 'g-poll'), array['1','2','3','4','5','6','7','8','9','10','11'], now() + interval '1 day')$$);
 select t.expect_denied('a poll cannot close within the hour', $$select add_poll((select id from posts where body = 'g-poll'), array['a','b'], now() + interval '10 minutes')$$);
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 select t.expect_denied('only the author can add a poll', $$select add_poll((select id from posts where body = 'g-poll'), array['a','b'], now() + interval '1 day')$$);
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f1';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f1';
 select add_poll((select id from posts where body = 'g-poll'), array['Red', ' Blue ', '', 'Green'], now() + interval '1 day');
 select t.expect('blank options are dropped', (select count(*) = 3 from poll_options where post_id = (select id from posts where body = 'g-poll')));
 select t.expect_denied('one poll per post', $$select add_poll((select id from posts where body = 'g-poll'), array['a','b'], now() + interval '1 day')$$);
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f2';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f2';
 insert into poll_votes (post_id, option_id, user_id) select post_id, id, auth.uid() from poll_options where label = 'Blue';
 select t.expect('a vote is counted', (select votes = 1 from poll_options where label = 'Blue'));
 select t.expect_denied('one vote per member', $$insert into poll_votes (post_id, option_id, user_id) select post_id, id, auth.uid() from poll_options where label = 'Red'$$);
-set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f3';
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f3';
 select t.expect('votes are anonymous: members see only their own', (select count(*) = 0 from poll_votes));
 select t.expect_denied('cannot vote for another poll''s option', $$insert into poll_votes (post_id, option_id, user_id) select (select id from posts where body = 'g-members'), id, auth.uid() from poll_options where label = 'Red'$$);
-reset role; select set_config('app.now', (now() + interval '2 days')::text, false); set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001f3';
+reset role; select set_config('app.now', (now() + interval '2 days')::text, false); set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005f3';
 select t.expect_denied('no votes after the poll closes', $$insert into poll_votes (post_id, option_id, user_id) select post_id, id, auth.uid() from poll_options where label = 'Green'$$);
 reset role; reset app.now;
 set role anon; set request.jwt.claim.sub = '';
@@ -957,3 +957,23 @@ insert into contact_messages (name, email, message) values ('Pat', 'pat@example.
 select t.expect_denied('a bad email is refused', $$insert into contact_messages (name, email, message) values ('Pat', 'nope', 'Hello')$$);
 select t.expect_denied('an empty message is refused', $$insert into contact_messages (name, email, message) values ('Pat', 'pat@example.com', '')$$);
 select t.expect('a non-staff member cannot read messages', (select count(*) = 0 from contact_messages));
+
+-- moderation (0036): hide, suspend, settings
+reset role;
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000009d1','m1@x.ca'),('00000000-0000-0000-0000-0000000009d2','m2@x.ca'),('00000000-0000-0000-0000-0000000009d3','m3@x.ca'),('00000000-0000-0000-0000-0000000009d4','m4@x.ca');
+select t.expect('moderation settings are not readable by anon', not has_table_privilege('anon', 'mod_settings', 'select'));
+select t.expect('there is one settings row', (select count(*) = 1 from mod_settings));
+select t.expect('eight report categories are seeded', (select count(*) = 8 from report_categories));
+-- three members report one post by carol (c): it is hidden on its own at 3
+insert into posts (id, author_id, body, status) values ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000009d3', 'Buy followers now', 'published') on conflict do nothing;
+insert into reports (reporter_id, post_id, reason) values ('00000000-0000-0000-0000-0000000009d1', '00000000-0000-0000-0000-0000000000f1', 'Spam');
+insert into reports (reporter_id, post_id, reason) values ('00000000-0000-0000-0000-0000000009d2', '00000000-0000-0000-0000-0000000000f1', 'Spam');
+select t.expect('two reports do not hide a post', (select hidden_at is null from posts where id = '00000000-0000-0000-0000-0000000000f1'));
+insert into reports (reporter_id, post_id, reason) values ('00000000-0000-0000-0000-0000000009d4', '00000000-0000-0000-0000-0000000000f1', 'Spam');
+select t.expect('the third report hides the post', (select hidden_at is not null from posts where id = '00000000-0000-0000-0000-0000000000f1'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000009d1';
+select t.expect('a hidden post is gone for other members', (select count(*) = 0 from posts where id = '00000000-0000-0000-0000-0000000000f1'));
+update mod_settings set blocking = false;
+reset role;
+select t.expect('a member cannot change moderation settings', (select blocking from mod_settings));
+reset role;
