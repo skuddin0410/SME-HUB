@@ -45,7 +45,7 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
 
   const shown = notes.filter((n) => tab === "all" || (tab === "posts" ? n.type === "like" || n.type === "comment" : n.type.startsWith("connection")));
   const unread = notes.filter((n) => !n.read_at).length;
-  const href = (n: Note) => (n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network" : `/members/${n.actor.id}`);
+  const href = (n: Note) => (n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network/connections" : `/members/${n.actor.id}`);
 
   const read = (id: string) => {
     setNotes((all) => all.map((n) => (n.id === id && !n.read_at ? { ...n, read_at: new Date().toISOString() } : n)));

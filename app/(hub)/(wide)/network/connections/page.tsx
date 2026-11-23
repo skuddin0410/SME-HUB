@@ -6,7 +6,7 @@ import { ConnectButton, Invitations, Suggestions, type Person } from "@/componen
 import { GroupsCard, SocialCard } from "@/components/rails";
 import { IntroAnswer } from "@/components/profile-extras";
 
-export const metadata = { title: "My network", robots: { index: false } };
+export const metadata = { title: "My connections", robots: { index: false } };
 
 type Row = { requester_id: string; addressee_id: string; status: "pending" | "accepted"; requester: Author; addressee: Author };
 

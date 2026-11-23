@@ -35,25 +35,31 @@ test("who viewed your profile shows the 30-day chart and the upgrade note for hi
   await expect(page.getByRole("link", { name: "See membership plans" })).toBeVisible();
 });
 
-test("directory filters go into the address and the results show", async ({ page }) => {
+test("the member directory filters by place and shows the chosen member beside the map", async ({ page }) => {
   await page.goto("/members", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Priya Raman")).toBeVisible();
-  await page.getByLabel("Province").selectOption("ON");
-  await page.getByLabel("Can help with").fill("Wholesale");
-  await page.getByLabel("Availability").selectOption("Evenings");
-  await page.getByRole("button", { name: "Search", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Member directory" })).toBeVisible();
+  await expect(page.getByText("Members · 8")).toBeVisible();
+  await expect(page.getByRole("button", { name: /Priya Raman/ }).first()).toBeVisible();
+  // choosing a member shows their details under the map
+  await page.getByRole("button", { name: /Luc Bouchard/ }).first().click();
+  await expect(page.getByRole("link", { name: "Send message" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "View profile" })).toHaveAttribute("href", /\/members\/00000000/);
+  // the place filter goes into the address
+  await page.getByLabel("Location").selectOption("ON");
   await expect(page).toHaveURL(/province=ON/);
-  await expect(page).toHaveURL(/help=Wholesale/);
-  await expect(page).toHaveURL(/avail=Evenings/);
+  // the extra filters open from Profile search
+  await page.getByRole("button", { name: /Profile search/ }).click();
+  await expect(page).toHaveURL(/more=1/);
+  await expect(page.getByLabel("Can help with")).toBeVisible();
+  await expect(page.getByLabel("Availability")).toBeVisible();
 });
 
-test("directory map view lists cities with counts when no map token is set", async ({ page }) => {
-  await page.goto("/members?view=map", { waitUntil: "domcontentloaded" });
-  const list = page.getByRole("list", { name: "Members by city" });
-  await expect(list.getByText("Toronto, ON")).toBeVisible();
-  await expect(list.getByRole("link", { name: /Montréal, QC/ })).toHaveAttribute("href", /q=Montr/);
-  await page.getByRole("link", { name: "List", exact: true }).click();
-  await expect(page).not.toHaveURL(/view=map/);
+test("the member directory switches between cards and a list", async ({ page }) => {
+  await page.goto("/network", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "List" }).click();
+  await expect(page.locator(".dirlist")).toBeVisible();
+  await page.getByRole("button", { name: "Grid" }).click();
+  await expect(page.locator(".dirgrid")).toBeVisible();
 });
 
 test("your own profile has Edit and no Follow button", async ({ page }) => {
@@ -71,7 +77,7 @@ test("the account menu links to settings and who viewed", async ({ page }) => {
 });
 
 for (const width of SCREEN_WIDTHS) {
-  for (const path of ["/settings", "/profile/views", "/profile/edit", "/members", "/members?view=map"]) {
+  for (const path of ["/settings", "/profile/views", "/profile/edit", "/members", "/network"]) {
     test(`${path} fits a ${width}px screen`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(path, { waitUntil: "domcontentloaded" });

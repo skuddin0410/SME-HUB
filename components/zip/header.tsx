@@ -213,6 +213,7 @@ export function ZipHeader({
                       <span className="muted small">{me.headline || "View your profile"}</span>
                     </Link>
                     <Link href="/profile/edit">Edit profile &amp; headline</Link>
+                    <Link href="/network/connections">My connections and invitations</Link>
                     <Link href="/profile/views">Who viewed your profile</Link>
                     <Link href="/settings">Settings &amp; privacy</Link>
                     <Link href="/feed?saved=1">Saved bookmarks</Link>

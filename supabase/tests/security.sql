@@ -441,6 +441,10 @@ select t.expect('accent-free name search', (select count(*) = 1 from search_memb
 select t.expect('filter by province and type', (select count(*) = 1 from search_members('', 'maker', 'QC') where id = :e1));
 select t.expect('filter by what they help with (visible to a connection)', (select count(*) = 1 from search_members('', null, null, 'Wholesale') where id = :e1));
 select t.expect('search treats % as plain text', (select count(*) = 0 from search_members('%')));
+select t.expect('the member directory finds the same people as the search', (select count(*) = 1 from member_directory('montreal') where id = :e1));
+select t.expect('the member directory counts recommendations and shows when a member was last active', (select recommended_by >= 0 and last_active is not null from member_directory('zoe') where id = :e1));
+select t.expect('the member directory treats % as plain text', (select count(*) = 0 from member_directory('%')));
+select t.expect('anyone can open the member directory', (select count(*) = 1 from pg_proc p where proname = 'member_directory' and has_function_privilege('anon', p.oid, 'execute')));
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
 update profile_details set visibility = visibility || '{"location":"only"}' where user_id = auth.uid();
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';

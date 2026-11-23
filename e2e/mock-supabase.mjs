@@ -50,6 +50,23 @@ http
     if (url.pathname === "/rest/v1/rpc/member_map_cities") {
       return res.end(JSON.stringify([{ location: "Toronto, ON", members: 4 }, { location: "Montréal, QC", members: 2 }, { location: "Tiny Town, MB", members: 1 }]));
     }
+    if (url.pathname === "/rest/v1/rpc/member_directory") {
+      const day = 86400_000;
+      const m = (n, id, name, headline, location, type, recs, ago, helps = [], needs = []) => ({
+        id: `00000000-0000-4000-8000-0000000000${String(n).padStart(2, "0")}`, full_name: name, headline, location, avatar_url: `/zip/img/p-${id}.jpg`, profile_type: type, member_type: "owner",
+        founding_number: n, helps_with: helps, needs, recommended_by: recs, last_active: new Date(Date.now() - ago * day).toISOString(),
+      });
+      return res.end(JSON.stringify([
+        m(11, "priya", "Priya Raman", "Founder, Maple Bakery", "Toronto, ON", "advisor", 3, 0.2, ["Wholesale"], ["Packaging"]),
+        m(12, "luc", "Luc Bouchard", "Director, Atelier Bouchard", "Montréal, QC", "maker", 1, 3),
+        m(13, "kwame", "Kwame Asante", "Managing Partner, Asante Legal", "Toronto, ON", "advisor", 3, 0.1, ["Contracts", "Leases", "Employment law"], ["Owner-run clients"]),
+        m(14, "sara", "Sara Haddad", "Founder, Clearwater Bookkeeping", "Ottawa, ON", "advisor", 4, 0.3),
+        m(15, "daniel", "Daniel Okafor", "Owner, Northside Logistics", "Mississauga, ON", "owner", 2, 2),
+        m(16, "hana", "Hana Kim", "Founder, Kim & Co. Accounting", "Edmonton, AB", "advisor", 2, 4),
+        m(17, "mei", "Mei Tanaka", "Co-founder, Harbour Analytics", "Vancouver, BC", "provider", 1, 5),
+        m(18, "amara", "Amara Diallo", "Founder, Diallo Imports", "Moncton, NB", "owner", 0, 20),
+      ]));
+    }
     if (url.pathname === "/rest/v1/rpc/search_members") {
       return res.end(JSON.stringify([
         { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", location: "Toronto, ON", avatar_url: null, profile_type: "owner", founding_number: 1, helps_with: ["Wholesale"] },

@@ -25,4 +25,5 @@ export const ICON: Record<string, string> = {
   lock: "<rect x=\"5\" y=\"11\" width=\"14\" height=\"9\" rx=\"2\"/><path d=\"M8 11V8a4 4 0 0 1 8 0v3\"/>",
   clock: "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>",
   up: "<path d=\"M6 15l6-6 6 6\"/>",
+  flag: "<path d=\"M5 21V4h11l-1.5 4L16 12H5\"/>",
 };

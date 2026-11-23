@@ -92,7 +92,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
     id: n.id,
     actor: n.actor?.full_name || "A member",
     text: NOTE_TEXT[n.type] ?? "sent you an update",
-    href: n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network" : `/members/${n.actor?.id}`,
+    href: n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network/connections" : `/members/${n.actor?.id}`,
     ago: shortAgo(n.created_at),
     unread: !n.read_at,
   }));

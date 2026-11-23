@@ -83,7 +83,7 @@ export async function ProfileCard() {
           )}
 
           <div className="mt-3.5 pt-3.5 border-t border-[#E5E5E8] grid grid-cols-2 divide-x divide-[#E5E5E8]">
-            <Link href="/network" className="pr-3 text-left group">
+            <Link href="/network/connections" className="pr-3 text-left group">
               <span className="block text-[0.75rem] text-zinc-500 group-hover:text-zinc-900 transition-colors">Connections</span>
               <span className="flex items-baseline justify-between mt-0.5">
                 <span className="font-display font-bold text-sm text-blue-600">{(connections.data as number | null) ?? 0}</span>

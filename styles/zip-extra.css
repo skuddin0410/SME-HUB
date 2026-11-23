@@ -32,3 +32,15 @@ button.spill{font:inherit;color:#A1A1AA}
 .dark .zip .btn.line{color:var(--link);border-color:var(--link)}
 .dark .zip .bzopen.open{color:#4ADE80}.dark .zip .bzopen.closed{color:#F87171}
 .dark .zip .act.blue{color:var(--link)}
+
+/* member directory map: land colours and state labels follow the theme */
+.zip .dirmap{--maplab:#8FA3B0}
+.dark .zip .dirmap{--maplab:#6F8494}
+.zip .dirmap .landfill{fill:#F3F1EA;stroke:#CFD8DC}
+.dark .zip .dirmap .landfill{fill:#22323D;stroke:#30444F}
+.zip .dirfilters summary{list-style:none}
+.zip .dirfilters summary::-webkit-details-marker{display:none}
+.zip .dirtools .chip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;font-weight:600}
+.zip .dirhead .eyebrow{color:var(--ink);opacity:.75}
+.zip .dirhead p.muted{color:var(--ink);opacity:.75}
+.dark .zip .recby{color:#34D399}
