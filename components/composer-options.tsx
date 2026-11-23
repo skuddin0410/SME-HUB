@@ -7,7 +7,7 @@ import { useImageUpload } from "@/lib/upload";
 import { FEED } from "@/lib/feed-rules";
 
 const FIELD = "w-full rounded-lg bg-white border border-[#E5E5E8] px-2.5 py-1.5 text-xs text-zinc-900 focus:outline-none focus:border-blue-600";
-const TOGGLE = "inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-[#F5F5F6] aria-pressed:bg-blue-50 aria-pressed:text-blue-700";
+const TOGGLE = "btn sm ghost";
 
 /** The optional parts of a post: cover picture, poll, schedule and closing comments. Sent along with the form. */
 export function ComposerOptions({ onBusy }: { onBusy?: (busy: boolean) => void }) {

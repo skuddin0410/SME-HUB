@@ -2,10 +2,12 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
+import { Ic } from "@/components/zip/ic";
+import { ZipAv } from "@/components/zip/bits";
 import { usePathname, useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, MessageSquare, Megaphone, Repeat2, Send, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
+import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, Megaphone, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useImageUpload } from "@/lib/upload";
 import {
@@ -258,6 +260,7 @@ export function Composer({
   placeholder,
   initialKind,
   businesses = [],
+  alwaysOpen = false,
 }: {
   me: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
   /** published business pages this member may post as */
@@ -266,9 +269,11 @@ export function Composer({
   placeholder?: string;
   /** open on this post type straight away (for example from ?compose=win) */
   initialKind?: Kind;
+  /** the feed's composer: always open, as in the design guide */
+  alwaysOpen?: boolean;
 }) {
   const [state, action] = useActionState<FormState, FormData>(createPost, {});
-  const [open, setOpen] = useState(!!initialKind);
+  const [open, setOpen] = useState(alwaysOpen || !!initialKind);
   const photo = useImageUpload("post");
   const clearPhoto = photo.clear;
   const [count, setCount] = useState(0);
@@ -284,7 +289,7 @@ export function Composer({
     setTimeout(() => (pickPhoto ? fileRef.current?.click() : textRef.current?.focus()), 30);
   };
   const collapse = () => {
-    setOpen(false);
+    setOpen(alwaysOpen);
   };
 
   useEffect(() => {
@@ -307,9 +312,9 @@ export function Composer({
       clearPhoto();
       setCount(0);
       setKind("update");
-      setOpen(false);
+      setOpen(alwaysOpen);
     }
-  }, [state.ok, clearPhoto]);
+  }, [state.ok, clearPhoto, alwaysOpen]);
 
   if (!me) {
     return (
@@ -327,6 +332,85 @@ export function Composer({
           </Link>
         </div>
       </div>
+    );
+  }
+
+  if (alwaysOpen) {
+    const chips = (["question", "win", "offer", "hiring", "intro"] as Kind[]).map((k) => ({ value: k, label: KINDS[k].label }));
+    return (
+      <form ref={formRef} action={action} className="card" id="composer">
+        {groupId && <input type="hidden" name="group_id" value={groupId} />}
+        <input type="hidden" name="kind" value={kind} />
+        <input type="hidden" name="image_url" value={photo.url} />
+        <input ref={fileRef} type="file" accept="image/*" className="sr" aria-label="Photo" onChange={(e) => photo.pick(e.target.files?.[0])} />
+        <div className="row" style={{ alignItems: "flex-start" }}>
+          <ZipAv name={me.full_name || "Member"} src={me.avatar_url} />
+          <div className="grow stack" style={{ gap: 10 }}>
+            <label className="sr" htmlFor="post-title">Post title</label>
+            <input id="post-title" className="field" name="title" maxLength={120} placeholder="Title (optional)" />
+            <label className="sr" htmlFor="post-body">Write a post</label>
+            <textarea
+              id="post-body"
+              ref={textRef}
+              className="field"
+              name="body"
+              required
+              maxLength={5000}
+              onChange={(e) => setCount(e.target.value.length)}
+              placeholder={kind === "update" ? "Ask a question, share a win, or introduce yourself" : KINDS[kind].prompt}
+            />
+            {photo.error && <p className="small" style={{ color: "var(--err, #B91C1C)" }}>{photo.error}</p>}
+            {photo.preview && (
+              <div className="stack" style={{ gap: 6 }}>
+                <img className="pic" src={photo.preview} alt="Selected image" style={photo.busy ? { opacity: 0.6 } : undefined} />
+                <button
+                  type="button"
+                  className="btn sm ghost"
+                  style={{ alignSelf: "flex-start" }}
+                  onClick={() => {
+                    photo.clear();
+                    if (fileRef.current) fileRef.current.value = "";
+                  }}
+                >
+                  Remove photo
+                </button>
+              </div>
+            )}
+            <ComposerOptions key={state.ok ?? 0} onBusy={setOptionsBusy} />
+            <div className="chips" role="group" aria-label="Post type">
+              {chips.map((o) => (
+                <button key={o.value} type="button" className="chip" aria-pressed={kind === o.value} onClick={() => setKind(kind === o.value ? "update" : o.value)}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            {state.error && <p className="small" role="alert" style={{ color: "var(--err, #B91C1C)" }}>{state.error}</p>}
+            <div className="row" style={{ flexWrap: "wrap" }}>
+              <button type="button" className="btn sm ghost" onClick={() => fileRef.current?.click()}>
+                {photo.busy ? "Uploading…" : photo.preview ? "Change photo" : "Add photo"}
+              </button>
+              {businesses.length > 0 && !groupId && (
+                <select name="business_id" defaultValue="" aria-label="Post as" className="field" style={{ flex: "0 1 190px", width: "auto" }}>
+                  <option value="">Post as me</option>
+                  {businesses.map((b) => (
+                    <option key={b.id} value={b.id}>Post as {b.name}</option>
+                  ))}
+                </select>
+              )}
+              {!groupId && (
+                <select name="visibility" defaultValue="public" aria-label="Who can see this post" className="field" style={{ flex: "0 1 210px", width: "auto" }}>
+                  <option value="public">Post to everyone</option>
+                  <option value="members">Members only</option>
+                  <option value="connections">My connections</option>
+                  <option value="private">Only me</option>
+                </select>
+              )}
+              <span className="muted small" style={{ marginLeft: "auto" }}>{count}/5000</span>
+              <ZipPublish disabled={photo.busy || optionsBusy} />
+            </div>
+          </div>
+        </div>
+      </form>
     );
   }
 
@@ -460,6 +544,15 @@ export function Composer({
         </button>
       </div>
     </form>
+  );
+}
+
+function ZipPublish({ disabled }: { disabled: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" className="btn" disabled={pending || disabled}>
+      {pending ? "Posting…" : "Post"}
+    </button>
   );
 }
 
@@ -642,10 +735,8 @@ function ReactionButton({
       onClick={click}
       aria-pressed={active}
       aria-label={`${label}, ${count}`}
-      className={cx(
-        "relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors duration-200 active:scale-95",
-        active ? on : PILL_OFF,
-      )}
+      className="act rx"
+      data-on={on ? "1" : undefined}
     >
       <span className="relative inline-flex">
         {kind === "insight" && play?.on && <span key={`g${play.n}`} aria-hidden="true" className="react-glow pointer-events-none absolute -inset-2 rounded-full" />}
@@ -686,8 +777,6 @@ function ReactionButton({
   );
 }
 
-const PILL_OFF = "bg-[#F5F5F6]/70 hover:bg-[#F5F5F6] text-zinc-600 border-transparent";
-const ICON_ACTION = "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-[#F5F5F6] transition-colors";
 
 export function PostActions({
   postId,
@@ -771,59 +860,47 @@ export function PostActions({
 
   return (
     <>
-      <div className="pt-3 border-t border-[#F5F5F6] flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-1.5">
-          {REACTIONS.map((r) => (
-            <ReactionButton key={r.kind} reaction={r} active={mine === r.kind} count={tally[r.kind] ?? 0} onToggle={() => react(r.kind)} />
-          ))}
-        </div>
-
-        <div className="flex items-center gap-1">
-          {note && (
-            <span role="status" className="mr-1 fade-in rounded-full bg-zinc-900 px-2.5 py-1 text-[0.75rem] font-medium text-white">
-              {note}
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={() => {
-              setOpen((o) => !o);
-            }}
-            aria-expanded={open}
-            aria-label={`Comments, ${commentCount}`}
-            className={ICON_ACTION}
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>{commentCount}</span>
-          </button>
-          <button
-            type="button"
-            onClick={repost}
-            aria-pressed={didRepost}
-            aria-label={didRepost ? "Remove repost" : "Repost"}
-            title={didRepost ? "Remove repost" : "Repost"}
-            className={cx(ICON_ACTION, didRepost && "!text-emerald-700")}
-          >
-            <Repeat2 className="w-3.5 h-3.5" />
-            <span>{repostCount}</span>
-          </button>
-          <button
-            type="button"
-            aria-label="Send in a message"
-            title="Send in a message"
-            onClick={() => {
-              if (needAccount()) return;
-              router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`);
-            }}
-            className="p-1.5 rounded-xl text-zinc-500 hover:text-zinc-900 hover:bg-[#F5F5F6] transition-colors"
-          >
-            <Send className="w-3.5 h-3.5" />
-          </button>
-        </div>
+      <div className="acts">
+        {REACTIONS.map((r) => (
+          <ReactionButton key={r.kind} reaction={r} active={mine === r.kind} count={tally[r.kind] ?? 0} onToggle={() => react(r.kind)} />
+        ))}
+        <span className="spacer" style={{ flex: 1 }} />
+        {note && (
+          <span role="status" className="small" style={{ background: "var(--ink)", color: "var(--bg)", borderRadius: 999, padding: "4px 10px" }}>
+            {note}
+          </span>
+        )}
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Comments, ${commentCount}`} className="act plain">
+          <Ic n="msg" s={15} />
+          {commentCount}
+        </button>
+        <button
+          type="button"
+          onClick={repost}
+          aria-pressed={didRepost}
+          aria-label={didRepost ? "Remove repost" : "Repost"}
+          title={didRepost ? "Remove repost" : "Repost"}
+          className="act plain"
+        >
+          <Ic n="repost" s={15} />
+          {repostCount}
+        </button>
+        <button
+          type="button"
+          aria-label="Send in a message"
+          title="Send in a message"
+          onClick={() => {
+            if (needAccount()) return;
+            router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`);
+          }}
+          className="act plain"
+        >
+          <Ic n="send" s={15} />
+        </button>
       </div>
 
       {open && (
-        <div className="pt-3 border-t border-[#F5F5F6] fade-in">
+        <div className="comments">
           <CommentThread
             postId={postId}
             me={me}

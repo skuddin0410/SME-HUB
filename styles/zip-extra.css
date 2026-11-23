@@ -82,3 +82,10 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip .thread .pill{flex:none}
 .zip .show-sm{display:none}
 @media(max-width:760px){.zip .msgs .hide-sm{display:none}.zip .show-sm{display:inline-flex}}
+@media(max-width:1023px){.zip .cols>.mid{order:-1}}
+.zip .pvrow{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);text-decoration:none;padding:10px 2px 0}
+.zip .pvrow .grow{flex:1}
+.zip .rail>.card,.zip .mid>*{flex-shrink:0}
+.zip article.post a.small,.zip article.post .row>.small{color:var(--muted)!important}
+.zip .pstats a.small{color:var(--muted)!important}
+.zip .pcard .linkbtn,.zip .gs4 .linkbtn{color:var(--link)}

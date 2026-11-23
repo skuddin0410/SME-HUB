@@ -23,7 +23,6 @@ test("a post shows its title, six reactions and a poll that shows results after 
 
 test("the composer offers title, cover, poll, schedule and closing comments", async ({ page }) => {
   await page.goto("/feed", { waitUntil: "domcontentloaded" });
-  await page.getByRole("button", { name: /Start a post/ }).click();
   await expect(page.getByLabel("Post title")).toBeVisible();
   await expect(page.getByLabel("Cover picture")).toBeAttached();
   await page.getByRole("button", { name: "Poll" }).click();
@@ -37,7 +36,7 @@ test("the composer offers title, cover, poll, schedule and closing comments", as
 
 test("the feed has a scope row and a Scheduled link", async ({ page }) => {
   await page.goto("/feed?scope=mine", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("link", { name: "My posts" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("link", { name: "My posts" })).toHaveAttribute("aria-current", "true");
   for (const name of ["Reacted", "Groups", "Connections", "Following"]) await expect(page.getByRole("navigation", { name: "Whose posts" }).getByRole("link", { name })).toBeVisible();
   await page.getByRole("navigation", { name: "Whose posts" }).getByRole("link", { name: "Scheduled" }).click();
   await expect(page).toHaveURL(/\/scheduled$/);

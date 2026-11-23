@@ -1,34 +1,24 @@
-import { ActiveMembersCard, ArticlesCard, GroupsCard, ProfileCard, QuickLinks, SocialCard } from "@/components/rails";
-import { StickyRail } from "@/components/sticky-rail";
+import { ZipLeftRail, ZipRightRail } from "@/components/zip/rails";
+import "@/styles/zip.css";
+import "@/styles/zip-extra.css";
 
 /**
- * Feed-style pages: three columns of 3 / 6 / 3 on a 12-column grid. Left: quick links and recent articles.
- * Right: the profile card (it sits on the right, unlike LinkedIn), then social and newest members.
- * While the feed scrolls, the left rail stays in view, and on the right the social and newest-members
- * cards scroll away until Groups to Explore reaches the header, which then stays in place.
- * On phones and tablets the rails step aside so the feed comes first.
+ * Feed-style pages, laid out as in the design guide: a left rail (shortcuts and recent articles),
+ * the centre column, and a right rail with the member's card. On phones the centre column comes first.
  */
 export default function RailsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex-1 max-w-[96rem] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-        <aside className="lg:col-span-3 hidden lg:block">
-          <StickyRail pinned className="space-y-4 -mx-1 px-1 pb-1">
-            <QuickLinks />
-            <ArticlesCard />
-          </StickyRail>
-        </aside>
-        <main className="lg:col-span-6 flex min-w-0 flex-col gap-4">{children}</main>
-        <aside className="lg:col-span-3 hidden lg:block">
-          <div className="space-y-4">
-            <ProfileCard />
-            <SocialCard />
-            <ActiveMembersCard />
-          </div>
-          <StickyRail className="mt-4">
-            <GroupsCard />
-          </StickyRail>
-        </aside>
+    <div className="zip">
+      <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
+        <div className="cols">
+          <aside className="rail" aria-label="Your shortcuts">
+            <ZipLeftRail />
+          </aside>
+          <section className="mid" style={{ display: "flex", flexDirection: "column" }}>{children}</section>
+          <aside className="rail" aria-label="Your account">
+            <ZipRightRail />
+          </aside>
+        </div>
       </div>
     </div>
   );

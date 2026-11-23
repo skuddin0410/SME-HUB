@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Sparkles, Clock } from "lucide-react";
+import { Ic } from "@/components/zip/ic";
 import { fetchPosts, getViewer } from "@/lib/hub";
 import { FEED } from "@/lib/feed-rules";
 import { topSignal } from "@/lib/feed";
@@ -22,8 +22,6 @@ const FILTERS: { key: string; label: string }[] = [
   { key: "intro", label: "Intros" },
 ];
 
-const PILL_ON = "px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition-all";
-const PILL_OFF = "px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-zinc-50 text-zinc-800 border border-[#E5E5E8] transition-all";
 
 type Params = { page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string };
 
@@ -50,14 +48,14 @@ function href(p: Params) {
 const NEW_MEMBER_DAYS = 30;
 
 /** The checklist is for new members only, and each step ticks itself from what the member has done. */
-async function firstWeekSteps(viewer: Awaited<ReturnType<typeof getViewer>>): Promise<WeekStep[] | null> {
+async function firstWeekSteps(viewer: Awaited<ReturnType<typeof getViewer>>): Promise<{ steps: WeekStep[]; count: number } | null> {
   const { supabase, userId, profile } = viewer;
   if (!userId || !profile) return null;
   const age = Date.now() - new Date(profile.created_at).getTime();
   if (age > NEW_MEMBER_DAYS * 86_400_000) return null;
   const { data: connections } = await supabase.rpc("connection_count", { member: userId });
   const count = (connections as number | null) ?? 0;
-  return [
+  const steps: WeekStep[] = [
     {
       key: "profile",
       title: "Set up your business profile",
@@ -77,6 +75,7 @@ async function firstWeekSteps(viewer: Awaited<ReturnType<typeof getViewer>>): Pr
     },
     { key: "referrals", title: "See your first referral opportunities", text: "Three people worth meeting, picked for you today.", cta: "See them", href: "/feed", done: false, soon: true },
   ];
+  return { steps, count };
 }
 
 export default async function FeedPage({ searchParams }: { searchParams: Promise<Params> }) {
@@ -110,63 +109,52 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      {week && !saved && !kind && page === 1 && <FirstWeek steps={week} />}
-      <Composer me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} />
+      {week && !saved && !kind && page === 1 && <FirstWeek steps={week.steps} connections={week.count} />}
+      <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} />
 
-      {viewer.userId && !saved && (
-        <nav className="flex flex-wrap items-center gap-1.5" aria-label="Whose posts">
-          {SCOPES.map((f) => {
-            const active = (scope ?? "") === f.key;
-            return (
-              <Link key={f.key} href={href({ ...keep, scope: f.key || undefined })} aria-current={active ? "page" : undefined} className={active ? PILL_ON : PILL_OFF}>
-                {f.label}
-              </Link>
-            );
-          })}
-          <Link href="/scheduled" className={PILL_OFF}>
-            Scheduled
-          </Link>
-        </nav>
-      )}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <nav className="flex flex-wrap items-center gap-1.5" aria-label="Filter the feed">
-          {saved ? (
-            <>
-              <span className={PILL_ON}>Saved bookmarks</span>
-              <Link href={href({ sort: keep.sort })} className={PILL_OFF}>
-                Back to everything
-              </Link>
-            </>
-          ) : (
-            FILTERS.map((f) => {
-              const active = (kind ?? "") === f.key;
-              return (
-                <Link key={f.key} href={href({ ...keep, kind: f.key || undefined })} aria-current={active ? "page" : undefined} className={active ? PILL_ON : PILL_OFF}>
-                  {f.label}
-                </Link>
-              );
-            })
-          )}
-        </nav>
+      <div className="tools">
+        <h2 style={{ font: "700 15px var(--display)" }}>{saved ? "Saved bookmarks" : "Latest from the community"}</h2>
+        <span className="grow" />
         {!saved && (
           <Link
+            className="chip"
             href={href({ ...keep, sort: latest ? undefined : "latest" })}
             title={latest ? "Showing newest first. Switch to Top Signal" : "Showing what members found most useful. Switch to Latest"}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-[#E5E5E8] text-[0.75rem] font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
           >
-            {latest ? <Clock className="w-3 h-3 text-blue-600" /> : <Sparkles className="w-3 h-3 text-amber-500" />}
-            <span>{latest ? "Latest" : "Top Signal"}</span>
+            <Ic n={latest ? "clock" : "spark"} s={13} /> {latest ? "Latest" : "Top Signal"}
           </Link>
         )}
       </div>
+      {viewer.userId && !saved && (
+        <nav className="chips" aria-label="Whose posts">
+          {SCOPES.map((f) => (
+            <Link key={f.key} href={href({ ...keep, scope: f.key || undefined })} aria-current={(scope ?? "") === f.key ? "true" : undefined} className="chip">
+              {f.label}
+            </Link>
+          ))}
+          <Link href="/scheduled" className="chip">Scheduled</Link>
+        </nav>
+      )}
+      <nav className="chips" aria-label="Filter the feed">
+        {saved ? (
+          <>
+            <span className="chip" aria-current="true">Saved bookmarks</span>
+            <Link href={href({ sort: keep.sort })} className="chip">Back to everything</Link>
+          </>
+        ) : (
+          FILTERS.map((f) => (
+            <Link key={f.key} href={href({ ...keep, kind: f.key || undefined })} aria-current={(kind ?? "") === f.key ? "true" : undefined} className="chip">
+              {f.label}
+            </Link>
+          ))
+        )}
+      </nav>
 
       {posts.length === 0 && (
         <Empty title={saved ? "No saved bookmarks yet" : kind ? `No ${KINDS[kind].label.toLowerCase()} posts yet` : "The feed is quiet"}>
           <p>{saved ? "Tap the bookmark on any post to keep it here." : "Switch back to Everything or share the first update with Canadian founders."}</p>
           {(saved || kind) && (
-            <Link href="/feed" className="mt-3 inline-block px-3.5 py-1.5 rounded-xl bg-zinc-900 text-white text-xs font-semibold">
-              Reset filter
-            </Link>
+            <Link href="/feed" className="btn sm" style={{ alignSelf: "flex-start" }}>Reset filter</Link>
           )}
         </Empty>
       )}
@@ -177,7 +165,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
       </div>
       {older && (
         <div className="flex justify-center">
-          <Link href={href({ ...keep, before: older })} rel="next" className="rounded-xl border border-[#E5E5E8] bg-white px-4 py-2 text-xs font-semibold text-zinc-800 hover:bg-[#F5F5F6]">
+          <Link href={href({ ...keep, before: older })} rel="next" className="btn ghost">
             Show older posts
           </Link>
         </div>

@@ -52,7 +52,7 @@ function LeftRail() {
           <div className="pname">Where Canadian business owners meet.</div>
           <p className="muted small">Ask questions, share what is working and find the people who can help you grow.</p>
           <Join>Join free</Join>
-          <Link href="/auth/login" className="linkbtn" style={{ alignSelf: "center", color: "var(--accent)", textDecoration: "none" }}>
+          <Link href="/auth/login" className="linkbtn" style={{ alignSelf: "center", color: "var(--link)", textDecoration: "none" }}>
             I already have an account
           </Link>
         </div>
