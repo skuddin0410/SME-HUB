@@ -464,3 +464,19 @@ export async function toggleArticleMark(item: string, kind: "saved" | "helpful" 
     : supabase.from("article_marks").delete().eq("user_id", userId).eq("item", item).eq("kind", kind);
   fail((await q).error);
 }
+
+// ---------- contact page ----------
+export async function sendContactMessage(_prev: FormState, form: FormData): Promise<FormState> {
+  if (text(form, "website")) return { ok: Date.now() }; // hidden field only bots fill in
+  const name = text(form, "name").slice(0, 120);
+  const email = text(form, "email").slice(0, 200);
+  const message = text(form, "message").slice(0, 4000);
+  if (!message) return { error: "Write a message first." };
+  if (!name) return { error: "Add your name." };
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { error: "Add an email address we can reply to." };
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  const { error } = await supabase.from("contact_messages").insert({ name, email, message, user_id: data.user?.id ?? null });
+  if (error) return { error: "Your message could not be sent. Please email support@smehub.ca." };
+  return { ok: Date.now() };
+}

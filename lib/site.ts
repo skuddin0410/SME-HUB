@@ -52,6 +52,7 @@ export const POLICY_MENU: NavItem[] = [
   { label: "Community guidelines", href: "/policies/community-guidelines" },
   { label: "Discrimination policy", href: "/policies/discrimination-policy" },
   { label: "Terms and conditions", href: "/policies/terms" },
+  { label: "Privacy policy", href: "/policies/privacy-policy" },
 ];
 
 export const SOCIAL = {

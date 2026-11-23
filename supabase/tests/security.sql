@@ -947,3 +947,13 @@ select t.expect_denied('cannot mark for another member', $$insert into article_m
 insert into article_marks (user_id, item, kind) values (auth.uid(), 'blog/x', 'helpful');
 select t.expect('a member sees their own mark', (select count(*) = 1 from article_marks));
 select t.expect('the count shows it', (select n = 1 from article_mark_counts('blog/x') where kind = 'helpful'));
+
+-- contact_messages (0035): anyone can send, only staff read
+reset role;
+select t.expect('anon can send a contact message', has_column_privilege('anon', 'contact_messages', 'message', 'insert'));
+select t.expect('anon cannot read contact messages', not has_table_privilege('anon', 'contact_messages', 'select'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+insert into contact_messages (name, email, message) values ('Pat', 'pat@example.com', 'Hello');
+select t.expect_denied('a bad email is refused', $$insert into contact_messages (name, email, message) values ('Pat', 'nope', 'Hello')$$);
+select t.expect_denied('an empty message is refused', $$insert into contact_messages (name, email, message) values ('Pat', 'pat@example.com', '')$$);
+select t.expect('a non-staff member cannot read messages', (select count(*) = 0 from contact_messages));

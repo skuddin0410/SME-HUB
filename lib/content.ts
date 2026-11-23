@@ -264,7 +264,7 @@ export const GUIDES: Guide[] = [
 
 /* ---------- Policies ---------- */
 
-export type Policy = { slug: string; label: string; title: string; intro: string; sections: { heading: string; text?: string; points?: string[] }[] };
+export type Policy = { slug: string; label: string; title: string; intro: string; draft?: string; sections: { heading: string; text?: string; points?: string[] }[] };
 
 export const POLICIES: Policy[] = [
   {
@@ -366,6 +366,23 @@ export const POLICIES: Policy[] = [
       { heading: "Contact", text: "Questions about these terms: info@canadiansme.ca or 416 655 0205." },
     ],
   },
+
+  {
+    slug: "privacy-policy",
+    label: "Privacy policy",
+    title: "Privacy policy",
+    intro: "How SMB Hub collects, uses and protects your information.",
+    draft: "Draft for review. Your live site has no privacy policy page yet, although the terms refer to one. A lawyer should approve this text before it is published.",
+    sections: [
+      { heading: "What we collect", points: ["Account details you give us: name, email address, business name, city and profile information.", "What you post: posts, comments, messages, business listings and photos.", "How you use the site: pages viewed, groups joined and device information."] },
+      { heading: "How we use it", points: ["To run your account and show your profile and posts to other members.", "To suggest members, groups and content that fit your business.", "To send service emails, and marketing emails only where you have agreed to receive them.", "To keep the community safe and enforce our guidelines."] },
+      { heading: "AI features", points: ["Ask the Hub and member suggestions use public posts, profiles and CanadianSME articles to produce answers.", "Private messages are never used by the AI features.", "[CONFIRM: whether member content is used to train AI models, and which AI providers process it.]"] },
+      { heading: "Sharing", points: ["We do not sell your personal information.", "We share it with service providers who help us run the site, under contract.", "We may disclose it when the law requires."] },
+      { heading: "Your choices", points: ["You can see, correct or delete your information by contacting us.", "You can unsubscribe from marketing emails at any time.", "You can close your account at any time."] },
+      { heading: "Storage and security", text: "[CONFIRM: where data is stored and how long it is kept.]" },
+      { heading: "Contact", text: "Privacy questions: support@smehub.ca or 416 655 0205." },
+    ],
+  }
 ];
 
 /* ---------- Blog, news and podcast ---------- */

@@ -95,3 +95,8 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip .acat{color:var(--link)!important}
 .zip .arthead p.muted,.zip .artfeat .muted{color:var(--ink)!important;opacity:.82!important}
 .zip .band p{color:#E8EAF0!important}
+
+/* about page: contrast */
+.zip .abcenter p,.zip .abcenter .eyebrow,.zip .tline span,.zip .year .muted,.zip .quote2 p{color:var(--ink)!important;opacity:.8}
+.zip .abstats span{color:#D8DBE3!important}
+.zip .ben2 .bg,.zip .pillars .go,.zip .year .when{color:var(--link)!important}
