@@ -4,13 +4,16 @@ import { expect, test } from "@playwright/test";
 
 test("the groups list shows type, members and how to join", async ({ page }) => {
   await page.goto("/groups");
-  await expect(page.getByRole("heading", { name: "Groups", exact: true })).toBeVisible();
-  const card = page.locator("a.panel", { hasText: "Retail owners" });
+  await expect(page.getByRole("heading", { name: "Find the owners who face what you face" })).toBeVisible();
+  const card = page.locator(".grpcard", { hasText: "Retail owners" });
   await expect(card).toContainText("Industry");
   await expect(card).toContainText("12 members");
-  await expect(card).toContainText("Join group");
-  await expect(page.locator("a.panel", { hasText: "Founders circle" })).toContainText("Request to join");
-  await expect(page.getByRole("searchbox", { name: "Search groups" }).or(page.getByRole("textbox", { name: "Search groups" }))).toBeVisible();
+  await expect(card.getByRole("link", { name: "Open group" })).toBeVisible();
+  const priv = page.locator(".grpcard", { hasText: "Founders circle" });
+  await expect(priv).toContainText("Private");
+  await expect(priv.getByRole("link", { name: "Request to join" })).toBeVisible();
+  await expect(page.getByRole("searchbox", { name: "Search groups" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Start a group/ }).first()).toBeVisible();
 });
 
 test("a group page has posts, members and rules tabs", async ({ page }) => {

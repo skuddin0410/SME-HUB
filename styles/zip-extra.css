@@ -54,3 +54,12 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip details.menuwrap{border:0;padding:0}
 .zip details.menuwrap>summary{min-height:0;display:inline}
 .zip details.menuwrap>summary::-webkit-details-marker{display:none}
+
+/* group links standing in for the guide's buttons */
+.zip .mygroups a.mygroup{flex:0 0 auto;display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:6px 14px 6px 6px;font-size:14px;font-weight:600;text-decoration:none;color:var(--ink)}
+.zip .mygroups a.mygroup:hover{background:var(--surface-2)}
+.zip a.chip{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:inherit}
+.zip a.chip[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:#FFFFFF;font-weight:600}
+.zip .imgopt[aria-checked="true"]{border-color:var(--accent)}
+.zip .tools .muted.small{color:var(--ink);opacity:.75}
+.zip .gthumb>span,.zip .gcover>span,.zip .mbrow .th>span{height:100%}

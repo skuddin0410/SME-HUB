@@ -921,3 +921,7 @@ select t.expect('the same member never takes a second place, and keeps theirs', 
 select apply_subscription('evt_f3', 'customer.subscription.created', '2026-11-24 10:00+00', '00000000-0000-0000-0000-000000000e05', 'cus_f5', 'sub_f5', 'plus', 'year', 'active', '2027-11-24 10:00+00', false, false) as r \gset
 select t.expect('a normal Plus sign-up takes no founding place', :'r' = 'applied' and not (select founding_offer from subscriptions where user_id = '00000000-0000-0000-0000-000000000e05'));
 select t.expect('anyone can see how many founding places are left', (select count(*) = 1 from pg_proc p where proname = 'founding_offer_left' and has_function_privilege('anon', p.oid, 'execute')));
+
+-- group card extras
+select t.expect('group card extras are open to everyone', (select count(*) = 1 from pg_proc p where proname = 'group_card_extras' and has_function_privilege('anon', p.oid, 'execute')));
+select t.expect('group card extras give nothing for an unknown group', (select count(*) = 0 from group_card_extras(array['00000000-0000-0000-0000-00000000dead']::uuid[])));
