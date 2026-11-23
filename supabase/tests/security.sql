@@ -1034,3 +1034,27 @@ set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000
 select t.expect_denied('writing can be limited to advisors', $$insert into member_blogs (author_id, title) values ('00000000-0000-0000-0000-0000000000f7', 'Second post')$$);
 reset role;
 delete from hub_settings where key = 'blogs';
+
+-- hashtags (0042)
+reset role; set request.jwt.claim.sub = '';
+select t.expect('anon cannot follow tags', not has_table_privilege('anon', 'hashtag_follows', 'insert'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+insert into hashtag_follows (user_id, tag) values ('00000000-0000-0000-0000-00000000000a', 'grants');
+select t.expect('a member can follow a tag', (select count(*) = 1 from hashtag_follows where tag = 'grants'));
+select t.expect_denied('a member cannot follow as someone else', $$insert into hashtag_follows (user_id, tag) values ('00000000-0000-0000-0000-0000000000f7', 'grants')$$);
+select t.expect_denied('tags are stored lower case', $$insert into hashtag_follows (user_id, tag) values ('00000000-0000-0000-0000-00000000000a', 'Grants')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000f7';
+select t.expect('follows are private to their owner', (select count(*) = 0 from hashtag_follows));
+select t.expect('follower counts are still available', (select followers = 1 from hashtag_followers() where tag = 'grants'));
+reset role; set request.jwt.claim.sub = '';
+insert into posts (author_id, body) values ('00000000-0000-0000-0000-00000000000a', 'Looking for #Grants and #hiring help, #grants again');
+insert into comments (post_id, author_id, body) select id, '00000000-0000-0000-0000-00000000000a', 'Also #retail' from posts where body like 'Looking for #Grants%';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000f7';
+select t.expect('a tag counts once per post, case ignored', (select uses = 1 and people = 1 from hashtag_usage() where tag = 'grants'));
+select t.expect('comment tags only count when asked', (select count(*) = 0 from hashtag_usage() where tag = 'retail') and (select count(*) = 1 from hashtag_usage(true) where tag = 'retail'));
+select t.expect('a new tag is fresh', (select fresh = 1 from hashtag_usage() where tag = 'hiring'));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+delete from hashtag_follows where tag = 'grants';
+select t.expect('a member can unfollow', (select count(*) = 0 from hashtag_follows));
+reset role;
+delete from posts where body like 'Looking for #Grants%';

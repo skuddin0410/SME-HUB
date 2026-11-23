@@ -64,6 +64,13 @@ http
     }
     if (url.pathname === "/rest/v1/profiles" && url.searchParams.get("member_type") === "eq.advisor") return res.end(JSON.stringify([{ id: PRIYA.id, full_name: "Priya Raman", headline: "Founder, Maple Bakery", avatar_url: null, location: "Toronto, ON", advisor_profiles: { field: "Food and retail", years: 11, helped: 64, rating: 4.9, about: "We bake small-batch bread and pastries for cafes and grocers across the GTA.", services: [{ name: "Wholesale readiness check", text: "" }] } }]));
     if (url.pathname === "/rest/v1/profiles" && (url.searchParams.get("id") || "").startsWith("neq.") && (url.searchParams.get("select") || "").includes("member_type")) return res.end(JSON.stringify(SIDE));
+    if (url.pathname === "/rest/v1/rpc/hashtag_usage") return res.end(JSON.stringify([
+      { tag: "wholesale", uses: 4, fresh: 3, people: 2, last_used: new Date().toISOString() },
+      { tag: "grants", uses: 3, fresh: 1, people: 2, last_used: new Date().toISOString() },
+      { tag: "taxes", uses: 2, fresh: 0, people: 1, last_used: new Date().toISOString() },
+      { tag: "free", uses: 9, fresh: 9, people: 3, last_used: new Date().toISOString() }]));
+    if (url.pathname === "/rest/v1/rpc/hashtag_followers") return res.end(JSON.stringify([{ tag: "grants", followers: 5 }]));
+    if (url.pathname === "/rest/v1/hashtag_follows") return res.end(req.method === "GET" ? JSON.stringify([{ tag: "grants" }]) : "[]");
     if (url.pathname === "/rest/v1/rpc/connection_count") return res.end("10");
     if (url.pathname === "/rest/v1/rpc/follower_count") return res.end("27");
     if (url.pathname === "/rest/v1/rpc/profile_last_active") return res.end(JSON.stringify(new Date().toISOString()));
@@ -116,6 +123,7 @@ http
       const scheduled = url.searchParams.get("status") === "eq.scheduled";
       const row = scheduled ? postRow({ id: "00000000-0000-4000-8000-0000000000a2", status: "scheduled", scheduled_at: new Date(Date.now() + 86400_000).toISOString(), title: "Launch day", body: "Our spring box is live." , author: { ...AUTHOR, id: MEMBER.id } }) : postRow({});
       res.setHeader("content-range", "0-0/1");
+      if ((url.searchParams.get("or") || "").includes("body.ilike")) return res.end(JSON.stringify([postRow({ body: "Which wholesale box size sells best for you? #wholesale #grants" })]));
       return res.end(JSON.stringify([row]));
     }
     if (url.pathname === "/rest/v1/polls") {

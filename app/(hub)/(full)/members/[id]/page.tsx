@@ -8,6 +8,7 @@ import { DEMO_IMAGES, demoAvatar } from "@/lib/demo";
 import { Empty, Pager, PostCard } from "@/components/hub";
 import { Cover } from "@/components/hub-client";
 import { blockMember } from "@/app/(hub)/actions";
+import { MyTagsCard } from "@/components/zip/hashtags";
 import { IntroButton, RecActions, RecommendForm, RequestRecButton, type Candidate } from "@/components/profile-extras";
 import { PROFILE_TYPES, RELATIONSHIPS, SOCIAL_NETWORKS } from "@/lib/profile-extra";
 import { ConnectBtn, FollowBtn, MoreMenu } from "@/components/zip/member-actions";
@@ -264,6 +265,8 @@ export default async function MemberPage({
                     <div key={f.k} className="stack" style={{ gap: 6 }}><span className="eyebrow">{f.l}</span><span>{details!.custom_fields![f.k]}</span></div>
                   ))}
                 </div>
+
+                {isMe && <MyTagsCard />}
 
                 {(recs.length > 0 || (!isMe && link === "connected") || requests.length > 0) && (
                   <div className="card psec">

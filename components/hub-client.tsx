@@ -22,6 +22,7 @@ import {
 } from "@/app/(hub)/actions";
 import type { CommentRow, Profile } from "@/lib/hub";
 import { REACTION_LABEL, type ReactionKind } from "@/lib/reactions";
+import { splitTags, type TagRules } from "@/lib/zip/hashtags";
 import { CommentThread } from "@/components/comment-thread";
 import { ComposerOptions } from "@/components/composer-options";
 import { DEMO_IMAGES, demoAvatar, demoCover, KINDS, type Kind } from "@/lib/demo";
@@ -129,12 +130,14 @@ export function GroupLogo({ seed, name, size = 40, className }: { seed: string; 
 }
 
 /** Long posts start folded so the feed stays scannable. */
-export function PostBody({ text }: { text: string }) {
+export function PostBody({ text, tags }: { text: string; tags?: TagRules | null }) {
   const long = text.length > 420 || text.split("\n").length > 7;
   const [open, setOpen] = useState(false);
   return (
     <div>
-      <p className={cx("text-[0.9062rem] text-zinc-900 leading-[1.6] whitespace-pre-line break-words", long && !open && "line-clamp-5")}>{text}</p>
+      <p className={cx("text-[0.9062rem] text-zinc-900 leading-[1.6] whitespace-pre-line break-words", long && !open && "line-clamp-5")}>
+        {tags ? splitTags(text, tags).map((x, i) => (x.tag ? <Link key={i} href={`/hashtags/${x.tag}`} className="hlink">{x.text}</Link> : x.text)) : text}
+      </p>
       {long && (
         <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-xs font-semibold text-blue-600 hover:underline">
           {open ? "Show less" : "See more"}
@@ -262,7 +265,13 @@ export function Composer({
   businesses = [],
   alwaysOpen = false,
   rules,
+  tagHints,
+  initialText,
 }: {
+  /** hashtags to suggest while typing #, when the team has that switched on */
+  tagHints?: { tag: string; uses: number }[];
+  /** text the box starts with, such as a hashtag from a tag page */
+  initialText?: string;
   /** what the team's feed settings allow in a post */
   rules?: import("@/lib/zip/settings-load").ComposerRules;
   me: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
@@ -285,6 +294,24 @@ export function Composer({
   const formRef = useRef<HTMLFormElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
+  const [sug, setSug] = useState<{ q: string; list: { tag: string; uses: number }[] } | null>(null);
+  const suggest = (el: HTMLTextAreaElement) => {
+    const m = tagHints ? /#([A-Za-z0-9_À-ſ]*)$/.exec(el.value.slice(0, el.selectionStart ?? el.value.length)) : null;
+    if (!m || !tagHints) { setSug(null); return; }
+    const q = m[1].toLowerCase();
+    setSug({ q, list: tagHints.filter((x) => x.tag.startsWith(q)).slice(0, 6) });
+  };
+  const pick = (tag: string) => {
+    const el = textRef.current;
+    if (!el) return;
+    const at = el.selectionStart ?? el.value.length;
+    const before = el.value.slice(0, at).replace(/#[A-Za-z0-9_À-ſ]*$/, `#${tag} `);
+    el.value = before + el.value.slice(at);
+    el.setSelectionRange(before.length, before.length);
+    setCount(el.value.length);
+    setSug(null);
+    el.focus();
+  };
 
   const expand = (k?: Kind, pickPhoto = false) => {
     if (k) setKind(k);
@@ -359,9 +386,21 @@ export function Composer({
               name="body"
               required
               maxLength={5000}
-              onChange={(e) => setCount(e.target.value.length)}
+              defaultValue={initialText}
+              onChange={(e) => { setCount(e.target.value.length); suggest(e.target); }}
+              onKeyUp={(e) => suggest(e.currentTarget)}
               placeholder={kind === "update" ? "Ask a question, share a win, or introduce yourself" : KINDS[kind].prompt}
             />
+            {sug && (
+              <div className="chips" aria-label="Hashtag suggestions">
+                {sug.list.length ? (
+                  <>
+                    <span className="muted small">Hashtags:</span>
+                    {sug.list.map((x) => <button key={x.tag} type="button" className="chip" onClick={() => pick(x.tag)}>#{x.tag} <span className="muted">{x.uses}</span></button>)}
+                  </>
+                ) : sug.q.length >= 2 ? <span className="muted small">New hashtag: #{sug.q}</span> : null}
+              </div>
+            )}
             {photo.error && <p className="small" style={{ color: "var(--err, #B91C1C)" }}>{photo.error}</p>}
             {photo.preview && (
               <div className="stack" style={{ gap: 6 }}>

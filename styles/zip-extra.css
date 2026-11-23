@@ -116,3 +116,5 @@ button.spill{font:inherit;color:#A1A1AA}
 html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color:#FCA5A5}
 .zip .backlink{color:var(--ink)!important;opacity:.85;font-weight:600}
 .zip .byline .ameta{color:var(--ink)!important;opacity:.8}
+/* hashtag links read well on the dark theme too */
+.zip .hlink{color:var(--link)}

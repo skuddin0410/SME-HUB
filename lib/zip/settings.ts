@@ -73,7 +73,7 @@ export const DEFAULTS = {
   },
   hashtags: {
     posts: true, comments: true, auto: true, follow: true, trend: true, profile: true, notify: "weekly", create: "all", min: "3", max: "24", per: "5",
-    blocked: ["free", "cheap", "followers"],
+    blocked: ["free", "cheap", "followers"], removed: {} as Record<string, boolean>, merge: {} as Record<string, string>,
   },
   stories: {
     publish: "all", aud: { public: false, members: true, conn: true } as Record<string, boolean>, defAud: "members", approval: false, dur: "24",

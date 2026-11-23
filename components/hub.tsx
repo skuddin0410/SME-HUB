@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { DEGREE_LABEL, MEMBER_TYPES, timeAgo, type Author, type Degree, type Post, type Profile } from "@/lib/hub";
+import { getTagRules } from "@/lib/zip/hashtags-server";
 import { AvatarImg, GroupLogo, PostActions, PostBody, PostMenu } from "@/components/hub-client";
 import { getPostRules } from "@/lib/zip/settings-load";
 import { PollView, PostManage, QuoteButton, QuoteEmbed } from "@/components/post-extras";
@@ -48,6 +49,7 @@ const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Co
 /** One post in the feed (design: docs/design/feed.html). */
 export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
   const rules = await getPostRules();
+  const tr = await getTagRules();
   const own = post.author.id === viewer.userId;
   return (
     <article id={`post-${post.id}`} className={`card post${post.pinned_at ? " pinnedp" : ""}`}>
@@ -108,7 +110,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
         </div>
       )}
       {post.title && <h3 className="font-display text-[1.125rem] font-bold leading-snug text-zinc-900">{post.title}</h3>}
-      <PostBody text={post.body} />
+      <PostBody text={post.body} tags={tr.on ? tr : null} />
       {post.quoted && <QuoteEmbed quoted={post.quoted} />}
       {post.poll && <PollView postId={post.id} poll={post.poll} signedIn={!!viewer.userId} />}
       {post.image_url && (

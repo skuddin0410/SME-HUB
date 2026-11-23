@@ -1,3 +1,4 @@
+import { TrendingTags } from "@/components/zip/hashtags";
 import Link from "next/link";
 import { getViewer } from "@/lib/hub";
 import { BLOG } from "@/lib/content";
@@ -162,6 +163,8 @@ export async function ZipRightRail() {
           <p className="muted small">Every question has an answer right now.</p>
         )}
       </div>
+
+      <TrendingTags />
 
       {event && (
         <div className="card">

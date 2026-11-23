@@ -227,13 +227,27 @@ export function BlogsBody({ queue }: { queue?: React.ReactNode }) {
 }
 
 /* ---------- Hashtags ---------- */
-export function HashtagsBody() {
+type TagStat = { tag: string; uses: number; followers: number };
+export function HashtagsBody({ tags, mine }: { tags: TagStat[]; mine: number }) {
+  const { get, edit } = useSettings();
+  const [moving, setMoving] = useState("");
+  const removed = Object.keys((get("removed") ?? {}) as Record<string, boolean>).filter((t) => get(`removed.${t}`));
+  const shown = tags.filter((x) => !get(`removed.${x.tag}`) && !((get("merge") ?? {}) as Record<string, string>)[x.tag]);
+  const total = shown.reduce((n, x) => n + x.uses, 0);
+  const exportCsv = () => {
+    const rows = ["hashtag,uses,followers", ...shown.map((x) => `${x.tag},${x.uses},${x.followers}`)].join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([rows], { type: "text/csv" }));
+    a.download = "hashtags.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
   return (
     <>
       <div className="pvstats" style={{ marginBottom: 20 }}>
-        <div><span className="n">0</span><span className="muted small">hashtags in use</span></div>
-        <div><span className="n">0</span><span className="muted small">total uses</span></div>
-        <div><span className="n">0</span><span className="muted small">followed by you</span></div>
+        <div><span className="n">{shown.length}</span><span className="muted small">hashtags in use</span></div>
+        <div><span className="n">{total}</span><span className="muted small">total uses</span></div>
+        <div><span className="n">{mine}</span><span className="muted small">followed by you</span></div>
       </div>
       <div className="setgrid">
         <div className="card"><h2>Where hashtags work</h2><Sw path="posts" label="Posts in the feed and in groups" /><Sw path="comments" label="Comments and replies" />
@@ -247,7 +261,25 @@ export function HashtagsBody() {
           <Small>Longest hashtag</Small><Radio path="max" label="Longest hashtag" opts={[["16", "16 letters"], ["24", "24 letters"], ["40", "40 letters"]]} /></div>
         <div className="card"><h2>Blocked words</h2><Note>A blocked word stays as plain text. It never becomes a link and cannot be followed.</Note>
           <WordList path="blocked" id="htb" prefix="#" placeholder="Word to block, such as crypto" addLabel="Word to block" remove={(w) => `Unblock ${w}`} /></div>
-        <div className="card" style={{ gridColumn: "1/-1" }}><h2>All hashtags</h2><p className="muted">No hashtags have been used yet. They appear here once members start using them, and you can merge or remove them.</p></div>
+        <div className="card" style={{ gridColumn: "1/-1" }}>
+          <div className="row" style={{ flexWrap: "wrap" }}><h2 className="grow">All hashtags</h2>
+            <button type="button" className="btn sm ghost" onClick={exportCsv} disabled={!shown.length}>Download as a spreadsheet</button></div>
+          {moving && <div className="warnbox"><span className="grow">Choose the hashtag that <strong>#{moving}</strong> should become. Every post moves over.</span><button type="button" className="linkbtn" onClick={() => setMoving("")}>Cancel</button></div>}
+          {shown.length ? (
+            <div className="ftable">
+              {shown.map((x) => (
+                <div className="frow2" style={{ flexWrap: "wrap" }} key={x.tag}>
+                  <Link className="hlink" style={{ flex: "1 1 180px", textAlign: "left", fontWeight: 700 }} href={`/hashtags/${x.tag}`}>#{x.tag}</Link>
+                  <span className="muted small" style={{ flex: "0 0 150px" }}>{x.uses} use{x.uses === 1 ? "" : "s"} · {x.followers} follower{x.followers === 1 ? "" : "s"}</span>
+                  {moving ? (moving === x.tag ? <span className="pill warn">Moving</span> : <button type="button" className="btn sm" onClick={() => { edit((d) => { d.merge[moving] = x.tag; }); setMoving(""); }}>Merge into this</button>)
+                    : (<><button type="button" className="btn sm ghost" onClick={() => setMoving(x.tag)}>Merge<span className="sr"> #{x.tag}</span></button>
+                        <button type="button" className="btn sm ghost" onClick={() => edit((d) => { d.removed[x.tag] = true; })}>Remove<span className="sr"> #{x.tag}</span></button></>)}
+                </div>
+              ))}
+            </div>
+          ) : <p className="muted">No hashtags have been used yet. They appear here once members start using them, and you can merge or remove them.</p>}
+          {removed.length > 0 && <p className="muted small">Removed: {removed.map((t) => `#${t}`).join(", ")}. <button type="button" className="linkbtn" style={{ color: "var(--accent)", fontWeight: 600 }} onClick={() => edit((d) => { d.removed = {}; })}>Bring them back</button></p>}
+        </div>
       </div>
     </>
   );

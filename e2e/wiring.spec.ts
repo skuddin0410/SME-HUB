@@ -112,4 +112,68 @@ test.describe("saved settings change the live pages", () => {
       });
     }
   }
+
+  test.describe("hashtags", () => {
+    const HT = { hashtags: { merge: { taxes: "grants" }, blocked: ["free"], removed: {}, per: "5", min: "3", max: "24" } };
+
+    test("the directory lists tags, applies merges and hides blocked words", async ({ page, context, baseURL }) => {
+      await context.addCookies([memberCookie(baseURL!, false, HT)]);
+      await page.goto("/hashtags");
+      await expect(page.getByRole("heading", { name: "Hashtags", exact: true })).toBeVisible();
+      await expect(page.getByRole("link", { name: "#wholesale", exact: true })).toBeVisible();
+      await expect(page.getByRole("link", { name: "#grants", exact: true })).toBeVisible();
+      await expect(page.getByText("5 uses").or(page.getByText("5 posts"))).toBeVisible(); // taxes (2) folded into grants (3)
+      await expect(page.getByRole("link", { name: "#taxes", exact: true })).toHaveCount(0);
+      await expect(page.getByRole("link", { name: "#free", exact: true })).toHaveCount(0);
+      await page.getByLabel("Search hashtags").fill("whole");
+      await page.keyboard.press("Enter");
+      await expect(page.getByRole("link", { name: "#grants", exact: true })).toHaveCount(0);
+    });
+
+    test("a tag page shows its posts and the follow button", async ({ page, context, baseURL }) => {
+      await context.addCookies([memberCookie(baseURL!, false, HT)]);
+      await page.goto("/hashtags/grants");
+      await expect(page.getByRole("heading", { name: "#grants" })).toBeVisible();
+      await expect(page.getByRole("button", { name: /Following/ })).toBeVisible(); // the mock says this member follows grants
+      await expect(page.getByRole("link", { name: "#wholesale" }).first()).toBeVisible(); // tags inside posts are links
+    });
+
+    test("blocked and removed tags have no page", async ({ page, context, baseURL }) => {
+      await context.addCookies([memberCookie(baseURL!, false, { hashtags: { blocked: ["free"], removed: { old: true } } })]);
+      expect((await page.goto("/hashtags/free"))?.status()).toBe(404);
+      expect((await page.goto("/hashtags/old"))?.status()).toBe(404);
+    });
+
+    test("turning hashtags off turns the pages off", async ({ page, context, baseURL }) => {
+      await context.addCookies([memberCookie(baseURL!, false, { hashtags: { posts: false } })]);
+      await page.goto("/hashtags");
+      await expect(page.getByText("Hashtags are turned off")).toBeVisible();
+    });
+
+    test("the team sees real counts and can merge and remove tags", async ({ page, context, baseURL }) => {
+      await context.addCookies([memberCookie(baseURL!, true, HT)]);
+      await page.goto("/hashtagsettings");
+      await expect(page.getByText("hashtags in use")).toBeVisible();
+      await page.getByRole("button", { name: /^Merge #wholesale/ }).click();
+      await expect(page.getByText("should become")).toBeVisible();
+      await page.getByRole("button", { name: "Merge into this" }).first().click();
+      await expect(page.getByRole("link", { name: "#wholesale", exact: true })).toHaveCount(0);
+      await page.getByRole("button", { name: /^Remove #grants/ }).click();
+      await expect(page.getByText(/Removed: #grants/)).toBeVisible();
+      await page.getByRole("button", { name: "Bring them back" }).click();
+      await expect(page.getByRole("link", { name: "#grants", exact: true })).toBeVisible();
+    });
+
+    for (const path of ["/hashtags", "/hashtags/grants", "/hashtagsettings"]) {
+      for (const dark of [false, true]) {
+        test(`${path} ${dark ? "dark" : "light"} has no serious accessibility problems`, async ({ page, context, baseURL }) => {
+          await context.addCookies([memberCookie(baseURL!, path === "/hashtagsettings", HT)]);
+          await page.addInitScript((d) => { try { localStorage.setItem("smbhub.theme", d ? "dark" : "light"); } catch {} }, dark);
+          await page.goto(path, { waitUntil: "networkidle" });
+          const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+          expect(r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${v.id}: ${v.nodes.length} (${v.nodes[0]?.target?.join(" ")})`)).toEqual([]);
+        });
+      }
+    }
+  });
 });

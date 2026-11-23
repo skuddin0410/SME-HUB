@@ -11,6 +11,8 @@ import { Composer } from "@/components/hub-client";
 import { canStartPost, getComposerRules, getHubSettings } from "@/lib/zip/settings-load";
 import { FirstWeek, type WeekStep } from "@/components/first-week";
 import { getPostingBusinesses } from "@/lib/business-server";
+import { getMyTags, aliasesOf, getTagIndex, getTagRules } from "@/lib/zip/hashtags-server";
+import { extractTags } from "@/lib/zip/hashtags";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({ title: "Feed", description: "What Canadian small business owners are posting: questions, wins, offers and hiring.", path: "/feed" });
@@ -25,7 +27,7 @@ const FILTERS: { key: string; label: string }[] = [
 ];
 
 
-type Params = { page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string };
+type Params = { tag?: string; page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string };
 
 const SCOPES: { key: string; label: string }[] = [
   { key: "", label: "All" },
@@ -34,6 +36,7 @@ const SCOPES: { key: string; label: string }[] = [
   { key: "groups", label: "Groups" },
   { key: "conn", label: "Connections" },
   { key: "follow", label: "Following" },
+  { key: "tags", label: "Hashtags I follow" },
 ];
 
 /** "2026-11-22T10:00:00+00:00_<uuid>" from the Show older link. */
@@ -90,11 +93,14 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
   const saved = params.saved === "1" && !!viewer.userId;
   const compose = params.compose && params.compose in KINDS ? (params.compose as Kind) : undefined;
   const fs = await getHubSettings("feed");
-  const scopes = SCOPES.filter((x) => !x.key || (fs.filters as Record<string, boolean>)[x.key] !== false);
+  const tr = await getTagRules();
+  const scopes = SCOPES.filter((x) => !x.key || (x.key === "tags" ? tr.on && tr.follow : (fs.filters as Record<string, boolean>)[x.key] !== false));
   const scope = viewer.userId && scopes.some((x) => x.key && x.key === params.scope) ? params.scope : undefined;
   const mayPost = !!viewer.userId && (await canStartPost(viewer.supabase, viewer.userId));
   const before = parseCursor(params.before);
-  const fetched = await fetchPosts(viewer.supabase, viewer.userId, {
+  const followed = scope === "tags" ? await getMyTags(viewer.supabase, viewer.userId) : [];
+  const aliases = followed.flatMap((t) => aliasesOf(t, tr.merge));
+  const fetchedAll = scope === "tags" && !aliases.length ? [] : await fetchPosts(viewer.supabase, viewer.userId, {
     page,
     before,
     kind,
@@ -105,8 +111,10 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
     connectionsOnly: scope === "conn",
     followingOnly: scope === "follow",
     relevant: !!fs.relevant && !scope && !saved && !kind,
+    tags: scope === "tags" ? aliases : undefined,
     limit: FEED.pageSize,
   });
+  const fetched = scope === "tags" ? fetchedAll.filter((p) => extractTags(p.body, tr).some((t) => followed.includes(t))) : fetchedAll;
   const posts = latest || saved || before || scope ? fetched : topSignal(fetched);
   const week = viewer.userId && viewer.profile ? await firstWeekSteps(viewer) : null;
   const keep = { kind, scope, sort: latest ? "latest" : undefined, saved: saved ? "1" : undefined };
@@ -117,7 +125,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
     <>
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week.steps} connections={week.count} />}
       {fs.refresh && <FeedRefresh />}
-      {mayPost && <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} rules={await getComposerRules()} />}
+      {mayPost && <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} rules={await getComposerRules()} tagHints={tr.on && tr.auto ? (await getTagIndex(viewer.supabase)).slice(0, 60).map((t) => ({ tag: t.tag, uses: t.uses })) : undefined} initialText={params.tag && /^[a-z0-9_à-ſ]{2,40}$/i.test(params.tag) ? `#${params.tag.toLowerCase()} ` : undefined} />}
 
       <div className="tools">
         <h2 style={{ font: "700 15px var(--display)" }}>{saved ? "Saved bookmarks" : "Latest from the community"}</h2>

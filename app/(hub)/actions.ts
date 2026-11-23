@@ -5,6 +5,8 @@ import { REACTION_KINDS, type ReactionKind } from "@/lib/reactions";
 import { cleanPollOptions, FEED } from "@/lib/feed-rules";
 import { createClient } from "@/lib/supabase/server";
 import { canStartPost, getHubSettings } from "@/lib/zip/settings-load";
+import { extractTags, canon } from "@/lib/zip/hashtags";
+import { getTagIndex, getTagRules } from "@/lib/zip/hashtags-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -42,12 +44,31 @@ function editMinutes(v: unknown) {
   return Number.isFinite(n) && n >= 0 ? n : FEED.editMinutes;
 }
 
+/** Hashtag rules for a new post: the most tags allowed, and who may start a tag nobody has used yet. */
+async function checkNewTags(supabase: Awaited<ReturnType<typeof requireUser>>["supabase"], userId: string, body: string): Promise<string | null> {
+  const r = await getTagRules();
+  if (!r.on) return null;
+  const all = [...new Set([...body.matchAll(/#([A-Za-zÀ-ſ][A-Za-z0-9_À-ſ]*)/g)].map((m) => canon(m[1], r.merge)))];
+  const mine = extractTags(body, { ...r, per: 999 });
+  if (mine.length > r.per) return `Use up to ${r.per} hashtags in one post.`;
+  if (r.create === "all" || !mine.length) return null;
+  const { data: me } = await supabase.from("profiles").select("role, plan").eq("id", userId).maybeSingle();
+  const p = me as { role?: string; plan?: string } | null;
+  if (p?.role === "admin" || p?.role === "moderator") return null;
+  if (r.create === "paid" && (p?.plan === "plus" || p?.plan === "advisor")) return null;
+  const known = new Set((await getTagIndex(supabase)).map((t) => t.tag));
+  const fresh = all.find((t) => mine.includes(t) && !known.has(t));
+  return fresh ? `#${fresh} is new. ${r.create === "team" ? "Only the Hub team" : "Only Plus members and Advisors"} can start a hashtag. Pick one that exists.` : null;
+}
+
 export async function createPost(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase, userId } = await requireUser();
   const rules = await getHubSettings("feed");
   if (!(await canStartPost(supabase, userId))) return { error: "Posting is limited to certain members right now. You can still react, reply and vote." };
   const body = text(form, "body");
   if (!body) return { error: "Write something before posting." };
+  const tagErr = await checkNewTags(supabase, userId, body);
+  if (tagErr) return { error: tagErr };
   const rawVisibility = text(form, "visibility");
   const visibility = ["public", "members", "connections", "private"].includes(rawVisibility) ? rawVisibility : "public";
   const groupId = text(form, "group_id") ? uuid(text(form, "group_id")) : null;

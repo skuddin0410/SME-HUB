@@ -129,7 +129,7 @@ type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" 
 export async function fetchPosts(
   supabase: Supabase,
   userId: string | null,
-  opts: { page?: number; before?: { createdAt: string; id: string }; mine?: boolean; reactedBy?: string; groupsOnly?: boolean; connectionsOnly?: boolean; followingOnly?: boolean; scheduledBy?: string; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string; businessId?: string; relevant?: boolean } = {},
+  opts: { page?: number; before?: { createdAt: string; id: string }; mine?: boolean; reactedBy?: string; groupsOnly?: boolean; connectionsOnly?: boolean; followingOnly?: boolean; scheduledBy?: string; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string; businessId?: string; relevant?: boolean; tags?: string[] } = {},
 ): Promise<Post[]> {
   const page = Math.max(1, opts.page ?? 1);
   const size = opts.limit ?? PAGE_SIZE;
@@ -139,7 +139,7 @@ export async function fetchPosts(
   let query = supabase.from("posts").select(opts.savedBy ? `${POST_SELECT}, saved_posts!inner(user_id)` : POST_SELECT);
   if (opts.savedBy) query = query.eq("saved_posts.user_id", opts.savedBy);
   // pinned posts lead the main feed only
-  if (!opts.authorId && !opts.postId && !opts.search && !opts.kind && !opts.savedBy) {
+  if (!opts.authorId && !opts.postId && !opts.search && !opts.kind && !opts.savedBy && !opts.tags) {
     query = query.order("pinned_at", { ascending: false, nullsFirst: false });
   }
   // on a member's profile, the post they pinned comes first
@@ -181,6 +181,8 @@ export async function fetchPosts(
   if (opts.businessId) query = query.eq("business_id", opts.businessId);
   if (opts.authorId) query = query.eq("author_id", opts.authorId);
   if (opts.postId) query = query.eq("id", opts.postId);
+  // hashtags: a rough match in the database; the screen then keeps only posts that really use the tag
+  if (opts.tags?.length) query = query.or(opts.tags.filter((t) => /^[a-zà-ſ0-9_]+$/i.test(t)).map((t) => `body.ilike.%#${t}%`).join(","));
   if (opts.kind) query = query.eq("kind", opts.kind);
   const fts = opts.search ? ftsQuery(opts.search) : "";
   if (fts) query = query.textSearch("fts", fts, { config: "english" });
