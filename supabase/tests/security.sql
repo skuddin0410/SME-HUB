@@ -998,3 +998,11 @@ set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
 update hub_settings set value = '{"polls": false}' where key = 'feed';
 select t.expect('a member cannot change settings', (select value->>'polls' = 'true' from hub_settings where key = 'feed'));
 reset role;
+
+-- edit windows follow Feed settings (0040)
+reset role;
+update hub_settings set value = '{"edit": "0", "cedit": "forever"}' where key = 'feed';
+select t.expect('edit window can be switched off', edit_window() = interval '0 minutes');
+select t.expect('comment edit window can be unlimited', comment_edit_window() > interval '1 year');
+update hub_settings set value = '{"polls": true}' where key = 'feed';
+select t.expect('edit window falls back to 10 minutes', edit_window() = interval '10 minutes');

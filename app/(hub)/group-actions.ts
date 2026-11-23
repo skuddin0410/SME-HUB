@@ -4,6 +4,7 @@ import { requireStaff, requireUser, slugify } from "@/lib/hub";
 import { GROUP_COVERS } from "@/lib/groups";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getHubSettings } from "@/lib/zip/settings-load";
 
 export type GroupState = { error?: string; ok?: boolean; info?: string };
 
@@ -25,23 +26,32 @@ function explain(message: string) {
   return wrap(message);
 }
 
-const cover = (form: FormData) => (GROUP_COVERS as readonly string[]).includes(text(form, "cover")) ? text(form, "cover") : "nodes";
+const cover = (form: FormData, fallback = "nodes") => (GROUP_COVERS as readonly string[]).includes(text(form, "cover")) ? text(form, "cover") : fallback;
 const joinMode = (form: FormData) => (["open", "request", "invite"].includes(text(form, "join_mode")) ? text(form, "join_mode") : "request");
 
 export async function createGroupV2(_prev: GroupState, form: FormData): Promise<GroupState> {
   const { supabase, userId } = await requireUser();
+  const rules = await getHubSettings("groups");
   const name = text(form, "name").slice(0, 80);
   if (name.length < 3) return { error: "Give the group a name of at least 3 characters." };
   const isPrivate = flag(form, "is_private");
+  if (isPrivate && rules.create === "advisor") {
+    const { data: me } = await supabase.from("profiles").select("member_type").eq("id", userId).maybeSingle();
+    if ((me as { member_type?: string } | null)?.member_type !== "advisor") return { error: "Only advisors can start a private group." };
+  }
+  const types = rules.types as string[];
+  const category = text(form, "category") || types[0] || "Topic";
+  if (types.length && !types.includes(category)) return { error: "Pick one of the group types shown." };
+  const defaultCover = (GROUP_COVERS as readonly string[]).includes(String(rules.defCover)) ? String(rules.defCover) : "nodes";
   const slug = `${slugify(name) || "group"}-${crypto.randomUUID().slice(0, 4)}`;
   const { error } = await supabase.from("groups").insert({
     name,
     slug,
     description: text(form, "description").slice(0, 500),
     is_private: isPrivate,
-    category: text(form, "category") || "Topic",
-    cover: cover(form),
-    join_mode: isPrivate ? (joinMode(form) === "open" ? "request" : joinMode(form)) : "open",
+    category,
+    cover: cover(form, defaultCover),
+    join_mode: isPrivate ? (rules.privJoin === "invite" ? "invite" : joinMode(form) === "open" ? "request" : joinMode(form)) : "open",
     created_by: userId,
   });
   if (error) return { error: explain(error.message) };

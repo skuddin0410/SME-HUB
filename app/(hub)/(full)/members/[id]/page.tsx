@@ -14,6 +14,7 @@ import { ConnectBtn, FollowBtn, MoreMenu } from "@/components/zip/member-actions
 import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { TYPES } from "@/lib/zip/types";
+import { getHubSettings } from "@/lib/zip/settings-load";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -70,7 +71,16 @@ export default async function MemberPage({
   if (!valid(id)) notFound();
   const sp = await searchParams;
   const page = Number(sp.page) || 1;
-  const tab = TABS.some(([k]) => k === sp.tab) ? (sp.tab as (typeof TABS)[number][0]) : "about";
+  // the team chooses which tabs show, their order and the one that opens first
+  const ps = await getHubSettings("profiles");
+  const visibleTabs = (ps.tabs as [string, string, boolean][])
+    .filter(([, , on]) => on)
+    .map(([k, label]) => [k === "conn" ? "connections" : k, label] as (typeof TABS)[number] | [string, string])
+    .filter(([k]) => TABS.some(([t]) => t === k)) as unknown as (typeof TABS)[number][];
+  const tabList = visibleTabs.length ? visibleTabs : TABS;
+  const defKey = String(ps.defTab) === "conn" ? "connections" : String(ps.defTab);
+  const firstTab = (tabList.some(([k]) => k === defKey) ? defKey : tabList[0][0]) as (typeof TABS)[number][0];
+  const tab = tabList.some(([k]) => k === sp.tab) ? (sp.tab as (typeof TABS)[number][0]) : firstTab;
   const viewer = await getViewer();
   const { supabase, userId } = viewer;
 
@@ -224,8 +234,8 @@ export default async function MemberPage({
                 )}
               </div>
               <nav className="ptabs" aria-label="Profile sections">
-                {TABS.map(([k, label]) => (
-                  <Link key={k} href={k === "about" ? `/members/${id}` : `/members/${id}?tab=${k}`} aria-current={tab === k ? "page" : undefined}>{label}</Link>
+                {tabList.map(([k, label]) => (
+                  <Link key={k} href={k === firstTab ? `/members/${id}` : `/members/${id}?tab=${k}`} aria-current={tab === k ? "page" : undefined}>{label}</Link>
                 ))}
               </nav>
             </div>

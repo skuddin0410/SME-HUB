@@ -104,6 +104,16 @@ export async function saveHubSettings(key: string, json: string): Promise<SaveSt
   if (!value || typeof value !== "object" || Array.isArray(value)) return { error: "Those settings could not be read." };
   const { error } = await supabase.from("hub_settings").upsert({ key, value, updated_at: new Date().toISOString(), updated_by: userId });
   if (error) return { error: "Could not save. Try again." };
+  if (key === "groups") {
+    // the database rules for creating groups read group_settings, so the two stay in step (admins only; staff keep the hub_settings copy)
+    const g = value as Record<string, unknown>;
+    const patch: Record<string, unknown> = {};
+    if (g.create === "all" || g.create === "paid" || g.create === "advisor") patch.create_private = g.create === "all" ? "all" : "paid";
+    if (g.privJoin === "invite" || g.privJoin === "request") patch.priv_join = g.privJoin;
+    if (typeof g.msgAll === "boolean") patch.msg_all = g.msgAll;
+    if (typeof g.archive === "boolean") patch.archive = g.archive;
+    if (Object.keys(patch).length) await supabase.from("group_settings").update(patch).eq("id", true);
+  }
   revalidatePath("/", "layout");
   return { ok: true };
 }
