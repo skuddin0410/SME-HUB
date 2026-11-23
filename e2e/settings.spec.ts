@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { memberCookie } from "./personas";
 
-const PAGES: [string, string][] = [["/profilesettings", "Profile and directory settings"], ["/feedsettings", "Feed settings"], ["/groupsettings", "Group settings"], ["/blogsettings", "Member blog settings"], ["/hashtagsettings", "Hashtag settings"]];
+const PAGES: [string, string][] = [["/profilesettings", "Profile and directory settings"], ["/feedsettings", "Feed settings"], ["/groupsettings", "Group settings"], ["/blogsettings", "Member blog settings"], ["/hashtagsettings", "Hashtag settings"], ["/storysettings", "Stories settings"]];
 
 for (const [path, title] of PAGES) {
   test(`a member sees the team gate on ${path}`, async ({ page, context, baseURL }) => {
@@ -54,3 +54,46 @@ test("hashtag settings: block a word, then unblock it", async ({ page, context, 
   await page.getByRole("button", { name: "Unblock crypto" }).click();
   await expect(page.getByRole("button", { name: "Unblock crypto" })).toHaveCount(0);
 });
+
+test("automations: use a prebuilt workflow, queue a post", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!, true)]);
+  await page.goto("/automations", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Automations", level: 1 })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Welcome new members/ })).toBeVisible();
+  await page.getByRole("tab", { name: "Prebuilt workflows" }).click();
+  await page.getByRole("button", { name: "Use this workflow" }).first().click();
+  await expect(page.getByRole("tab", { name: /Workflow builder \(4\)/ })).toBeVisible();
+  await page.getByRole("tab", { name: /Scheduled posts/ }).click();
+  await page.getByLabel("Post text").fill("Friday wins: share one good thing.");
+  await page.getByRole("button", { name: "Schedule post" }).click();
+  await expect(page.getByText("Friday wins: share one good thing.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Save changes" })).toBeEnabled();
+});
+
+test("business profiles: gate, queues, settings", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto("/bizadmin", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "This page is for the Hub team" })).toBeVisible();
+  await context.clearCookies();
+  await context.addCookies([memberCookie(baseURL!, true)]);
+  await page.goto("/bizadmin", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Business Profiles", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "New listings" })).toBeVisible();
+  await page.goto("/bizadmin?tab=settings", { waitUntil: "domcontentloaded" });
+  await page.getByRole("switch").first().click();
+  await expect(page.getByRole("button", { name: "Save changes" })).toBeEnabled();
+  await page.goto("/bizadmin?tab=cats", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Categories" })).toBeVisible();
+});
+
+for (const p of ["/automations", "/bizadmin", "/bizadmin?tab=all", "/bizadmin?tab=cats", "/bizadmin?tab=settings"]) {
+  for (const dark of [false, true]) {
+    test(`${p} ${dark ? "dark" : "light"} has no serious accessibility problems`, async ({ page, context, baseURL }) => {
+      await context.addCookies([memberCookie(baseURL!, true)]);
+      await page.addInitScript((d) => { try { localStorage.setItem("smbhub.theme", d ? "dark" : "light"); } catch {} }, dark);
+      await page.goto(p, { waitUntil: "networkidle" });
+      const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+      expect(r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${v.id}: ${v.nodes.length} (${v.nodes[0]?.target?.join(" ")})`)).toEqual([]);
+    });
+  }
+}

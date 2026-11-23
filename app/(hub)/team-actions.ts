@@ -87,7 +87,7 @@ export async function deleteReportCategory(form: FormData) {
   revalidatePath("/moderation");
 }
 
-const PAGES = ["profiles", "feed", "groups", "blogs", "hashtags", "stories"];
+const PAGES = ["profiles", "feed", "groups", "blogs", "hashtags", "stories", "automations"];
 export type SaveState = { error?: string; ok?: boolean };
 
 /** One settings page = one row. The page sends its whole choices object as JSON. */
@@ -104,6 +104,40 @@ export async function saveHubSettings(key: string, json: string): Promise<SaveSt
   if (!value || typeof value !== "object" || Array.isArray(value)) return { error: "Those settings could not be read." };
   const { error } = await supabase.from("hub_settings").upsert({ key, value, updated_at: new Date().toISOString(), updated_by: userId });
   if (error) return { error: "Could not save. Try again." };
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/** Posts a queued automation message to the feed from the team member's own account. */
+export async function publishQueuedPost(body: string): Promise<SaveState> {
+  const { supabase, userId } = await requireStaff();
+  const t = body.trim();
+  if (!t || t.length > 3000) return { error: "That post is empty or too long." };
+  const { error } = await supabase.from("posts").insert({ author_id: userId, body: t, visibility: "members" });
+  if (error) return { error: "Could not post. Try again." };
+  revalidatePath("/feed");
+  return { ok: true };
+}
+
+/** Business Profiles settings page: the choices go into the existing business_settings row. */
+export async function saveBizSettings(json: string): Promise<SaveState> {
+  const { supabase } = await requireStaff();
+  let v: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  try { v = JSON.parse(json); } catch { return { error: "Those settings could not be read." }; }
+  const list = (a: unknown, max: number) => [...new Set((Array.isArray(a) ? a : []).map((x) => String(x).trim()).filter(Boolean))].slice(0, max);
+  const cats = list(v.cats, 40), crit = list(v.criteria, 6);
+  if (!cats.length || !crit.length) return { error: "Keep at least one category and one review criterion." };
+  const tabs = v.tabs ?? {};
+  const { error } = await supabase.from("business_settings").update({
+    create_mode: v.create === "paid" ? "paid" : "all",
+    member_limit: Math.min(50, Math.max(0, Number(v.limit) || 0)),
+    pub_approval: !!v.pubApproval,
+    review_approval: !!v.revApproval,
+    categories: cats,
+    criteria: crit,
+    tabs: { photos: !!tabs.photos, events: !!tabs.events, jobs: !!tabs.jobs, shop: !!tabs.shop },
+  }).eq("id", true);
+  if (error) return { error: "Could not save. Only admins can change these." };
   revalidatePath("/", "layout");
   return { ok: true };
 }

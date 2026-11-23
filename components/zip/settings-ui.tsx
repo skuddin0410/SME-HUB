@@ -18,14 +18,14 @@ function setAt(o: Obj, path: string, val: unknown) {
 }
 
 /** Holds a page's choices in memory until the team presses Save changes. */
-export function SettingsForm({ pageKey, initial, children }: { pageKey: string; initial: Obj; children: ReactNode }) {
+export function SettingsForm({ pageKey, initial, children, save: saveAction }: { pageKey: string; initial: Obj; children: ReactNode; save?: (json: string) => Promise<{ error?: string; ok?: boolean }> }) {
   const [v, setV] = useState<Obj>(initial);
   const [dirty, setDirty] = useState(false);
   const [msg, setMsg] = useState<{ error?: string; ok?: boolean }>({});
   const [pending, start] = useTransition();
   const edit = (fn: (d: Obj) => void) => { setV((cur) => { const d = structuredClone(cur); fn(d); return d; }); setDirty(true); setMsg({}); };
   const store: Store = { v, edit, set: (p, val) => edit((d) => setAt(d, p, val)) };
-  const save = () => start(async () => { const r = await saveHubSettings(pageKey, JSON.stringify(v)); setMsg(r); if (r.ok) setDirty(false); });
+  const save = () => start(async () => { const r = await (saveAction ?? ((j: string) => saveHubSettings(pageKey, j)))(JSON.stringify(v)); setMsg(r); if (r.ok) setDirty(false); });
   return (
     <Ctx.Provider value={store}>
       {children}

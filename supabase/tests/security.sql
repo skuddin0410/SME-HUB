@@ -988,6 +988,8 @@ select t.expect_denied('only the six pages have settings', $$insert into hub_set
 set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
 insert into hub_settings (key, value, updated_by) values ('feed', '{"polls": false}', auth.uid());
 select t.expect('staff can save settings', (select value->>'polls' = 'false' from hub_settings where key = 'feed'));
+insert into hub_settings (key, value, updated_by) values ('automations', '{"flows": []}', auth.uid());
+select t.expect('automations has its own settings row', (select count(*) = 1 from hub_settings where key = 'automations'));
 select t.expect_denied('settings must be an object', $$insert into hub_settings (key, value) values ('groups', '[1]')$$);
 select t.expect_denied('staff cannot sign someone else as the editor', $$insert into hub_settings (key, value, updated_by) values ('blogs', '{}', '00000000-0000-0000-0000-00000000000a')$$);
 update hub_settings set value = '{"polls": true}' where key = 'feed';

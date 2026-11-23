@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { Scene } from "@/components/zip/scene";
 import { Chip, Radio, Sw, WordList, useSettings } from "@/components/zip/settings-ui";
-import { FEED_FILTERS, FTYPES, GCOVERS, NETS, VISL, WIN, type Field } from "@/lib/zip/settings";
+import { Ic } from "@/components/zip/ic";
+import { AUOPT, AUTPL, FEED_FILTERS, FTYPES, GCOVERS, NETS, STTYPES, VISL, WIN, flowFromTpl, type Field, type Flow } from "@/lib/zip/settings";
 
 const Small = ({ children }: { children: React.ReactNode }) => <span className="small"><strong>{children}</strong></span>;
 const Note = ({ children }: { children: React.ReactNode }) => <p className="muted small">{children}</p>;
@@ -249,5 +250,177 @@ export function HashtagsBody() {
         <div className="card" style={{ gridColumn: "1/-1" }}><h2>All hashtags</h2><p className="muted">No hashtags have been used yet. They appear here once members start using them, and you can merge or remove them.</p></div>
       </div>
     </>
+  );
+}
+
+/* ---------- Stories ---------- */
+export function StoriesBody() {
+  const { get, set } = useSettings();
+  return (
+    <>
+      <div className="pvstats" style={{ marginBottom: 20 }}>
+        <div><span className="n">0</span><span className="muted small">stories in the feed now</span></div>
+        <div><span className="n">0</span><span className="muted small">waiting for approval</span></div>
+        <div><span className="n">0</span><span className="muted small">expired items kept in highlights</span></div>
+      </div>
+      <div className="setgrid">
+        <div className="card"><h2>Who can post</h2><Radio path="publish" label="Who can post" opts={[["all", "Every member"], ["paid", "Plus and Advisors"], ["team", "Hub team only"]]} />
+          <H2>Approval</H2><Sw path="approval" label="New stories wait for a moderator" />
+          <Note>When this is on, members see “Pending review” after posting, and nobody else can see the story until it is approved.</Note></div>
+        <div className="card"><h2>Audiences members can choose</h2><Sw path="aud.public" label="Anyone, including visitors" /><Sw path="aud.members" label="All Hub members" /><Sw path="aud.conn" label="My connections only" />
+          <Small>Selected by default</Small><Radio path="defAud" label="Selected by default" opts={[["members", "All members"], ["conn", "Connections"], ["public", "Anyone"]]} />
+          <Note>Changing this only affects new stories. Existing stories and highlights keep their original audience.</Note></div>
+        <div className="card"><h2>How long stories stay in the feed</h2><Radio path="dur" label="How long stories stay" opts={[["6", "6 hours"], ["12", "12 hours"], ["24", "24 hours"], ["48", "48 hours"], ["168", "7 days"]]} />
+          <H2>After a story leaves the feed</H2><Sw path="cleanup" label="Permanently delete its photos and videos" />
+          <Note>Off by default. Files saved in a highlight are always kept.</Note></div>
+        <div className="card"><h2>Files</h2><Small>Allowed types</Small>
+          <div className="chips">{STTYPES.map(([k, l]) => <Chip key={k} on={!!get(`types.${k}`)} onClick={() => set(`types.${k}`, !get(`types.${k}`))}>{l}</Chip>)}</div>
+          <Small>Largest file</Small><Radio path="maxMB" label="Largest file" opts={[["10", "10 MB"], ["25", "25 MB"], ["50", "50 MB"], ["100", "100 MB"]]} />
+          <Small>Longest video</Small><Radio path="maxVid" label="Longest video" opts={[["15", "15 sec"], ["30", "30 sec"], ["60", "60 sec"]]} /></div>
+        <div className="card"><h2>Limits</h2><Small>Active stories per member</Small><Radio path="perMember" label="Active stories per member" opts={[["1", "1"], ["3", "3"], ["5", "5"], ["10", "10"]]} />
+          <Small>Photos or videos in one story</Small><Radio path="perStory" label="Photos or videos in one story" opts={[["3", "3"], ["5", "5"], ["10", "10"]]} /></div>
+        <div className="card"><h2>Views and likes</h2><Sw path="showViewers" label="Authors can see who viewed their story" /><Sw path="likes" label="Members can like stories" />
+          <Note>Authors always see the view count. Each person counts once.</Note>
+          <Link href="/moderation?tab=stories" style={linkStyle}>Review stories in Moderation</Link></div>
+      </div>
+    </>
+  );
+}
+
+/* ---------- Automations ---------- */
+const KIND: Record<string, [string, string, string]> = { action: ["Action", "Send email, notify, etc.", "mail"], refine: ["Refine audience", "Branch on member criteria", "filter"], delay: ["Delay", "Wait before the next step", "clock"] };
+const doneFlow = (f: Flow) => f.steps.some((s) => s.t === "action") && f.steps[f.steps.length - 1]?.t === "action";
+
+export function AutomationsBody({ publish }: { publish: (text: string) => Promise<{ error?: string; ok?: boolean }> }) {
+  const { v, set, edit } = useSettings();
+  const [tab, setTab] = useState("flows");
+  const [sel, setSel] = useState(0);
+  const [add, setAdd] = useState<number | null>(null);
+  const [qtext, setQtext] = useState(""); const [qday, setQday] = useState("Mon, Jan 18"); const [qtime, setQtime] = useState("9:00 am ET");
+  const [note, setNote] = useState("");
+  const flows: Flow[] = v.flows;
+  const queue: { day: string; time: string; text: string }[] = v.queue;
+  const f = flows[sel] ?? flows[0];
+  const i0 = flows[sel] ? sel : 0;
+  const tabs: [string, string][] = [["flows", `Workflow builder (${flows.length})`], ["tpl", "Prebuilt workflows"], ["posts", `Scheduled posts (${queue.length})`]];
+  const days = ["Mon, Jan 18", "Tue, Jan 19", "Wed, Jan 20", "Thu, Jan 21", "Fri, Jan 22", "Sat, Jan 23", "Sun, Jan 24"];
+  const times = ["7:30 am ET", "9:00 am ET", "12:00 pm ET", "4:00 pm ET", "7:00 pm ET"];
+  const Sel = ({ id, cur, opts, label, onChange }: { id: string; cur: string; opts: string[]; label: string; onChange: (x: string) => void }) => (
+    <><label className="sr" htmlFor={id}>{label}</label><select id={id} value={cur} onChange={(e) => onChange(e.target.value)}>{opts.map((o) => <option key={o} value={o}>{o.split("|")[0]}</option>)}</select></>
+  );
+  const Plus = ({ i }: { i: number }) => (
+    <>
+      <span className="conn" /><button type="button" className="plus" aria-label="Add a step here" aria-expanded={add === i} onClick={() => setAdd(add === i ? null : i)}>+</button>
+      {add === i && <><span className="conn" /><div className="picker">{(["action", "refine", "delay"] as const).map((k) => (
+        <button key={k} type="button" onClick={() => { edit((d) => { d.flows[i0].steps.splice(i, 0, { t: k, v: AUOPT[k][0] }); }); setAdd(null); }}>
+          <span className={`nico ${k}`}><Ic n={KIND[k][2]} s={15} /></span><span><b>{KIND[k][0]}</b><span>{KIND[k][1]}</span></span></button>))}</div></>}
+      <span className="conn" />
+    </>
+  );
+  return (
+    <>
+      <p className="muted small" style={{ marginBottom: 12 }}>Workflows and scheduled posts are saved here. Email sending is not connected yet, so a workflow does not send anything until it is.</p>
+      <div className="autabs" role="tablist">{tabs.map(([k, l]) => <button key={k} type="button" role="tab" className="chip" aria-selected={tab === k} onClick={() => setTab(k)}>{l}</button>)}</div>
+      {tab === "flows" && (
+        <div className="auwrap">
+          <section className="stack" style={{ gap: 10 }}>
+            {flows.map((x, i) => { const d = doneFlow(x); return (
+              <button key={i} type="button" className="flowrow" aria-pressed={i === i0} onClick={() => setSel(i)}>
+                <span className="stack grow" style={{ gap: 2 }}><strong style={{ fontSize: 13.5 }}>{x.name}</strong><span className="muted small">{x.trigger}{x.runs ? ` · ${x.runs} members so far` : ""}</span></span>
+                <span className={`pill ${!d ? "warn" : x.on ? "on" : ""}`}>{!d ? "Incomplete" : x.on ? "On" : "Off"}</span></button>); })}
+            <button type="button" className="btn sm ghost" style={{ alignSelf: "flex-start" }} onClick={() => { edit((d) => { d.flows.push({ name: "New workflow", on: false, runs: 0, trigger: AUOPT.trigger[0], aud: AUOPT.aud[6], steps: [] }); }); setSel(flows.length); }}>+ New workflow</button>
+          </section>
+          {f ? (
+            <section className="stack" style={{ gap: 12 }}>
+              <div className="row" style={{ flexWrap: "wrap" }}>
+                <h2 className="grow" style={{ font: "700 18px var(--display)" }}>{f.name}</h2>
+                <button type="button" className={`btn sm${f.on ? " ghost" : ""}`} aria-pressed={f.on} onClick={() => set(`flows.${i0}.on`, !f.on)}>{f.on ? "Turn off" : "Turn on"}</button>
+                <button type="button" className="btn sm ghost" onClick={() => { edit((d) => { d.flows.splice(i0, 1); }); setSel(0); }}>Delete</button>
+              </div>
+              <div className="field-row"><label className="sr" htmlFor="wfn">Workflow name</label><input id="wfn" className="field" value={f.name} onChange={(e) => set(`flows.${i0}.name`, e.target.value)} /></div>
+              <div className="canvas">
+                <div className="node"><span className="nico trigger"><Ic n="cal" s={17} /></span><div className="stack grow" style={{ gap: 2 }}><span className="k">Trigger</span>
+                  <Sel id="wf-trigger" cur={f.trigger} opts={AUOPT.trigger} label="Trigger" onChange={(x) => set(`flows.${i0}.trigger`, x)} />
+                  {!doneFlow(f) && <span className="pill warn" style={{ alignSelf: "flex-start", marginTop: 4 }}>Incomplete: must end with an action</span>}</div></div>
+                <span className="conn" /><span className="conn" />
+                <div className="node"><span className="nico aud"><Ic n="users" s={17} /></span><div className="stack grow" style={{ gap: 2 }}><span className="k">Audience</span>
+                  <Sel id="wf-aud" cur={f.aud} opts={AUOPT.aud} label="Audience" onChange={(x) => set(`flows.${i0}.aud`, x)} /><span className="k">{f.aud.split("|")[1]}</span></div></div>
+                <Plus i={0} />
+                {f.steps.map((s, i) => (
+                  <div key={i} style={{ display: "contents" }}>
+                    <div className={`node${s.t === "delay" ? " narrow" : ""}`}><span className={`nico ${s.t}`}><Ic n={KIND[s.t][2]} s={17} /></span><div className="stack grow" style={{ gap: 2 }}><span className="k">{KIND[s.t][0]}</span>
+                      <Sel id={`wf-s${i}`} cur={s.v} opts={AUOPT[s.t]} label={KIND[s.t][0]} onChange={(x) => set(`flows.${i0}.steps.${i}.v`, x)} /></div>
+                      <button type="button" className="xbtn" aria-label="Remove this step" onClick={() => edit((d) => { d.flows[i0].steps.splice(i, 1); })}>×</button></div>
+                    <Plus i={i + 1} />
+                  </div>))}
+                <span className="muted small">End of workflow</span>
+              </div>
+            </section>
+          ) : <section className="card"><p className="muted">No workflows yet. Start from a prebuilt one.</p></section>}
+        </div>
+      )}
+      {tab === "tpl" && (
+        <div className="tplgrid">{AUTPL.map((t, i) => { const used = flows.some((x) => x.name === t.name); return (
+          <div className="card" key={t.name}><strong style={{ font: "700 15px var(--display)" }}>{t.name}</strong><p className="muted small">{t.why}</p>
+            <div className="stack small" style={{ gap: 4 }}><span><b>When:</b> {AUOPT.trigger[t.trigger]}</span><span><b>Who:</b> {AUOPT.aud[t.aud].split("|")[0]}</span><span><b>Steps:</b> {t.steps.map(([k, j]) => AUOPT[k][j]).join(" → ")}</span></div>
+            <button type="button" className={`btn sm${used ? " ghost" : ""}`} style={{ alignSelf: "flex-start", marginTop: "auto" }} onClick={() => {
+              const at = flows.findIndex((x) => x.name === t.name);
+              if (at < 0) edit((d) => { d.flows.push(flowFromTpl(t)); });
+              setSel(at < 0 ? flows.length : at); setTab("flows");
+            }}>{used ? "Open workflow" : "Use this workflow"}</button></div>); })}</div>
+      )}
+      {tab === "posts" && (
+        <div className="auwrap" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(min(360px,100%),1fr))" }}>
+          <section className="card"><h2>Queue a post</h2>
+            <label className="sr" htmlFor="aq2">Post text</label><textarea className="field" id="aq2" placeholder="Write the post now, publish it at the right moment" value={qtext} onChange={(e) => setQtext(e.target.value)} />
+            <div className="row" style={{ flexWrap: "wrap" }}>
+              <label className="sr" htmlFor="aqd">Day</label><select id="aqd" className="field" style={{ flex: "1 1 140px", width: "auto" }} value={qday} onChange={(e) => setQday(e.target.value)}>{days.map((d) => <option key={d}>{d}</option>)}</select>
+              <label className="sr" htmlFor="aqt">Time</label><select id="aqt" className="field" style={{ flex: "1 1 140px", width: "auto" }} value={qtime} onChange={(e) => setQtime(e.target.value)}>{times.map((d) => <option key={d}>{d}</option>)}</select></div>
+            <div className="row"><button type="button" className="btn" onClick={() => { const t = qtext.trim(); if (!t) return; edit((d) => { d.queue.push({ day: qday, time: qtime, text: t }); }); setQtext(""); }}>Schedule post</button><span className="muted small">Posts from your account</span></div>
+            <p className="muted small">Tip: members are most active on weekday mornings and at lunch. Posts go out only when you press Publish now.</p></section>
+          <section className="card"><h2>Scheduled ({queue.length})</h2>
+            {note && <p role="status" className="small">{note}</p>}
+            {queue.length ? <div>{queue.map((q, i) => (
+              <div className="qrow" key={i}><span className="qwhen">{q.day}<br /><span className="muted" style={{ fontWeight: 400 }}>{q.time}</span></span><span className="grow small">{q.text}</span>
+                <span className="stack" style={{ gap: 4 }}>
+                  <button type="button" className="btn sm ghost" onClick={async () => { const r = await publish(q.text); if (r.ok) { edit((d) => { d.queue.splice(i, 1); }); setNote("Posted to the feed. Press Save changes to update the queue."); } else setNote(r.error ?? "Could not post."); }}>Publish now</button>
+                  <button type="button" className="linkbtn" onClick={() => edit((d) => { d.queue.splice(i, 1); })}>Remove</button></span></div>))}</div> : <p className="muted">Nothing scheduled.</p>}</section>
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ---------- Business Profiles: settings and categories ---------- */
+export function BizSettingsBody() {
+  const { v } = useSettings();
+  void v;
+  return (
+    <div className="setgrid">
+      <div className="card"><h2>Who can add a business</h2><Radio path="create" label="Who can add a business" opts={[["all", "Every member"], ["paid", "Plus and Advisors"]]} />
+        <Small>Pages one member can own</Small><Radio path="limit" label="Pages one member can own" opts={[["1", "1"], ["3", "3"], ["5", "5"], ["10", "10"]]} /></div>
+      <div className="card"><h2>Approval</h2><Sw path="pubApproval" label="New business pages need approval" /><Sw path="revApproval" label="New reviews need approval" />
+        <Note>Unapproved reviews never count toward the rating.</Note></div>
+      <div className="card"><h2>Review criteria</h2><Note>Optional extra ratings members can give. Up to 6.</Note>
+        <WordList path="criteria" id="ncrit" placeholder="For example: Timeliness" addLabel="New criterion" remove={(w) => `Remove ${w}`} /></div>
+      <div className="card"><h2>Optional tabs</h2><Note>Turn a tab off here to hide it for every business.</Note>
+        {[["photos", "Photos (Hub media)", "Connected"], ["events", "Events (Hub events)", "Connected"], ["jobs", "Jobs (Hub hiring posts)", "Connected"], ["shop", "Shop", "Checkout not connected"]].map(([k, l, st]) => (
+          <div className="row" key={k}><Sw path={`tabs.${k}`} label={l} /><span className={`pill ${st === "Connected" ? "on" : "warn"}`}>{st}</span></div>))}</div>
+    </div>
+  );
+}
+
+export function BizCategoriesBody({ counts }: { counts: Record<string, number> }) {
+  const { get, edit } = useSettings();
+  const [t, setT] = useState("");
+  const cats: string[] = get("cats") ?? [];
+  return (
+    <div className="card"><h2>Categories</h2>
+      <div className="ftable">{cats.map((c, i) => { const n = counts[c] ?? 0; return (
+        <div className="frow2" key={c}><span className="grow">{c}</span><span className="muted small">{n} business{n === 1 ? "" : "es"}</span>
+          {!n && <button type="button" className="btn sm ghost" onClick={() => edit((d) => { d.cats.splice(i, 1); })}>Remove</button>}</div>); })}</div>
+      <div className="row"><label className="sr" htmlFor="ncat">New category</label><input id="ncat" className="field grow" placeholder="New category" value={t} onChange={(e) => setT(e.target.value)} />
+        <button type="button" className="btn sm" onClick={() => { const w = t.trim(); if (!w || cats.includes(w)) return; edit((d) => { d.cats.push(w); }); setT(""); }}>Add</button></div>
+    </div>
   );
 }

@@ -105,3 +105,4 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip .wrap>p.muted,.zip .wrap>.pagehead .muted{color:var(--ink)!important;opacity:.78}
 .zip .chip[role="radio"][aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:#FFFFFF;font-weight:600}
 .zip .pvstats .muted{color:var(--ink)!important;opacity:.8}
+.zip .chip[role="tab"][aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#FFFFFF;font-weight:600}

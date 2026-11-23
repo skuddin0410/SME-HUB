@@ -29,7 +29,7 @@ const HUB_MENU: NavItem[] = [
 ];
 
 const TEAM_MENU: [string, NavItem[]][] = [
-  ["Community", [{ label: "Moderation", href: "/moderation" }]],
+  ["Community", [{ label: "Moderation", href: "/moderation" }, { label: "Automations", href: "/automations" }]],
   [
     "Settings",
     [
@@ -38,10 +38,11 @@ const TEAM_MENU: [string, NavItem[]][] = [
       { label: "Groups", href: "/groupsettings" },
       { label: "Member blogs", href: "/blogsettings" },
       { label: "Hashtags", href: "/hashtagsettings" },
+      { label: "Stories", href: "/storysettings" },
       { label: "Billing", href: "/admin/billing" },
     ],
   ],
-  ["Business Directory", [{ label: "Business Profiles", href: "/admin/businesses" }]],
+  ["Business Directory", [{ label: "Business Profiles", href: "/bizadmin" }]],
 ];
 
 function Chev() {
