@@ -118,3 +118,54 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .zip .byline .ameta{color:var(--ink)!important;opacity:.8}
 /* hashtag links read well on the dark theme too */
 .zip .hlink{color:var(--link)}
+
+/* ---------- motion: short, calm, and off for people who ask for less ---------- */
+:root { --ease: cubic-bezier(.22, .8, .24, 1); }
+
+/* skeletons: soft shapes that shimmer once a second while the page loads */
+.zip .zsk { display: block; border-radius: 8px; background: var(--line); opacity: .55; }
+.zip .zsk.r { border-radius: 999px; }
+.zip .zsk.t { height: 12px; }
+.zip .zsk.h { height: 20px; }
+.zip .skcard { display: flex; flex-direction: column; gap: 12px; }
+.zip.skroot { background: none; min-height: 0; }
+@keyframes zshimmer { 0% { background-position: 120% 0; } 100% { background-position: -120% 0; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .zip .zsk {
+    background: linear-gradient(100deg, var(--line) 30%, var(--surface-2) 50%, var(--line) 70%);
+    background-size: 220% 100%; animation: zshimmer 1.5s ease-in-out infinite; opacity: .8;
+  }
+
+  @keyframes zfade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes zrise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes zpop { from { opacity: 0; transform: translateY(-4px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes zsheet { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes ztoast { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translateX(-50%); } }
+
+  /* a new page eases in once its data has arrived (the skeleton itself does not animate) */
+  .zip > .wrap:not(.sk) { animation: zrise .34s var(--ease) both; }
+  .pgmid > :not(.sk) { animation: zrise .34s var(--ease) both; }
+  .pgmid > :nth-child(2) { animation-delay: .04s; }
+  .pgmid > :nth-child(3) { animation-delay: .08s; }
+  .pgmid > :nth-child(4) { animation-delay: .12s; }
+  .pgmid > :nth-child(5) { animation-delay: .16s; }
+  .pgmid > :nth-child(n+6) { animation-delay: .2s; }
+
+  /* things that open: dialogs, menus, panels, toasts, comments, tab panels */
+  .zip .overlay { animation: zfade .18s ease both; }
+  .zip .modal { animation: zsheet .24s var(--ease) both; }
+  .zip .menu { transform-origin: top right; animation: zpop .16s var(--ease) both; }
+  .zip .pmenu .menu { transform-origin: top left; }
+  .zip .toast { animation: ztoast .22s var(--ease) both; }
+  .zip .dock > * { animation: zsheet .26s var(--ease) both; }
+  .zip .cthread { animation: zfade .2s ease both; }
+  .zip .cin { animation: zrise .24s var(--ease) both; }
+  .zip [role="tabpanel"], .zip details[open] > :not(summary) { animation: zfade .22s ease both; }
+
+  /* a little life on hover and press, nothing more */
+  .zip .htcard, .zip .acard { transition: border-color .2s, box-shadow .2s, transform .2s var(--ease); }
+  .zip .htcard:hover { border-color: var(--accent); box-shadow: 0 6px 18px rgba(16, 24, 40, .07); transform: translateY(-1px); }
+  .zip .btn, .zip .chip, .zip .act { transition: background .15s, color .15s, transform .1s; }
+  .zip .btn:active, .zip .chip:active, .zip .act:active { transform: scale(.98); }
+}

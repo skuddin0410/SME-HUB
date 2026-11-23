@@ -14,7 +14,7 @@ export default function RailsLayout({ children }: { children: React.ReactNode })
           <aside className="rail" aria-label="Your shortcuts">
             <ZipLeftRail />
           </aside>
-          <section className="mid" style={{ display: "flex", flexDirection: "column" }}>{children}</section>
+          <section className="mid pgmid" style={{ display: "flex", flexDirection: "column" }}>{children}</section>
           <aside className="rail" aria-label="Your account">
             <ZipRightRail />
           </aside>

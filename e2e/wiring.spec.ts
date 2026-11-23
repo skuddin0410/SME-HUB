@@ -140,8 +140,11 @@ test.describe("saved settings change the live pages", () => {
 
     test("blocked and removed tags have no page", async ({ page, context, baseURL }) => {
       await context.addCookies([memberCookie(baseURL!, false, { hashtags: { blocked: ["free"], removed: { old: true } } })]);
-      expect((await page.goto("/hashtags/free"))?.status()).toBe(404);
-      expect((await page.goto("/hashtags/old"))?.status()).toBe(404);
+      for (const t of ["free", "old"]) {
+        await page.goto(`/hashtags/${t}`);
+        await expect(page.getByText("This page could not be found")).toBeVisible();
+        await expect(page.getByRole("heading", { name: `#${t}` })).toHaveCount(0);
+      }
     });
 
     test("turning hashtags off turns the pages off", async ({ page, context, baseURL }) => {

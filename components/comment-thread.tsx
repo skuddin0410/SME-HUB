@@ -91,7 +91,7 @@ export function CommentThread({
   const one = (c: CommentRow, isReply: boolean) => {
     const own = c.author.id === me?.id;
     return (
-      <div key={c.id} className={`group p-2.5 rounded-xl bg-[#F5F5F6]/75 border border-[#E5E5E8]/70 ${isReply ? "ml-6" : ""}`}>
+      <div key={c.id} className={`cin group p-2.5 rounded-xl bg-[#F5F5F6]/75 border border-[#E5E5E8]/70 ${isReply ? "ml-6" : ""}`}>
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
             <Link href={`/members/${c.author.id}`} className="truncate text-xs font-bold text-zinc-900 hover:underline">
@@ -132,7 +132,7 @@ export function CommentThread({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="cthread space-y-3">
       <div className="space-y-2">
         {list === null && (
           <>
