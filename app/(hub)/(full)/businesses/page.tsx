@@ -194,7 +194,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
                 <strong>Own a business?</strong>
                 <span className="small">Add a free page in two minutes, or claim a listing the CanadianSME team created.</span>
                 <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
-                  <Link className="btn" href="/businesses/mine"><Ic n="store" s={15} />Add a business</Link>
+                  <Link className="btn" href="/businesses/new"><Ic n="store" s={15} />Add a business</Link>
                   <Link className="btn ghost" href="/businesses/mine">My Businesses</Link>
                 </div>
               </div>
