@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Search, Send, SquarePen } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { markThreadRead, sendMessage } from "@/app/(hub)/actions";
 import type { Author } from "@/lib/hub";
-import { AvatarImg } from "@/components/hub-client";
+import { ZipAv } from "@/components/zip/bits";
 
 export type Msg = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string; read_at: string | null };
 
@@ -50,7 +49,7 @@ export function MessagingApp({
   const [pendingShare, setPendingShare] = useState(startWith ? "" : prefill);
   const [error, setError] = useState<string | null>(null);
   const end = useRef<HTMLDivElement>(null);
-  const box = useRef<HTMLTextAreaElement>(null);
+  const box = useRef<HTMLInputElement>(null);
   const byId = useMemo(() => new Map(people.map((p) => [p.id, p])), [people]);
 
   // conversations, newest first
@@ -135,192 +134,114 @@ export function MessagingApp({
   };
 
   const pill = (key: Filter, label: string) => (
-    <button
-      type="button"
-      onClick={() => setFilter(key)}
-      aria-pressed={filter === key}
-      className={cx(
-        "press rounded-full px-3 py-1 text-sm font-semibold transition-colors duration-150",
-        filter === key ? "bg-emerald-700 text-white" : "border border-foreground/50 text-muted-foreground hover:bg-muted hover:shadow-[inset_0_0_0_1px_rgb(0_0_0/0.5)]",
-      )}
-    >
+    <button type="button" className="chip" onClick={() => setFilter(key)} aria-pressed={filter === key}>
       {label}
     </button>
   );
 
   return (
-    <div className="panel flex h-[calc(100vh-6.75rem)] min-h-[30rem] flex-col overflow-hidden">
-      <div className="flex items-center gap-3 border-b px-4 py-2">
-        <h1 className="text-base font-semibold">Messaging</h1>
-        <label className="relative hidden w-56 sm:block">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search messages"
-            aria-label="Search messages"
-            className="w-full rounded bg-tint py-1.5 pl-8 pr-2 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
-          />
-        </label>
-        <button type="button" onClick={() => setFilter("connections")} title="New message" aria-label="New message" className="press ml-auto rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
-          <SquarePen className="h-5 w-5" />
-        </button>
-      </div>
-      <div className="flex gap-2 overflow-x-auto border-b px-4 py-2">
-        {pill("all", "Focused")}
-        {pill("unread", "Unread")}
-        {pill("connections", "Connections")}
-      </div>
-
-      <div className="grid min-h-0 flex-1 md:grid-cols-[19.5rem_minmax(0,1fr)]">
-        <div className={cx("min-h-0 overflow-y-auto border-r", active ? "hidden md:block" : "block")}>
-          {pendingShare && <p className="bg-primary/10 px-4 py-2 text-xs font-semibold text-primary">Choose who to send this post to.</p>}
-          {filter !== "connections" &&
-            listed.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => open(t.id)}
-                className={cx(
-                  "flex w-full items-center gap-3 border-b border-l-4 px-3 py-3 text-left transition-colors duration-100",
-                  t.id === active ? "border-l-emerald-700 bg-tint" : "border-l-transparent hover:bg-muted",
-                )}
-              >
-                <AvatarImg person={t.person!} size={56} />
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-baseline justify-between gap-2">
-                    <span className={cx("truncate text-base", t.unread ? "font-semibold" : "font-normal")}>{t.person!.full_name}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground">{short(t.last.created_at)}</span>
-                  </span>
-                  <span className={cx("line-clamp-2 text-sm leading-5", t.unread ? "font-semibold text-foreground" : "text-muted-foreground")}>
-                    {t.last.sender_id === me.id ? "You: " : ""}
-                    {t.last.body}
-                  </span>
+    <div className="msgs">
+      <div className={cx("card threads", active && "hide-sm")} style={{ gap: 4 }}>
+        <label className="sr" htmlFor="msq">Search messages</label>
+        <input id="msq" className="field" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search messages" style={{ marginBottom: 6 }} />
+        <div className="chips" role="group" aria-label="Show" style={{ marginBottom: 6 }}>
+          {pill("all", "Focused")}
+          {pill("unread", "Unread")}
+          {pill("connections", "Connections")}
+        </div>
+        {pendingShare && <p className="small" style={{ color: "var(--link)", fontWeight: 600 }}>Choose who to send this post to.</p>}
+        {filter !== "connections" &&
+          listed.map((t) => (
+            <button key={t.id} type="button" className="thread" aria-current={t.id === active} onClick={() => open(t.id)}>
+              <ZipAv name={t.person!.full_name} src={t.person!.avatar_url} />
+              <span className="stack grow" style={{ minWidth: 0 }}>
+                <strong style={{ fontWeight: t.unread ? 700 : 600 }}>{t.person!.full_name}</strong>
+                <span className="muted small" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {t.last.sender_id === me.id ? "You: " : ""}
+                  {t.last.body}
                 </span>
-                {t.unread > 0 && <span className="rounded-full bg-primary px-1.5 text-[0.75rem] font-semibold leading-[1.125rem] text-white">{t.unread}</span>}
+              </span>
+              <span className="muted small">{short(t.last.created_at)}</span>
+              {t.unread > 0 && <span className="pill warn">{t.unread}</span>}
+            </button>
+          ))}
+        {filter !== "connections" && listed.length === 0 && (
+          <p className="muted small" style={{ padding: 12, textAlign: "center" }}>{filter === "unread" ? "You are all caught up." : q ? "No conversations match." : "No conversations yet."}</p>
+        )}
+        {(filter === "connections" || threads.length === 0) && (
+          <>
+            <span className="eyebrow" style={{ padding: "8px 10px 2px" }}>Start a conversation</span>
+            {fresh.map((p) => (
+              <button key={p.id} type="button" className="thread" onClick={() => open(p.id)}>
+                <ZipAv name={p.full_name} src={p.avatar_url} size="s" />
+                <span className="stack grow" style={{ minWidth: 0 }}>
+                  <strong>{p.full_name}</strong>
+                  <span className="muted small">{p.headline}</span>
+                </span>
               </button>
             ))}
-          {filter !== "connections" && listed.length === 0 && (
-            <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-              {filter === "unread" ? "You are all caught up." : q ? "No conversations match." : "No conversations yet."}
-            </p>
-          )}
-          {(filter === "connections" || threads.length === 0) && (
-            <>
-              <p className="px-4 pb-1 pt-3 text-xs font-semibold text-muted-foreground">Start a conversation</p>
-              {fresh.map((p) => (
-                <button key={p.id} type="button" onClick={() => open(p.id)} className="flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-muted">
-                  <AvatarImg person={p} size={40} />
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold">{p.full_name}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{p.headline}</span>
-                  </span>
-                </button>
-              ))}
-              {fresh.length === 0 && (
-                <p className="px-4 py-6 text-center text-sm text-muted-foreground">
-                  Messages are between connections.{" "}
-                  <Link href="/network" className="font-semibold text-primary hover:underline">
-                    Grow your network
-                  </Link>
-                </p>
-              )}
-            </>
-          )}
-        </div>
+            {fresh.length === 0 && (
+              <p className="muted small" style={{ padding: 12, textAlign: "center" }}>
+                Messages are between connections. <Link href="/network" style={{ color: "var(--link)", fontWeight: 600 }}>Grow your network</Link>
+              </p>
+            )}
+          </>
+        )}
+      </div>
 
-        <div className={cx("min-h-0 flex-col", active ? "flex" : "hidden md:flex")}>
-          {other ? (
-            <>
-              <div className="flex items-center gap-2 border-b px-3 py-2">
-                <button type="button" onClick={() => setActive(null)} className="rounded-full p-1.5 hover:bg-muted md:hidden" aria-label="Back to conversations">
-                  <ArrowLeft className="h-4 w-4" />
-                </button>
-                <Link href={`/members/${other.id}`} className="min-w-0">
-                  <span className="block truncate text-sm font-semibold hover:underline">{other.full_name}</span>
-                  <span className="block truncate text-xs text-muted-foreground">{other.headline || "SMB Hub member"}</span>
-                </Link>
+      <div className={cx("card conv", !active && "hide-sm")}>
+        {other ? (
+          <>
+            <div className="row">
+              <button type="button" className="btn ghost sm show-sm" onClick={() => setActive(null)} aria-label="Back to conversations">← Back</button>
+              <ZipAv name={other.full_name} src={other.avatar_url} />
+              <div className="stack grow">
+                <Link href={`/members/${other.id}`} className="namebtn">{other.full_name}</Link>
+                <span className="muted small">{other.headline || "SMB Hub member"}</span>
               </div>
-
-              <div className="flex-1 overflow-y-auto">
-                <div className="border-b px-4 py-5">
-                  <AvatarImg person={other} size={72} />
-                  <Link href={`/members/${other.id}`} className="mt-2 block text-base font-semibold hover:underline">
-                    {other.full_name}
-                  </Link>
-                  <p className="text-sm">{other.headline || "SMB Hub member"}</p>
-                </div>
-                <div className="px-4 pb-4">
-                  {history.map((m, i) => {
-                    const prev = history[i - 1];
-                    const newDay = !prev || new Date(prev.created_at).toDateString() !== new Date(m.created_at).toDateString();
-                    const grouped = !newDay && prev.sender_id === m.sender_id && new Date(m.created_at).getTime() - new Date(prev.created_at).getTime() < 5 * 60000;
-                    const who = m.sender_id === me.id ? me : other;
-                    return (
-                      <div key={m.id}>
-                        {newDay && (
-                          <p className="my-3 flex items-center gap-3 text-xs font-semibold text-muted-foreground before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
-                            {dayLabel(m.created_at)}
-                          </p>
-                        )}
-                        <div className={cx("-mx-2 flex gap-3 rounded px-2 transition-colors hover:bg-muted/60", grouped ? "py-0.5" : "pt-2", m.id.startsWith("tmp-") && "opacity-60")}>
-                          <span className="w-10 shrink-0">{!grouped && <AvatarImg person={who} size={40} />}</span>
-                          <span className="min-w-0 flex-1">
-                            {!grouped && (
-                              <span className="flex items-baseline gap-1.5">
-                                <span className="text-sm font-semibold">{who.full_name}</span>
-                                <span className="text-xs text-muted-foreground">{clock(m.created_at)}</span>
-                              </span>
-                            )}
-                            <span className="block whitespace-pre-wrap break-words text-sm leading-5">{m.body}</span>
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <div ref={end} />
-                </div>
-              </div>
-
-              {error && <p className="mx-3 mb-2 rounded bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
-              <div className="border-t bg-muted/50 p-3">
-                <textarea
-                  ref={box}
-                  value={drafts[other.id] ?? ""}
-                  onChange={(e) => setDrafts((d) => ({ ...d, [other.id]: e.target.value }))}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      send();
-                    }
-                  }}
-                  rows={3}
-                  maxLength={4000}
-                  placeholder="Write a message..."
-                  aria-label="Write a message"
-                  className="w-full resize-none rounded bg-tint px-3 py-2 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
-                />
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Press Enter to send, Shift + Enter for a new line</span>
-                  <button
-                    type="button"
-                    onClick={send}
-                    disabled={!(drafts[other.id] ?? "").trim()}
-                    className="press inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
-                  >
-                    <Send className="h-4 w-4" />
-                    Send
-                  </button>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="m-auto max-w-xs px-6 text-center">
-              <p className="text-base font-semibold">Your messages</p>
-              <p className="mt-1 text-sm text-muted-foreground">Pick a conversation on the left, or start one with a connection.</p>
             </div>
-          )}
-        </div>
+            <div className="stack" style={{ gap: 8, padding: "12px 0", borderTop: "1px solid var(--line)", maxHeight: 460, overflowY: "auto" }}>
+              {history.map((m, i) => {
+                const prev = history[i - 1];
+                const newDay = !prev || new Date(prev.created_at).toDateString() !== new Date(m.created_at).toDateString();
+                return (
+                  <div key={m.id} className="stack" style={{ gap: 8 }}>
+                    {newDay && <span className="muted small" style={{ textAlign: "center" }}>{dayLabel(m.created_at)}</span>}
+                    <div className={cx("bubble", m.sender_id === me.id && "mine")} style={m.id.startsWith("tmp-") ? { opacity: 0.6 } : undefined} title={clock(m.created_at)}>
+                      {m.body}
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={end} />
+            </div>
+            {error && <p className="small sterr" role="alert">{error}</p>}
+            <div className="row">
+              <label className="sr" htmlFor="mdraft">Write a message</label>
+              <input
+                id="mdraft"
+                ref={box}
+                className="field grow"
+                value={drafts[other.id] ?? ""}
+                maxLength={4000}
+                placeholder="Write a message"
+                onChange={(e) => setDrafts((d) => ({ ...d, [other.id]: e.target.value }))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    send();
+                  }
+                }}
+              />
+              <button type="button" className="btn" onClick={send} disabled={!(drafts[other.id] ?? "").trim()}>Send</button>
+            </div>
+          </>
+        ) : (
+          <div className="stack" style={{ margin: "auto", textAlign: "center", maxWidth: 320, padding: 24 }}>
+            <strong>Your messages</strong>
+            <span className="muted small">Pick a conversation on the left, or start one with a connection.</span>
+          </div>
+        )}
       </div>
     </div>
   );

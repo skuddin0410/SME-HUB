@@ -1,6 +1,7 @@
 import { AUTHOR_FIELDS, requireUser, type Author } from "@/lib/hub";
 import { MessagingApp, type Msg } from "@/components/messages-client";
-import { ActiveMembersCard, SocialCard } from "@/components/rails";
+import "@/styles/zip.css";
+import "@/styles/zip-extra.css";
 
 export const metadata = { title: "Messaging", robots: { index: false } };
 
@@ -49,14 +50,14 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
   };
 
   return (
-    <div className="mx-auto grid max-w-[96rem] items-start gap-6 px-4 sm:px-6 lg:px-8 py-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <main className="min-w-0">
+    <div className="zip">
+      <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
+        <div className="pagehead">
+          <h1>Messages</h1>
+          <p className="muted">Private conversations with members you are connected to.</p>
+        </div>
         <MessagingApp me={me} people={[...people.values()]} initialMessages={messages} startWith={startWith} prefill={text} />
-      </main>
-      <aside className="rail hidden space-y-2 lg:block">
-        <ActiveMembersCard />
-        <SocialCard />
-      </aside>
+      </div>
     </div>
   );
 }

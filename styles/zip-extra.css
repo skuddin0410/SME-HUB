@@ -78,3 +78,7 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip .pagehead .eyebrow,.zip .bzmhead .eyebrow{color:var(--ink);opacity:.75}
 .zip .pagehead .muted,.zip .pagehead p.muted{color:var(--ink);opacity:.75}
 .zip .bg-blue-600{background-color:#1D4ED8;color:#FFFFFF}
+.zip .thread{font:inherit;color:inherit}
+.zip .thread .pill{flex:none}
+.zip .show-sm{display:none}
+@media(max-width:760px){.zip .msgs .hide-sm{display:none}.zip .show-sm{display:inline-flex}}
