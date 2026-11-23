@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Check, Star, Trash2 } from "lucide-react";
 import { inviteToGroup, removeGroupInvite } from "@/app/(hub)/actions";
 import { deleteReview, removeReviewReply, replyToReview, saveReview, toggleFollow } from "@/app/(hub)/business-actions";
@@ -103,140 +103,140 @@ export function Reviews({
     removeReviewReply(companyId, authorId).catch(() => setReviews(before));
   };
 
-  return (
-    <section className="panel">
-      <div className="flex flex-wrap items-center gap-3 px-4 py-3">
-        <h2 className="text-base font-semibold">Reviews</h2>
-        {shown.length > 0 ? (
-          <span className="flex items-center gap-2 text-sm">
-            <Stars value={average} />
-            <span className="font-semibold">{average.toFixed(1)}</span>
-            <span className="text-muted-foreground">
-              from {shown.length} {shown.length === 1 ? "review" : "reviews"}
-            </span>
-          </span>
-        ) : (
-          <span className="text-sm text-muted-foreground">No reviews yet</span>
-        )}
-      </div>
+  const critAvg = criteria
+    .map((c) => {
+      const v = shown.map((r) => r.criteria[c]).filter(Boolean);
+      return v.length ? ([c, Math.round((v.reduce((x, y) => x + y, 0) / v.length) * 10) / 10] as const) : null;
+    })
+    .filter((x): x is readonly [string, number] => !!x);
+  const stars = (v: number, lg?: boolean) => (
+    <span className={`bzst${lg ? " lg" : ""}`} role="img" aria-label={`${v.toFixed(1)} out of 5`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i} className={v >= i - 0.25 ? "on" : v >= i - 0.75 ? "half" : ""}>★</span>
+      ))}
+    </span>
+  );
 
-      {canReview && (
-        <div className="border-t bg-muted/50 px-4 py-3">
-          <p className="text-sm font-semibold">{mine ? "Your review" : me ? "Worked with this business? Leave a review" : "Sign in to leave a review"}</p>
-          <div className="mt-2 grid gap-2">
+  return (
+    <>
+      <div className="card">
+        <div className="row" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
+          <div className="stack grow" style={{ gap: 4, flexBasis: 200 }}>
+            <h2>Reviews</h2>
+            {shown.length > 0 ? (
+              <>
+                <span className="bzbig">{average.toFixed(1)}</span>
+                {stars(average, true)}
+                <span className="muted small">{shown.length} published {shown.length === 1 ? "review" : "reviews"}</span>
+              </>
+            ) : (
+              <span className="muted">No reviews yet.</span>
+            )}
+          </div>
+          {critAvg.length > 0 && (
+            <dl className="bzdl small">
+              {critAvg.map(([c, v]) => (
+                <Fragment key={c}>
+                  <dt>{c}</dt>
+                  <dd>{stars(v)} {v.toFixed(1)}</dd>
+                </Fragment>
+              ))}
+            </dl>
+          )}
+        </div>
+        {!me && <Link href="/auth/login" className="btn sm" style={{ alignSelf: "flex-start" }}>Join free to write a review</Link>}
+        {mine?.status === "pending" && <p className="small bzpend">Your review is waiting for the Hub team. It does not count toward the rating until it is published.</p>}
+        {canReview && me && (
+          <div className="stack" style={{ gap: 10, borderTop: "1px solid var(--line)", paddingTop: 12 }}>
+            <strong>{mine ? "Your review" : "Worked with this business? Leave a review"}</strong>
             {criteria.map((c) => (
-              <div key={c} className="flex flex-wrap items-center justify-between gap-2" role="group" aria-label={c}>
-                <span className="text-sm">{c}</span>
-                <span className="flex">
+              <div key={c} className="row" style={{ flexWrap: "wrap", justifyContent: "space-between" }} role="group" aria-label={c}>
+                <span>{c}</span>
+                <span className="bzrate">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <button
                       key={i}
                       type="button"
                       aria-label={`${c}: ${i} ${i === 1 ? "star" : "stars"}`}
                       aria-pressed={scores[c] === i}
+                      className={i <= (scores[c] ?? 0) ? "on" : ""}
+                      style={{ fontSize: 28 }}
                       onClick={() => {
                         setScores({ ...scores, [c]: i });
                         setSaved(false);
                       }}
-                      className="press p-0.5"
                     >
-                      <Star className={cx("h-6 w-6 transition-colors duration-100", i <= (scores[c] ?? 0) ? "fill-amber-400 text-amber-400" : "text-foreground/25")} />
+                      ★
                     </button>
                   ))}
                 </span>
               </div>
             ))}
+            <textarea
+              value={body}
+              onChange={(e) => {
+                setBody(e.target.value);
+                setSaved(false);
+              }}
+              rows={2}
+              maxLength={1000}
+              placeholder="What was it like to work with them? (optional)"
+              aria-label="Your review"
+              className="field"
+            />
+            {error && <p className="small sterr" role="alert">{error}</p>}
+            <button type="button" onClick={submit} disabled={saved} className="btn sm" style={{ alignSelf: "flex-start" }}>
+              {saved ? "Saved" : mine ? "Update review" : "Post review"}
+            </button>
           </div>
-          <textarea
-            value={body}
-            onChange={(e) => {
-              setBody(e.target.value);
-              setSaved(false);
-            }}
-            rows={2}
-            maxLength={1000}
-            placeholder="What was it like to work with them? (optional)"
-            aria-label="Your review"
-            className="field mt-2 resize-none"
-          />
-          {error && <p className="mt-2 rounded bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
-          {mine?.status === "pending" && <p className="mt-2 text-xs text-muted-foreground">Your review is waiting for the team to approve it.</p>}
-          <button
-            type="button"
-            onClick={submit}
-            disabled={saved}
-            className={cx("press mt-2 inline-flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-sm font-semibold transition-colors", saved ? "bg-emerald-50 text-emerald-700" : "bg-primary text-white hover:bg-primary/90")}
-          >
-            {saved && <Check className="h-4 w-4 animate-pop" />}
-            {saved ? "Saved" : mine ? "Update review" : "Post review"}
-          </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {shown.map((r) => (
-        <div key={r.author.id} className="group flex animate-rise gap-3 border-t px-4 py-3">
-          <Link href={`/members/${r.author.id}`} className="shrink-0">
-            <AvatarImg person={r.author} size={48} />
-          </Link>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between gap-2">
-              <Link href={`/members/${r.author.id}`} className="truncate text-sm font-semibold hover:underline">
-                {r.author.full_name}
-              </Link>
-              {(r.author.id === me?.id || isStaff) && (
-                <button type="button" aria-label="Delete review" onClick={() => remove(r.author.id)} className="rounded p-1 text-muted-foreground opacity-0 transition-opacity hover:text-rose-600 focus:opacity-100 group-hover:opacity-100">
-                  <Trash2 className="h-4 w-4" />
-                </button>
+        <div key={r.author.id} className="card bzrev">
+          <div className="row" style={{ alignItems: "flex-start" }}>
+            <Link href={`/members/${r.author.id}`} aria-hidden="true" tabIndex={-1}><AvatarImg person={r.author} size={36} /></Link>
+            <div className="stack grow" style={{ gap: 3, minWidth: 0 }}>
+              <span>
+                <Link href={`/members/${r.author.id}`} className="namebtn">{r.author.full_name}</Link>
+                {r.status !== "published" && <span className="pill warn" style={{ marginLeft: 6 }}>Pending</span>}
+              </span>
+              <span>
+                {stars(r.rating)} <span className="muted small">{new Date(r.created_at).toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" })}</span>
+              </span>
+              {Object.keys(r.criteria).length > 0 && <span className="muted small">{Object.entries(r.criteria).map(([k, v]) => `${k} ${v}/5`).join(", ")}</span>}
+              {r.body && <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{r.body}</p>}
+              {r.reply && (
+                <div className="bzreply">
+                  <strong className="small">Reply from the business</strong>
+                  <p className="small" style={{ whiteSpace: "pre-wrap" }}>{r.reply}</p>
+                  {canReply && <button type="button" className="linkbtn small" onClick={() => dropReply(r.author.id)}>Remove reply</button>}
+                </div>
               )}
             </div>
-            <p className="truncate text-xs text-muted-foreground">{r.author.headline}</p>
-            <Stars value={r.rating} size={14} />
-            {Object.keys(r.criteria).length > 0 && (
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                {Object.entries(r.criteria)
-                  .map(([k, v]) => `${k} ${v}/5`)
-                  .join(", ")}
-              </p>
-            )}
-            {r.body && <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-5">{r.body}</p>}
-            {r.reply && (
-              <div className="mt-2 rounded-lg bg-muted px-3 py-2 text-sm">
-                <p className="text-xs font-semibold text-muted-foreground">Reply from the business</p>
-                <p className="whitespace-pre-wrap break-words">{r.reply}</p>
-                {canReply && (
-                  <button type="button" onClick={() => dropReply(r.author.id)} className="mt-1 text-xs font-semibold text-rose-700 hover:underline">
-                    Remove reply
-                  </button>
-                )}
-              </div>
-            )}
-            {canReply && !r.reply && (
-              <div className="mt-2">
-                {replying === r.author.id ? (
-                  <div className="grid gap-2">
-                    <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={2} maxLength={1000} aria-label="Reply to this review" className="field resize-none" />
-                    <span className="flex gap-2">
-                      <button type="button" onClick={() => sendReply(r.author.id)} className="press rounded-xl bg-primary px-3 py-1 text-sm font-semibold text-white">
-                        Reply
-                      </button>
-                      <button type="button" onClick={() => setReplying(null)} className="rounded-xl px-3 py-1 text-sm font-semibold text-muted-foreground hover:bg-muted">
-                        Cancel
-                      </button>
-                    </span>
-                  </div>
-                ) : (
-                  <button type="button" onClick={() => setReplying(r.author.id)} className="text-xs font-semibold text-primary hover:underline">
-                    Reply as the business
-                  </button>
-                )}
-              </div>
+            {(r.author.id === me?.id || isStaff) && (
+              <button type="button" aria-label="Delete review" className="linkbtn small" onClick={() => remove(r.author.id)}>Delete</button>
             )}
           </div>
+          {canReply && !r.reply && (
+            replying === r.author.id ? (
+              <div className="stack" style={{ gap: 8 }}>
+                <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={2} maxLength={1000} aria-label="Reply to this review" className="field" />
+                <span className="row">
+                  <button type="button" onClick={() => sendReply(r.author.id)} className="btn sm">Reply</button>
+                  <button type="button" onClick={() => setReplying(null)} className="btn sm ghost">Cancel</button>
+                </span>
+              </div>
+            ) : (
+              <button type="button" className="linkbtn small" style={{ alignSelf: "flex-start", color: "var(--link)", fontWeight: 600 }} onClick={() => setReplying(r.author.id)}>
+                Reply as the business
+              </button>
+            )
+          )}
         </div>
       ))}
-    </section>
-  );
-}
+    </>
+  );}
 
 /** Group admins invite their connections; each row flips to Invited at once. */
 export function InvitePanel({ groupId, candidates, invited }: { groupId: string; candidates: Author[]; invited: string[] }) {

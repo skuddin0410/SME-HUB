@@ -69,5 +69,6 @@ test("the owner sees Manage and the rating form asks for each criterion", async 
   await expect(page.getByRole("link", { name: "Manage" })).toBeVisible();
   await page.goto("/businesses/mine/maple-demo");
   await expect(page.getByRole("heading", { name: "Maple Demo Bakery" })).toBeVisible();
+  await page.goto("/businesses/mine/maple-demo?tab=team");
   await expect(page.getByRole("heading", { name: "Team" })).toBeVisible();
 });

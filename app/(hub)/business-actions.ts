@@ -62,7 +62,7 @@ export async function saveBusiness(_prev: BizState, form: FormData): Promise<Biz
     if (error) return { error: wrap(error.message) };
   }
   refresh();
-  redirect(`/businesses/mine/${slug}`);
+  redirect(text(form, "then") === "preview" ? `/businesses/${slug}` : `/businesses/mine/${slug}`);
 }
 
 export async function saveBusinessDetails(_prev: BizState, form: FormData): Promise<BizState> {

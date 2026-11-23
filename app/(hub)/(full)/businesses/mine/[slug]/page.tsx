@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLinks, requireUser } from "@/lib/hub";
-import { PageTitle } from "@/components/hub";
+import { Ic } from "@/components/zip/ic";
+import { ZipSubmit } from "@/components/zip/submit";
+import "@/styles/zip.css";
+import "@/styles/zip-extra.css";
 import { SubmitButton } from "@/components/hub-client";
 import { BusinessForm } from "@/components/business-form";
 import { DetailsForm, EventForm, JobForm, PhotoForm, ProductForm, ServiceForm, TeamAdd, type DetailsValues } from "@/components/business-manage";
@@ -11,8 +14,9 @@ import { getBusinessSettings } from "@/lib/business-server";
 
 export const dynamic = "force-dynamic";
 
-export default async function ManageBusinessPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ManageBusinessPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ tab?: string }> }) {
   const { slug } = await params;
+  const { tab: rawTab } = await searchParams;
   if (!/^[a-z0-9-]{1,80}$/.test(slug)) notFound();
   const { supabase, userId, isStaff } = await requireUser();
   const { data } = await supabase.from("companies").select("*").eq("slug", slug).maybeSingle();
@@ -59,44 +63,57 @@ export default async function ManageBusinessPage({ params }: { params: Promise<{
   };
   const canSubmit = ["draft", "rejected"].includes(c.status);
 
+  const TABS = [
+    { key: "details", label: "Details" },
+    { key: "services", label: "Services" },
+    ...(settings.tabs.photos ? [{ key: "photos", label: "Photos" }] : []),
+    { key: "inbox", label: `Inbox${unread ? ` (${unread})` : ""}`, href: `/businesses/mine/${c.slug}/inbox` },
+    { key: "team", label: "Team" },
+    ...(settings.tabs.shop || settings.tabs.jobs || settings.tabs.events ? [{ key: "modules", label: "Shop, events and jobs" }] : []),
+    { key: "publish", label: "Publish and share" },
+  ];
+  const tab = TABS.some((t) => t.key === rawTab && !("href" in t)) ? rawTab! : "details";
   return (
-    <>
-      <PageTitle title={c.name}>
-        <span className="flex gap-3 text-sm font-semibold">
-          <Link href={`/businesses/${c.slug}`} className="text-primary hover:underline">View page</Link>
-          <Link href={`/businesses/mine/${c.slug}/inbox`} className="text-primary hover:underline">Inbox{unread ? ` (${unread})` : ""}</Link>
-        </span>
-      </PageTitle>
-
-      <section className="panel flex flex-wrap items-center justify-between gap-3 p-4">
-        <div>
-          <p className="text-sm font-semibold">Status: {STATUS_LABEL[c.status] ?? c.status}</p>
-          <p className="text-xs text-muted-foreground">
-            {c.status === "draft" && (settings.pub_approval ? "Send your page to the team for approval when it is ready." : "Publish your page when it is ready.")}
-            {c.status === "pending" && "The team is reviewing your page."}
-            {c.status === "published" && "Your page is live in the directory."}
-            {c.status === "rejected" && "The team did not approve this page. Update it and send it again."}
-          </p>
+    <div className="zip">
+      <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
+        <div className="card bzmhead" style={{ marginBottom: 16 }}>
+          <p className="eyebrow">You are acting for</p>
+          <div className="row" style={{ flexWrap: "wrap" }}>
+            <span className="av l bzav" aria-hidden="true" style={{ borderRadius: 14 }}>
+              {c.logo_url ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={c.logo_url} alt="" /> : String(c.name).charAt(0).toUpperCase()}
+            </span>
+            <div className="stack grow" style={{ gap: 2 }}>
+              <h1 style={{ font: "800 22px var(--display)" }}>{c.name}</h1>
+              <span className="muted small">Your role: {isStaff && !role ? "Hub team" : ROLES[role as keyof typeof ROLES]}</span>
+            </div>
+            <Link href={`/businesses/${c.slug}`} className="btn ghost sm">View page</Link>
+          </div>
+          <nav className="bztabs" aria-label="Manage sections">
+            {TABS.map((t) => (
+              <Link key={t.key} href={"href" in t && t.href ? t.href : `/businesses/mine/${c.slug}?tab=${t.key}`} aria-current={t.key === tab ? "page" : undefined}>{t.label}</Link>
+            ))}
+          </nav>
         </div>
-        {canSubmit && (
-          <form action={submitBusiness.bind(null, c.id)}>
-            <SubmitButton>{settings.pub_approval ? "Send for approval" : "Publish page"}</SubmitButton>
-          </form>
-        )}
-      </section>
 
-      <section className="panel p-5">
-        <h2 className="mb-4 text-base font-semibold">Basics</h2>
+        <div className="bzmbody">
+{tab === "details" && (
+<>
+      <>
+        <h2 style={{ font: "700 16px var(--display)" }}>Basics</h2>
         <BusinessForm key={c.updated_at} categories={settings.categories} values={{ id: c.id, name: c.name, kind: c.kind, category: c.category, city: c.city, province: c.province, description: c.description, website: c.website }} />
-      </section>
+      </>
 
-      <section className="panel p-5">
-        <h2 className="mb-4 text-base font-semibold">Hours, contacts and buttons</h2>
+      <div className="card">
+        <h2>Hours, contacts and buttons</h2>
         <DetailsForm key={c.updated_at} v={details} />
-      </section>
+      </div>
 
-      <section className="panel p-5">
-        <h2 className="mb-3 text-base font-semibold">Services</h2>
+</>
+)}
+{tab === "services" && (
+<>
+      <div className="card">
+        <h2>Services</h2>
         <ul className="mb-4 divide-y">
           {((services ?? []) as { id: string; name: string; price_type: string; price: number | null }[]).map((s) => (
             <li key={s.id} className="flex items-center justify-between gap-3 py-2 text-sm">
@@ -110,50 +127,62 @@ export default async function ManageBusinessPage({ params }: { params: Promise<{
           ))}
         </ul>
         <ServiceForm companyId={c.id} />
-      </section>
+      </div>
 
+</>
+)}
+{tab === "photos" && (
+<>
       {settings.tabs.photos && (
-        <section className="panel p-5">
-          <h2 className="mb-3 text-base font-semibold">Photos</h2>
+        <div className="card">
+          <h2>Photos</h2>
           <ul className="mb-4 divide-y">
             {((photos.data ?? []) as { id: string; caption: string }[]).map((x) => <Row key={x.id} label={x.caption || "Photo"} remove={deletePhoto.bind(null, x.id)} />)}
           </ul>
           <PhotoForm companyId={c.id} />
-        </section>
+        </div>
       )}
 
+</>
+)}
+{tab === "modules" && (
+<>
       {settings.tabs.shop && (
-        <section className="panel p-5">
-          <h2 className="mb-3 text-base font-semibold">Shop</h2>
+        <div className="card">
+          <h2>Shop</h2>
           <ul className="mb-4 divide-y">
             {((products.data ?? []) as { id: string; name: string; price: number; available: boolean }[]).map((x) => <Row key={x.id} label={`${x.name} · ${money(x.price)}${x.available ? "" : " · sold out"}`} remove={deleteProduct.bind(null, x.id)} />)}
           </ul>
           <ProductForm companyId={c.id} />
-        </section>
+        </div>
       )}
 
       {settings.tabs.jobs && (
-        <section className="panel p-5">
-          <h2 className="mb-3 text-base font-semibold">Jobs</h2>
+        <div className="card">
+          <h2>Jobs</h2>
           <ul className="mb-4 divide-y">
             {((jobs.data ?? []) as { id: string; title: string; job_type: string }[]).map((x) => <Row key={x.id} label={`${x.title} · ${x.job_type}`} remove={deleteJob.bind(null, x.id)} />)}
           </ul>
           <JobForm companyId={c.id} />
-        </section>
+        </div>
       )}
 
       {settings.tabs.events && (
-        <section className="panel p-5">
-          <h2 className="mb-3 text-base font-semibold">Events</h2>
+        <div className="card">
+          <h2>Events</h2>
           <ul className="mb-4 divide-y">
             {((events.data ?? []) as { id: string; title: string; starts_at: string }[]).map((x) => <Row key={x.id} label={`${x.title} · ${new Date(x.starts_at).toLocaleDateString("en-CA", { timeZone: c.tz })}`} remove={deleteEvent.bind(null, x.id)} />)}
           </ul>
           <EventForm companyId={c.id} />
-        </section>
+        </div>
       )}
 
-      <section className="panel p-5">
-        <h2 className="mb-3 text-base font-semibold">Team</h2>
+</>
+)}
+{tab === "team" && (
+<>
+      <div className="card">
+        <h2>Team</h2>
         <ul className="mb-4 divide-y">
           {((team ?? []) as unknown as { user_id: string; role: keyof typeof ROLES; member: { full_name: string } | null }[]).map((t) => (
             <li key={t.user_id} className="flex flex-wrap items-center justify-between gap-3 py-2 text-sm">
@@ -178,7 +207,38 @@ export default async function ManageBusinessPage({ params }: { params: Promise<{
           ))}
         </ul>
         {isOwner && <TeamAdd companyId={c.id} candidates={(candidates ?? []) as { id: string; full_name: string }[]} />}
-      </section>
-    </>
+      </div>
+</>
+)}
+{tab === "publish" && (
+<>
+      <div className="card">
+        <div className="row" style={{ flexWrap: "wrap" }}>
+          <div className="stack grow" style={{ gap: 2 }}>
+            <strong>Status: {STATUS_LABEL[c.status] ?? c.status}</strong>
+            <span className="muted small">
+              {c.status === "draft" && (settings.pub_approval ? "Send your page to the team for approval when it is ready." : "Publish your page when it is ready.")}
+              {c.status === "pending" && "The team is reviewing your page."}
+              {c.status === "published" && "Your page is live in the directory."}
+              {c.status === "rejected" && "The team did not approve this page. Update it and send it again."}
+            </span>
+          </div>
+          {canSubmit && (
+            <form action={submitBusiness.bind(null, c.id)}>
+              <ZipSubmit>{settings.pub_approval ? "Send for approval" : "Publish page"}</ZipSubmit>
+            </form>
+          )}
+        </div>
+      </div>
+<div className="card">
+          <h2>Share your page</h2>
+          <p className="muted small">Your page address stays the same: <strong>/businesses/{c.slug}</strong></p>
+          <div className="row"><Link href={`/businesses/${c.slug}`} className="btn sm ghost">Preview the page</Link></div>
+        </div>
+</>
+)}
+        </div>
+      </div>
+    </div>
   );
 }

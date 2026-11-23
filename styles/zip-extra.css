@@ -63,3 +63,18 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip .imgopt[aria-checked="true"]{border-color:var(--accent)}
 .zip .tools .muted.small{color:var(--ink);opacity:.75}
 .zip .gthumb>span,.zip .gcover>span,.zip .mbrow .th>span{height:100%}
+.zip .bztabs a{cursor:pointer;padding:13px 12px;font-weight:600;font-size:14px;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;text-decoration:none}
+.zip .bztabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.zip .bzlogo-wrap .av.bzav{border-radius:14px}
+.zip .bzlogo-wrap .av img{width:100%;height:100%;object-fit:cover}
+.zip .bzsv img{width:64px;height:64px}
+.zip .bzgal img{width:100%}
+.zip .bzcover svg{width:100%;height:230px}
+.zip .bzrate button{color:#8A8A92}.zip .bzrate button.on{color:#B45309}
+.zip .bzst .on,.zip .bzst .half{color:#B45309}
+.zip .bzst{color:#6B7280}
+.zip .bzst .half{background:linear-gradient(90deg,#B45309 50%,#6B7280 50%);-webkit-background-clip:text;color:transparent}
+.zip .sterr{color:#B91C1C}.dark .zip .sterr{color:#FCA5A5}
+.zip .pagehead .eyebrow,.zip .bzmhead .eyebrow{color:var(--ink);opacity:.75}
+.zip .pagehead .muted,.zip .pagehead p.muted{color:var(--ink);opacity:.75}
+.zip .bg-blue-600{background-color:#1D4ED8;color:#FFFFFF}

@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { saveBusiness, type BizState } from "@/app/(hub)/business-actions";
-import { SubmitButton } from "@/components/hub-client";
+import { ZipSubmit } from "@/components/zip/submit";
 import { useImageUpload } from "@/lib/upload";
 import { KINDS } from "@/lib/business";
 import { PROVINCES } from "@/lib/profile-extra";
@@ -30,81 +30,86 @@ export function BusinessForm({ values = {}, categories }: { values?: BusinessVal
   const logo = useImageUpload("logo");
   const cover = useImageUpload("cover");
   return (
-    <form action={action} className="flex flex-col gap-4">
+    <form action={action} className="card bzform">
       {values.id && <input type="hidden" name="id" value={values.id} />}
-      <label className="grid gap-1.5 text-sm font-semibold">
+      <label>
         Business name
-        <input name="name" required maxLength={100} defaultValue={values.name} className="field font-normal" />
+        <input name="name" required maxLength={100} defaultValue={values.name} className="field" placeholder="For example: Golden Crust Bakery" />
       </label>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="grid gap-1.5 text-sm font-semibold">
+      <div className="bz2col">
+        <label>
           Category
-          <select name="category" required defaultValue={values.category ?? ""} className="field font-normal">
+          <select name="category" required defaultValue={values.category ?? ""} className="field">
             <option value="">Choose a category</option>
             {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </label>
-        <label className="grid gap-1.5 text-sm font-semibold">
-          How customers find you
-          <select name="kind" defaultValue={values.kind ?? "storefront"} className="field font-normal">
+        <label>
+          How customers reach you
+          <select name="kind" defaultValue={values.kind ?? "storefront"} className="field">
             {Object.entries(KINDS).map(([v, l]) => (
-              <option key={v} value={v}>
-                {l}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="grid gap-1.5 text-sm font-semibold">
-          City
-          <input name="city" required maxLength={80} defaultValue={values.city} className="field font-normal" />
-        </label>
-        <label className="grid gap-1.5 text-sm font-semibold">
-          Province
-          <select name="province" required defaultValue={values.province ?? ""} className="field font-normal">
-            <option value="">Choose</option>
-            {PROVINCES.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
+              <option key={v} value={v}>{l}</option>
             ))}
           </select>
         </label>
       </div>
-      <label className="grid gap-1.5 text-sm font-semibold">
+      <label>
         What the business does
-        <textarea name="description" rows={3} maxLength={1000} defaultValue={values.description} className="field font-normal" />
+        <textarea name="description" rows={3} maxLength={1000} defaultValue={values.description} className="field" placeholder="What you do and for whom" />
       </label>
-      <label className="grid gap-1.5 text-sm font-semibold">
-        Website
-        <input name="website" maxLength={200} placeholder="yourbusiness.ca" defaultValue={values.website} className="field font-normal" />
-      </label>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="grid gap-1.5 text-sm font-semibold">
-          Logo
-          <input type="file" accept="image/*" className="text-sm font-normal" onChange={(e) => logo.pick(e.target.files?.[0])} />
-          {logo.busy && <span className="text-xs font-normal text-muted-foreground">Uploading…</span>}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {logo.url && <img src={logo.url} alt="Logo preview" className="h-16 w-16 rounded border object-contain" />}
+      <div className="bz2col">
+        <label>
+          City
+          <input name="city" required maxLength={80} defaultValue={values.city} className="field" placeholder="Mississauga" />
         </label>
-        <label className="grid gap-1.5 text-sm font-semibold">
-          Cover photo
-          <input type="file" accept="image/*" className="text-sm font-normal" onChange={(e) => cover.pick(e.target.files?.[0])} />
-          {cover.busy && <span className="text-xs font-normal text-muted-foreground">Uploading…</span>}
+        <label>
+          Province or territory
+          <select name="province" required defaultValue={values.province ?? ""} className="field">
+            <option value="">Choose</option>
+            {PROVINCES.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <label>
+        Website
+        <input name="website" maxLength={200} placeholder="yourbusiness.ca" defaultValue={values.website} className="field" />
+      </label>
+      <div className="bz2col">
+        <label>
+          Logo
+          <input type="file" accept="image/*" onChange={(e) => logo.pick(e.target.files?.[0])} />
+          {logo.busy && <span className="muted small">Uploading…</span>}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {cover.url && <img src={cover.url} alt="Cover preview" className="h-16 w-full rounded border object-cover" />}
+          {logo.url && <img src={logo.url} alt="Logo preview" style={{ height: 64, width: 64, borderRadius: 10, objectFit: "contain", border: "1px solid var(--line)" }} />}
+        </label>
+        <label>
+          Cover photo
+          <input type="file" accept="image/*" onChange={(e) => cover.pick(e.target.files?.[0])} />
+          {cover.busy && <span className="muted small">Uploading…</span>}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {cover.url && <img src={cover.url} alt="Cover preview" style={{ height: 64, width: "100%", borderRadius: 10, objectFit: "cover", border: "1px solid var(--line)" }} />}
         </label>
       </div>
       <input type="hidden" name="logo_url" value={logo.url} />
       <input type="hidden" name="cover_url" value={cover.url} />
-      {(logo.error || cover.error) && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{logo.error || cover.error}</p>}
-      <Notice state={state} />
-      <SubmitButton className="self-start" disabled={logo.busy || cover.busy}>
-        {values.id ? "Save changes" : "Create page"}
-      </SubmitButton>
+      {(logo.error || cover.error) && <p className="small sterr" role="alert">{logo.error || cover.error}</p>}
+      {state.error && <p role="alert" className="small sterr">{state.error}</p>}
+      {state.ok && <p role="status" className="small" style={{ color: "#15803D" }}>Saved.</p>}
+      <p className="muted small">{values.id ? "" : "You choose later whether your street address is shown."}</p>
+      <div className="row" style={{ flexWrap: "wrap" }}>
+        {values.id ? (
+          <ZipSubmit disabled={logo.busy || cover.busy}>Save changes</ZipSubmit>
+        ) : (
+          <>
+            <ZipSubmit className="btn ghost" name="then" value="preview" disabled={logo.busy || cover.busy}>Save draft and preview</ZipSubmit>
+            <ZipSubmit disabled={logo.busy || cover.busy}>Save draft and add more details</ZipSubmit>
+          </>
+        )}
+      </div>
     </form>
   );
 }
