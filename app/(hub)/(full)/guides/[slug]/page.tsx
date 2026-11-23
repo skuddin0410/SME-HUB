@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { findFull, GUIDE_FULL } from "@/lib/smehub";
 import { pageMeta } from "@/lib/seo";
-import { SmehubPage } from "@/components/smehub-page";
+import { ZipGuidePage } from "@/components/zip/smehub";
 
 const ALL = GUIDE_FULL;
 export const generateStaticParams = () => ALL.map((p) => ({ slug: p.path.split("/").pop()! }));
@@ -15,5 +15,5 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const page = findFull(`/guides/${(await params).slug}`);
   if (!page) notFound();
-  return <SmehubPage page={page} />;
+  return <ZipGuidePage page={page} />;
 }
