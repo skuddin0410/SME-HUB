@@ -148,6 +148,14 @@ http
       { id: "00000000-0000-4000-8000-0000000000a1", title: "Founding members welcome call", when_label: "Tue, Jan 12, 2027 · 12:00 pm ET", location: "Online", note: "Meet the team and the first members." },
       { id: "00000000-0000-4000-8000-0000000000a2", title: "Small Business Show 2027", when_label: "Date to be announced", location: "In person", note: "Members get early access and a discount." },
     ]));
+    if (url.pathname === "/rest/v1/member_blogs") {
+      const A = { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", avatar_url: null, location: "Toronto, ON", bio: "I bake and write about wholesale." };
+      const blog = (n, over) => ({ id: `00000000-0000-4000-8000-0000000b00${n}`, author_id: A.id, title: `Wholesale lessons ${n}`, cat: n === 1 ? "Money" : "Sales & marketing", tags: ["wholesale", "food"], image_url: null, blocks: [["p", "It took fourteen months and three samples."], ["h", "What buyers asked for"], ["ul", "Shelf life\nCase size"], ["q", "Answer their questions first."]], status: "published", scheduled_at: null, published_at: "2026-11-14T12:00:00Z", created_at: "2026-11-13T12:00:00Z", author: A, ...over });
+      const wantId = String(url.searchParams.get("id") ?? "").replace("eq.", "");
+      if (wantId) return one(blog(1, { id: wantId }));
+      if (url.searchParams.get("author_id")) return res.end("[]"); // profile tabs: this member has not written anything
+      return res.end(JSON.stringify([blog(1), blog(2)]));
+    }
     if (url.pathname === "/rest/v1/hub_settings") {
       let hub = {};
       try { hub = JSON.parse(Buffer.from(String(req.headers.authorization).split(".")[1] ?? "", "base64url").toString()).hub ?? {}; } catch {}

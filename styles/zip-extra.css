@@ -110,3 +110,9 @@ button.spill{font:inherit;color:#A1A1AA}
 /* profile header centred (Profile settings) */
 .zip .phero[data-head="center"] .pinfo{align-items:center;text-align:center}
 .zip .phero[data-head="center"] .pavrow,.zip .phero[data-head="center"] .pmain,.zip .phero[data-head="center"] .prow{justify-content:center;align-items:center}
+
+/* error text that stays readable in both themes */
+.zip .errtxt{color:#B91C1C;font-weight:600}
+html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color:#FCA5A5}
+.zip .backlink{color:var(--ink)!important;opacity:.85;font-weight:600}
+.zip .byline .ameta{color:var(--ink)!important;opacity:.8}

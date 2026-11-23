@@ -20,6 +20,7 @@ const HUB_MENU: NavItem[] = [
   { label: "Members", href: "/members" },
   { label: "Business Directory", href: "/businesses" },
   { label: "My Businesses", href: "/businesses/mine" },
+  { label: "Member blogs", href: "/member-blogs" },
   { label: "SMB Advisors", href: "/smb-advisor" },
   { label: "Membership plans", href: "/membership-plans" },
   { label: "Blog", href: "/blog" },

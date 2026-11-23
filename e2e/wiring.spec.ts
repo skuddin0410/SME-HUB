@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { memberCookie } from "./personas";
 
@@ -65,4 +66,50 @@ test.describe("saved settings change the live pages", () => {
     await expect(page.getByLabel("Favourite local supplier")).toBeVisible();
     await expect(page.getByLabel("Team secret")).toHaveCount(0);
   });
+
+  const BLOG = "/member-blogs/00000000-0000-4000-8000-0000000b0001";
+  test("member blogs: directory lists posts and follows the layout setting", async ({ page, context, baseURL }) => {
+    await context.addCookies([memberCookie(baseURL!)]);
+    await page.goto("/member-blogs", { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("heading", { name: "Member blogs", level: 1 })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Wholesale lessons 1" }).first()).toBeVisible();
+    await expect(page.locator(".artgrid")).toBeVisible();
+    await page.context().clearCookies();
+    await context.addCookies([memberCookie(baseURL!, false, { blogs: { layout: "compact", cats: ["Money", "Legal"] } })]);
+    await page.goto("/member-blogs", { waitUntil: "domcontentloaded" });
+    await expect(page.locator(".mbcompact").first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Legal", exact: true })).toBeVisible();
+  });
+
+  test("member blogs: a post shows its text, share buttons and author box as set", async ({ page, context, baseURL }) => {
+    await context.addCookies([memberCookie(baseURL!, false, { blogs: { share: { linkedin: false, facebook: false, x: false, email: false, copy: true }, authorBox: false } })]);
+    await page.goto(BLOG, { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("heading", { name: "Wholesale lessons 1", level: 1 })).toBeVisible();
+    await expect(page.getByText("What buyers asked for")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Copy link" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "LinkedIn" })).toHaveCount(0);
+    await expect(page.getByText("Written by", { exact: true })).toHaveCount(0);
+  });
+
+  test("write: the editor loads with the team's categories; plan limits show a message", async ({ page, context, baseURL }) => {
+    await context.addCookies([memberCookie(baseURL!, false, { blogs: { cats: ["Money", "Legal"], reqImg: true } })]);
+    await page.goto("/write", { waitUntil: "domcontentloaded" });
+    await expect(page.getByLabel("Post title")).toBeVisible();
+    await expect(page.getByLabel("Category").getByRole("option", { name: "Legal" })).toHaveCount(1);
+    await expect(page.getByText("A featured image is required.")).toBeVisible();
+    await page.getByRole("button", { name: "+ Quote" }).click();
+    await expect(page.getByLabel("Quote")).toBeVisible();
+  });
+
+  for (const path of ["/member-blogs", BLOG, "/write"]) {
+    for (const dark of [false, true]) {
+      test(`${path.replace(/[0-9a-f-]{36}/, "id")} ${dark ? "dark" : "light"} has no serious accessibility problems`, async ({ page, context, baseURL }) => {
+        await context.addCookies([memberCookie(baseURL!)]);
+        await page.addInitScript((d) => { try { localStorage.setItem("smbhub.theme", d ? "dark" : "light"); } catch {} }, dark);
+        await page.goto(path, { waitUntil: "networkidle" });
+        const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+        expect(r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${v.id}: ${v.nodes.length} (${v.nodes[0]?.target?.join(" ")})`)).toEqual([]);
+      });
+    }
+  }
 });

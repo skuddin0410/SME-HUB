@@ -16,6 +16,7 @@ import { ZipAv } from "@/components/zip/bits";
 import { TYPES } from "@/lib/zip/types";
 import { getHubSettings } from "@/lib/zip/settings-load";
 import { customFields, fieldAllowed } from "@/lib/zip/profile-fields";
+import { readMinutes, STATUS_LABEL, when as blogDate, type MemberBlog } from "@/lib/zip/member-blogs";
 import { displayName, profileActions } from "@/lib/zip/profile-rules";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
@@ -142,6 +143,7 @@ export default async function MemberPage({
       connList = ((await supabase.rpc("mutual_connection_list", { other: id })).data ?? []) as Conn[];
     }
   }
+  const blogPosts = tab === "blog" ? (((await supabase.from("member_blogs").select("id, title, cat, image_url, blocks, status, published_at, created_at").eq("author_id", id).order("created_at", { ascending: false }).limit(30)).data ?? []) as unknown as Pick<MemberBlog, "id" | "title" | "cat" | "image_url" | "blocks" | "status" | "published_at" | "created_at">[]).filter((b) => b.status === "published" || isMe) : [];
   const groupList = tab === "groups" ? (((await supabase.rpc("profile_groups", { p_member: id })).data ?? []) as Grp[]) : [];
   const connLinks = connList.length ? links : links;
 
@@ -375,7 +377,24 @@ export default async function MemberPage({
             )}
 
             {tab === "blog" && (
-              <div className="card psec"><h2>Blog</h2><p className="muted">{first} has not published a blog post yet.</p></div>
+              <div className="card psec">
+                <h2>Blog</h2>
+                {blogPosts.length === 0 ? <p className="muted">{isMe ? "You have" : `${first} has`} not published a blog post yet.</p> : (
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {blogPosts.map((b) => (
+                      <div key={b.id} className="mbrow">
+                        <span className="th"><img src={b.image_url || "/zip/img/community.jpg"} alt="" loading="lazy" /></span>
+                        <div className="stack grow" style={{ gap: 5, minWidth: 0 }}>
+                          <span className="acat">{b.cat}{b.status !== "published" ? ` · ${STATUS_LABEL[b.status]}` : ""}</span>
+                          <Link className="atitle" style={{ font: "700 17px/1.3 var(--display)" }} href={`/member-blogs/${b.id}`}>{b.title}</Link>
+                          <span className="ameta">{blogDate(b.published_at ?? b.created_at)} · {readMinutes(b.blocks)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {isMe && <Link href="/write" className="btn sm" style={{ alignSelf: "flex-start" }}>Write a post</Link>}
+              </div>
             )}
           </section>
 

@@ -1006,3 +1006,31 @@ select t.expect('edit window can be switched off', edit_window() = interval '0 m
 select t.expect('comment edit window can be unlimited', comment_edit_window() > interval '1 year');
 update hub_settings set value = '{"polls": true}' where key = 'feed';
 select t.expect('edit window falls back to 10 minutes', edit_window() = interval '10 minutes');
+
+-- member blogs (0041)
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000f7', 'erin@x.ca');
+delete from hub_settings where key = 'blogs';
+select t.expect('anon can read blogs', has_table_privilege('anon', 'member_blogs', 'select'));
+select t.expect('anon cannot write blogs', not has_table_privilege('anon', 'member_blogs', 'insert'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000f7';
+insert into member_blogs (author_id, title, status) values ('00000000-0000-0000-0000-0000000000f7', 'My first post', 'draft');
+select t.expect('a member can save a draft', (select count(*) = 1 from member_blogs where title = 'My first post'));
+update member_blogs set status = 'published' where title = 'My first post';
+select t.expect('a free member publishing goes to review', (select status = 'review' from member_blogs where title = 'My first post'));
+select t.expect_denied('a member cannot write as someone else', $$insert into member_blogs (author_id, title) values ('00000000-0000-0000-0000-00000000000a', 'Not mine')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect('another member cannot read a post under review', (select count(*) = 0 from member_blogs where title = 'My first post'));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+select t.expect('the team sees a post under review', (select count(*) = 1 from member_blogs where title = 'My first post'));
+update member_blogs set status = 'published' where title = 'My first post';
+select t.expect('the team can publish', (select status = 'published' and published_at is not null from member_blogs where title = 'My first post'));
+reset role; set request.jwt.claim.sub = '';
+set role anon;
+select t.expect('anyone can read a published post', (select count(*) = 1 from member_blogs where title = 'My first post'));
+reset role;
+insert into hub_settings (key, value) values ('blogs', '{"who": "advisor"}');
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000f7';
+select t.expect_denied('writing can be limited to advisors', $$insert into member_blogs (author_id, title) values ('00000000-0000-0000-0000-0000000000f7', 'Second post')$$);
+reset role;
+delete from hub_settings where key = 'blogs';

@@ -9,11 +9,11 @@ import "@/styles/zip-extra.css";
 
 const TABS: [string, string, string][] = [["blog", "Articles", "/blog"], ["news", "News", "/news"], ["podcast", "Podcast", "/podcast"], ["memberblogs", "Member blogs", "/member-blogs"]];
 
-function Tabs({ k }: { k: string }) {
+export function Tabs({ k }: { k: string }) {
   return (
     <div className="arttabs" role="tablist" aria-label="Type">
       {TABS.map(([key, label, href]) => (
-        <Link key={key} className="chip" role="tab" aria-selected={key === k} aria-current={key === k ? "true" : undefined} href={href} prefetch={key === "memberblogs" ? false : undefined}>{label}</Link>
+        <Link key={key} className="chip" role="tab" aria-selected={key === k} aria-current={key === k ? "true" : undefined} href={href}>{label}</Link>
       ))}
     </div>
   );

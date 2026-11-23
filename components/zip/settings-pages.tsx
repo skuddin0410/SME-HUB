@@ -204,11 +204,11 @@ export function GroupsBody() {
 }
 
 /* ---------- Member blogs ---------- */
-export function BlogsBody() {
+export function BlogsBody({ queue }: { queue?: React.ReactNode }) {
   return (
     <>
-      <div className="card" style={{ marginBottom: 20 }}><div className="row"><h2 className="grow">Waiting for approval</h2><span className="pill on">0 waiting</span></div>
-        <p className="muted">Nothing is waiting. New submissions appear here.</p></div>
+      {queue ?? <div className="card" style={{ marginBottom: 20 }}><div className="row"><h2 className="grow">Waiting for approval</h2><span className="pill on">0 waiting</span></div>
+        <p className="muted">Nothing is waiting. New submissions appear here.</p></div>}
       <div className="setgrid">
         <div className="card"><h2>Who can write a post</h2><Radio path="who" label="Who can write a post" opts={[["all", "All members"], ["paid", "Plus and Advisors"], ["advisor", "Advisors only"]]} />
           <Note>Your team can always post, whatever the rule.</Note>
