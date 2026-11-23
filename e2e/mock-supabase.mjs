@@ -43,6 +43,7 @@ http
     if (url.pathname === "/rest/v1/profiles" && url.searchParams.get("id") === `eq.${PRIYA.id}`) {
       return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? PRIYA : [PRIYA]));
     }
+    if (url.pathname === "/rest/v1/profiles" && url.searchParams.get("member_type") === "eq.advisor") return res.end(JSON.stringify([{ id: PRIYA.id, full_name: "Priya Raman", headline: "Founder, Maple Bakery", avatar_url: null, location: "Toronto, ON", advisor_profiles: { field: "Food and retail", years: 11, helped: 64, rating: 4.9, about: "We bake small-batch bread and pastries for cafes and grocers across the GTA.", services: [{ name: "Wholesale readiness check", text: "" }] } }]));
     if (url.pathname === "/rest/v1/profiles" && (url.searchParams.get("id") || "").startsWith("neq.") && (url.searchParams.get("select") || "").includes("member_type")) return res.end(JSON.stringify(SIDE));
     if (url.pathname === "/rest/v1/rpc/connection_count") return res.end("10");
     if (url.pathname === "/rest/v1/rpc/follower_count") return res.end("27");

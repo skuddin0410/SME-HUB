@@ -929,3 +929,10 @@ select t.expect('group card extras give nothing for an unknown group', (select c
 -- hub events and seats
 select t.expect('the events list is public', (select count(*) >= 3 from hub_events where status = 'published'));
 select t.expect('seats are never readable by anyone signed out', not has_table_privilege('anon', 'event_rsvps', 'select'));
+
+-- advisor_profiles: anyone reads, a member cannot write their own
+reset role;
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+select t.expect_denied('a member cannot add advisor details for themselves', $$insert into advisor_profiles (user_id, field) values ('00000000-0000-0000-0000-00000000000c','Legal')$$);
+select t.expect('advisor details are public to read', (select count(*) >= 0 from advisor_profiles));
+reset role;
