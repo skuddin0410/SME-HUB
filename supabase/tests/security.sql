@@ -445,6 +445,9 @@ select t.expect('the member directory finds the same people as the search', (sel
 select t.expect('the member directory counts recommendations and shows when a member was last active', (select recommended_by >= 0 and last_active is not null from member_directory('zoe') where id = :e1));
 select t.expect('the member directory treats % as plain text', (select count(*) = 0 from member_directory('%')));
 select t.expect('anyone can open the member directory', (select count(*) = 1 from pg_proc p where proname = 'member_directory' and has_function_privilege('anon', p.oid, 'execute')));
+select t.expect('a profile shows when the member was last active', profile_last_active(:e1) is not null);
+select t.expect('the public groups list never includes a private group', (select count(*) = 0 from profile_groups(:e1) g join groups x on x.id = g.id where x.is_private));
+select t.expect('visitors cannot read anyone''s mutual connections', not has_function_privilege('anon', 'mutual_connection_list(uuid)', 'execute'));
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e1';
 update profile_details set visibility = visibility || '{"location":"only"}' where user_id = auth.uid();
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';

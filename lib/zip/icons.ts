@@ -26,4 +26,9 @@ export const ICON: Record<string, string> = {
   clock: "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>",
   up: "<path d=\"M6 15l6-6 6 6\"/>",
   flag: "<path d=\"M5 21V4h11l-1.5 4L16 12H5\"/>",
+  dots: "<circle cx=\"5\" cy=\"12\" r=\"1.4\"/><circle cx=\"12\" cy=\"12\" r=\"1.4\"/><circle cx=\"19\" cy=\"12\" r=\"1.4\"/>",
+  ban: "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M6 18L18 6\"/>",
+  eye: "<path d=\"M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z\"/><circle cx=\"12\" cy=\"12\" r=\"2.8\"/>",
+  eyeoff: "<path d=\"M3 3l18 18M10.6 6.2A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-3 3.6M6.3 7.8A16 16 0 0 0 2.5 12S6 18 12 18c1.3 0 2.5-.3 3.6-.7\"/><path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\"/>",
+  mail: "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M3 7l9 6 9-6\"/>",
 };

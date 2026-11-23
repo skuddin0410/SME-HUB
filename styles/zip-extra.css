@@ -44,3 +44,13 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip .dirhead .eyebrow{color:var(--ink);opacity:.75}
 .zip .dirhead p.muted{color:var(--ink);opacity:.75}
 .dark .zip .recby{color:#34D399}
+
+/* profile tabs are links here, so they get the same look as the guide's tab buttons */
+.zip .ptabs a{cursor:pointer;padding:14px 12px;font-size:14px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;text-decoration:none}
+.zip .ptabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.zip .ptabs a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.zip .pcover .banner{height:100%;aspect-ratio:auto}
+.zip .pside{text-decoration:none;color:inherit}
+.zip details.menuwrap{border:0;padding:0}
+.zip details.menuwrap>summary{min-height:0;display:inline}
+.zip details.menuwrap>summary::-webkit-details-marker{display:none}

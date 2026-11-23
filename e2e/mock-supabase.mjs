@@ -37,6 +37,21 @@ http
     if (member && url.pathname === "/rest/v1/profiles" && url.searchParams.get("id") === `eq.${MEMBER.id}`) {
       return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? MEMBER : [MEMBER]));
     }
+    // a fuller member for the profile screen: Priya, with her recommendations and a few people for the side list
+    const PRIYA = { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", location: "Toronto, ON", bio: "We bake small-batch bread and pastries for cafes and grocers across the GTA.", website: "https://maplebakery.example", avatar_url: "/zip/img/p-priya.jpg", role: "member", status: "active", member_type: "advisor", profile_type: "advisor", founding_number: 1, created_at: "2026-05-04T12:00:00Z" };
+    const SIDE = [["luc", "Luc Bouchard", "Director, Atelier Bouchard", 12], ["sara", "Sara Haddad", "Founder, Clearwater Bookkeeping", 14], ["daniel", "Daniel Okafor", "Owner, Northside Logistics", 15], ["mei", "Mei Tanaka", "Co-founder, Harbour Analytics", 17]].map(([k, n, h, i]) => ({ id: `00000000-0000-4000-8000-0000000000${i}`, full_name: n, headline: h, avatar_url: `/zip/img/p-${k}.jpg`, member_type: "owner" }));
+    if (url.pathname === "/rest/v1/profiles" && url.searchParams.get("id") === `eq.${PRIYA.id}`) {
+      return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? PRIYA : [PRIYA]));
+    }
+    if (url.pathname === "/rest/v1/profiles" && (url.searchParams.get("id") || "").startsWith("neq.") && (url.searchParams.get("select") || "").includes("member_type")) return res.end(JSON.stringify(SIDE));
+    if (url.pathname === "/rest/v1/rpc/connection_count") return res.end("10");
+    if (url.pathname === "/rest/v1/rpc/follower_count") return res.end("27");
+    if (url.pathname === "/rest/v1/rpc/profile_last_active") return res.end(JSON.stringify(new Date().toISOString()));
+    if (url.pathname === "/rest/v1/rpc/get_profile_details") return res.end(JSON.stringify([{ user_id: PRIYA.id, helps_with: ["Wholesale", "Food retail"], needs: ["Packaging suppliers"], availability: [], social_links: {} }]));
+    if (url.pathname === "/rest/v1/recommendations") {
+      const r = (i, id, name, headline, rel, body) => ({ id: `rec${i}`, author_id: `00000000-0000-4000-8000-0000000000${id}`, relationship: rel, body, hidden: false, created_at: "2026-10-12T12:00:00Z", author: { id: `00000000-0000-4000-8000-0000000000${id}`, full_name: name, headline } });
+      return res.end(JSON.stringify([r(1, 18, "Nadia Rahman", "Owner, Prairie Roots Catering", "referral_partner", "Priya sends us her catering clients and we send her our dessert orders. Reliable every single time."), r(2, 19, "Chloe Tremblay", "Owner, Fern & Fable Boutique", "client", "Her shortbread sells out in our shop every holiday season. Easy to order from and always on time.")]));
+    }
     if (url.pathname.startsWith("/auth/v1/")) {
       res.statusCode = 401;
       return res.end(JSON.stringify({ code: 401, msg: "not signed in" }));

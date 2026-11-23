@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 /** The guide's round avatar: a photo if there is one, otherwise the person's initial. */
-export function ZipAv({ name, src, size }: { name: string; src?: string | null; size?: "s" | "l" | "xl" }) {
+export function ZipAv({ name, src, size }: { name: string; src?: string | null; size?: "s" | "l" | "xl" | "hero" }) {
   const initial = (name.trim()[0] || "?").toUpperCase();
   return (
     <span className={`av${size ? ` ${size}` : ""}`} aria-hidden="true">

@@ -62,6 +62,27 @@ test("the member directory switches between cards and a list", async ({ page }) 
   await expect(page.locator(".dirgrid")).toBeVisible();
 });
 
+test("a member profile shows the guide's header, tabs and recommendations", async ({ page }) => {
+  await page.goto("/members/00000000-0000-4000-8000-000000000011", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Priya Raman" })).toBeVisible();
+  await expect(page.getByText("Founding Member")).toBeVisible();
+  await expect(page.getByText("Recommended by 2").first()).toBeVisible();
+  await expect(page.getByText("10 connections")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Connect" }).first()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Follow" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Recommendations" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "More profiles for you" })).toBeVisible();
+  // the tabs are links, so each one has its own address
+  const tabs = page.getByRole("navigation", { name: "Profile sections" });
+  await tabs.getByRole("link", { name: "Connections" }).click();
+  await expect(page).toHaveURL(/tab=connections/);
+  await expect(tabs.getByRole("link", { name: "Connections" })).toHaveAttribute("aria-current", "page");
+  await tabs.getByRole("link", { name: "Groups" }).click();
+  await expect(page.getByText("has not joined a public group yet")).toBeVisible();
+  await tabs.getByRole("link", { name: "Blog" }).click();
+  await expect(page.getByText("has not published a blog post yet")).toBeVisible();
+});
+
 test("your own profile has Edit and no Follow button", async ({ page }) => {
   await page.goto(`/members/${ME}`, { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("link", { name: "Edit profile" }).first()).toBeVisible();

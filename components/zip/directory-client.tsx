@@ -8,6 +8,7 @@ import { toggleFollow } from "@/app/(hub)/network-actions";
 import type { LinkState } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
+import { TYPES } from "@/lib/zip/types";
 import { LAND, MAP_LABELS, NFLD, outline, placeOf, placePins } from "@/lib/zip/geo";
 
 export type DirMember = {
@@ -22,14 +23,6 @@ export type DirMember = {
   today: boolean;
   helps: string[];
   needs: string[];
-};
-
-export const TYPES: Record<string, [string, string, string]> = {
-  owner: ["Business owner", "#F4F4F5", "#27272A"],
-  advisor: ["SMB Advisor", "#DBEAFE", "#1D4ED8"],
-  maker: ["Canadian maker", "#FEE2E2", "#B91C1C"],
-  provider: ["Service provider", "#DCFCE7", "#15803D"],
-  team: ["Hub team", "#EDE9FE", "#6D28D9"],
 };
 
 function TypeTag({ type }: { type: string }) {
