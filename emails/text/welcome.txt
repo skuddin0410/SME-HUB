@@ -1,0 +1,22 @@
+Welcome to SME Hub, {{first_name}}
+
+YOU’RE IN, {{first_name}}. LET’S GET YOU KNOWN.
+SME Hub is where Canadian small-business owners find customers, partners and answers through people they trust. Here’s how to get the most out of your first week.
+
+{{member_count}} owners from Victoria to St. John’s are already here, including bakers, builders, accountants and software founders.
+
+1. Finish your business profile — Add your photo, a header and what you can help with. Members with a complete profile get far more connection requests. (Complete my profile: {{profile_url}})
+2. Say who you want to meet — Customers, suppliers, an accountant? We’ll suggest 3 people every day. (Choose: {{meet_url}})
+3. Join a group — Start with your industry and one challenge, like money or hiring. (Browse groups: {{group_url}})
+4. Introduce yourself — Write a short Intro post so members can say hello. (Write my intro: {{digest_url}})
+
+Go to my Home page: {{hub_url}}
+{{#if founding_member}}
+[FOUNDING MEMBER]
+You’re one of our first 500 members, so your profile carries a permanent Founding Member badge.
+{{/if}}Questions? Just reply to this email. A real person on the CanadianSME team in Mississauga reads every reply.
+
+--
+You’re getting this email about your SME Hub account.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -1,0 +1,15 @@
+You’ve made {{conn_count}} connections on SME Hub
+
+{{conn_count}} CONNECTIONS!
+
+[{{conn_count}}] Connections — You’re building a real network of Canadian owners.
+
+Make them count
+
+1. Ask for an introduction — Your connections can introduce you to people they know. (Find someone: {{meet_url}})
+2. Recommend someone you’ve worked with — They’ll often return the favour. (Write one: {{profile_url}})
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

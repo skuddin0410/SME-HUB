@@ -6,15 +6,15 @@ import { signWebhook } from "@/lib/auth/webhook";
 const secret = `v1,whsec_${Buffer.from("route-test-secret-value").toString("base64")}`;
 const body = JSON.stringify({
   user: { email: "ana@example.com" },
-  email_data: { token: "1", token_hash: "h1", redirect_to: "https://smbhub.ca/feed", email_action_type: "signup", site_url: "", token_new: "", token_hash_new: "" },
+  email_data: { token: "1", token_hash: "h1", redirect_to: "https://smehub.ca/feed", email_action_type: "signup", site_url: "", token_new: "", token_hash_new: "" },
 });
 function request(raw = body, sign = true) {
   const ts = Math.floor(Date.now() / 1000);
-  return new NextRequest("https://smbhub.ca/api/auth/send-email", {
+  return new NextRequest("https://smehub.ca/api/auth/send-email", {
     method: "POST",
     body: raw,
     headers: {
-      host: "smbhub.ca",
+      host: "smehub.ca",
       "webhook-id": "msg_9",
       "webhook-timestamp": String(ts),
       "webhook-signature": sign ? signWebhook(secret, "msg_9", ts, raw) : "v1,AAAA",
@@ -35,13 +35,13 @@ describe("POST /api/auth/send-email", () => {
     vi.unstubAllGlobals();
   });
 
-  it("sends the confirmation from accounts@ and answers {}", async () => {
+  it("sends the confirmation from hello@ and answers {}", async () => {
     const res = await POST(request());
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({});
     const sent = JSON.parse(fetchMock.mock.calls[0][1].body);
-    expect(sent.from).toBe("SMB Hub <accounts@smbhub.ca>");
-    expect(sent.html).toContain("https://smbhub.ca/auth/confirm?token_hash=h1");
+    expect(sent.from).toBe("SME Hub <hello@smehub.ca>");
+    expect(sent.html).toContain("https://smehub.ca/auth/confirm?token_hash=h1");
   });
   it("rejects an unsigned request and sends nothing", async () => {
     const res = await POST(request(body, false));

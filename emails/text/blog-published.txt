@@ -1,0 +1,12 @@
+Your blog post is live
+
+YOUR POST IS LIVE
+{{blog_title}} passed review and is now published in Member blogs.
+
+Read and share it: {{blog_url}}
+Share it on LinkedIn and tag @CanadianSME. We feature strong member posts in our newsletter.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

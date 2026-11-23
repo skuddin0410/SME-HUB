@@ -1,0 +1,15 @@
+{{business_name}} is live on SME Hub
+
+{{business_name}} IS LIVE
+Your page is now in the SME Hub Business Directory, where members across Canada can find, follow and message you.
+
+1. Share your page — Post the link on LinkedIn and in your email signature. (Copy my link: {{business_url}})
+2. Ask 3 customers for a review — Reviews make you show up higher in the directory.
+3. Post your first update — Updates from your business show in your followers’ feeds.
+
+View my page: {{business_url}}
+
+--
+You’re getting this because you manage {{business_name}} on SME Hub. Choose which business emails you get ({{preferences_url}}) or unsubscribe ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

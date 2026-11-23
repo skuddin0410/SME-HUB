@@ -1,0 +1,14 @@
+Add your photo, {{first_name}}. It takes 10 seconds.
+
+ADD YOUR PHOTO. IT TAKES 10 SECONDS.
+Owners reply to people they can see. Right now your profile shows your initials, so most people who find you move on without connecting.
+
+These members added a photo, so people can see who they’re talking to before they reply.
+
+Add my photo: {{photo_link}}
+Any clear, friendly photo works: head and shoulders, good light, just you. Your logo goes on your business page instead.
+
+--
+You’re getting this digest because you’re an SME Hub member. Change how often ({{preferences_url}}) or unsubscribe from digests ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

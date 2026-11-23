@@ -1,0 +1,20 @@
+Important: a security incident involving your SME Hub information
+
+WE WANT YOU TO KNOW ABOUT A SECURITY INCIDENT
+Hi Alex, on November 19, 2026 we found that an unauthorized person accessed some SME Hub information on November 18, 2026. We’re telling you because your information was involved.
+
+What happened: Unauthorized access on November 18, 2026, found on November 19, 2026
+Information involved: Names, email addresses and business names of some members. No passwords, payment cards or messages were involved.
+What we did: We closed the gap the same day, reset access keys and hired an outside security firm to check our systems.
+
+[WHAT YOU CAN DO]
+Be careful with emails that ask you to sign in or pay. SME Hub will never ask for your password or card number by email. Turn on email codes for new devices in Security and sign-in.
+
+Read the full notice: https://smehub.ca/security-notice
+Security settings: https://smehub.ca/account/security
+We’ve reported this to the Office of the Privacy Commissioner of Canada. You can contact them at priv.gc.ca. Questions? Email privacy@smehub.ca.
+
+--
+We’re required to send this notice to every member. It isn’t marketing, so it’s sent even if you’ve turned off other emails.
+Help Centre: https://smehub.ca/help
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

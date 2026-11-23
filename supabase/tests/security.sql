@@ -1058,3 +1058,65 @@ delete from hashtag_follows where tag = 'grants';
 select t.expect('a member can unfollow', (select count(*) = 0 from hashtag_follows));
 reset role;
 delete from posts where body like 'Looking for #Grants%';
+
+-- sign-in security (0043)
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email, raw_user_meta_data) values
+ ('00000000-0000-0000-0000-0000000005d1', 'erin@x.ca', '{"first_name":"Erin","last_name":"Lee","website":"erin.ca","newsletter":"true","newsletter_wording":"Send me the weekly newsletter"}'),
+ ('00000000-0000-0000-0000-0000000005d2', 'finn@x.ca', '{"first_name":"Finn","last_name":"Ng"}');
+select t.expect('sign-up keeps first and last name and the website', (select full_name = 'Erin Lee' and website = 'erin.ca' from profiles where id = '00000000-0000-0000-0000-0000000005d1'));
+select t.expect('a ticked newsletter box is recorded with its wording', (select wording = 'Send me the weekly newsletter' and consented_at is not null from newsletter_consents where user_id = '00000000-0000-0000-0000-0000000005d1'));
+select t.expect('an unticked newsletter box records nothing', (select count(*) = 0 from newsletter_consents where user_id = '00000000-0000-0000-0000-0000000005d2'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005d2';
+select t.expect('consent records are private', (select count(*) = 0 from newsletter_consents));
+select t.expect_denied('a member cannot add consent for themselves', $$insert into newsletter_consents (user_id, wording) values ('00000000-0000-0000-0000-0000000005d2', 'x')$$);
+reset role;
+set role anon;
+select t.expect('log-ins are open until five wrong passwords', (select locked_until is null and failed = 0 from login_state('Erin@X.ca')));
+select t.expect('wrong password 1 to 4 do not lock', (select count(*) filter (where locked) = 0 from (select * from login_failed('erin@x.ca') union all select * from login_failed('erin@x.ca') union all select * from login_failed('ERIN@x.ca') union all select * from login_failed('erin@x.ca')) q));
+select t.expect('the fifth wrong password locks, and says the account exists', (select locked and remaining = 0 and has_account from login_failed('erin@x.ca')));
+select t.expect('the pause lasts about 15 minutes', (select locked_until > now() + interval '14 minutes' and failed = 5 from login_state('erin@x.ca')));
+select t.expect('an email with no account never says it exists', (select not has_account from login_failed('nobody@x.ca')));
+select t.expect('visitors see no log-in attempts', (select count(*) = 0 from login_attempts));
+select t.expect_denied('visitors cannot clear the count', $$select login_succeeded()$$);
+reset role;
+select t.expect('a good log-in clears only that member''s count', (select count(*) from login_attempts where email = 'erin@x.ca') = 5);
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005d1';
+select login_succeeded();
+reset role;
+select t.expect('after a good log-in the count is gone', (select count(*) from login_attempts where email = 'erin@x.ca') = 0 and (select count(*) from login_attempts where email = 'nobody@x.ca') = 1);
+set role anon;
+select t.expect('5 reset requests an hour are allowed, the 6th is not', (select count(*) filter (where ok) = 5 from (select rate_hit('reset:erin@x.ca', 5, interval '1 hour') ok from generate_series(1, 6)) q));
+select t.expect('the limit is per key', rate_hit('reset:finn@x.ca', 5, interval '1 hour'));
+select t.expect('visitors see no rate-limit rows', (select count(*) = 0 from rate_hits));
+reset role;
+insert into auth.sessions (id, user_id, user_agent, ip) values
+ ('00000000-0000-0000-0000-0000000005b1', '00000000-0000-0000-0000-0000000005d1', 'Chrome on Windows', '203.0.113.5'),
+ ('00000000-0000-0000-0000-0000000005b2', '00000000-0000-0000-0000-0000000005d1', 'Safari on iPhone', '203.0.113.6'),
+ ('00000000-0000-0000-0000-0000000005b3', '00000000-0000-0000-0000-0000000005d2', 'Firefox', '198.51.100.9');
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005d1'; set request.jwt.claim.session_id = '00000000-0000-0000-0000-0000000005b1';
+select t.expect('a member sees only their own sessions, this one first', (select count(*) = 2 and (array_agg(id order by is_current desc))[1] = '00000000-0000-0000-0000-0000000005b1' from my_sessions()));
+select end_session('00000000-0000-0000-0000-0000000005b3');
+select end_session('00000000-0000-0000-0000-0000000005b1');
+reset role;
+select t.expect('a member cannot end someone else''s session, or the one they are using', (select count(*) = 3 from auth.sessions));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005d1'; set request.jwt.claim.session_id = '00000000-0000-0000-0000-0000000005b1';
+select t.expect('a member can end another of their own sessions', (select end_other_sessions()) = 1);
+reset role; set request.jwt.claim.session_id = '';
+select t.expect('only the other session went', (select count(*) = 2 from auth.sessions));
+select t.expect('visitors cannot list sessions', not has_function_privilege('anon', 'my_sessions()', 'execute'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005d1';
+insert into user_security (user_id, email_code) values ('00000000-0000-0000-0000-0000000005d1', false);
+select t.expect('a member can switch the email code off for themselves', (select email_code = false from user_security));
+select t.expect_denied('a member cannot change someone else''s code setting', $$insert into user_security (user_id) values ('00000000-0000-0000-0000-0000000005d2')$$);
+reset role;
+
+-- new-device codes (0044): the member's own session can neither read a code nor trust a device
+reset role;
+insert into signin_challenges (user_id, code_hash, expires_at) values ('00000000-0000-0000-0000-0000000005d1', 'x', now() + interval '10 minutes');
+insert into trusted_devices (user_id, token_hash, expires_at) values ('00000000-0000-0000-0000-0000000005d1', 'x', now() + interval '30 days');
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005d1';
+select t.expect('a member cannot read their sign-in code', (select count(*) = 0 from signin_challenges));
+select t.expect('a member cannot read trusted devices', (select count(*) = 0 from trusted_devices));
+select t.expect_denied('a member cannot trust a device themselves', $$insert into trusted_devices (user_id, token_hash, expires_at) values ('00000000-0000-0000-0000-0000000005d1', 'y', now() + interval '30 days')$$);
+reset role;

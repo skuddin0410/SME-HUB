@@ -1,0 +1,15 @@
+Your SME Hub account has been closed
+
+YOUR ACCOUNT HAS BEEN CLOSED
+Hi {{first_name}}, your SME Hub account was closed on {{close_date}}. Your profile and posts are no longer visible to members.
+
+[CHANGED YOUR MIND?]
+You can restore your account until {{restore_until}}. After that, your information is permanently deleted.
+
+Restore my account: {{restore_url}}
+Thanks for being part of the community. If something didn’t work for you, we’d really like to hear it: just reply to this email.
+
+--
+You’re getting this email about your SME Hub account.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

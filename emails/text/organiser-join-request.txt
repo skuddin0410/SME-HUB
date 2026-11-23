@@ -1,0 +1,12 @@
+{{join_req_name}} wants to join {{nm_group}}
+
+NEW REQUEST TO JOIN {{nm_group}}
+
+{{join_req_name}} — {{join_req_role}}
+"{{join_req_answer}}"
+You have {{pending_count}} requests waiting. Members who wait more than 3 days often lose interest.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

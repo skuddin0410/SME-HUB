@@ -1,0 +1,14 @@
+You completed {{course_title}}
+
+WELL DONE, {{first_name}}!
+
+[✓] {{course_title}} — Completed on {{certificate_date}}
+Your reviews help other owners pick the right course, and help {{course_instructor}} improve it.
+
+Leave a review: {{review_url}}
+Browse more courses: {{hub_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

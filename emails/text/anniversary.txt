@@ -1,0 +1,17 @@
+Happy SME Hub anniversary, {{first_name}}!
+
+ONE YEAR ON SME HUB
+
+[1 yr] Thank you for being here — You joined on {{anniv_date}}.
+{{#if founding_member}}As one of our first 500 members, you’ll always have the Founding Member badge.
+{{/if}}{{yr_connections}} connections
+{{yr_posts}} posts
+{{yr_intros}} introductions
+You also received {{yr_recs}} recommendations. That’s the kind of trust that brings in work.
+
+Share my year: {{profile_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

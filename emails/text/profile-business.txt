@@ -1,0 +1,24 @@
+Your business isn’t in the Directory yet
+
+YOUR BUSINESS ISN’T IN THE DIRECTORY YET
+{{search_count}} owners near {{city}} searched the SME Hub Business Directory for businesses like yours this week. Without a business page, they didn’t find you.
+{{#if has_draft}}
+Your draft is ready to check
+Business: {{draft_business}}
+Category: {{draft_category}}
+Where: {{draft_city}}
+Description: {{draft_desc}}
+{{/if}}{{#if has_draft}}
+Check and publish my page: {{biz_setup_url}}
+{{/if}}{{#if no_draft}}
+1. Paste your website or Google listing — AI reads it and drafts your business page.
+2. Check the draft — Change anything you like. Nothing is public until you save.
+3. Submit it — The CanadianSME team checks new pages, usually within 2 business days.
+{{/if}}{{#if no_draft}}
+Set it up from my website: {{biz_setup_url}}
+{{/if}}Listing your business is free on every plan.
+
+--
+You’re getting this digest because you’re an SME Hub member. Change how often ({{preferences_url}}) or unsubscribe from digests ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

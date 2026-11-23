@@ -1,0 +1,27 @@
+Welcome to SME Hub {{plan_name}}: your receipt
+
+WELCOME TO {{plan_name}}, {{first_name}}
+Thank you. Your upgrade is active now. Here’s your receipt.
+
+SME Hub {{plan_name}} ({{plan_period}} · renews {{renew_date}}): {{plan_price}}
+Subtotal: {{plan_price}}
+{{tax_label}}: {{tax}}
+Total paid: {{total}}
+Receipt number: {{invoice_no}}
+Date paid: {{paid_date}}
+Payment method: {{card}}
+GST/HST number: {{gst_no}}
+
+Unlocked with {{plan_name}}
+
+1. Post your first Offer — 2 offers a month go to all members. (Create an offer: {{digest_url}})
+2. Start a private group — A space for your clients or a mastermind. (Start a group: {{group_url}})
+3. See everyone who viewed you — Your full profile-viewer list is open now. (See viewers: {{viewers_url}})
+
+Download PDF invoice: {{invoice_url}}
+Manage billing: {{billing_url}}
+
+--
+You’re getting this email because of a payment or plan change on your SME Hub account. Keep it for your records.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

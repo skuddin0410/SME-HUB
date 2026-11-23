@@ -1,0 +1,22 @@
+SME Hub this week: {{week_new}} new members, {{week_reply_rate}} of questions answered
+
+HOW THE COMMUNITY DID THIS WEEK
+{{week_new}} new members
+{{week_active}} active members
+{{week_posts}} posts
+
+Key numbers
+Questions answered: 78%
+Profiles complete: 64%
+New members who posted: 41%
+Businesses approved in 2 days: 92%
+
+[NEEDS ATTENTION]
+{{week_unanswered}} questions have had no reply for more than 24 hours. A team reply or a nudge to an advisor keeps members coming back.
+
+Open the dashboard: {{health_url}}
+
+--
+You’re getting this because you’re on the SME Hub team. Change team alerts ({{preferences_url}}). Internal only. Please don’t forward.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

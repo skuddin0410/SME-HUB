@@ -1,0 +1,16 @@
+{{first_name}}, here’s what you missed on SME Hub
+
+YOUR NETWORK KEPT GROWING
+{{views}} profile views
+{{new_connections}} new connection requests
+
+Members talking about your industry
+{{#each top_posts}}- {{name}}: {{text}} ({{url}})
+{{/each}}
+Catch up in 5 minutes: {{digest_url}}
+Too many emails? Choose what we send you.
+
+--
+You’re getting this digest because you’re an SME Hub member. Change how often ({{preferences_url}}) or unsubscribe from digests ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

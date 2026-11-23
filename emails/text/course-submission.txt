@@ -1,0 +1,12 @@
+{{learner_name}} submitted “{{asg_title}}”
+
+NEW WORK TO GRADE
+
+{{learner_name}} — {{asg_title}} · {{course_title}}
+"{{sub_excerpt}}"
+You have {{to_grade}} submissions waiting. Learners usually hear back within 3 days.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

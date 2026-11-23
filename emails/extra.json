@@ -1,0 +1,22 @@
+[
+ {
+  "id": "approve-email-change",
+  "category": "Account and security",
+  "name": "Approve email change",
+  "trigger": "Sent to the current address when a member changes their email (Supabase secure email change needs both addresses to confirm)",
+  "sender": "SME Hub Security <security@smehub.ca>",
+  "subject": "Approve the email change on your SME Hub account",
+  "preheader": "Someone asked to change your email to {{new_email}}.",
+  "type": "Security (always sent)",
+  "preview_subject": "Approve the email change on your SME Hub account",
+  "preview_preheader": "Someone asked to change your email to alex@morganreno.ca.",
+  "variables": [
+   "confirm_new_url",
+   "expires_minutes",
+   "new_email"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 7.3
+ }
+]

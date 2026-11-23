@@ -1,0 +1,22 @@
+Your receipt: {{paid_course}}
+
+THANKS FOR YOUR PURCHASE
+You now have lifetime access to {{paid_course}}.
+
+{{paid_course}} (Online course · lifetime access): {{paid_price}}
+Subtotal: {{paid_price}}
+{{tax_label}}: {{paid_tax}}
+Total paid: {{paid_total}}
+Receipt number: {{course_receipt_no}}
+Date paid: {{paid_date}}
+Payment method: {{card}}
+GST/HST number: {{gst_no}}
+
+Start the course: {{start_url}}
+Download PDF receipt: {{invoice_url}}
+Not what you expected? Email billing@smehub.ca within 14 days for a full refund if you’ve completed less than a quarter of the course.
+
+--
+You’re getting this email because of a payment or plan change on your SME Hub account. Keep it for your records.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

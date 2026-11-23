@@ -1,0 +1,14 @@
+{{mentioner_name}} mentioned you
+
+{{mentioner_first}} MENTIONED YOU
+In {{mention_where}}:
+
+{{mentioner_name}}: {{mention_text}}
+
+Reply: {{mention_url}}
+A quick answer helps the member who asked, and it’s a good way to get known.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

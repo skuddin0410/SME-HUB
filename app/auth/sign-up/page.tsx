@@ -1,11 +1,19 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AuthLanding } from "@/components/auth-landing";
+import { AuthFrame } from "@/components/sa/frame";
+import { SignUpForm } from "@/components/sa/signup-form";
+import { loadProof } from "@/lib/auth/proof";
 import { getViewer } from "@/lib/hub";
 
-export const metadata = { title: "Join SMB Hub" };
+export const metadata = { title: "Join SME Hub free", description: "Join SME Hub, the community for Canadian small-business owners.", robots: { index: false, follow: false } };
 
 export default async function Page() {
   // already signed in: nothing to do here
   if ((await getViewer()).userId) redirect("/feed");
-  return <AuthLanding initialMode="join" />;
+  const proof = await loadProof();
+  return (
+    <AuthFrame right={<><span>Already a member?</span> <Link href="/auth/login">Log in</Link></>}>
+      <SignUpForm proof={proof} />
+    </AuthFrame>
+  );
 }

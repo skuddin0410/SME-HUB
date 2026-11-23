@@ -1,0 +1,13 @@
+3 people worth meeting today
+
+3 PEOPLE WORTH MEETING, {{first_name}}
+We picked these based on what you’re looking for and what they can help with.
+{{#each people}}- {{name}}, {{role}} — {{why}} ({{url}})
+{{/each}}
+See why we picked them: {{meet_url}}
+Free members get 3 suggestions a day. You can change this in your email settings.
+
+--
+You’re getting this digest because you’re an SME Hub member. Change how often ({{preferences_url}}) or unsubscribe from digests ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

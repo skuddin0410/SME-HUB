@@ -1,0 +1,16 @@
+{{inviter_name}} invited you to help manage {{team_business}}
+
+JOIN THE {{team_business}} TEAM
+
+{{inviter_name}} — Owner, {{team_business}}
+
+Your role: {{team_role}}
+You can: {{team_role_desc}}
+
+Accept invitation: {{team_accept_url}}
+Not expecting this? Ignore this email and you won’t be added.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -1,0 +1,15 @@
+Your group “{{req_group_name}}” is approved
+
+“{{req_group_name}}” IS LIVE
+Thanks for starting a group. It now appears in the Groups directory, and you’re its organiser.
+
+1. Write a welcome post and pin it — Say who the group is for and what to post.
+2. Invite 10 people you know — Groups with early activity grow fastest.
+3. Post one question a week — A weekly prompt keeps the conversation going.
+
+Open my group: {{group_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

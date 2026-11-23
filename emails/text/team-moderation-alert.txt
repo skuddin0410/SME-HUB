@@ -1,0 +1,20 @@
+{{queue_count}} reports are waiting in Moderation
+
+REPORTS NEED ATTENTION
+{{queue_count}} reports waiting
+{{queue_oldest}} oldest waiting
+{{queue_auto}} hidden automatically
+
+By reason
+Spam or disguised advertising: 5
+Scam or fraud: 3
+Harassment: 2
+Fake business: 2
+
+Open Moderation: {{mod_url}}
+Our goal is to review every report within 24 hours.
+
+--
+You’re getting this because you’re on the SME Hub team. Change team alerts ({{preferences_url}}). Internal only. Please don’t forward.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

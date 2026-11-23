@@ -1,0 +1,12 @@
+{{sender_name}} wants to connect with you
+
+{{sender_name}} WANTS TO CONNECT
+
+{{sender_name}} — {{sender_role}}
+"{{sender_note}}"
+You have {{mutual_count}} connections in common. Not interested? You can ignore the request. {{sender_first}} won’t be told.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

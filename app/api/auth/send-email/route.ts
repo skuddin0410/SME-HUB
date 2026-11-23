@@ -13,7 +13,7 @@ function hookError(status: number, message: string) {
 
 /**
  * Supabase Auth "Send Email" hook. Supabase calls this instead of sending its own emails,
- * so every account email uses our templates and goes out from accounts@ through Resend.
+ * so every account email uses our templates and goes out from security@ through Resend.
  * Only requests signed with SEND_EMAIL_HOOK_SECRET are accepted.
  */
 export async function POST(request: NextRequest) {
@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
 
   let emails;
   try {
-    emails = buildAuthEmails(JSON.parse(body) as HookPayload, siteOrigin(request.headers, request.url));
+    emails = await buildAuthEmails(JSON.parse(body) as HookPayload, siteOrigin(request.headers, request.url));
   } catch (e) {
     return hookError(400, (e as Error).message);
   }
 
   try {
-    for (const { to, message } of emails) await sendEmail({ from: "accounts", to, ...message });
+    for (const { to, message } of emails) await sendEmail({ to, ...message });
   } catch (e) {
     console.error("send-email hook:", (e as Error).message);
     return hookError(502, "We could not send the email. Please try again in a minute.");

@@ -1,0 +1,11 @@
+A new lesson is open: {{drip_lesson}}
+
+YOUR NEXT LESSON IS READY
+{{drip_lesson}} in {{drip_course}} is open now.
+
+Open the lesson: {{drip_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -1,0 +1,12 @@
+New quote request for {{business_name}}
+
+NEW REQUEST FROM {{inq_name}}
+
+{{inq_name}} — {{inq_role}}
+"{{inq_text}}"
+Businesses that reply within a day are shown as “Usually replies within a day” on their page.
+
+--
+You’re getting this because you manage {{business_name}} on SME Hub. Choose which business emails you get ({{preferences_url}}) or unsubscribe ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

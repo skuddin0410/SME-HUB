@@ -1,0 +1,15 @@
+Pick up where you left off: {{course_title}}
+
+YOUR COURSE IS WAITING
+You’ve done {{done_lessons}} of {{course_lessons}} lessons in {{course_title}}.
+
+Progress: {{course_pct}}% complete
+Up next: {{next_lesson}}
+
+Continue learning: {{continue_url}}
+Too busy right now? You can turn off course reminders in your email settings.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

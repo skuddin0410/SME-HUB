@@ -1,0 +1,12 @@
+Confirm your new email address
+
+CONFIRM YOUR NEW EMAIL ADDRESS
+You asked to change your SME Hub email to {{new_email}}. Confirm it to finish the change.
+
+Confirm new email: {{confirm_new_url}}
+Until you confirm, you’ll keep signing in with your old address. This link expires in {{expires_minutes}} minutes. Didn’t ask for this? Ignore this email.
+
+--
+You’re getting this security email because of activity on your SME Hub account. We always send security emails, even if you’ve turned off other emails.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

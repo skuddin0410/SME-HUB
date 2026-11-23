@@ -1,0 +1,16 @@
+We paused sign-ins to your SME Hub account
+
+WE PAUSED SIGN-INS FOR 15 MINUTES
+There were 5 unsuccessful attempts to log in to your account. To keep it safe, we’ve paused sign-ins for 15 minutes.
+
+Last attempt: Saturday, November 21, 2026 at 2:14 pm ET
+Device: Chrome on Windows
+Location: Mississauga, ON (approximate)
+If this was you, wait 15 minutes or reset your password now. If it wasn’t you, reset your password to be safe.
+
+Reset my password: https://smehub.ca/forgot
+
+--
+You’re getting this security email because of activity on your SME Hub account. We always send security emails, even if you’ve turned off other emails.
+Help Centre: https://smehub.ca/help
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -1,6 +1,6 @@
 import "server-only";
 import { fromHeader, replyTo, type Sender } from "./senders";
-import type { Rendered } from "./templates";
+import type { Rendered } from "./render";
 
 export type SendInput = Rendered & {
   from: Sender;
@@ -44,7 +44,7 @@ export async function sendEmail(input: SendInput, fetchImpl: typeof fetch = fetc
     subject: input.subject,
     html: input.html,
     text: input.text,
-    ...(replyTo(input.from) ? { reply_to: replyTo(input.from) } : {}),
+    ...(replyTo() ? { reply_to: replyTo() } : {}),
   });
   const headers: Record<string, string> = {
     Authorization: `Bearer ${key}`,

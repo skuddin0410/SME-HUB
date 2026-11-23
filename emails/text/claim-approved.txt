@@ -1,0 +1,12 @@
+Your claim for {{claim_business}} was approved
+
+{{claim_business}} IS YOURS TO MANAGE
+We verified your claim. You’re now the owner, so you can update details, reply to reviews and answer messages as the business.
+
+Manage my page: {{claim_url}}
+Tip: check your hours and contact details first. They were added by our team and may be out of date.
+
+--
+You’re getting this because you manage {{business_name}} on SME Hub. Choose which business emails you get ({{preferences_url}}) or unsubscribe ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

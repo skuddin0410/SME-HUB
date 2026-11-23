@@ -1,0 +1,18 @@
+{{inviter_name}} invited you to join SME Hub
+
+{{inviter_first}} THINKS YOU’D LIKE SME HUB
+
+{{inviter_name}} — Founder, Maple Bakery · Toronto, ON
+"{{invite_note}}"
+SME Hub is a free community from CanadianSME where small-business owners find customers, partners and answers through people they trust.
+
+{{member_count}} owners are already here.
+{{#if founding_open}}The first 500 members get a permanent Founding Member badge.
+{{/if}}
+Join free with {{inviter_first}}: {{invite_url}}
+Joining is free. No credit card.
+
+--
+{{inviter_name}} asked us to send you this one-time invitation. We won’t email you again unless you join. Don’t send me invitations ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

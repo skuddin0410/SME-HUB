@@ -1,0 +1,16 @@
+You’re registered: {{event_name}}
+
+SEE YOU THERE, {{first_name}}
+
+{{event_name}}
+{{event_when}}
+{{event_where}}
+
+Add to calendar: {{calendar_url}}
+Event details: {{event_url}}
+We’ll send a reminder the day before with the link to join. Can’t make it? Cancel on the event page so someone else can take your spot.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

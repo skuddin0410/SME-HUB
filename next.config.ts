@@ -41,7 +41,14 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    // The CMS shows each email in a frame on our own site, so the sample emails may be framed by us (and only us).
+    const ownFrame = securityHeaders.map((h) =>
+      h.key === "X-Frame-Options" ? { ...h, value: "SAMEORIGIN" } : h.key === "Content-Security-Policy" ? { ...h, value: h.value.replace("frame-ancestors 'none'", "frame-ancestors 'self'") } : h,
+    );
+    return [
+      { source: "/email-preview/:path*", headers: ownFrame },
+      { source: "/((?!email-preview/).*)", headers: securityHeaders },
+    ];
   },
 };
 

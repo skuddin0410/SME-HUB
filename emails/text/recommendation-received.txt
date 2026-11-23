@@ -1,0 +1,15 @@
+{{rec_name}} recommended you
+
+{{rec_first}} RECOMMENDED YOU
+
+{{rec_name}} — {{rec_role}} · {{rec_relation}}
+"{{rec_text}}"
+Recommendations only appear on your profile after you approve them.
+
+Show on my profile: {{rec_approve_url}}
+Review first: {{rec_review_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

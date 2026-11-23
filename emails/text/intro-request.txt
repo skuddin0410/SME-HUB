@@ -1,0 +1,16 @@
+{{requester_name}} asked you for an introduction to {{target_name}}
+
+CAN YOU INTRODUCE {{requester_first}} TO {{target_name}}?
+
+{{requester_name}} — {{requester_role}}
+"{{intro_note}}"
+If you think it’s a good fit, we’ll send both of them a short introduction from you, and you can edit it first.
+
+Make the introduction: {{intro_url}}
+Not this time: {{decline_url}}
+If you decline, {{requester_first}} gets a polite note. We don’t say why.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

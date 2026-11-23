@@ -1,30 +1,49 @@
 /**
- * The three addresses SMB Hub sends from. Each one has its own job, so a burst of
- * notifications can never hurt delivery of sign-in and password emails.
+ * The addresses SME Hub sends from (Update 1). Each has its own job, so a burst of notifications
+ * can never hurt delivery of sign-in and password emails. Set up SPF, DKIM and DMARC for the domain first.
  *
- * - accounts: confirm email, reset password, password changed, email change. Not monitored.
- * - info: the welcome email and anything a person might answer. A real, monitored inbox.
- * - notifications: connection requests, messages, comments, reminders. Replies go to info.
+ * - hello: welcome, community, network, digests, events
+ * - security: password reset, password changed, new sign-in, email changed
+ * - billing: receipts, failed payments, renewals, cancellations
+ * - business: business page reviews, approvals, quote requests
+ * - community: group and blog approvals, report outcomes, content removal, Hub team alerts
  */
-export type Sender = "accounts" | "info" | "notifications";
+export type Sender = "hello" | "security" | "billing" | "business" | "community";
 
-export const BRAND = "SMB Hub";
+export const BRAND = "SME Hub";
+
+const DISPLAY: Record<Sender, string> = {
+  hello: "SME Hub",
+  security: "SME Hub Security",
+  billing: "SME Hub Billing",
+  business: "SME Hub Business",
+  community: "SME Hub Community Team",
+};
+
+export const SENDERS = Object.keys(DISPLAY) as Sender[];
 
 /** The sending domain. Override with EMAIL_DOMAIN (for a staging domain, say). */
 export function emailDomain() {
-  return (process.env.EMAIL_DOMAIN ?? "smbhub.ca").trim().toLowerCase();
+  return (process.env.EMAIL_DOMAIN ?? "smehub.ca").trim().toLowerCase();
 }
 
 export function senderAddress(sender: Sender) {
   return `${sender}@${emailDomain()}`;
 }
 
-/** "SMB Hub <accounts@smbhub.ca>" */
+/** "SME Hub Security <security@smehub.ca>" */
 export function fromHeader(sender: Sender) {
-  return `${BRAND} <${senderAddress(sender)}>`;
+  return `${DISPLAY[sender]} <${senderAddress(sender)}>`;
 }
 
-/** Where a reply should land. Only info@ is read by people. */
-export function replyTo(sender: Sender) {
-  return sender === "accounts" ? undefined : senderAddress("info");
+/** Where a reply should land: support@, the inbox people read. */
+export function replyTo() {
+  return `support@${emailDomain()}`;
+}
+
+/** The sender key for a catalogue line such as "SME Hub Security <security@smehub.ca>". */
+export function senderFromCatalogue(line: string): Sender {
+  const local = /<([a-z]+)@/.exec(line)?.[1] as Sender | undefined;
+  if (!local || !(local in DISPLAY)) throw new Error(`Unknown sender in catalogue: ${line}`);
+  return local;
 }

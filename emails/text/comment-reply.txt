@@ -1,0 +1,14 @@
+{{replier_name}} replied to your comment
+
+{{replier_name}} REPLIED TO YOU
+
+"{{your_comment}}" — Your comment
+
+{{replier_name}}: {{reply_text}}
+
+Continue the conversation: {{reply_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

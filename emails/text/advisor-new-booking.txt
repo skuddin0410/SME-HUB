@@ -1,0 +1,19 @@
+New intro call: {{member_name}}, {{call_when}}
+
+{{member_name}} BOOKED A FREE INTRO CALL
+
+{{member_name}} — {{member_role}}
+"{{member_note}}"
+
+When: {{call_when}}
+Length: 15 minutes
+Topic: {{call_topic}}
+
+Add to calendar: {{calendar_url}}
+Manage my calls: {{calls_url}}
+Tip: read their profile before the call and suggest one next step at the end.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

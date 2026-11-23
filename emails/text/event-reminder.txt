@@ -1,0 +1,15 @@
+Tomorrow: {{event_name}}
+
+{{event_name}}
+
+{{event_name}}
+{{event_when}}
+{{event_where}}
+
+Join the event: {{join_url}}
+Tip: bring one question. Hosts usually leave the last 15 minutes for members.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

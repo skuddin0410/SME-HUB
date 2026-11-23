@@ -1,6 +1,4 @@
-import { AuthChrome } from "@/components/auth-chrome";
-
-/** Sign-in, join and password screens. Design: docs/design/auth.html. */
+/** Sign-in, join and password screens (Update 1). Each page draws its own frame: components/sa/frame.tsx. */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return <AuthChrome>{children}</AuthChrome>;
+  return children;
 }

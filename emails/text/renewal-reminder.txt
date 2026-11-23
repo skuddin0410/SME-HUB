@@ -1,0 +1,16 @@
+Your {{plan_name}} plan renews on {{renew_date}}
+
+YOUR PLAN RENEWS SOON
+
+Plan: SME Hub {{plan_name}} ({{plan_period}})
+Renews on: {{renew_date}}
+Amount: {{total}} including tax
+Payment method: {{card}}
+Nothing to do if you’d like to keep your plan. To change or cancel, go to Billing before the renewal date.
+
+Manage billing: {{billing_url}}
+
+--
+You’re getting this email because of a payment or plan change on your SME Hub account. Keep it for your records.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

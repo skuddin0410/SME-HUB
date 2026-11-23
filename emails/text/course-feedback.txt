@@ -1,0 +1,16 @@
+Feedback on “{{asg_title}}”: {{asg_marks}}/{{asg_total}}
+
+{{course_instructor}} REVIEWED YOUR WORK
+
+Assignment: {{asg_title}}
+Course: {{course_title}}
+Mark: {{asg_marks}} / {{asg_total}} · {{asg_result}}
+
+"{{asg_feedback}}" — {{course_instructor}}
+
+See your feedback: {{asg_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -1,0 +1,20 @@
+Your SME Hub account is suspended
+
+YOUR ACCOUNT IS SUSPENDED
+Hi {{first_name}}, we’ve suspended your SME Hub account until {{suspend_until}}.
+
+[WHY]
+{{suspend_reason}}
+
+Until: {{suspend_until}}
+You can: Read the community and log in
+You can’t: Post, comment, message or send connection requests
+
+Read the guidelines: {{guidelines_url}}
+Ask for a review: {{appeal_url}}
+If you think we got this wrong, ask for a review. A person on our team will look at it within 2 business days.
+
+--
+You’re getting this email about your SME Hub account.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

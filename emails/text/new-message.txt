@@ -1,0 +1,13 @@
+New message from {{sender_name}}
+
+{{sender_first}} SENT YOU A MESSAGE
+
+{{sender_name}}: {{message_preview}}
+
+Reply: {{thread_url}}
+You have {{unread_count}} unread messages. We only email you about messages you haven’t seen on SME Hub.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -1,0 +1,18 @@
+New sign-in to your SME Hub account
+
+NEW SIGN-IN TO YOUR ACCOUNT
+We noticed a sign-in to your SME Hub account from a device we haven’t seen before.
+
+When: {{changed_at}}
+Device: {{device}}
+Location: {{location}}
+IP address: {{ip}}
+If this was you, you can ignore this email. If not, change your password and sign out of other devices now.
+
+This wasn’t me: {{secure_url}}
+Location is approximate and based on the IP address.
+
+--
+You’re getting this security email because of activity on your SME Hub account. We always send security emails, even if you’ve turned off other emails.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

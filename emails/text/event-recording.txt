@@ -1,0 +1,16 @@
+Recording: {{event_name}}
+
+MISSED IT, OR WANT A SECOND LOOK?
+The recording of {{event_name}} is ready.
+
+Length: {{rec_length}}
+Host: {{event_host}}
+Includes: Recording, slides and member Q&amp;A
+
+Watch the recording: {{recording_url}}
+Download slides: {{slides_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

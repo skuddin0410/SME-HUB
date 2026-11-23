@@ -1,0 +1,15 @@
+Confirm your email address
+
+CONFIRM YOUR EMAIL ADDRESS
+Please confirm that {{email}} is your email address. This keeps your account secure and makes sure you get messages from members.
+
+Confirm my email: {{verify_url}}
+Or enter this code on the sign-up screen:
+
+Your code: {{verify_code}}
+This link and code expire in {{expires_minutes}} minutes. If you didn’t sign up for SME Hub, you can ignore this email.
+
+--
+You’re getting this email about your SME Hub account.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

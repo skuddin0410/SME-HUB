@@ -1,0 +1,14 @@
+{{asker_name}} asked you for a recommendation
+
+WOULD YOU RECOMMEND {{asker_first}}?
+
+{{asker_name}} — {{asker_role}}
+"{{ask_note}}"
+Tip: be specific. “Finished our shop fit-out in five days and stayed on budget” helps more than “great to work with”.
+
+Write a recommendation: {{write_rec_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

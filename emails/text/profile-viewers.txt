@@ -1,0 +1,22 @@
+{{viewer_count}} people viewed your profile. Here’s what they saw.
+
+{{viewer_count}} PEOPLE VIEWED YOUR PROFILE
+
+{{viewer_count}} members looked at your profile since you joined.
+
+Here’s what they saw
+
+Photo: {{photo_status}}
+Headline: {{headline_status}}
+City: {{city_status}}
+Can help with: {{helps_status}}
+Business page: {{biz_status}}
+
+Finish my profile: {{profile_url}}
+Let AI set it up: {{biz_setup_url}}
+This is the last reminder about your profile. You can finish it any time from your Home page.
+
+--
+You’re getting this digest because you’re an SME Hub member. Change how often ({{preferences_url}}) or unsubscribe from digests ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

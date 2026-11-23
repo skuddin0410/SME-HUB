@@ -1,0 +1,18 @@
+Change to {{event_name}}
+
+THE TIME HAS CHANGED
+
+[WHAT CHANGED]
+{{change_summary}}
+
+{{event_name}}
+Wednesday, December 3, 2026 · 1:00 to 2:00 pm ET
+{{event_where}}
+
+Update my calendar: {{calendar_url}}
+Can’t make it now: {{event_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

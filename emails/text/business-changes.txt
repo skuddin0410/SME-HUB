@@ -1,0 +1,15 @@
+{{business_name}} needs a few changes
+
+A FEW CHANGES BEFORE WE PUBLISH
+Thanks for adding {{business_name}}. Before it goes live, please change the following:
+
+[WHAT TO CHANGE]
+{{changes_list}}
+
+Edit and resubmit: {{manage_url}}
+Questions about the review? Reply to this email and the reviewer will get back to you.
+
+--
+You’re getting this because you manage {{business_name}} on SME Hub. Choose which business emails you get ({{preferences_url}}) or unsubscribe ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

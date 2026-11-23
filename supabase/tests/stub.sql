@@ -12,3 +12,8 @@ create publication supabase_realtime;
 grant usage on schema public, auth to anon, authenticated;
 alter default privileges in schema public grant all on tables to anon, authenticated;
 alter default privileges in schema public grant execute on functions to anon, authenticated;
+
+-- Update 1: the pieces of Supabase Auth that 0043 reads
+create function auth.jwt() returns jsonb language sql stable as $$ select jsonb_build_object('session_id', nullif(current_setting('request.jwt.claim.session_id', true), ''), 'email', nullif(current_setting('request.jwt.claim.email', true), '')) $$;
+create table auth.sessions (id uuid primary key default gen_random_uuid(), user_id uuid not null, created_at timestamptz default now(), updated_at timestamptz default now(),
+  refreshed_at timestamp, not_after timestamptz, user_agent text, ip inet);

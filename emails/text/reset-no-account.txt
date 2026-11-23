@@ -1,0 +1,14 @@
+SME Hub password reset request
+
+WE COULDN’T FIND YOUR ACCOUNT
+Someone asked to reset the SME Hub password for {{email}}, but there’s no account with this email address.
+Maybe you signed up with a different email, or with Google or LinkedIn.
+
+Join SME Hub free: {{hub_url}}
+Try another email: {{forgot_url}}
+Didn’t ask for this? You can ignore this email. Nothing has changed.
+
+--
+You’re getting this security email because of activity on your SME Hub account. We always send security emails, even if you’ve turned off other emails.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

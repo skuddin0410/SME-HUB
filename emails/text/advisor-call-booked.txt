@@ -1,0 +1,18 @@
+Your call with {{advisor_name}} is booked
+
+YOUR FREE CALL IS BOOKED
+
+{{advisor_name}} — {{advisor_role}}
+
+When: {{call_when}}
+Length: 15 minutes
+Topic: {{call_topic}}
+
+Add to calendar: {{calendar_url}}
+Reschedule: {{reschedule_url}}
+Free intro calls are a chance to see if you’re a good fit. Any paid work is agreed directly between you and the advisor.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

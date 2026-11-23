@@ -1,0 +1,13 @@
+{{gd_count}} new posts in {{gd_group}}
+
+THIS WEEK IN {{gd_group}}
+{{gd_count}} new posts since your last digest. Here are the most active:
+{{#each top_posts}}- {{name}}: {{text}} ({{url}})
+{{/each}}
+Open the group: {{gd_url}}
+You can get this daily, weekly or never in your email settings.
+
+--
+You’re getting this digest because you’re an SME Hub member. Change how often ({{preferences_url}}) or unsubscribe from digests ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

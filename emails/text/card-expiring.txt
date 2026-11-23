@@ -1,0 +1,15 @@
+Your card on file expires soon
+
+YOUR CARD EXPIRES SOON
+
+Card: {{card}}
+Expires: {{card_exp}}
+Next payment: {{total}} on {{renew_date}}
+Update your card before {{card_exp_date}} so your plan continues without a break.
+
+Update my card: {{update_card_url}}
+
+--
+You’re getting this email because of a payment or plan change on your SME Hub account. Keep it for your records.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

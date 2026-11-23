@@ -1,0 +1,13 @@
+{{commenter_name}} commented on your post
+
+{{commenter_name}} AND {{others_count}} OTHERS REPLIED
+Your post: {{post_title}}
+
+{{commenter_name}}: {{comment_text}}
+
+See the conversation: {{post_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

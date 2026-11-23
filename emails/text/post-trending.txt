@@ -1,0 +1,17 @@
+Your post is taking off
+
+MEMBERS ARE TALKING ABOUT YOUR POST
+{{trend_title}}
+{{trend_views}} people saw it
+{{trend_reacts}} reactions
+{{trend_comments}} comments
+
+[{{trend_rank}}]
+Replying to comments in the first day keeps the conversation going and helps more people find you.
+
+Reply to comments: {{post_url}}
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

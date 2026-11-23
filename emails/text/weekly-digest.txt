@@ -1,0 +1,30 @@
+Your week: {{views}} profile views and 3 people worth meeting
+
+GOOD MORNING, {{first_name}}
+Here’s what happened around you on SME Hub this week.
+{{views}} profile views
+{{new_connections}} new connections
+{{post_reach}} people saw your posts
+
+People worth meeting
+{{#each people}}- {{name}}, {{role}} — {{why}} ({{url}})
+{{/each}}
+See all suggestions: {{meet_url}}
+
+----
+
+Who viewed your profile
+{{#each viewers}}- {{name}}, {{role}} — {{why}} ({{url}})
+{{/each}}Plus members see everyone who viewed them. See all viewers
+
+----
+
+Popular in your groups
+{{#each top_posts}}- {{name}}: {{text}} ({{url}})
+{{/each}}
+Open SME Hub: {{digest_url}}
+
+--
+You’re getting this digest because you’re an SME Hub member. Change how often ({{preferences_url}}) or unsubscribe from digests ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

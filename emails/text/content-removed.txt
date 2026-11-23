@@ -1,0 +1,17 @@
+We removed one of your posts
+
+WE REMOVED ONE OF YOUR POSTS
+Hi {{first_name}}, we removed {{removed_item}}.
+
+[WHY]
+{{removed_reason}}
+This hasn’t affected the rest of your account. Please take a minute to read the community guidelines so it doesn’t happen again.
+
+Read the guidelines: {{guidelines_url}}
+Ask for a review: {{appeal_url}}
+If you think we got this wrong, reply to this email or ask for a review. A person on our team will look at it.
+
+--
+You’re getting this email about your SME Hub account.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada
