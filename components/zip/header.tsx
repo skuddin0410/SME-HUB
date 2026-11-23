@@ -33,7 +33,11 @@ const TEAM_MENU: [string, NavItem[]][] = [
   [
     "Settings",
     [
-      { label: "Groups", href: "/admin/groups" },
+      { label: "Profiles and directory", href: "/profilesettings" },
+      { label: "Feed", href: "/feedsettings" },
+      { label: "Groups", href: "/groupsettings" },
+      { label: "Member blogs", href: "/blogsettings" },
+      { label: "Hashtags", href: "/hashtagsettings" },
       { label: "Billing", href: "/admin/billing" },
     ],
   ],

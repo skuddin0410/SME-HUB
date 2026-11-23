@@ -86,3 +86,24 @@ export async function deleteReportCategory(form: FormData) {
   fail((await supabase.from("report_categories").delete().eq("id", id)).error);
   revalidatePath("/moderation");
 }
+
+const PAGES = ["profiles", "feed", "groups", "blogs", "hashtags", "stories"];
+export type SaveState = { error?: string; ok?: boolean };
+
+/** One settings page = one row. The page sends its whole choices object as JSON. */
+export async function saveHubSettings(key: string, json: string): Promise<SaveState> {
+  const { supabase, userId } = await requireStaff();
+  if (!PAGES.includes(key)) return { error: "Unknown settings page." };
+  if (json.length > 30000) return { error: "These settings are too large to save." };
+  let value: unknown;
+  try {
+    value = JSON.parse(json);
+  } catch {
+    return { error: "Those settings could not be read." };
+  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return { error: "Those settings could not be read." };
+  const { error } = await supabase.from("hub_settings").upsert({ key, value, updated_at: new Date().toISOString(), updated_by: userId });
+  if (error) return { error: "Could not save. Try again." };
+  revalidatePath("/", "layout");
+  return { ok: true };
+}

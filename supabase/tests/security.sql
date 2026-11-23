@@ -977,3 +977,22 @@ update mod_settings set blocking = false;
 reset role;
 select t.expect('a member cannot change moderation settings', (select blocking from mod_settings));
 reset role;
+
+-- hub_settings (0037): everyone reads, only staff write
+reset role; set request.jwt.claim.sub = '';
+select t.expect('anon can read settings', has_table_privilege('anon', 'hub_settings', 'select'));
+select t.expect('anon cannot write settings', not has_table_privilege('anon', 'hub_settings', 'insert') and not has_table_privilege('anon', 'hub_settings', 'update'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect_denied('a member cannot save settings', $$insert into hub_settings (key, value) values ('feed', '{"polls": false}')$$);
+select t.expect_denied('only the six pages have settings', $$insert into hub_settings (key, value) values ('billing', '{}')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+insert into hub_settings (key, value, updated_by) values ('feed', '{"polls": false}', auth.uid());
+select t.expect('staff can save settings', (select value->>'polls' = 'false' from hub_settings where key = 'feed'));
+select t.expect_denied('settings must be an object', $$insert into hub_settings (key, value) values ('groups', '[1]')$$);
+select t.expect_denied('staff cannot sign someone else as the editor', $$insert into hub_settings (key, value, updated_by) values ('blogs', '{}', '00000000-0000-0000-0000-00000000000a')$$);
+update hub_settings set value = '{"polls": true}' where key = 'feed';
+select t.expect('staff can change settings', (select value->>'polls' = 'true' from hub_settings where key = 'feed'));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+update hub_settings set value = '{"polls": false}' where key = 'feed';
+select t.expect('a member cannot change settings', (select value->>'polls' = 'true' from hub_settings where key = 'feed'));
+reset role;
