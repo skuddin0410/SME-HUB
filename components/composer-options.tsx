@@ -10,7 +10,8 @@ const FIELD = "w-full rounded-lg bg-white border border-[#E5E5E8] px-2.5 py-1.5 
 const TOGGLE = "btn sm ghost";
 
 /** The optional parts of a post: cover picture, poll, schedule and closing comments. Sent along with the form. */
-export function ComposerOptions({ onBusy }: { onBusy?: (busy: boolean) => void }) {
+export function ComposerOptions({ onBusy, rules }: { onBusy?: (busy: boolean) => void; rules?: { polls: boolean; pollMax: number; cover: boolean; schedule: boolean; closeC: boolean } }) {
+  const allow = { polls: true, pollMax: FEED.pollMax as number, cover: true, schedule: true, closeC: true, ...rules };
   const cover = useImageUpload("cover");
   const [poll, setPoll] = useState(false);
   const [options, setOptions] = useState(["", ""]);
@@ -26,15 +27,15 @@ export function ComposerOptions({ onBusy }: { onBusy?: (busy: boolean) => void }
       {schedule && <input type="hidden" name="tz_offset" value={offset} />}
 
       <div className="flex flex-wrap items-center gap-1">
-        <label className={`${TOGGLE} cursor-pointer`}>
+        {allow.cover && <label className={`${TOGGLE} cursor-pointer`}>
           <ImagePlus className="h-3.5 w-3.5 text-blue-600" />
           {cover.preview ? "Change cover" : "Add cover"}
           <input type="file" accept="image/*" className="sr-only" aria-label="Cover picture" onChange={(e) => cover.pick(e.target.files?.[0])} />
-        </label>
-        <button type="button" aria-pressed={poll} onClick={() => setPoll((v) => !v)} className={TOGGLE}>
+        </label>}
+        {allow.polls && <button type="button" aria-pressed={poll} onClick={() => setPoll((v) => !v)} className={TOGGLE}>
           <BarChart3 className="h-3.5 w-3.5" /> Poll
-        </button>
-        <button
+        </button>}
+        {allow.schedule && <button
           type="button"
           aria-pressed={schedule}
           onClick={() => {
@@ -44,12 +45,12 @@ export function ComposerOptions({ onBusy }: { onBusy?: (busy: boolean) => void }
           className={TOGGLE}
         >
           <CalendarClock className="h-3.5 w-3.5" /> Schedule
-        </button>
-        <label className={`${TOGGLE} cursor-pointer`}>
+        </button>}
+        {allow.closeC && <label className={`${TOGGLE} cursor-pointer`}>
           <Lock className="h-3.5 w-3.5" />
           <input type="checkbox" name="comments_closed" value="1" className="h-3 w-3" />
           Close comments
-        </label>
+        </label>}
       </div>
 
       {cover.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{cover.error}</p>}
@@ -84,12 +85,12 @@ export function ComposerOptions({ onBusy }: { onBusy?: (busy: boolean) => void }
             </div>
           ))}
           <div className="flex flex-wrap items-center justify-between gap-2">
-            {options.length < FEED.pollMax ? (
+            {options.length < allow.pollMax ? (
               <button type="button" onClick={() => setOptions((all) => [...all, ""])} className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 hover:underline">
                 <Plus className="h-3 w-3" /> Add option
               </button>
             ) : (
-              <span className="text-[0.75rem] text-zinc-500">Up to {FEED.pollMax} options</span>
+              <span className="text-[0.75rem] text-zinc-500">Up to {allow.pollMax} options</span>
             )}
             <label className="flex items-center gap-1.5 text-xs text-zinc-600">
               Closes after

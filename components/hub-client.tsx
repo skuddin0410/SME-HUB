@@ -261,7 +261,10 @@ export function Composer({
   initialKind,
   businesses = [],
   alwaysOpen = false,
+  rules,
 }: {
+  /** what the team's feed settings allow in a post */
+  rules?: import("@/lib/zip/settings-load").ComposerRules;
   me: Pick<Profile, "id" | "full_name" | "avatar_url"> | null;
   /** published business pages this member may post as */
   businesses?: { id: string; name: string }[];
@@ -347,7 +350,7 @@ export function Composer({
           <ZipAv name={me.full_name || "Member"} src={me.avatar_url} />
           <div className="grow stack" style={{ gap: 10 }}>
             <label className="sr" htmlFor="post-title">Post title</label>
-            <input id="post-title" className="field" name="title" maxLength={120} placeholder="Title (optional)" />
+            {rules?.title !== "off" && <input id="post-title" className="field" name="title" maxLength={120} required={rules?.title === "required"} placeholder={rules?.title === "required" ? "Title" : "Title (optional)"} />}
             <label className="sr" htmlFor="post-body">Write a post</label>
             <textarea
               id="post-body"
@@ -376,7 +379,7 @@ export function Composer({
                 </button>
               </div>
             )}
-            <ComposerOptions key={state.ok ?? 0} onBusy={setOptionsBusy} />
+            <ComposerOptions key={state.ok ?? 0} onBusy={setOptionsBusy} rules={rules} />
             <div className="chips" role="group" aria-label="Post type">
               {chips.map((o) => (
                 <button key={o.value} type="button" className="chip" aria-pressed={kind === o.value} onClick={() => setKind(kind === o.value ? "update" : o.value)}>
@@ -504,7 +507,7 @@ export function Composer({
                   </button>
                 </div>
               )}
-              <ComposerOptions key={state.ok ?? 0} onBusy={setOptionsBusy} />
+              <ComposerOptions key={state.ok ?? 0} onBusy={setOptionsBusy} rules={rules} />
               {state.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{state.error}</p>}
 
               <div className="flex items-center justify-between pt-1">

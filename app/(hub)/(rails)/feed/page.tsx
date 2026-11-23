@@ -7,6 +7,7 @@ import { topSignal } from "@/lib/feed";
 import { KINDS, type Kind } from "@/lib/demo";
 import { Empty, PostCard } from "@/components/hub";
 import { Composer } from "@/components/hub-client";
+import { getComposerRules } from "@/lib/zip/settings-load";
 import { FirstWeek, type WeekStep } from "@/components/first-week";
 import { getPostingBusinesses } from "@/lib/business-server";
 import { pageMeta } from "@/lib/seo";
@@ -110,7 +111,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
   return (
     <>
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week.steps} connections={week.count} />}
-      <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} />
+      <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} rules={await getComposerRules()} />
 
       <div className="tools">
         <h2 style={{ font: "700 15px var(--display)" }}>{saved ? "Saved bookmarks" : "Latest from the community"}</h2>

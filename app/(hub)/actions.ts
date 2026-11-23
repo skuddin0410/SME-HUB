@@ -4,6 +4,7 @@ import { AUTHOR_FIELDS, requireStaff, requireUser, slugify, type CommentRow, typ
 import { REACTION_KINDS, type ReactionKind } from "@/lib/reactions";
 import { cleanPollOptions, FEED } from "@/lib/feed-rules";
 import { createClient } from "@/lib/supabase/server";
+import { getHubSettings } from "@/lib/zip/settings-load";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -34,8 +35,16 @@ function ownUpload(form: FormData, field: string, userId: string): string | null
 }
 
 // ---------- posts ----------
+/** Minutes a member may still edit: "0" is off, "forever" has no limit. */
+function editMinutes(v: unknown) {
+  if (v === "forever") return Infinity;
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 0 ? n : FEED.editMinutes;
+}
+
 export async function createPost(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase, userId } = await requireUser();
+  const rules = await getHubSettings("feed");
   const body = text(form, "body");
   if (!body) return { error: "Write something before posting." };
   const rawVisibility = text(form, "visibility");
@@ -45,8 +54,12 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const kind = ["question", "win", "offer", "hiring", "intro"].includes(rawKind) ? rawKind : "update";
   const image_url = ownUpload(form, "image_url", userId);
   const cover_url = ownUpload(form, "cover_url", userId);
-  const title = text(form, "title").slice(0, FEED.titleMax);
-  const comments_closed = text(form, "comments_closed") === "1";
+  const titleRule = String(rules.title);
+  const title = titleRule === "off" ? "" : text(form, "title").slice(0, FEED.titleMax);
+  if (titleRule === "required" && !title) return { error: "Add a title to your post." };
+  const comments_closed = rules.closeC ? text(form, "comments_closed") === "1" : false;
+  if (!rules.cover && text(form, "cover_url")) return { error: "Cover pictures are turned off." };
+  if (!rules.schedule && text(form, "scheduled_local")) return { error: "Scheduling posts is turned off." };
   const quoted_post_id = text(form, "quoted_post_id") ? uuid(text(form, "quoted_post_id")) : null;
 
   // schedule: a local date-time string plus the browser's offset in minutes, turned into one exact moment
@@ -60,6 +73,9 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
 
   const options = form.getAll("poll_option").map(String);
   const wantsPoll = options.some((o) => o.trim());
+  if (wantsPoll && !rules.polls) return { error: "Polls are turned off." };
+  const pollCap = Math.min(FEED.pollMax, Math.max(FEED.pollMin, Number(rules.pollMax) || FEED.pollMax));
+  if (wantsPoll && options.filter((o) => o.trim()).length > pollCap) return { error: `A poll can have up to ${pollCap} options.` };
   const pollOptions = wantsPoll ? cleanPollOptions(options) : null;
   if (wantsPoll && !pollOptions) return { error: `A poll needs ${FEED.pollMin} to ${FEED.pollMax} options of up to ${FEED.pollOptionMax} characters.` };
   const pollDays = Math.min(30, Math.max(1, Number(text(form, "poll_days")) || 3));
@@ -90,6 +106,10 @@ export async function editPost(postId: string, input: { title: string; body: str
   const { supabase } = await requireUser();
   const body = input.body.trim();
   if (!body) throw new Error("A post cannot be empty.");
+  const rules = await getHubSettings("feed");
+  const { data: row } = await supabase.from("posts").select("created_at").eq("id", postId).maybeSingle();
+  const mins = editMinutes(rules.edit);
+  if (row && Date.now() - new Date((row as { created_at: string }).created_at).getTime() > mins * 60_000) throw new Error("The edit window for this post has closed.");
   fail((await supabase.from("posts").update({ body, title: input.title.trim().slice(0, FEED.titleMax) }).eq("id", postId)).error);
   revalidatePath("/", "layout");
 }
@@ -197,6 +217,8 @@ export async function addComment(postId: string, body: string, parentId?: string
   const { supabase, userId } = await requireUser();
   const clean = body.trim().slice(0, 2000);
   if (!clean) throw new Error("Empty comment");
+  const rules = await getHubSettings("feed");
+  if (!rules.comments) throw new Error("Comments are turned off.");
   const { data, error } = await supabase
     .from("comments")
     .insert({ post_id: postId, author_id: userId, body: clean, parent_id: parentId ?? null })
@@ -211,6 +233,10 @@ export async function editComment(commentId: string, body: string): Promise<Comm
   const { supabase } = await requireUser();
   const clean = body.trim().slice(0, 2000);
   if (!clean) throw new Error("Empty comment");
+  const rules = await getHubSettings("feed");
+  const { data: row } = await supabase.from("comments").select("created_at").eq("id", commentId).maybeSingle();
+  const mins = editMinutes(rules.cedit);
+  if (row && Date.now() - new Date((row as { created_at: string }).created_at).getTime() > mins * 60_000) throw new Error("The edit window for this comment has closed.");
   const { data, error } = await supabase.from("comments").update({ body: clean }).eq("id", commentId).select(COMMENT_SELECT).single();
   fail(error);
   return data as unknown as CommentRow;
