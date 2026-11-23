@@ -1,5 +1,6 @@
 "use client";
 
+import { displayName } from "@/lib/zip/profile-rules";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -31,10 +32,14 @@ function TypeTag({ type }: { type: string }) {
 }
 
 /** Selecting a card or a pin shows that member in the panel under the map, like the guide. */
-export function DirectoryBody({ members, signedIn, links, following, form, invite }: {
+export function DirectoryBody({ members: all, signedIn, links, following, form, invite, rules }: {
   members: DirMember[]; signedIn: boolean; links: Record<string, LinkState>; following: string[]; form: React.ReactNode; invite: boolean;
+  /** what the team chose on Profile settings: layout, card fields, name style, invite button */
+  rules?: { dview: string; dswitch: boolean; dcard: Record<string, boolean>; dname: string; invites: boolean };
 }) {
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const card = { online: true, type: true, last: true, ...rules?.dcard };
+  const members = all.map((m) => ({ ...m, name: displayName(m.name, rules?.dname ?? "full") }));
+  const [view, setView] = useState<"grid" | "list">(rules?.dview === "list" ? "list" : "grid");
   const [selId, setSelId] = useState<string | null>(null);
   const sel = members.find((m) => m.id === selId) ?? members[0] ?? null;
   const pins = placePins(members.flatMap((m) => { const at = placeOf(m.city); return at ? [{ id: m.id, at }] : []; }));
@@ -45,12 +50,12 @@ export function DirectoryBody({ members, signedIn, links, following, form, invit
         {form}
         <div className="row" style={{ flexWrap: "wrap" }}>
           <h2 className="grow" style={{ font: "800 20px var(--display)" }}>Members · {members.length}</h2>
-          <span className="vsw" role="group" aria-label="Layout">
+          {rules?.dswitch !== false && <span className="vsw" role="group" aria-label="Layout">
             <button type="button" aria-pressed={view === "grid"} aria-label="Grid" onClick={() => setView("grid")}><Ic n="grid" s={16} /></button>
             <button type="button" aria-pressed={view === "list"} aria-label="List" onClick={() => setView("list")}><Ic n="filter" s={16} /></button>
-          </span>
+          </span>}
           <SortSelect />
-          {invite && <Link href="/network/connections" className="btn sm"><Ic n="users" s={15} />Invite</Link>}
+          {invite && rules?.invites !== false && <Link href="/network/connections" className="btn sm"><Ic n="users" s={15} />Invite</Link>}
         </div>
         {members.length === 0 ? (
           <div className="card">
@@ -65,18 +70,18 @@ export function DirectoryBody({ members, signedIn, links, following, form, invit
               const meta = (
                 <>
                   {m.recs > 0 && <span className="recby"><Ic n="spark" s={13} />Recommended by {m.recs}</span>}
-                  {m.active && <span className="muted small">{m.active}</span>}
+                  {card.last && m.active && <span className="muted small">{m.active}</span>}
                 </>
               );
-              const av = <span className="avwrap"><ZipAv name={m.name} src={m.avatar} size="l" />{m.today && <i className="ondot sm" />}</span>;
+              const av = <span className="avwrap"><ZipAv name={m.name} src={m.avatar} size="l" />{card.online && m.today && <i className="ondot sm" />}</span>;
               return view === "list" ? (
                 <button key={m.id} type="button" className="dircard dirrow" aria-pressed={pressed} onClick={() => setSelId(m.id)}>
                   {av}
                   <span className="stack grow" style={{ gap: 2, minWidth: 0 }}>
-                    <span className="row" style={{ gap: 8, flexWrap: "wrap" }}><span className="nm">{m.name}</span><TypeTag type={m.type} /></span>
+                    <span className="row" style={{ gap: 8, flexWrap: "wrap" }}><span className="nm">{m.name}</span>{card.type && <TypeTag type={m.type} />}</span>
                     <span>{m.headline}</span>
                     {m.recs > 0 && <span className="recby"><Ic n="spark" s={13} />Recommended by {m.recs}</span>}
-                    <span className="muted small">{m.city}{m.active ? ` · ${m.active}` : ""}</span>
+                    <span className="muted small">{m.city}{card.last && m.active ? ` · ${m.active}` : ""}</span>
                   </span>
                 </button>
               ) : (
@@ -85,7 +90,7 @@ export function DirectoryBody({ members, signedIn, links, following, form, invit
                     {av}
                     <span className="stack grow" style={{ minWidth: 0, gap: 3 }}>
                       <span className="nm">{m.name}</span>
-                      <span><TypeTag type={m.type} /></span>
+                      {card.type && <span><TypeTag type={m.type} /></span>}
                       <span className="muted small">{m.city}</span>
                     </span>
                   </span>

@@ -1,3 +1,4 @@
+import { getHubSettings } from "@/lib/zip/settings-load";
 import Link from "next/link";
 import { requireUser, MEMBER_TYPES } from "@/lib/hub";
 import { pageMeta } from "@/lib/seo";
@@ -9,6 +10,14 @@ type Viewer = { viewer_id: string | null; last_at: string; shown: boolean };
 
 export default async function ViewsPage() {
   const { supabase, userId } = await requireUser();
+  if (!(await getHubSettings("profiles")).pv.on) {
+    return (
+      <section className="mx-auto max-w-2xl p-6">
+        <h1 className="text-2xl font-semibold">Who viewed your profile</h1>
+        <p className="mt-3 text-muted-foreground">This feature is turned off for now.</p>
+      </section>
+    );
+  }
   const [viewers, days] = await Promise.all([supabase.rpc("my_profile_viewers"), supabase.rpc("my_profile_view_days")]);
   const rows = (viewers.data ?? []) as Viewer[];
   const series = (days.data ?? []) as { day: string; views: number }[];

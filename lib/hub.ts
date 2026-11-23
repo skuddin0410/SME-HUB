@@ -129,7 +129,7 @@ type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" 
 export async function fetchPosts(
   supabase: Supabase,
   userId: string | null,
-  opts: { page?: number; before?: { createdAt: string; id: string }; mine?: boolean; reactedBy?: string; groupsOnly?: boolean; connectionsOnly?: boolean; followingOnly?: boolean; scheduledBy?: string; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string; businessId?: string } = {},
+  opts: { page?: number; before?: { createdAt: string; id: string }; mine?: boolean; reactedBy?: string; groupsOnly?: boolean; connectionsOnly?: boolean; followingOnly?: boolean; scheduledBy?: string; groupId?: string; authorId?: string; postId?: string; search?: string; kind?: string; limit?: number; savedBy?: string; businessId?: string; relevant?: boolean } = {},
 ): Promise<Post[]> {
   const page = Math.max(1, opts.page ?? 1);
   const size = opts.limit ?? PAGE_SIZE;
@@ -164,6 +164,17 @@ export async function fetchPosts(
       const { data: f } = await supabase.from("follows").select("followee_id").eq("follower_id", userId).limit(500);
       query = query.in("author_id", (f ?? []).map((x) => x.followee_id as string));
     }
+  }
+  if (userId && opts.relevant) {
+    // posts from me, my connections, people I follow, and my groups; nothing hidden or ranked
+    const [{ data: f }, { data: g }] = await Promise.all([
+      supabase.from("follows").select("followee_id").eq("follower_id", userId).limit(500),
+      supabase.from("group_members").select("group_id").eq("user_id", userId).limit(200),
+    ]);
+    const links = await getLinks();
+    const authors = [userId, ...[...links].filter(([, v]) => v === "connected").map(([k]) => k), ...(f ?? []).map((x) => x.followee_id as string)];
+    const groups = (g ?? []).map((x) => x.group_id as string);
+    query = query.or(`author_id.in.(${authors.join(",")})${groups.length ? `,group_id.in.(${groups.join(",")})` : ""}`);
   }
   if (opts.groupsOnly) query = query.not("group_id", "is", null);
   if (opts.groupId) query = query.eq("group_id", opts.groupId);

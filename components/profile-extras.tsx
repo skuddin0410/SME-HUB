@@ -69,7 +69,7 @@ export function FollowButton({ otherId, initial, signedIn }: { otherId: string; 
 }
 
 // ---------- edit profile: about section ----------
-export function DetailsForm({ details, profileType }: { details: Details; profileType: string }) {
+export function DetailsForm({ details, profileType, nets }: { details: Details; profileType: string; /** social networks the team allows */ nets?: Record<string, boolean> }) {
   const [state, action] = useActionState<NetState, FormData>(saveDetails, {});
   const typeOptions = Object.entries(PROFILE_TYPES).filter(([k]) => (SELF_TYPES as readonly string[]).includes(k) || k === profileType);
   const locked = !(SELF_TYPES as readonly string[]).includes(profileType);
@@ -103,7 +103,7 @@ export function DetailsForm({ details, profileType }: { details: Details; profil
       <fieldset className="grid gap-3 text-sm font-medium">
         <legend className="mb-1.5">Social links</legend>
         <div className="grid gap-3 sm:grid-cols-2">
-          {SOCIAL_NETWORKS.map(([key, label]) => (
+          {SOCIAL_NETWORKS.filter(([key]) => !nets || nets[key] !== false).map(([key, label]) => (
             <label key={key} className="grid gap-1 text-xs font-medium text-muted-foreground">
               {label}
               <input name={`social_${key}`} defaultValue={details.social_links[key] ?? ""} placeholder={`${key}.com/yourname`} maxLength={200} className="field text-sm font-normal text-foreground" />

@@ -28,3 +28,22 @@ export async function getComposerRules(): Promise<ComposerRules> {
     title: t === "required" || t === "off" ? t : "optional",
   };
 }
+
+/** How a post's actions and comments behave, small enough to pass to the browser. */
+export type PostRules = { share: boolean; comments: boolean; flat: boolean; cshow: number; cload: number };
+export async function getPostRules(): Promise<PostRules> {
+  const f = await getHubSettings("feed");
+  return { share: !!f.share, comments: !!f.comments, flat: String(f.thread) === "1", cshow: Math.max(1, Number(f.cshow) || 2), cload: Math.max(1, Number(f.cload) || 10) };
+}
+
+/** Whether this member may start a post, from "Who can post" on the feed settings. The team can always post. */
+export async function canStartPost(supabase: SupabaseClient, userId: string): Promise<boolean> {
+  const f = await getHubSettings("feed");
+  if (f.access === "all") return true;
+  const { data } = await supabase.from("profiles").select("role, plan, profile_type").eq("id", userId).maybeSingle();
+  const me = data as { role?: string; plan?: string; profile_type?: string } | null;
+  if (!me) return false;
+  if (me.role && me.role !== "member") return true;
+  if (f.access === "paid") return me.plan === "plus" || me.plan === "advisor";
+  return !!(f.accessTypes as Record<string, boolean>)[me.profile_type ?? "owner"];
+}

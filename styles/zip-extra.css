@@ -106,3 +106,7 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip .chip[role="radio"][aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:#FFFFFF;font-weight:600}
 .zip .pvstats .muted{color:var(--ink)!important;opacity:.8}
 .zip .chip[role="tab"][aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#FFFFFF;font-weight:600}
+
+/* profile header centred (Profile settings) */
+.zip .phero[data-head="center"] .pinfo{align-items:center;text-align:center}
+.zip .phero[data-head="center"] .pavrow,.zip .phero[data-head="center"] .pmain,.zip .phero[data-head="center"] .prow{justify-content:center;align-items:center}

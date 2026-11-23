@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FeedRefresh } from "@/components/feed-refresh";
 import { Ic } from "@/components/zip/ic";
 import { fetchPosts, getViewer } from "@/lib/hub";
 import { FEED } from "@/lib/feed-rules";
@@ -7,7 +8,7 @@ import { topSignal } from "@/lib/feed";
 import { KINDS, type Kind } from "@/lib/demo";
 import { Empty, PostCard } from "@/components/hub";
 import { Composer } from "@/components/hub-client";
-import { getComposerRules } from "@/lib/zip/settings-load";
+import { canStartPost, getComposerRules, getHubSettings } from "@/lib/zip/settings-load";
 import { FirstWeek, type WeekStep } from "@/components/first-week";
 import { getPostingBusinesses } from "@/lib/business-server";
 import { pageMeta } from "@/lib/seo";
@@ -88,7 +89,10 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
   if (!viewer.userId) redirect("/");
   const saved = params.saved === "1" && !!viewer.userId;
   const compose = params.compose && params.compose in KINDS ? (params.compose as Kind) : undefined;
-  const scope = viewer.userId && SCOPES.some((x) => x.key && x.key === params.scope) ? params.scope : undefined;
+  const fs = await getHubSettings("feed");
+  const scopes = SCOPES.filter((x) => !x.key || (fs.filters as Record<string, boolean>)[x.key] !== false);
+  const scope = viewer.userId && scopes.some((x) => x.key && x.key === params.scope) ? params.scope : undefined;
+  const mayPost = !!viewer.userId && (await canStartPost(viewer.supabase, viewer.userId));
   const before = parseCursor(params.before);
   const fetched = await fetchPosts(viewer.supabase, viewer.userId, {
     page,
@@ -100,6 +104,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
     groupsOnly: scope === "groups",
     connectionsOnly: scope === "conn",
     followingOnly: scope === "follow",
+    relevant: !!fs.relevant && !scope && !saved && !kind,
     limit: FEED.pageSize,
   });
   const posts = latest || saved || before || scope ? fetched : topSignal(fetched);
@@ -111,7 +116,8 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
   return (
     <>
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week.steps} connections={week.count} />}
-      <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} rules={await getComposerRules()} />
+      {fs.refresh && <FeedRefresh />}
+      {mayPost && <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} rules={await getComposerRules()} />}
 
       <div className="tools">
         <h2 style={{ font: "700 15px var(--display)" }}>{saved ? "Saved bookmarks" : "Latest from the community"}</h2>
@@ -128,7 +134,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
       </div>
       {viewer.userId && !saved && (
         <nav className="chips" aria-label="Whose posts">
-          {SCOPES.map((f) => (
+          {scopes.map((f) => (
             <Link key={f.key} href={href({ ...keep, scope: f.key || undefined })} aria-current={(scope ?? "") === f.key ? "true" : undefined} className="chip">
               {f.label}
             </Link>
@@ -136,7 +142,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           <Link href="/scheduled" className="chip">Scheduled</Link>
         </nav>
       )}
-      <nav className="chips" aria-label="Filter the feed">
+      {(fs.topics || saved) && <nav className="chips" aria-label="Filter the feed">
         {saved ? (
           <>
             <span className="chip" aria-current="true">Saved bookmarks</span>
@@ -149,7 +155,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
             </Link>
           ))
         )}
-      </nav>
+      </nav>}
 
       {posts.length === 0 && (
         <Empty title={saved ? "No saved bookmarks yet" : kind ? `No ${KINDS[kind].label.toLowerCase()} posts yet` : "The feed is quiet"}>

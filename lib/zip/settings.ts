@@ -54,7 +54,7 @@ export const DEFAULTS = {
     pv: { on: true, strip: true, optout: true, guests: false, free: "2", notify: "weekly", chart: "bar" },
   },
   feed: {
-    relevant: false, filters: { mine: true, reacted: true, groups: true, conn: true, follow: true, mention: true } as Record<string, boolean>, topics: false, refresh: true, share: true, shareOut: true,
+    relevant: false, filters: { mine: true, reacted: true, groups: true, conn: true, follow: true, mention: true } as Record<string, boolean>, topics: true, refresh: true, share: true, shareOut: true,
     schedule: true, pin: true, polls: true, pollMax: "10", cover: true, title: "optional", edit: "10", closeC: true,
     comments: true, cedit: "10", thread: "2", cshow: "2", cload: "10",
     access: "all", accessTypes: { owner: true, advisor: true, maker: true, provider: false, team: true } as Record<string, boolean>,

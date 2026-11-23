@@ -148,6 +148,12 @@ http
       { id: "00000000-0000-4000-8000-0000000000a1", title: "Founding members welcome call", when_label: "Tue, Jan 12, 2027 · 12:00 pm ET", location: "Online", note: "Meet the team and the first members." },
       { id: "00000000-0000-4000-8000-0000000000a2", title: "Small Business Show 2027", when_label: "Date to be announced", location: "In person", note: "Members get early access and a discount." },
     ]));
+    if (url.pathname === "/rest/v1/hub_settings") {
+      let hub = {};
+      try { hub = JSON.parse(Buffer.from(String(req.headers.authorization).split(".")[1] ?? "", "base64url").toString()).hub ?? {}; } catch {}
+      const key = String(url.searchParams.get("key") ?? "").replace("eq.", "");
+      return hub[key] ? one({ key, value: hub[key] }) : res.end(wantsObject ? "null" : "[]");
+    }
     if (url.pathname === "/rest/v1/group_settings") return one(GSET);
     if (url.pathname === "/rest/v1/groups") {
       if (url.searchParams.get("slug") === "eq.retail-owners") return one(GROUP());

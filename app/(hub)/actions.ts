@@ -4,7 +4,7 @@ import { AUTHOR_FIELDS, requireStaff, requireUser, slugify, type CommentRow, typ
 import { REACTION_KINDS, type ReactionKind } from "@/lib/reactions";
 import { cleanPollOptions, FEED } from "@/lib/feed-rules";
 import { createClient } from "@/lib/supabase/server";
-import { getHubSettings } from "@/lib/zip/settings-load";
+import { canStartPost, getHubSettings } from "@/lib/zip/settings-load";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -45,6 +45,7 @@ function editMinutes(v: unknown) {
 export async function createPost(_prev: FormState, form: FormData): Promise<FormState> {
   const { supabase, userId } = await requireUser();
   const rules = await getHubSettings("feed");
+  if (!(await canStartPost(supabase, userId))) return { error: "Posting is limited to certain members right now. You can still react, reply and vote." };
   const body = text(form, "body");
   if (!body) return { error: "Write something before posting." };
   const rawVisibility = text(form, "visibility");
@@ -259,7 +260,15 @@ export async function reportPost(postId: string, reason: string) {
 export async function requestConnection(otherId: string) {
   uuid(otherId);
   const { supabase, userId } = await requireUser();
+  const ps = await getHubSettings("profiles");
+  if (!ps.connect) throw new Error("Connecting is turned off.");
+  // each profile type can be limited to asking certain other types
+  const { data: pair } = await supabase.from("profiles").select("id, profile_type").in("id", [userId, otherId]);
+  const typeOf = (id: string) => (pair as { id: string; profile_type?: string }[] | null)?.find((p) => p.id === id)?.profile_type ?? "owner";
+  const allowed = (ps.access as Record<string, string[] | null>)[typeOf(userId)];
+  if (allowed && !allowed.includes(typeOf(otherId))) throw new Error("Your profile type cannot ask to connect with that type of member.");
   fail((await supabase.from("connections").insert({ requester_id: userId, addressee_id: otherId })).error);
+  if (ps.autoFollow) await supabase.from("follows").upsert({ follower_id: userId, followee_id: otherId }, { ignoreDuplicates: true });
   revalidatePath("/", "layout");
 }
 
@@ -272,6 +281,7 @@ export async function acceptConnection(requesterId: string) {
     .eq("requester_id", requesterId)
     .eq("addressee_id", userId);
   fail(error);
+  if ((await getHubSettings("profiles")).autoFollow) await supabase.from("follows").upsert({ follower_id: userId, followee_id: requesterId }, { ignoreDuplicates: true });
   revalidatePath("/", "layout");
 }
 
@@ -405,6 +415,7 @@ export async function adminDeletePost(postId: string) {
 export async function adminPinPost(postId: string, pin: boolean) {
   uuid(postId);
   const { supabase } = await requireStaff();
+  if (pin && !(await getHubSettings("feed")).pin) throw new Error("Pinning posts is turned off.");
   const { error } = await supabase
     .from("posts")
     .update({ pinned_at: pin ? new Date().toISOString() : null })

@@ -15,6 +15,7 @@ import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { TYPES } from "@/lib/zip/types";
 import { getHubSettings } from "@/lib/zip/settings-load";
+import { displayName, profileActions } from "@/lib/zip/profile-rules";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -89,7 +90,7 @@ export default async function MemberPage({
   const isMe = id === userId;
 
   // visiting someone else's profile counts as a view (the database skips private browsers and blocked pairs)
-  if (userId && !isMe) await supabase.rpc("record_profile_view", { p_id: id });
+  if (userId && !isMe && ps.pv.on) await supabase.rpc("record_profile_view", { p_id: id });
 
   const [links, posts, listingRows, countRow, otherRows, mutualRow, detailRows, followerRow, followRow, recRows, askedRows, myRecRows, activeRow] = await Promise.all([
     getLinks(),
@@ -168,20 +169,20 @@ export default async function MemberPage({
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="cols">
           <section className="mid" style={{ gap: 20 }} aria-label="Profile">
-            <div className="card phero">
+            <div className="card phero" data-head={String(ps.header)}>
               <div className="pcover"><Cover seed={member.id} className="h-full w-full" /></div>
               <div className="pinfo">
                 <div className="pavrow">
                   <span className="avwrap">
                     <ZipAv name={member.full_name || "M"} src={photo(member)} size="hero" />
-                    {active?.today && <i className="ondot" title="Active today" />}
+                    {ps.head.online && active?.today && <i className="ondot" title="Active today" />}
                   </span>
                 </div>
                 <div className="pmain">
                   <div className="row prow" style={{ flexWrap: "wrap", gap: 8 }}>
-                    <h1>{member.full_name || "Member"}</h1>
+                    <h1>{displayName(member.full_name, String(ps.dname))}</h1>
                     {degree && <span className="deg">· {DEGREE_LABEL[degree]}</span>}
-                    <span className="tag ptype" style={{ background: type[1], color: type[2] }}>{type[0]}</span>
+                    {ps.head.type && <span className="tag ptype" style={{ background: type[1], color: type[2] }}>{type[0]}</span>}
                     {planLabel && planLabel !== type[0] && <span className="tag">{planLabel}</span>}
                     {member.founding_number != null && <span className="tag badge">Founding Member</span>}
                     {member.status === "suspended" && <span className="tag" style={{ background: "#B91C1C", color: "#fff" }}>Suspended</span>}
@@ -200,7 +201,7 @@ export default async function MemberPage({
                   </span>
                   {shown.length > 0 && <span className="recby"><Ic n="spark" s={13} />Recommended by {shown.length}</span>}
                   <span className="muted small">
-                    {[`Joined ${when(member.created_at, { year: "numeric", month: "short" })}`, followers !== null && followers > 0 ? `${followers} follower${followers === 1 ? "" : "s"}` : null, active?.label].filter(Boolean).join(" · ")}
+                    {[ps.head.joined ? `Joined ${when(member.created_at, { year: "numeric", month: "short" })}` : null, ps.head.followers && followers !== null && followers > 0 ? `${followers} follower${followers === 1 ? "" : "s"}` : null, ps.head.last ? active?.label : null].filter(Boolean).join(" · ")}
                   </span>
                   {connections !== null && <span className="muted">{connections >= 500 ? "500+" : connections} connection{connections === 1 ? "" : "s"}{mutual > 0 ? ` · ${mutual} mutual` : ""}</span>}
                   <div className="row prow" style={{ flexWrap: "wrap", marginTop: 8 }}>
@@ -212,9 +213,11 @@ export default async function MemberPage({
                       </>
                     ) : (
                       <>
-                        <ConnectBtn otherId={id} initial={link} signedIn={!!userId} primary />
-                        {link === "connected" && <Link href={`/messages?with=${id}`} className="btn ghost"><Ic n="msg" s={14} />Message</Link>}
-                        <FollowBtn otherId={id} initial={following} signedIn={!!userId} />
+                        {profileActions(ps).map((a, i) =>
+                          a === "connect" ? <ConnectBtn key={a} otherId={id} initial={link} signedIn={!!userId} primary={i === 0} />
+                          : a === "message" ? link === "connected" && <Link key={a} href={`/messages?with=${id}`} className="btn ghost"><Ic n="msg" s={14} />Message</Link>
+                          : <FollowBtn key={a} otherId={id} initial={following} signedIn={!!userId} />,
+                        )}
                         {site && <a href={site} target="_blank" rel="noreferrer nofollow" className="btn line">Visit my website</a>}
                         {userId && <MoreMenu copyPath={`/members/${id}`} blockName={first} onBlock={blockMember.bind(null, id)} />}
                       </>
@@ -294,7 +297,7 @@ export default async function MemberPage({
                   <div className="card psec">
                     <h2>Find me online</h2>
                     <div className="chips">
-                      {SOCIAL_NETWORKS.filter(([k]) => details.social_links[k]).map(([k, label]) => (
+                      {SOCIAL_NETWORKS.filter(([k]) => details.social_links[k] && (ps.nets as Record<string, boolean>)[k] !== false).map(([k, label]) => (
                         <a key={k} href={details.social_links[k]} target="_blank" rel="noreferrer nofollow" className="chip">{label}</a>
                       ))}
                     </div>

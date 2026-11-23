@@ -795,9 +795,11 @@ export function PostActions({
   isStaff,
   startOpen = false,
   commentsClosed = false,
+  rules,
 }: {
   postId: string;
   commentsClosed?: boolean;
+  rules?: import("@/lib/zip/settings-load").PostRules;
   likes?: number;
   comments: number;
   counts: Partial<Record<ReactionKind, number>>;
@@ -876,11 +878,11 @@ export function PostActions({
             {note}
           </span>
         )}
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Comments, ${commentCount}`} className="act plain">
+        {rules?.comments !== false && <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Comments, ${commentCount}`} className="act plain">
           <Ic n="msg" s={15} />
           {commentCount}
-        </button>
-        <button
+        </button>}
+        {rules?.share !== false && <button
           type="button"
           onClick={repost}
           aria-pressed={didRepost}
@@ -890,8 +892,8 @@ export function PostActions({
         >
           <Ic n="repost" s={15} />
           {repostCount}
-        </button>
-        <button
+        </button>}
+        {rules?.share !== false && <button
           type="button"
           aria-label="Send in a message"
           title="Send in a message"
@@ -902,10 +904,10 @@ export function PostActions({
           className="act plain"
         >
           <Ic n="send" s={15} />
-        </button>
+        </button>}
       </div>
 
-      {open && (
+      {open && rules?.comments !== false && (
         <div className="comments">
           <CommentThread
             postId={postId}
@@ -916,6 +918,9 @@ export function PostActions({
             setList={(fn) => setList(fn)}
             onCount={(by) => setCommentCount((n) => Math.max(0, n + by))}
             onNote={setNote}
+            flat={rules?.flat}
+            firstShown={rules?.cshow}
+            more={rules?.cload}
           />
         </div>
       )}

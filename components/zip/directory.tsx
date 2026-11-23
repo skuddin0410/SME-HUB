@@ -1,3 +1,4 @@
+import { getHubSettings } from "@/lib/zip/settings-load";
 import Link from "next/link";
 import { getLinks, getViewer } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
@@ -27,6 +28,7 @@ function activity(at: string | null | undefined): { label: string; today: boolea
 
 /** The guide's "Member directory": search and filters on the left, cards below, the map and the chosen member on the right. */
 export async function Directory({ searchParams, base }: { searchParams: Record<string, string | string[] | undefined>; base: string }) {
+  const ps = await getHubSettings("profiles");
   const q = one(searchParams.q).slice(0, 80);
   const province = one(searchParams.province);
   const type = one(searchParams.type);
@@ -136,7 +138,7 @@ export async function Directory({ searchParams, base }: { searchParams: Record<s
           <h1>Member directory</h1>
           <p className="muted" style={{ fontSize: 15 }}>Find the right owner by name, skill or place, then connect in one click.</p>
         </div>
-        <DirectoryBody members={members} signedIn={!!userId} links={Object.fromEntries(links)} following={follows} form={form} invite={!!userId} />
+        <DirectoryBody members={members} signedIn={!!userId} links={Object.fromEntries(links)} following={follows} form={form} invite={!!userId} rules={{ dview: String(ps.dview), dswitch: !!ps.dswitch, dcard: ps.dcard as Record<string, boolean>, dname: String(ps.dname), invites: !!ps.invites }} />
       </div>
     </div>
   );

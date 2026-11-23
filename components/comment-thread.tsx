@@ -22,6 +22,9 @@ export function CommentThread({
   setList,
   onCount,
   onNote,
+  flat = false,
+  firstShown,
+  more = 10,
 }: {
   postId: string;
   me: Me;
@@ -31,7 +34,13 @@ export function CommentThread({
   setList: (fn: (l: CommentRow[] | null) => CommentRow[] | null) => void;
   onCount: (by: number) => void;
   onNote: (text: string) => void;
+  /** one flat list instead of replies under the comment they answer */
+  flat?: boolean;
+  /** comments shown at first, and how many more each "Load more" adds */
+  firstShown?: number;
+  more?: number;
 }) {
+  const [shown, setShown] = useState(firstShown ?? 99);
   const [draft, setDraft] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -39,11 +48,11 @@ export function CommentThread({
   const [busy, start] = useTransition();
 
   const { tops, replies } = useMemo(() => {
-    const tops = (list ?? []).filter((c) => !c.parent_id);
+    const tops = (list ?? []).filter((c) => flat || !c.parent_id);
     const replies = new Map<string, CommentRow[]>();
-    for (const c of list ?? []) if (c.parent_id) replies.set(c.parent_id, [...(replies.get(c.parent_id) ?? []), c]);
+    if (!flat) for (const c of list ?? []) if (c.parent_id) replies.set(c.parent_id, [...(replies.get(c.parent_id) ?? []), c]);
     return { tops, replies };
-  }, [list]);
+  }, [list, flat]);
 
   const send = (body: string, parentId: string | null, done: () => void) => {
     if (!body.trim()) return;
@@ -113,7 +122,7 @@ export function CommentThread({
         ) : (
           <p className="text-xs text-zinc-800 mt-1 leading-relaxed whitespace-pre-wrap break-words">{c.body}</p>
         )}
-        {!isReply && me && !closed && (
+        {!flat && !isReply && me && !closed && (
           <button type="button" onClick={() => { setReplyTo(replyTo === c.id ? null : c.id); setDraft(""); }} className="mt-1.5 inline-flex items-center gap-1 text-[0.75rem] font-medium text-zinc-500 hover:text-zinc-900">
             <Reply className="h-3 w-3" /> Reply
           </button>
@@ -131,7 +140,7 @@ export function CommentThread({
             <div className="skeleton h-14 w-2/3 !rounded-xl" />
           </>
         )}
-        {tops.map((c) => (
+        {tops.slice(0, shown).map((c) => (
           <div key={c.id} className="space-y-2">
             {one(c, false)}
             {(replies.get(c.id) ?? []).map((r) => one(r, true))}
@@ -149,6 +158,11 @@ export function CommentThread({
             )}
           </div>
         ))}
+        {tops.length > shown && (
+          <button type="button" onClick={() => setShown((n) => n + more)} className="text-xs font-semibold text-blue-700 hover:underline">
+            Load {Math.min(more, tops.length - shown)} more {tops.length - shown === 1 ? "comment" : "comments"}
+          </button>
+        )}
         {list?.length === 0 && <p className="text-xs text-zinc-500">No replies yet. Start the conversation.</p>}
       </div>
 

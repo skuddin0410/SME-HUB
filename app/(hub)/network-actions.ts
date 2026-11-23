@@ -1,5 +1,7 @@
 "use server";
 
+import { mayCloseAccount } from "@/lib/zip/profile-rules";
+import { getHubSettings } from "@/lib/zip/settings-load";
 import { requireUser } from "@/lib/hub";
 import { cleanSocialUrl, SELF_TYPES, SOCIAL_NETWORKS, splitList, VISIBILITY_FIELDS, VISIBILITY_LEVELS, AVAILABILITY, RELATIONSHIPS } from "@/lib/profile-extra";
 import { createClient } from "@/lib/supabase/server";
@@ -29,7 +31,9 @@ export async function saveDetails(_prev: NetState, form: FormData): Promise<NetS
 
   if (section === "about") {
     const social_links: Record<string, string> = {};
+    const nets = (await getHubSettings("profiles")).nets as Record<string, boolean>;
     for (const [key, label] of SOCIAL_NETWORKS) {
+      if (nets[key] === false) continue;
       const raw = text(form, `social_${key}`);
       if (!raw) continue;
       const url = cleanSocialUrl(raw);
@@ -60,6 +64,14 @@ export async function saveDetails(_prev: NetState, form: FormData): Promise<NetS
     const res = await supabase.from("profiles").update({ profile_type: type }).eq("id", userId);
     if (res.error) return { error: res.error.message };
   }
+  if (section === "about") {
+    // groups the team set for this profile type are joined on day one (public groups only; the database decides)
+    const ps = await getHubSettings("profiles");
+    let t = type;
+    if (!(SELF_TYPES as readonly string[]).includes(t)) t = ((await supabase.from("profiles").select("profile_type").eq("id", userId).maybeSingle()).data as { profile_type?: string } | null)?.profile_type ?? "owner";
+    const ids = ((ps.auto as Record<string, string[]>)[t] ?? []).filter((x) => /^[0-9a-f-]{36}$/i.test(x));
+    if (ids.length) await supabase.from("group_members").upsert(ids.map((g) => ({ group_id: g, user_id: userId })), { ignoreDuplicates: true });
+  }
   revalidatePath("/", "layout");
   return { ok: Date.now() };
 }
@@ -67,6 +79,7 @@ export async function saveDetails(_prev: NetState, form: FormData): Promise<NetS
 export async function toggleFollow(otherId: string, following: boolean) {
   uuid(otherId);
   const { supabase, userId } = await requireUser();
+  if (!following && !(await getHubSettings("profiles")).follow) throw new Error("Following is turned off.");
   if (following) fail((await supabase.from("follows").delete().eq("follower_id", userId).eq("followee_id", otherId)).error);
   else fail((await supabase.from("follows").insert({ follower_id: userId, followee_id: otherId })).error);
   revalidatePath(`/members/${otherId}`);
@@ -141,7 +154,9 @@ export async function unblockMember(otherId: string) {
 
 /** Deletes the account through the database; no secret key lives in the website. */
 export async function deleteAccount(_prev: NetState, form: FormData): Promise<NetState> {
-  const { supabase } = await requireUser();
+  const { supabase, userId } = await requireUser();
+  const { data: me } = await supabase.from("profiles").select("plan").eq("id", userId).maybeSingle();
+  if (!mayCloseAccount(await getHubSettings("profiles"), (me as { plan?: string } | null)?.plan)) return { error: "Please ask the Hub team to close your account." };
   if (text(form, "confirm") !== "DELETE") return { error: "Type DELETE to confirm." };
   const { error } = await supabase.rpc("delete_my_account");
   if (error) return { error: error.message };

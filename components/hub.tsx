@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { DEGREE_LABEL, MEMBER_TYPES, timeAgo, type Author, type Degree, type Post, type Profile } from "@/lib/hub";
 import { AvatarImg, GroupLogo, PostActions, PostBody, PostMenu } from "@/components/hub-client";
+import { getPostRules } from "@/lib/zip/settings-load";
 import { PollView, PostManage, QuoteButton, QuoteEmbed } from "@/components/post-extras";
 import { ConnectButton } from "@/components/network-client";
 import { SaveButton } from "@/components/feed-client";
@@ -45,7 +46,8 @@ export function PersonLine({ person, extra, size = 44, degree }: { person: Autho
 const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Connections", private: "Only you" };
 
 /** One post in the feed (design: docs/design/feed.html). */
-export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
+export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
+  const rules = await getPostRules();
   const own = post.author.id === viewer.userId;
   return (
     <article id={`post-${post.id}`} className={`card post${post.pinned_at ? " pinnedp" : ""}`}>
@@ -125,8 +127,9 @@ export function PostCard({ post, viewer, startOpen }: { post: Post; viewer: View
         isStaff={viewer.isStaff}
         startOpen={startOpen}
         commentsClosed={post.comments_closed}
+        rules={rules}
       />
-      {viewer.userId && post.id && <QuoteButton postId={post.id} signedIn />}
+      {rules.share && viewer.userId && post.id && <QuoteButton postId={post.id} signedIn />}
       {own && <PostManage post={post} />}
     </article>
   );
