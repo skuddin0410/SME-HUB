@@ -925,3 +925,7 @@ select t.expect('anyone can see how many founding places are left', (select coun
 -- group card extras
 select t.expect('group card extras are open to everyone', (select count(*) = 1 from pg_proc p where proname = 'group_card_extras' and has_function_privilege('anon', p.oid, 'execute')));
 select t.expect('group card extras give nothing for an unknown group', (select count(*) = 0 from group_card_extras(array['00000000-0000-0000-0000-00000000dead']::uuid[])));
+
+-- hub events and seats
+select t.expect('the events list is public', (select count(*) >= 3 from hub_events where status = 'published'));
+select t.expect('seats are never readable by anyone signed out', not has_table_privilege('anon', 'event_rsvps', 'select'));

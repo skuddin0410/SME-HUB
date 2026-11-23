@@ -443,3 +443,14 @@ export async function removeGroupInvite(groupId: string, memberId: string) {
   fail((await supabase.from("group_invites").delete().eq("group_id", groupId).eq("user_id", memberId)).error);
   revalidatePath("/groups", "layout");
 }
+
+/** Save or release a seat at a Hub event. */
+export async function setRsvp(eventId: string, on: boolean) {
+  uuid(eventId);
+  const { supabase, userId } = await requireUser();
+  const q = on
+    ? supabase.from("event_rsvps").upsert({ event_id: eventId, user_id: userId }, { ignoreDuplicates: true })
+    : supabase.from("event_rsvps").delete().eq("event_id", eventId).eq("user_id", userId);
+  fail((await q).error);
+  revalidatePath("/events");
+}

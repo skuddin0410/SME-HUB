@@ -16,6 +16,7 @@ type Me = { id: string; full_name: string; avatar_url: string | null; headline?:
 /** The guide's "Explore the Hub" list, limited to the pages this site has built. */
 const HUB_MENU: NavItem[] = [
   { label: "Groups", href: "/groups" },
+  { label: "Events", href: "/events" },
   { label: "Members", href: "/members" },
   { label: "Business Directory", href: "/businesses" },
   { label: "My Businesses", href: "/businesses/mine" },
