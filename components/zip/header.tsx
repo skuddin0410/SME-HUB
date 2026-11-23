@@ -217,6 +217,7 @@ export function ZipHeader({
                     <Link href="/network/connections">My connections and invitations</Link>
                     <Link href="/profile/views">Who viewed your profile</Link>
                     <Link href="/settings">Settings &amp; privacy</Link>
+                    <Link href="/blocked">Blocked members</Link>
                     <Link href="/feed?saved=1">Saved bookmarks</Link>
                     <Link href="/businesses/mine">My business listings</Link>
                     {isStaff && <Link href="/admin">Admin panel</Link>}

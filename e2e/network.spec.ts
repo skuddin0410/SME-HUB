@@ -17,15 +17,32 @@ test("edit profile has the help, availability and social link fields", async ({ 
   await expect(page.getByLabel("I am a")).toBeVisible();
 });
 
-test("settings shows privacy choices, blocked members, data download and a guarded delete", async ({ page }) => {
-  await page.goto("/settings", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Privacy" })).toBeVisible();
-  await expect(page.getByLabel("Helps with")).toHaveValue("public");
-  await expect(page.getByLabel("Helps with").locator("option")).toHaveText(["Public", "All members", "My connections", "Only me"]);
-  await expect(page.getByText("You have not blocked anyone.")).toBeVisible();
+test("settings shows privacy choices, data download and a guarded close-account", async ({ page }) => {
+  await page.goto("/settings", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "Privacy and account", level: 1 })).toBeVisible();
+  await expect(page.getByLabel("Who can see Helps with")).toHaveValue("public");
+  await expect(page.getByLabel("Who can see Helps with").locator("option")).toHaveText(["Public", "All members", "My connections", "Only me"]);
+  await expect(page.getByText("set by the Hub team").first()).toBeVisible();
   await expect(page.getByRole("link", { name: "Download my data" })).toHaveAttribute("href", "/settings/export");
-  await page.getByRole("button", { name: "Delete my account" }).click();
-  await expect(page.getByText("Type DELETE to confirm.", { exact: true }).last()).toBeVisible();
+  await expect(page.getByRole("button", { name: "Close my account" })).toBeDisabled();
+  await page.getByRole("switch", { name: "I understand the consequences" }).click();
+  await expect(page.getByRole("button", { name: "Close my account" })).toBeEnabled();
+  await page.getByRole("button", { name: "Close my account" }).click();
+  await expect(page.getByText("Type DELETE to confirm.", { exact: true })).toBeVisible();
+});
+
+test("blocked members page explains how to block and lists nobody when empty", async ({ page }) => {
+  await page.goto("/blocked", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Blocked members", level: 1 })).toBeVisible();
+  await expect(page.getByText("You have not blocked anyone.")).toBeVisible();
+});
+
+test("courses page lists the course with a start button and the teach card", async ({ page }) => {
+  await page.goto("/courses", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Courses", level: 1 })).toBeVisible();
+  await page.getByRole("button", { name: /Start course/ }).first().click();
+  await expect(page.getByText("being added")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Become an SMB Advisor" })).toBeVisible();
 });
 
 test("who viewed your profile shows the 30-day chart and the upgrade note for hidden viewers", async ({ page }) => {

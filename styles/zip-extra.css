@@ -100,3 +100,6 @@ button.spill{font:inherit;color:#A1A1AA}
 .zip .abcenter p,.zip .abcenter .eyebrow,.zip .tline span,.zip .year .muted,.zip .quote2 p{color:var(--ink)!important;opacity:.8}
 .zip .abstats span{color:#D8DBE3!important}
 .zip .ben2 .bg,.zip .pillars .go,.zip .year .when{color:var(--link)!important}
+
+/* muted text sitting directly on the page background */
+.zip .wrap>p.muted,.zip .wrap>.pagehead .muted{color:var(--ink)!important;opacity:.78}
