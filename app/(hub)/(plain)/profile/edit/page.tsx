@@ -1,3 +1,4 @@
+import { customFields } from "@/lib/zip/profile-fields";
 import { getHubSettings } from "@/lib/zip/settings-load";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -22,7 +23,7 @@ export default async function EditProfilePage() {
         <p className="mb-5 text-sm text-muted-foreground">
           This is what members search for in the directory. You choose who sees each part in <Link href="/settings" className="font-semibold text-primary hover:underline">privacy settings</Link>.
         </p>
-        <DetailsForm details={details} profileType={type} nets={(await getHubSettings("profiles")).nets as Record<string, boolean>} />
+        <DetailsForm details={details} profileType={type} nets={(await getHubSettings("profiles")).nets as Record<string, boolean>} extra={customFields((await getHubSettings("profiles")).fields).filter((f) => !f.lock)} />
       </section>
     </>
   );

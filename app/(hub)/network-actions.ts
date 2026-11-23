@@ -1,6 +1,7 @@
 "use server";
 
 import { mayCloseAccount } from "@/lib/zip/profile-rules";
+import { cleanAnswer, customFields } from "@/lib/zip/profile-fields";
 import { getHubSettings } from "@/lib/zip/settings-load";
 import { requireUser } from "@/lib/hub";
 import { cleanSocialUrl, SELF_TYPES, SOCIAL_NETWORKS, splitList, VISIBILITY_FIELDS, VISIBILITY_LEVELS, AVAILABILITY, RELATIONSHIPS } from "@/lib/profile-extra";
@@ -27,6 +28,7 @@ function fail(error: { message: string } | null) {
 export async function saveDetails(_prev: NetState, form: FormData): Promise<NetState> {
   const { supabase, userId } = await requireUser();
   const section = text(form, "section");
+  const ps0 = await getHubSettings("profiles");
   const row: Record<string, unknown> = { user_id: userId };
 
   if (section === "about") {
@@ -44,6 +46,15 @@ export async function saveDetails(_prev: NetState, form: FormData): Promise<NetS
     row.needs = splitList(text(form, "needs"));
     row.availability = form.getAll("availability").map(String).filter((a) => (AVAILABILITY as readonly string[]).includes(a));
     row.social_links = social_links;
+    // questions the team added; locked ones cannot be changed by members, so their saved answer is kept
+    const answers: Record<string, string> = { ...(((await supabase.from("profile_details").select("custom_fields").eq("user_id", userId).maybeSingle()).data as { custom_fields?: Record<string, string> } | null)?.custom_fields ?? {}) };
+    for (const fld of customFields(ps0.fields)) {
+      if (fld.lock) continue;
+      const v = cleanAnswer(fld.t, text(form, `custom_${fld.k}`));
+      if (v === null) delete answers[fld.k];
+      else answers[fld.k] = v;
+    }
+    row.custom_fields = answers;
   } else if (section === "privacy") {
     const visibility: Record<string, string> = {};
     for (const [field] of VISIBILITY_FIELDS) {

@@ -54,4 +54,15 @@ test.describe("saved settings change the live pages", () => {
     await expect(page.getByRole("link", { name: "Download my data" })).toHaveCount(0);
     await expect(page.getByText("ask the Hub team")).toBeVisible();
   });
+
+  test("profile edit: a question the team added shows, a locked one does not", async ({ page, context, baseURL }) => {
+    const fields = [
+      { k: "xa", g: "About", l: "Favourite local supplier", t: "Text", vis: "members", lock: false },
+      { k: "xb", g: "About", l: "Team secret", t: "Text", vis: "only", lock: true },
+    ];
+    await context.addCookies([memberCookie(baseURL!, false, { profiles: { fields } })]);
+    await page.goto("/profile/edit", { waitUntil: "domcontentloaded" });
+    await expect(page.getByLabel("Favourite local supplier")).toBeVisible();
+    await expect(page.getByLabel("Team secret")).toHaveCount(0);
+  });
 });

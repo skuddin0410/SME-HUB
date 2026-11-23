@@ -15,11 +15,12 @@ import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { TYPES } from "@/lib/zip/types";
 import { getHubSettings } from "@/lib/zip/settings-load";
+import { customFields, fieldAllowed } from "@/lib/zip/profile-fields";
 import { displayName, profileActions } from "@/lib/zip/profile-rules";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
-type Details = { helps_with: string[]; needs: string[]; availability: string[]; social_links: Record<string, string> };
+type Details = { helps_with: string[]; needs: string[]; availability: string[]; social_links: Record<string, string>; custom_fields?: Record<string, string> };
 type Rec = { id: string; author_id: string; relationship: keyof typeof RELATIONSHIPS; body: string; hidden: boolean; created_at: string; author: { id: string; full_name: string; headline: string } | null };
 
 type Listing = { slug: string; name: string; category: string; logo_url: string | null };
@@ -257,6 +258,9 @@ export default async function MemberPage({
                   {details && details.availability.length > 0 && (
                     <div className="stack" style={{ gap: 6 }}><span className="eyebrow">Free to chat</span><span>{details.availability.join(", ")}</span></div>
                   )}
+                  {customFields(ps.fields).filter((f) => details?.custom_fields?.[f.k] && fieldAllowed(f.vis, { self: isMe, signedIn: !!userId, connected: link === "connected", staff: viewer.isStaff })).map((f) => (
+                    <div key={f.k} className="stack" style={{ gap: 6 }}><span className="eyebrow">{f.l}</span><span>{details!.custom_fields![f.k]}</span></div>
+                  ))}
                 </div>
 
                 {(recs.length > 0 || (!isMe && link === "connected") || requests.length > 0) && (

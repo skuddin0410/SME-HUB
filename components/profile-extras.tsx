@@ -29,6 +29,7 @@ export type Details = {
   needs: string[];
   availability: string[];
   social_links: Record<string, string>;
+  custom_fields?: Record<string, string>;
   visibility: Record<string, string>;
   private_browsing: boolean;
 };
@@ -69,7 +70,7 @@ export function FollowButton({ otherId, initial, signedIn }: { otherId: string; 
 }
 
 // ---------- edit profile: about section ----------
-export function DetailsForm({ details, profileType, nets }: { details: Details; profileType: string; /** social networks the team allows */ nets?: Record<string, boolean> }) {
+export function DetailsForm({ details, profileType, nets, extra = [] }: { details: Details; profileType: string; /** social networks the team allows */ nets?: Record<string, boolean>; /** questions the team added, which this member may answer */ extra?: { k: string; l: string; t: string; g: string }[] }) {
   const [state, action] = useActionState<NetState, FormData>(saveDetails, {});
   const typeOptions = Object.entries(PROFILE_TYPES).filter(([k]) => (SELF_TYPES as readonly string[]).includes(k) || k === profileType);
   const locked = !(SELF_TYPES as readonly string[]).includes(profileType);
@@ -92,6 +93,17 @@ export function DetailsForm({ details, profileType, nets }: { details: Details; 
         I am looking for
         <input name="needs" defaultValue={details.needs.join(", ")} placeholder="Packaging suppliers" className="field font-normal" />
       </label>
+      {extra.length > 0 && (
+        <fieldset className="grid gap-3 text-sm font-medium">
+          <legend className="mb-1.5">More about you</legend>
+          {extra.map((f) => (
+            <label key={f.k} className="grid gap-1.5">
+              {f.l}
+              <input name={`custom_${f.k}`} type={f.t === "Number" ? "number" : f.t === "Email" ? "email" : f.t === "Date" ? "date" : "text"} defaultValue={details.custom_fields?.[f.k] ?? ""} maxLength={300} className="field font-normal" />
+            </label>
+          ))}
+        </fieldset>
+      )}
       <fieldset className="grid gap-1.5 text-sm font-medium">
         <legend className="mb-1.5">When I am free to chat</legend>
         <div className="flex flex-wrap gap-x-5 gap-y-2 font-normal">
