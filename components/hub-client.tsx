@@ -7,7 +7,7 @@ import { ZipAv } from "@/components/zip/bits";
 import { usePathname, useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { CircleHelp, Ellipsis, Flag, ImagePlus, Link2, Loader2, Megaphone, Trash2, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
+import { CircleHelp, ImagePlus, Loader2, Megaphone, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useImageUpload } from "@/lib/upload";
 import {
@@ -572,7 +572,7 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"menu" | "report" | "done" | "copied">("menu");
   const [gone, setGone] = useState(false);
-  const row = "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs text-zinc-800 transition-colors hover:bg-[#F5F5F6] [&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:text-zinc-400";
+  const row = "";
 
   useEffect(() => {
     if (!open) return;
@@ -586,12 +586,12 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
 
   if (gone) return null;
   return (
-    <div className="relative" onClick={(e) => e.stopPropagation()} role="presentation">
-      <button type="button" aria-label="Post options" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="p-1.5 rounded-lg text-zinc-400 transition-colors hover:bg-[#F5F5F6] hover:text-zinc-900">
-        <Ellipsis className="h-4 w-4" />
+    <div className="menuwrap" onClick={(e) => e.stopPropagation()} role="presentation">
+      <button type="button" aria-label="Post options" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="iconbtn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="19" cy="12" r="1.8" /></svg>
       </button>
       {open && (
-        <div className="absolute right-0 z-20 mt-1 w-60 bg-white rounded-2xl border border-[#E5E5E8] shadow-popover p-2 fade-in">
+        <div className="menu">
           {step === "menu" && (
             <>
               <button
@@ -602,17 +602,20 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
                   setStep("copied");
                 }}
               >
-                <Link2 className="h-4 w-4" /> Copy link to post
+                Copy link to post
+              </button>
+              <button type="button" className={row} onClick={() => router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`)}>
+                Send in a message
               </button>
               {canReport && (
                 <button type="button" className={row} onClick={() => setStep("report")}>
-                  <Flag className="h-4 w-4" /> Report post
+                  Report post
                 </button>
               )}
               {canDelete && (
                 <button
                   type="button"
-                  className={cx(row, "!text-rose-600")}
+                  style={{ color: "var(--err, #B91C1C)" }}
                   onClick={() => {
                     setGone(true);
                     document.getElementById(`post-${postId}`)?.classList.add("hidden");
@@ -622,14 +625,14 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
                     });
                   }}
                 >
-                  <Trash2 className="h-4 w-4" /> Delete post
+                  Delete post
                 </button>
               )}
             </>
           )}
           {step === "report" && (
             <>
-              <p className="px-3 py-1.5 text-xs font-semibold text-muted-foreground">What is wrong with it?</p>
+              <p className="note"><strong>What is wrong with it?</strong></p>
               {["Spam", "Harassment", "Inappropriate", "Misinformation"].map((r) => (
                 <button
                   key={r}
@@ -645,8 +648,8 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
               ))}
             </>
           )}
-          {step === "done" && <p className="px-3 py-3 text-sm">Reported. Our team will take a look.</p>}
-          {step === "copied" && <p className="px-3 py-3 text-sm">Link copied.</p>}
+          {step === "done" && <p className="note">Reported. Our team will take a look.</p>}
+          {step === "copied" && <p className="note">Link copied.</p>}
         </div>
       )}
     </div>
