@@ -1120,3 +1120,16 @@ select t.expect('a member cannot read their sign-in code', (select count(*) = 0 
 select t.expect('a member cannot read trusted devices', (select count(*) = 0 from trusted_devices));
 select t.expect_denied('a member cannot trust a device themselves', $$insert into trusted_devices (user_id, token_hash, expires_at) values ('00000000-0000-0000-0000-0000000005d1', 'y', now() + interval '30 days')$$);
 reset role;
+
+-- Help Centre (0045): anyone can read it, nobody but the service role can change it
+reset role;
+insert into help_topics (id, title) values ('t1', 'Topic one');
+insert into help_articles (id, topic, title, html) values ('a1', 't1', 'Article one', '<p>Hello &amp; welcome <b>to</b> the hub</p>');
+set role anon;
+select t.expect('visitors can read help topics and articles', (select count(*) = 1 from help_topics) and (select count(*) = 1 from help_articles));
+select t.expect('search text drops tags and decodes &amp;', (select body_text = 'Hello & welcome to the hub' from help_articles));
+select t.expect_denied('visitors cannot write help articles', $$insert into help_articles (id, topic, title) values ('a2', 't1', 'x')$$);
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005d1';
+select t.expect_denied('members cannot write help articles', $$update help_articles set title = 'x'$$);
+select t.expect_denied('members cannot write help topics', $$delete from help_topics$$);
+reset role;

@@ -9,9 +9,8 @@ test("about page has the story, benefits and resource centres", async ({ page })
   await expect(page.getByRole("link", { name: "Learn more" }).first()).toBeVisible();
 });
 
-test("help page lists the questions and contact details", async ({ page }) => {
-  await page.goto("/help", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("How does the AI assistant work?")).toBeVisible();
+test("help centre shows the contact details", async ({ page }) => {
+  await page.goto("/help/a/contact-support", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("support@smehub.ca").first()).toBeVisible();
 });
 

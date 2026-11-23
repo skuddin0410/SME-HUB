@@ -1,0 +1,115 @@
+{
+ "help_topics": [
+  {
+   "id": "start",
+   "title": "Getting started",
+   "description": "New to SME Hub? Set up your account and find your way around.",
+   "icon": "spark",
+   "position": 0
+  },
+  {
+   "id": "profile",
+   "title": "Your profile",
+   "description": "Photos, headers, your introduction, recommendations and who viewed you.",
+   "icon": "user",
+   "position": 1
+  },
+  {
+   "id": "network",
+   "title": "Connections and introductions",
+   "description": "Connect, follow, find the right people and ask for warm introductions.",
+   "icon": "users",
+   "position": 2
+  },
+  {
+   "id": "account",
+   "title": "Account, sign-in and privacy",
+   "description": "Logging in, passwords, emails from us, your data and closing your account.",
+   "icon": "lock",
+   "position": 14
+  }
+ ],
+ "help_articles": [
+  {
+   "id": "what-is-smb-hub",
+   "topic": "start",
+   "title": "What is SME Hub?",
+   "summary": "A free community for Canadian small-business owners, from the team behind CanadianSME Small Business Magazine.",
+   "tags": "about community canadiansme",
+   "popular": true,
+   "html": "<p>SME Hub is an online community where Canadian small-business owners connect, ask questions, share what works and find customers through recommendations and warm introductions.</p><p>It is run by CanadianSME, the team behind CanadianSME Small Business Magazine, which has covered Canadian small business since 2018.</p><h3>What you can do on SME Hub</h3><ul><li>Build a profile for you and a page for your business.</li><li>Ask questions and share wins, jobs and introductions in the feed.</li><li>Join groups on topics like money, marketing, hiring, exporting and AI.</li><li>Find and message other owners, advisors and Canadian suppliers.</li><li>Get recommended by people you have worked with, and ask for introductions through people you both know.</li><li>List your business in the Canada-wide Business Directory.</li><li>Use AI to answer business questions and suggest who to meet.</li></ul><div class=\"call tip\"><b>Tip</b><span>SME Hub is free to join. Paid plans add things like offers, private groups and more AI. See <a href=\"#/a/plans-compared\">Free, Plus and Advisor plans compared</a>.</span></div><figure class=\"fig\"><button type=\"button\" class=\"zoom\" data-zoom=\"media/start-hero.webp\" aria-label=\"Enlarge screenshot: The SME Hub welcome page\"><img src=\"media/start-hero.webp\" alt=\"The SME Hub welcome page\" loading=\"lazy\"></button><figcaption>The SME Hub welcome page</figcaption></figure>",
+   "position": 0,
+   "updated_on": "2026-11-22",
+   "body_text": "SME Hub is an online community where Canadian small-business owners connect, ask questions, share what works and find customers through recommendations and warm introductions. It is run by CanadianSME, the team behind CanadianSME Small Business Magazine, which has covered Canadian small business since 2018. What you can do on SME Hub Build a profile for you and a page for your business. Ask questions and share wins, jobs and introductions in the feed. Join groups on topics like money, marketing, hiring, exporting and AI. Find and message other owners, advisors and Canadian suppliers. Get recommended by people you have worked with, and ask for introductions through people you both know. List your business in the Canada-wide Business Directory. Use AI to answer business questions and suggest who to meet. Tip SME Hub is free to join. Paid plans add things like offers, private groups and more AI. See Free, Plus and Advisor plans compared . The SME Hub welcome page"
+  },
+  {
+   "id": "create-account",
+   "topic": "start",
+   "title": "Create your account",
+   "summary": "Join free in about two minutes. No card needed.",
+   "tags": "join sign up register new account password code",
+   "popular": true,
+   "html": "<figure class=\"fig vid\"><div class=\"vbox\"><video src=\"media/vid-signup.mp4\" poster=\"media/vid-signup.jpg\" muted loop playsinline preload=\"none\" aria-label=\"Video walkthrough: Joining SME Hub, start to finish\"></video><button type=\"button\" class=\"vplay\" aria-label=\"Play walkthrough\">&#9654;</button></div><figcaption><span class=\"vtag\">Walkthrough</span>Joining SME Hub, start to finish</figcaption></figure><ol class=\"steps\"><li>Go to SME Hub and select <b>Join free</b> (or <b>Join now</b> at the top of any page).</li><li>Sign up with <b>Google</b> or <b>LinkedIn</b>, or fill in your first and last name, your business name and your work email. No business yet? Write \"Starting soon\".</li><li>Add your <b>business website or Google listing</b> if you have one. It’s optional, and it lets AI set up your profile for you.</li><li>Create a password. The checklist turns green as you meet each rule: 8 or more characters, at least one number, upper and lower case or a symbol, and not a common password.</li><li>Choose your province or territory and agree to the Terms. Ticking the newsletter box is up to you.</li><li>Select <b>Create my free account</b>.</li><li>We email you a <b>6-digit code</b>. Type or paste it and select <b>Confirm my email</b>. The code works for 60 minutes. Didn’t get it? Check your spam folder, or select <b>Send a new code</b>.</li><li>AI sets up your profile. If you added your website, it drafts your profile and business page from it. No website? Answer 3 quick questions instead. Check the draft, change anything you like, then select <b>Looks good, save</b>. See <a href=\"#/a/first-week\">Get your profile ready</a>.</li></ol><figure class=\"fig\"><button type=\"button\" class=\"zoom\" data-zoom=\"media/acct-signup.webp\" aria-label=\"Enlarge screenshot: The Join page\"><img src=\"media/acct-signup.webp\" alt=\"The Join page\" loading=\"lazy\"></button><figcaption>The Join page</figcaption></figure><figure class=\"fig\"><button type=\"button\" class=\"zoom\" data-zoom=\"media/acct-verify.webp\" aria-label=\"Enlarge screenshot: Enter the 6-digit code from your email\"><img src=\"media/acct-verify.webp\" alt=\"Enter the 6-digit code from your email\" loading=\"lazy\"></button><figcaption>Enter the 6-digit code from your email</figcaption></figure><figure class=\"fig\"><button type=\"button\" class=\"zoom\" data-zoom=\"media/start-ai-draft.webp\" aria-label=\"Enlarge screenshot: AI drafts your profile and business page. Nothing is public until you save.\"><img src=\"media/start-ai-draft.webp\" alt=\"AI drafts your profile and business page. Nothing is public until you save.\" loading=\"lazy\"></button><figcaption>AI drafts your profile and business page. Nothing is public until you save.</figcaption></figure><div class=\"call note\"><b>Good to know</b><span>Use your real name and your real business. Profiles that pretend to be someone else are removed. See <a href=\"#/a/community-guidelines\">Community guidelines</a>.</span></div>",
+   "position": 1,
+   "updated_on": "2026-11-22",
+   "body_text": "&#9654; Walkthrough Joining SME Hub, start to finish Go to SME Hub and select Join free (or Join now at the top of any page). Sign up with Google or LinkedIn , or fill in your first and last name, your business name and your work email. No business yet? Write \"Starting soon\". Add your business website or Google listing if you have one. It’s optional, and it lets AI set up your profile for you. Create a password. The checklist turns green as you meet each rule: 8 or more characters, at least one number, upper and lower case or a symbol, and not a common password. Choose your province or territory and agree to the Terms. Ticking the newsletter box is up to you. Select Create my free account . We email you a 6-digit code . Type or paste it and select Confirm my email . The code works for 60 minutes. Didn’t get it? Check your spam folder, or select Send a new code . AI sets up your profile. If you added your website, it drafts your profile and business page from it. No website? Answer 3 quick questions instead. Check the draft, change anything you like, then select Looks good, save . See Get your profile ready . The Join page Enter the 6-digit code from your email AI drafts your profile and business page. Nothing is public until you save. Good to know Use your real name and your real business. Profiles that pretend to be someone else are removed. See Community guidelines ."
+  },
+  {
+   "id": "first-week",
+   "topic": "start",
+   "title": "Get your profile ready",
+   "summary": "Five quick things that help the right people find you, and how AI can do most of them for you.",
+   "tags": "onboarding checklist new member ready profile complete photo headline business page website ai setup",
+   "popular": true,
+   "html": "<p>Your profile is <b>ready</b> when it has all 5 of these:</p><ol class=\"steps\"><li><b>A profile photo.</b> Owners reply to people they can see.</li><li><b>A headline.</b> Your role and business, for example \"Owner, Morgan Home Renovations\".</li><li><b>Your city.</b> So owners near you can find you. Only your city shows, never your address.</li><li><b>What you can help with.</b> Short tags. They decide who finds you in search.</li><li><b>A business page.</b> Puts your business in the Business Directory.</li></ol><p>Until your profile is ready, a <b>Your profile is N of 5 ready</b> card sits at the top of your Home page and your profile. Each step has its own button.</p><figure class=\"fig\"><button type=\"button\" class=\"zoom\" data-zoom=\"media/start-ready.webp\" aria-label=\"Enlarge screenshot: The “Your profile” card. Select a button to finish that step.\"><img src=\"media/start-ready.webp\" alt=\"The “Your profile” card. Select a button to finish that step.\" loading=\"lazy\"></button><figcaption>The “Your profile” card. Select a button to finish that step.</figcaption></figure><h3>Let AI do it for you</h3><p>Select <b>Set it up for me</b> on the card, then paste your business website or Google Business Profile link. AI reads it and drafts your headline, city, introduction, \"Can help with\" tags and business page. You check everything and change anything before you save.</p><p>No website? Select <b>No website? Answer 3 questions</b>: your role and business, your city, and what you can help with.</p><h3>What a ready profile gets you</h3><div class=\"tw\"><table><thead><tr><th>Until your profile has…</th><th>You can’t…</th></tr></thead><tbody><tr><td>A photo and a headline</td><td>Send connection requests or ask for introductions. We ask you to add them first, in the same window.</td></tr><tr><td>A business page</td><td>Appear in the Business Directory</td></tr><tr><td>All 5</td><td>Appear in member search, daily \"People to meet\" and AI matchmaking for other members</td></tr></tbody></table></div><p>You can always read posts, join groups, ask questions and message people who contact you.</p><figure class=\"fig\"><button type=\"button\" class=\"zoom\" data-zoom=\"media/network-photo-first.webp\" aria-label=\"Enlarge screenshot: Add a photo and headline before your first connection request\"><img src=\"media/network-photo-first.webp\" alt=\"Add a photo and headline before your first connection request\" loading=\"lazy\"></button><figcaption>Add a photo and headline before your first connection request</figcaption></figure><div class=\"call tip\"><b>Tip</b><span>A ready profile also lets you apply for the <a href=\"#/a/member-spotlight\">Get featured: the Member Spotlight</a> in CanadianSME Small Business Magazine.</span></div><h3>Reminder emails</h3><p>If your profile isn’t ready, we send up to 3 short emails in your first 2 weeks, each about one missing step. They stop as soon as your profile is ready. You can turn them off in <b>Email notifications</b>.</p>",
+   "position": 2,
+   "updated_on": "2026-11-22",
+   "body_text": "Your profile is ready when it has all 5 of these: A profile photo. Owners reply to people they can see. A headline. Your role and business, for example \"Owner, Morgan Home Renovations\". Your city. So owners near you can find you. Only your city shows, never your address. What you can help with. Short tags. They decide who finds you in search. A business page. Puts your business in the Business Directory. Until your profile is ready, a Your profile is N of 5 ready card sits at the top of your Home page and your profile. Each step has its own button. The “Your profile” card. Select a button to finish that step. Let AI do it for you Select Set it up for me on the card, then paste your business website or Google Business Profile link. AI reads it and drafts your headline, city, introduction, \"Can help with\" tags and business page. You check everything and change anything before you save. No website? Select No website? Answer 3 questions : your role and business, your city, and what you can help with. What a ready profile gets you Until your profile has… You can’t… A photo and a headline Send connection requests or ask for introductions. We ask you to add them first, in the same window. A business page Appear in the Business Directory All 5 Appear in member search, daily \"People to meet\" and AI matchmaking for other members You can always read posts, join groups, ask questions and message people who contact you. Add a photo and headline before your first connection request Tip A ready profile also lets you apply for the Get featured: the Member Spotlight in CanadianSME Small Business Magazine. Reminder emails If your profile isn’t ready, we send up to 3 short emails in your first 2 weeks, each about one missing step. They stop as soon as your profile is ready. You can turn them off in Email notifications ."
+  },
+  {
+   "id": "member-spotlight",
+   "topic": "profile",
+   "title": "Get featured: the Member Spotlight",
+   "summary": "Apply to be featured in CanadianSME Small Business Magazine.",
+   "tags": "spotlight featured magazine press feature canadiansme",
+   "popular": false,
+   "html": "<p>Every month, CanadianSME Small Business Magazine and its newsletter feature SME Hub members and their businesses. It’s free.</p><h3>Who can apply</h3><p>Any member whose profile is ready: photo, headline, city, \"Can help with\" and a business page. See <a href=\"#/a/first-week\">Get your profile ready</a>.</p><h3>How to apply</h3><ol class=\"steps\"><li>Open <b>Explore</b>, then <b>Member Spotlight</b>. Once your profile is ready, you’ll also see an <b>Apply</b> button at the top of your profile.</li><li>Answer 3 short questions: what your business does, one win or lesson, and what you’d like readers to know.</li><li>Tick the box so CanadianSME can use your photo, business name and answers.</li><li>Select <b>Apply for the Spotlight</b>.</li></ol><figure class=\"fig\"><button type=\"button\" class=\"zoom\" data-zoom=\"media/profile-spotlight.webp\" aria-label=\"Enlarge screenshot: Applying for the Member Spotlight\"><img src=\"media/profile-spotlight.webp\" alt=\"Applying for the Member Spotlight\" loading=\"lazy\"></button><figcaption>Applying for the Member Spotlight</figcaption></figure><h3>What happens next</h3><p>The CanadianSME editorial team picks members each month. If you’re chosen, we email you with the issue, your editor and what they need. Chosen members get a feature in the magazine, a mention in the newsletter, a social media post and a Spotlight badge on their profile for 30 days.</p>",
+   "position": 12,
+   "updated_on": "2026-11-22",
+   "body_text": "Every month, CanadianSME Small Business Magazine and its newsletter feature SME Hub members and their businesses. It’s free. Who can apply Any member whose profile is ready: photo, headline, city, \"Can help with\" and a business page. See Get your profile ready . How to apply Open Explore , then Member Spotlight . Once your profile is ready, you’ll also see an Apply button at the top of your profile. Answer 3 short questions: what your business does, one win or lesson, and what you’d like readers to know. Tick the box so CanadianSME can use your photo, business name and answers. Select Apply for the Spotlight . Applying for the Member Spotlight What happens next The CanadianSME editorial team picks members each month. If you’re chosen, we email you with the issue, your editor and what they need. Chosen members get a feature in the magazine, a mention in the newsletter, a social media post and a Spotlight badge on their profile for 30 days."
+  },
+  {
+   "id": "connect-vs-follow",
+   "topic": "network",
+   "title": "Connect or follow: what is the difference?",
+   "summary": "Connections are two-way. Following is one-way.",
+   "tags": "connection follow request",
+   "popular": true,
+   "html": "<ul><li><b>Connect:</b> you send a request and the other member accepts. You both see each other’s updates, you can share with \"Connections only\", and you can introduce each other to people.</li><li><b>Follow:</b> you see someone’s public posts in your feed. They don’t need to accept.</li></ul><p>When you connect with someone, you also follow them automatically.</p><div class=\"call note\"><b>Good to know</b><span>You need a profile photo and a headline before you can send connection requests. If either is missing, SME Hub asks you to add them first, in the same window. See <a href=\"#/a/first-week\">Get your profile ready</a>.</span></div><h3>Send a connection request</h3><ol class=\"steps\"><li>Select <b>+ Connect</b> on a member’s profile, card or post.</li><li>The button changes to <b>Request sent</b> until they reply.</li></ol><figure class=\"fig\"><button type=\"button\" class=\"zoom\" data-zoom=\"media/network-actions.webp\" aria-label=\"Enlarge screenshot: Connect, Message and Follow on a member’s profile\"><img src=\"media/network-actions.webp\" alt=\"Connect, Message and Follow on a member’s profile\" loading=\"lazy\"></button><figcaption>Connect, Message and Follow on a member’s profile</figcaption></figure>",
+   "position": 13,
+   "updated_on": "2026-11-22",
+   "body_text": "Connect: you send a request and the other member accepts. You both see each other’s updates, you can share with \"Connections only\", and you can introduce each other to people. Follow: you see someone’s public posts in your feed. They don’t need to accept. When you connect with someone, you also follow them automatically. Good to know You need a profile photo and a headline before you can send connection requests. If either is missing, SME Hub asks you to add them first, in the same window. See Get your profile ready . Send a connection request Select + Connect on a member’s profile, card or post. The button changes to Request sent until they reply. Connect, Message and Follow on a member’s profile"
+  },
+  {
+   "id": "contact-support",
+   "topic": "account",
+   "title": "Contact the SME Hub team",
+   "summary": "Email, phone and office address.",
+   "tags": "contact support help email phone",
+   "popular": true,
+   "html": "<div class=\"tw\"><table><thead><tr><th>How</th><th>Details</th></tr></thead><tbody><tr><td>Email (members)</td><td>support@smehub.ca</td></tr><tr><td>Email (CanadianSME)</td><td>info@canadiansme.ca</td></tr><tr><td>Phone</td><td>+1 437 778 4446 · +1 416 655 0205</td></tr><tr><td>Office</td><td>Cmarketing Inc., 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6</td></tr></tbody></table></div><p>You can also use the <b>Contact us</b> form under <b>About</b>.</p>",
+   "position": 79,
+   "updated_on": "2026-11-22",
+   "body_text": "How Details Email (members) support@smehub.ca Email (CanadianSME) info@canadiansme.ca Phone +1 437 778 4446 · +1 416 655 0205 Office Cmarketing Inc., 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6 You can also use the Contact us form under About ."
+  }
+ ],
+ "help_videos": [
+  {
+   "article_id": "create-account",
+   "file": "vid-signup",
+   "caption": "Joining SME Hub, start to finish",
+   "title": "Create your account",
+   "position": 0
+  }
+ ]
+}
