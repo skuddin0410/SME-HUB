@@ -1,0 +1,13 @@
+/* Contrast fixes for the Update 13 to 15 pages (province guides, Grant Finder, About, resource centres): the zip's
+   muted grey and red labels are a little light for small text, so they are darkened just enough to read (WCAG AA).
+   "body" raises the weight so these win over the page styles, which load after this file. */
+body .zip .pgcrumbs, body .zip .pgcrumbs a, body .zip .crumbs { color: #5A5A63; }
+body .zip .crumbs a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
+.dark body .zip .pgcrumbs, .dark body .zip .pgcrumbs a, .dark body .zip .crumbs { color: var(--muted); }
+.dark body .zip .pgkick, .dark body .zip .pgkick2 { color: #FF8F8F; }
+.dark body .zip .pgkick2::before { background: #FF8F8F; }
+html:not(.dark) body .zip :is(.pgihead, .pgiregion, .pgwrap, .xabpage, .tlpage, .gfpage, .dlpage) { --muted: #66666E; }
+body .zip .pgdl p { opacity: 1; }
+.dark body .zip .pgnav a[aria-current="page"], .dark body .zip .pgnav a[aria-current="page"] small { color: #FF8F8F; }
+html:not(.dark) body .zip .tldl .tlopen { color: #1D4ED8; }
+body .zip .gfmh a, body .zip .gfpage .card p a, body .zip .gftrust a { text-decoration: underline; text-underline-offset: 2px; }

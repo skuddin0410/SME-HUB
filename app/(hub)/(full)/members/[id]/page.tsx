@@ -24,6 +24,7 @@ import { getMyReady, getSignals } from "@/lib/ready";
 import { missLine } from "@/lib/ready-shared";
 import { ReadyAv, } from "@/components/ready/provider";
 import { ReadyCard, SpotlightBanner } from "@/components/ready/card";
+import { AiProfileButton } from "@/components/ready/ai-button";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -37,8 +38,8 @@ const valid = (id: string) => /^[0-9a-f-]{36}$/i.test(id);
 // one read shared by the page and its search-engine tags
 const getMember = cache(async (id: string) => {
   const { supabase } = await getViewer();
-  const { data } = await supabase.from("profiles").select("id, full_name, headline, bio, location, website, avatar_url, member_type, profile_type, role, status, created_at, founding_number").eq("id", id).maybeSingle();
-  return data as (Profile & { profile_type: keyof typeof PROFILE_TYPES; founding_number: number | null }) | null;
+  const { data } = await supabase.from("profiles").select("id, full_name, headline, bio, location, website, avatar_url, member_type, profile_type, role, status, created_at, founding_number, plan").eq("id", id).maybeSingle();
+  return data as (Profile & { profile_type: keyof typeof PROFILE_TYPES; founding_number: number | null; plan?: string | null }) | null;
 });
 
 const photo = (m: Profile) => m.avatar_url ?? (DEMO_IMAGES ? demoAvatar(m.id) : null);
@@ -74,7 +75,7 @@ export default async function MemberPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ page?: string; tab?: string }>;
+  searchParams: Promise<{ page?: string; tab?: string; range?: string }>;
 }) {
   const { id } = await params;
   if (!valid(id)) notFound();
@@ -89,13 +90,16 @@ export default async function MemberPage({
   const tabList = visibleTabs.length ? visibleTabs : TABS;
   const defKey = String(ps.defTab) === "conn" ? "connections" : String(ps.defTab);
   const firstTab = (tabList.some(([k]) => k === defKey) ? defKey : tabList[0][0]) as (typeof TABS)[number][0];
-  const tab = tabList.some(([k]) => k === sp.tab) ? (sp.tab as (typeof TABS)[number][0]) : firstTab;
+  const tab0 = tabList.some(([k]) => k === sp.tab) ? (sp.tab as (typeof TABS)[number][0]) : firstTab;
   const viewer = await getViewer();
   const { supabase, userId } = viewer;
 
   const member = await getMember(id);
   if (!member) notFound();
   const isMe = id === userId;
+  // Update 15 (profile as in the zip): "Profile views" is a tab of the member's own profile when the feature is on
+  const pvOn = isMe && !!ps.pv.on;
+  const tab: (typeof TABS)[number][0] | "views" = pvOn && sp.tab === "views" ? "views" : tab0;
 
   // visiting someone else's profile counts as a view (the database skips private browsers and blocked pairs)
   if (userId && !isMe && ps.pv.on) await supabase.rpc("record_profile_view", { p_id: id });
@@ -158,6 +162,19 @@ export default async function MemberPage({
   const mine = isMe ? await getMyReady() : null;
   const applied = mine && mine.count === 5 && userId ? ((await supabase.from("spotlight_applications").select("id", { count: "exact", head: true }).eq("member_id", userId).in("status", ["received", "chosen"])).count ?? 0) > 0 : false;
   const miss = mine && mine.count < 5 ? missLine(mine.items, await getSignals(), { city: mine.city }) : null;
+  // own profile views: the strip under the name and the "Profile views" tab
+  const [pvRows, pvDays] = pvOn ? await Promise.all([supabase.rpc("my_profile_viewers"), supabase.rpc("my_profile_view_days")]) : [null, null];
+  const pvList = ((pvRows?.data ?? []) as { viewer_id: string | null; last_at: string; shown: boolean }[]);
+  const pvSeries = ((pvDays?.data ?? []) as { day: string; views: number }[]);
+  const pvRange = ["today", "7", "30"].includes(String(sp.range)) ? String(sp.range) : "30";
+  const pvDaysN = pvRange === "today" ? 1 : Number(pvRange);
+  const pvTotal = pvSeries.slice(-pvDaysN).reduce((n, d) => n + d.views, 0);
+  const pvIds = pvList.filter((v) => v.viewer_id).map((v) => v.viewer_id as string);
+  const pvPeople = pvIds.length ? (((await supabase.from("profiles").select("id, full_name, headline, location, avatar_url, member_type, profile_type").in("id", pvIds)).data ?? []) as (Author & { location: string; profile_type: string })[]) : [];
+  const pvBy = new Map(pvPeople.map((x) => [x.id, x]));
+  const pvShown = pvList.filter((v) => v.viewer_id && pvBy.has(v.viewer_id) && Date.now() - new Date(v.last_at).getTime() < pvDaysN * 86_400_000);
+  const pvHidden = pvList.filter((v) => !v.shown || !v.viewer_id).length;
+  const plan = member.plan === "plus" ? "SMB Plus" : member.plan === "advisor" ? "SME Advisor" : "Free member";
 
   return (
     <div className="zip">
@@ -200,7 +217,7 @@ export default async function MemberPage({
                     <h1>{displayName(member.full_name, String(ps.dname))}</h1>
                     {degree && <span className="deg">· {DEGREE_LABEL[degree]}</span>}
                     {ps.head.type && <span className="tag ptype" style={{ background: type[1], color: type[2] }}>{type[0]}</span>}
-                    {planLabel && planLabel !== type[0] && <span className="tag">{planLabel}</span>}
+                    {planLabel && planLabel !== type[0] ? <span className="tag">{planLabel}</span> : plan !== type[0] && <span className="tag">{plan}</span>}
                     {member.founding_number != null && <span className="tag badge">Founding Member</span>}
                     {member.status === "suspended" && <span className="tag" style={{ background: "#B91C1C", color: "#fff" }}>Suspended</span>}
                   </div>
@@ -220,13 +237,21 @@ export default async function MemberPage({
                   <span className="muted small">
                     {[ps.head.joined ? `Joined ${when(member.created_at, { year: "numeric", month: "short" })}` : null, ps.head.followers && followers !== null && followers > 0 ? `${followers} follower${followers === 1 ? "" : "s"}` : null, ps.head.last ? active?.label : null].filter(Boolean).join(" · ")}
                   </span>
+                  {pvOn && ps.pv.strip !== false && (
+                    <Link href={`/members/${id}?tab=views`} className="pvstrip">
+                      <span className="sysav">{pvShown.slice(0, 5).map((v) => { const m = pvBy.get(v.viewer_id!)!; return <span key={m.id}><ZipAv name={m.full_name || "M"} src={m.avatar_url} size="s" /></span>; })}</span>
+                      <span><strong>{pvSeries.reduce((n, d) => n + d.views, 0)} profile views</strong> in the last 30 days</span>
+                      <span className="small" style={{ color: "var(--accent)", fontWeight: 600 }}>See who</span>
+                    </Link>
+                  )}
                   {connections !== null && <span className="muted">{connections >= 500 ? "500+" : connections} connection{connections === 1 ? "" : "s"}{mutual > 0 ? ` · ${mutual} mutual` : ""}</span>}
                   <div className="row prow" style={{ flexWrap: "wrap", marginTop: 8 }}>
                     {isMe ? (
                       <>
                         <Link href="/profile/edit" className="btn dark">Edit profile</Link>
-                        <Link href="/businesses/mine" className="btn line">My business listings</Link>
+                        <AiProfileButton rewrite={!!member.bio} />
                         <Link href="/settings" className="btn ghost"><Ic n="lock" s={14} />Privacy and account</Link>
+                        <Link href="/deadlines" className="btn ghost"><Ic n="cal2" s={14} />My deadlines</Link>
                       </>
                     ) : (
                       <>
@@ -257,8 +282,46 @@ export default async function MemberPage({
                 {tabList.map(([k, label]) => (
                   <Link key={k} href={k === firstTab ? `/members/${id}` : `/members/${id}?tab=${k}`} aria-current={tab === k ? "page" : undefined}>{label}</Link>
                 ))}
+                {pvOn && <Link href={`/members/${id}?tab=views`} aria-current={tab === "views" ? "page" : undefined}>Profile views</Link>}
               </nav>
             </div>
+
+            {tab === "views" && (
+              <>
+                <div className="card psec">
+                  <div className="row" style={{ flexWrap: "wrap" }}>
+                    <div className="stack grow" style={{ gap: 2, flexBasis: 240 }}><h2>Who viewed my profile</h2><span className="muted small" style={{ display: "flex", gap: 5, alignItems: "center" }}><Ic n="lock" s={12} />Only you can see this tab.</span></div>
+                    <div className="chips" role="group" aria-label="Period">
+                      {([["today", "Today"], ["7", "7 days"], ["30", "30 days"]] as const).map(([k, l]) => <Link key={k} className="chip" aria-pressed={pvRange === k} href={`/members/${id}?tab=views&range=${k}`} style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>{l}</Link>)}
+                    </div>
+                  </div>
+                  <div className="pvstats">
+                    <div><span className="n">{pvTotal}</span><span className="muted small">profile views</span></div>
+                    <div><span className="n">{pvShown.length}</span><span className="muted small">different members</span></div>
+                    <div><span className="n">{pvShown.filter((v) => pvBy.get(v.viewer_id!)?.profile_type === "advisor").length}</span><span className="muted small">were SME Advisors</span></div>
+                  </div>
+                </div>
+                <div className="card psec">
+                  <h2>Visitors</h2>
+                  {pvShown.length ? (
+                    <div className="list">
+                      {pvShown.map((v) => { const m = pvBy.get(v.viewer_id!)!; return (
+                        <div key={m.id} className="row" style={{ flexWrap: "wrap" }}>
+                          <ZipAv name={m.full_name || "M"} src={m.avatar_url} />
+                          <span className="stack grow" style={{ gap: 2, minWidth: 0, flexBasis: 200 }}>
+                            <Link href={`/members/${m.id}`} className="namebtn">{m.full_name || "Member"}</Link>
+                            <span className="muted small">{[m.headline, m.location].filter(Boolean).join(" · ")}</span>
+                            <span className="muted small">Viewed {when(v.last_at, { month: "short", day: "numeric" })}</span>
+                          </span>
+                          <Link className="btn sm ghost" href={`/messages?with=${m.id}`}><Ic n="msg" s={14} />Message</Link>
+                        </div>
+                      ); })}
+                    </div>
+                  ) : <p className="muted">No one has viewed your profile in this period.</p>}
+                  {pvHidden > 0 && <p className="small" style={{ borderTop: "1px solid var(--line)", paddingTop: 12 }}>Plus {pvHidden} more. Plus members see everyone who viewed them. <Link href="/membership-plans" style={{ color: "var(--accent)", fontWeight: 600 }}>See plans</Link></p>}
+                </div>
+              </>
+            )}
 
             {tab === "about" && (
               <>
