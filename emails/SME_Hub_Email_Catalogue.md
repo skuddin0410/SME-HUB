@@ -1,6 +1,6 @@
 # SME Hub emails and sign-in pages
 
-6 sign-in and password pages and 86 emails (updated Nov 22, 2026). Preview: “SME Hub emails and sign-in pages” artifact. Files: SMB_Hub_Emails_and_Signin_Pages.zip.
+6 sign-in and password pages and 90 emails (updated Nov 23, 2026). Preview: “SME Hub emails and sign-in pages” artifact. Files: SMB_Hub_Emails_and_Signin_Pages.zip.
 
 ## Sign-in and password pages
 
@@ -116,6 +116,15 @@
 |Monthly business summary|First weekday of each month, to owners and managers|SME Hub Business &lt;business@smehub.ca&gt;|{{business_name}} in {{biz_month}}: {{biz_views}} page views|Business (owner can turn off)|
 |New business follower|When someone follows the business (grouped into one email a day)|SME Hub Business &lt;business@smehub.ca&gt;|{{bfollower_name}} followed {{business_name}}|Business (owner can turn off)|
 |Customer replied on a review|When a reviewer replies to the business’s response to their review|SME Hub Business &lt;business@smehub.ca&gt;|{{reviewer_name}} replied on their review of {{business_name}}|Business (owner can turn off)|
+
+## Businesses for sale
+
+|Email|When it is sent|Sender|Subject|Type|
+|---|---|---|---|---|
+|Business listing is live|Right after a Plus member or Advisor publishes a business for sale|SME Hub Business &lt;business@smehub.ca&gt;|Your business is listed for sale: {{sale_title}}|Notification (member can turn off)|
+|New buyer enquiry|When a member contacts the seller of a business for sale|SME Hub Business &lt;business@smehub.ca&gt;|{{buyer_name}} is interested in your business|Notification (member can turn off)|
+|Buyer enquiry sent|Right after a member contacts the seller of a business for sale|SME Hub Business &lt;business@smehub.ca&gt;|Your enquiry was sent: {{buy_title}}|Notification (member can turn off)|
+|Saved listing changed|When the price or status of a business a member saved changes|SME Hub Business &lt;business@smehub.ca&gt;|Price drop on a business you saved|Notification (member can turn off)|
 
 ## Content and safety
 

@@ -5,6 +5,7 @@
 import http from "node:http";
 import fs from "node:fs";
 import { handleCourses } from "./mock-courses.mjs";
+import { handleForsale } from "./mock-forsale.mjs";
 
 const MEMBER = {
   id: "00000000-0000-4000-8000-000000000001",
@@ -44,6 +45,7 @@ http
     try { claims = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString()); } catch {}
     const staff = member && sub.endsWith("0002");
     if (handleCourses(req, res, url, { member, staff, sub })) return;
+    if (handleForsale(req, res, url, { member, staff, sub, claims })) return;
     if (staff) {
       const STAFF = { ...MEMBER, id: sub, full_name: "Team Lead", role: "admin" };
       if (url.pathname === "/auth/v1/user") return res.end(JSON.stringify({ id: sub, aud: "authenticated", role: "authenticated", email: "team@example.test", app_metadata: {}, user_metadata: {}, created_at: MEMBER.created_at }));
@@ -63,7 +65,8 @@ http
       return res.end(JSON.stringify({ id: MEMBER.id, aud: "authenticated", role: "authenticated", email: "member@example.test", app_metadata: {}, user_metadata: {}, created_at: MEMBER.created_at }));
     }
     if (member && url.pathname === "/rest/v1/profiles" && url.searchParams.get("id") === `eq.${MEMBER.id}`) {
-      return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? MEMBER : [MEMBER]));
+      const M = claims.plan ? { ...MEMBER, plan: claims.plan, member_type: claims.plan === "free" ? "owner" : claims.plan } : MEMBER;
+      return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? M : [M]));
     }
     // a fuller member for the profile screen: Priya, with her recommendations and a few people for the side list
     const PRIYA = { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", location: "Toronto, ON", bio: "We bake small-batch bread and pastries for cafes and grocers across the GTA.", website: "https://maplebakery.example", avatar_url: "/zip/img/p-priya.jpg", role: "member", status: "active", member_type: "advisor", profile_type: "advisor", founding_number: 1, created_at: "2026-05-04T12:00:00Z" };

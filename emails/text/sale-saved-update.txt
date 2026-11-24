@@ -1,0 +1,15 @@
+Price drop on a business you saved
+
+A BUSINESS YOU SAVED HAS CHANGED
+{{saved_title}}
+
+Was: {{saved_old}}
+Now: {{saved_new}}
+
+See the listing: {{saved_url}}
+You get these emails for listings you save. Remove the bookmark on the listing to stop them.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -1,0 +1,21 @@
+Your business is listed for sale: {{sale_title}}
+
+YOUR LISTING IS LIVE, {{first_name}}
+Members can now find {{sale_title}} in Businesses for sale.
+
+Asking price: {{sale_price}}
+Area shown: {{sale_area}}
+Your name: {{sale_name_status}}
+
+1. Share your listing — Send the link to your accountant, lawyer and anyone who knows buyers.
+2. Reply within a day — Buyers who hear back quickly stay interested.
+3. Share documents only with serious buyers — You choose who sees your financial statements and your name.
+
+See my listing: {{sale_url}}
+Manage my listings: {{manage_url}}
+The Hub team checks every new listing within 2 working days. Once it’s checked, buyers see a shield on your listing.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -86,5 +86,9 @@ export const LOADERS: Record<string, () => Promise<{ html: string; text: string 
   "team-course-publish": () => import("./team-course-publish"),
   "terms-update": () => import("./terms-update"),
   "data-breach-notice": () => import("./data-breach-notice"),
+  "sale-listing-live": () => import("./sale-listing-live"),
+  "sale-new-enquiry": () => import("./sale-new-enquiry"),
+  "sale-enquiry-sent": () => import("./sale-enquiry-sent"),
+  "sale-saved-update": () => import("./sale-saved-update"),
   "approve-email-change": () => import("./approve-email-change"),
 };

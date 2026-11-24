@@ -49,4 +49,8 @@ export const ICON: Record<string, string> = {
  "left": "<path d=\"M15 6l-6 6 6 6\"/>",
  "cap": "<path d=\"M2.5 9.5L12 5l9.5 4.5L12 14z\"/><path d=\"M6.5 11.5v4c1.5 1.5 3.300 2.200 5.5 2.200s4-.7 5.5-2.200v-4\"/>",
  "expand": "<path d=\"M14 4h6v6M20 4l-7 7M10 20H4v-6M4 20l7-7\"/>",
+ "key": "<circle cx=\"8\" cy=\"15\" r=\"4\"/><path d=\"M11 12l9-9M16 7l3 3M14 9l2 2\"/>",
+ "shield": "<path d=\"M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z\"/><path d=\"M9 12l2 2 4-4\"/>",
+ "pin": "<path d=\"M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z\"/><circle cx=\"12\" cy=\"9\" r=\"2.5\"/>",
+ "chart": "<path d=\"M4 20V10M10 20V4M16 20v-7M22 20H2\"/>",
 };

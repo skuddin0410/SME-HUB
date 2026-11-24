@@ -16,7 +16,7 @@ type R<T = object> = Promise<({ error?: string } & Partial<T>)>;
 const msg = (e: { message: string } | null | undefined) => (e ? { error: e.message.replace(/^.*?: /, "") } : {});
 const refresh = () => revalidatePath("/courses", "layout");
 const why = (e: unknown) => ({ error: (e as Error).message || "Something went wrong. Try again." });
-const REASON = "You get this because you take or teach a course on SME Hub.";
+const REASON = "you take or teach a course on SME Hub";
 
 async function courseInfo(courseId: string) {
   const { supabase } = await getViewer();
@@ -292,7 +292,7 @@ export async function askPublish(courseId: string): R {
   if (c) {
     await courseMail("team-course-publish", teamInbox(), {
       ask_instructor: (profile as { full_name?: string } | null)?.full_name ?? "An instructor", pub_course: c.title,
-      editor_url: `${siteUrl()}/courses/edit/${c.id}`, admin_courses_url: `${siteUrl()}/courses/manage`, reason: "You get this because you're on the SME Hub team.", unsubscribe_url: `${siteUrl()}/settings`,
+      editor_url: `${siteUrl()}/courses/edit/${c.id}`, admin_courses_url: `${siteUrl()}/courses/manage`, reason: "you're on the SME Hub team", unsubscribe_url: `${siteUrl()}/settings`,
     });
   }
   refresh();

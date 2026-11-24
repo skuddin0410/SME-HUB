@@ -30,4 +30,6 @@ build("design/zip-source.css", "styles/zip.css");
 build("design/zip-profile-completion.css", "styles/profile-completion.css");
 // Update 4 (courses): code/courses-source/cr.css from that package, scoped the same way
 build("design/zip-courses.css", "styles/courses.css");
+// Update 5 (businesses for sale): code/businesses-for-sale.css from that package, scoped the same way
+build("design/zip-forsale.css", "styles/forsale.css");
 console.log("ok");

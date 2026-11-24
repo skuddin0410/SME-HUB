@@ -1,0 +1,8 @@
+/* Update 5: contrast fixes on the page background (the hand-off's muted grey is too light there), as for Courses. */
+.zip .fscrumb, .zip .fsprev > .eyebrow { color: #66666E; }
+.dark .zip .fscrumb, .dark .zip .fsprev > .eyebrow { color: var(--muted); }
+/* the breadcrumb link sits in a line of text, so it is underlined to stand out without colour alone */
+.zip .fscrumb a { text-decoration: underline; text-underline-offset: 2px; }
+/* the hand-off shows these links underlined and the report button's flag on the same line */
+.zip .fstips a, .zip .fstable a { text-decoration: underline; }
+.zip .fstips .linkbtn { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; }

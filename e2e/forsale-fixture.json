@@ -1,0 +1,475 @@
+{
+"listings": [
+{
+"id": "00000000-0000-4000-8000-0000000fa000",
+"slug": "bakery-cafe-toronto-west-end",
+"seller_id": "00000000-0000-4000-8000-00000000f000",
+"title": "Established bakery-café in Toronto’s west end",
+"industry": "Food and drink",
+"city": "Toronto",
+"province": "ON",
+"area_shown": "West end, Toronto",
+"price": 485000,
+"price_on_request": false,
+"yearly_sales": 920000,
+"owner_earnings": 168000,
+"year_established": 2011,
+"employees": 9,
+"sale_type": "full",
+"premises": "lease",
+"lease_details": "7 years left on the lease, with an option to renew",
+"seller_financing": true,
+"training": "The owner stays for 3 months to train you and introduce wholesale customers.",
+"reason": "The owner is retiring after 14 years.",
+"included": [
+"Equipment and fixtures",
+"Inventory and stock",
+"Customer list",
+"Website, phone number and social accounts",
+"Brand name and trademarks",
+"Staff willing to stay"
+],
+"highlights": [
+"Busy corner unit with a patio and steady foot traffic",
+"Wholesale accounts with 6 local cafés bring in about 30% of sales",
+"Fully equipped kitchen, replaced in 2022"
+],
+"description": [
+"A well-loved neighbourhood bakery-café with a loyal morning crowd and a growing wholesale side. Bread, pastries and custom cakes are made on site every day.",
+"Sales have grown each year since 2021. A trained head baker and two supervisors run day-to-day operations, so a new owner does not need to be a baker."
+],
+"ideal_buyer": "An owner-operator with retail or food experience, or a café group adding a location.",
+"documents": [
+"Financial statements for the last 3 years",
+"Lease agreement",
+"Equipment list",
+"Wholesale customer list (names shared after a meeting)"
+],
+"photo_url": "/zip/img/bizcover-maple.jpg",
+"confidential": true,
+"business_name": "",
+"status": "live",
+"checked": true,
+"views": 412,
+"saves": 38,
+"days": 3
+},
+{
+"id": "00000000-0000-4000-8000-0000000fa001",
+"slug": "prairie-roots-catering-winnipeg",
+"seller_id": "00000000-0000-4000-8000-00000000f001",
+"title": "Prairie Roots Catering: corporate and event catering in Winnipeg",
+"industry": "Food and drink",
+"city": "Winnipeg",
+"province": "MB",
+"area_shown": "Winnipeg",
+"price": 340000,
+"price_on_request": false,
+"yearly_sales": 610000,
+"owner_earnings": 132000,
+"year_established": 2015,
+"employees": 6,
+"sale_type": "full",
+"premises": "lease",
+"lease_details": "Commercial kitchen lease, 4 years left",
+"seller_financing": true,
+"training": "6 weeks of training, plus introductions to the 3 largest corporate clients.",
+"reason": "Moving to Ontario to be closer to family.",
+"included": [
+"Equipment and fixtures",
+"Customer list",
+"Website, phone number and social accounts",
+"Brand name and trademarks",
+"Supplier contracts",
+"Vehicles"
+],
+"highlights": [
+"Repeat contracts with offices and two universities",
+"Licensed commercial kitchen and a refrigerated van",
+"Booked weddings into next summer"
+],
+"description": [
+"A catering company known for local, seasonal menus. About 60% of sales come from corporate lunches and recurring office orders, which keeps weekday cash flow steady.",
+"The brand, recipes, booking system and wedding calendar all transfer to the buyer."
+],
+"ideal_buyer": "A chef or food entrepreneur who wants an established client base from day one.",
+"documents": [
+"Financial statements for the last 3 years",
+"Menu costings",
+"Kitchen lease",
+"Equipment and vehicle list"
+],
+"photo_url": "/zip/img/bizcover-lakeshore.jpg",
+"confidential": false,
+"business_name": "Prairie Roots Catering",
+"status": "live",
+"checked": true,
+"views": 268,
+"saves": 21,
+"days": 9
+},
+{
+"id": "00000000-0000-4000-8000-0000000fa002",
+"slug": "kitchen-bath-renovation-company-gta",
+"seller_id": "00000000-0000-4000-8000-00000000f002",
+"title": "Kitchen and bathroom renovation company, Greater Toronto Area",
+"industry": "Construction and trades",
+"city": "Mississauga",
+"province": "ON",
+"area_shown": "Greater Toronto Area",
+"price": 650000,
+"price_on_request": false,
+"yearly_sales": 1850000,
+"owner_earnings": 245000,
+"year_established": 2008,
+"employees": 14,
+"sale_type": "full",
+"premises": "lease",
+"lease_details": "Showroom and shop lease, 3 years left",
+"seller_financing": false,
+"training": "The owner stays for 6 months to hand over supplier and trade relationships.",
+"reason": "The owner wants to step back and focus on another business.",
+"included": [
+"Equipment and fixtures",
+"Customer list",
+"Website, phone number and social accounts",
+"Brand name and trademarks",
+"Supplier contracts",
+"Vehicles",
+"Staff willing to stay"
+],
+"highlights": [
+"Booked work worth about $700,000 for the next 5 months",
+"Two project managers and 9 trades on staff",
+"4.8 stars from more than 200 reviews"
+],
+"description": [
+"A residential renovation company specializing in kitchens and bathrooms across Peel and Halton. Most work comes from referrals and repeat customers.",
+"Systems for quoting, scheduling and warranty follow-up are in place, so the business does not depend on the owner for day-to-day work."
+],
+"ideal_buyer": "A contractor looking to grow, or an operator with construction management experience.",
+"documents": [
+"Financial statements for the last 3 years",
+"Work-in-progress schedule",
+"Vehicle and tool list",
+"Staff list (roles only)"
+],
+"photo_url": "/zip/img/bizcover-morgan.jpg",
+"confidential": true,
+"business_name": "",
+"status": "live",
+"checked": false,
+"views": 96,
+"saves": 11,
+"days": 1
+},
+{
+"id": "00000000-0000-4000-8000-0000000fa003",
+"slug": "courier-and-warehousing-partner-wanted",
+"seller_id": "00000000-0000-4000-8000-00000000f003",
+"title": "Courier and warehousing company seeks a partner (30% stake)",
+"industry": "Transport and logistics",
+"city": "Mississauga",
+"province": "ON",
+"area_shown": "Mississauga",
+"price": 1200000,
+"price_on_request": false,
+"yearly_sales": 4300000,
+"owner_earnings": 610000,
+"year_established": 2012,
+"employees": 31,
+"sale_type": "part",
+"premises": "lease",
+"lease_details": "Warehouse lease, 6 years left",
+"seller_financing": false,
+"training": "The owner stays and runs the business. The partner would lead sales or finance.",
+"reason": "Raising money to open a second warehouse in Ottawa.",
+"included": [],
+"highlights": [
+"Contracts with 3 national retailers",
+"Fleet of 12 vans and 2 trucks",
+"On-time delivery rate above 98%"
+],
+"description": [
+"Northside Logistics handles last-mile delivery and short-term storage for retailers and online stores across the GTA.",
+"The owner is looking for an active partner who can invest and help lead the expansion to Ottawa."
+],
+"ideal_buyer": "An investor-operator with logistics, sales or finance experience.",
+"documents": [
+"Financial statements for the last 3 years",
+"Expansion plan for Ottawa",
+"Customer contracts summary"
+],
+"photo_url": "/zip/img/bizcover-northside.jpg",
+"confidential": false,
+"business_name": "Northside Logistics",
+"status": "live",
+"checked": true,
+"views": 351,
+"saves": 44,
+"days": 14
+},
+{
+"id": "00000000-0000-4000-8000-0000000fa004",
+"slug": "residential-solar-installer-calgary",
+"seller_id": "00000000-0000-4000-8000-00000000f002",
+"title": "Residential solar installer with a strong pipeline, Calgary",
+"industry": "Energy and environment",
+"city": "Calgary",
+"province": "AB",
+"area_shown": "Calgary and area",
+"price": 2400000,
+"price_on_request": false,
+"yearly_sales": 5200000,
+"owner_earnings": 780000,
+"year_established": 2016,
+"employees": 22,
+"sale_type": "full",
+"premises": "lease",
+"lease_details": "Office and warehouse lease, 5 years left",
+"seller_financing": true,
+"training": "12 months of transition support.",
+"reason": "The founders are moving into commercial solar.",
+"included": [
+"Equipment and fixtures",
+"Inventory and stock",
+"Customer list",
+"Website, phone number and social accounts",
+"Brand name and trademarks",
+"Supplier contracts",
+"Vehicles",
+"Staff willing to stay"
+],
+"highlights": [
+"More than 1,400 homes installed",
+"Approved installer for the provincial rebate programs",
+"Sales pipeline worth $2.1 million"
+],
+"description": [
+"Brightline Solar designs and installs rooftop solar for homes in southern Alberta. The business has its own crews, a warehouse and a strong local brand."
+],
+"ideal_buyer": "A trades or energy company expanding into solar, or an experienced operator.",
+"documents": [
+"Financial statements for the last 3 years",
+"Sales pipeline",
+"Supplier agreements"
+],
+"photo_url": "/zip/img/bizcover-brightline.jpg",
+"confidential": false,
+"business_name": "Brightline Solar",
+"status": "offer",
+"checked": true,
+"views": 803,
+"saves": 97,
+"days": 40
+},
+{
+"id": "00000000-0000-4000-8000-0000000fa005",
+"slug": "womens-clothing-boutique-halifax",
+"seller_id": "00000000-0000-4000-8000-00000000f004",
+"title": "Women’s clothing boutique on a busy downtown street, Halifax",
+"industry": "Retail",
+"city": "Halifax",
+"province": "NS",
+"area_shown": "Downtown Halifax",
+"price": 195000,
+"price_on_request": false,
+"yearly_sales": 540000,
+"owner_earnings": 98000,
+"year_established": 2017,
+"employees": 4,
+"sale_type": "full",
+"premises": "lease",
+"lease_details": "2 years left, with a 5-year renewal option",
+"seller_financing": true,
+"training": "4 weeks of training and buying-trip introductions.",
+"reason": "The owner is starting a family.",
+"included": [
+"Equipment and fixtures",
+"Inventory and stock",
+"Customer list",
+"Website, phone number and social accounts",
+"Brand name and trademarks"
+],
+"highlights": [
+"Online store brings in about 25% of sales",
+"About $60,000 of stock included in the price",
+"12,000 Instagram followers"
+],
+"description": [
+"A boutique selling Canadian and European labels to women aged 25 to 55. The shop has a loyal customer base and a busy online store."
+],
+"ideal_buyer": "Someone who loves fashion and retail and wants a business that is already running.",
+"documents": [
+"Financial statements for the last 3 years",
+"Stock list",
+"Lease agreement"
+],
+"photo_url": "/zip/img/post-retail.jpg",
+"confidential": true,
+"business_name": "",
+"status": "live",
+"checked": false,
+"views": 177,
+"saves": 19,
+"days": 5
+},
+{
+"id": "00000000-0000-4000-8000-0000000fa006",
+"slug": "bookkeeping-practice-ottawa",
+"seller_id": "00000000-0000-4000-8000-00000000f005",
+"title": "Bookkeeping practice with 60 recurring clients, Ottawa",
+"industry": "Professional services",
+"city": "Ottawa",
+"province": "ON",
+"area_shown": "Ottawa",
+"price": 260000,
+"price_on_request": false,
+"yearly_sales": 310000,
+"owner_earnings": 142000,
+"year_established": 2014,
+"employees": 3,
+"sale_type": "full",
+"premises": "home",
+"lease_details": "",
+"seller_financing": true,
+"training": "The owner stays for one tax season to introduce clients.",
+"reason": "The owner is moving into a CFO advisory role.",
+"included": [
+"Customer list",
+"Website, phone number and social accounts",
+"Brand name and trademarks",
+"Staff willing to stay"
+],
+"highlights": [
+"60 small-business clients on monthly fees",
+"Almost all work is cloud-based and remote",
+"Client retention above 90% a year"
+],
+"description": [
+"A bookkeeping and payroll practice serving trades, retail and professional firms. Clients pay a fixed monthly fee, so income is predictable."
+],
+"ideal_buyer": "A bookkeeper or accountant who wants to grow quickly.",
+"documents": [
+"Client list by fee level (names after a meeting)",
+"Financial statements for the last 3 years",
+"Software and subscriptions list"
+],
+"photo_url": "/zip/img/bizcover-clearwater.jpg",
+"confidential": true,
+"business_name": "",
+"status": "live",
+"checked": true,
+"views": 143,
+"saves": 26,
+"days": 2
+},
+{
+"id": "00000000-0000-4000-8000-0000000fa007",
+"slug": "bridal-tailoring-studio-equipment-quebec",
+"seller_id": "00000000-0000-4000-8000-00000000f006",
+"title": "Bridal and tailoring studio: equipment and brand for sale, Québec City",
+"industry": "Retail",
+"city": "Québec City",
+"province": "QC",
+"area_shown": "Québec City",
+"price": 85000,
+"price_on_request": false,
+"yearly_sales": 0,
+"owner_earnings": 0,
+"year_established": 2013,
+"employees": 0,
+"sale_type": "assets",
+"premises": "none",
+"lease_details": "",
+"seller_financing": false,
+"training": "Two days of training on the equipment.",
+"reason": "The owner is closing the studio to focus on design work.",
+"included": [
+"Equipment and fixtures",
+"Inventory and stock",
+"Website, phone number and social accounts",
+"Brand name and trademarks"
+],
+"highlights": [
+"Industrial sewing machines and fitting room furniture",
+"Brand name, website and 4,000 email subscribers",
+"Fabric and notions stock"
+],
+"description": [
+"The sale includes the studio’s equipment, stock, brand and online presence. The premises lease is not included."
+],
+"ideal_buyer": "A designer or tailor setting up a studio.",
+"documents": [
+"Equipment list with photos",
+"Stock list"
+],
+"photo_url": "/zip/img/post-design.jpg",
+"confidential": false,
+"business_name": "Studio Gagnon Design",
+"status": "live",
+"checked": false,
+"views": 88,
+"saves": 7,
+"days": 20
+}
+],
+"people": [
+{
+"id": "00000000-0000-4000-8000-00000000f000",
+"full_name": "Priya Raman",
+"headline": "Founder, Maple Bakery",
+"avatar_url": "/zip/img/p-priya.jpg",
+"member_type": "advisor",
+"plan": "advisor"
+},
+{
+"id": "00000000-0000-4000-8000-00000000f001",
+"full_name": "Nadia Rahman",
+"headline": "Owner, Prairie Roots Catering",
+"avatar_url": "/zip/img/p-nadia.jpg",
+"member_type": "plus",
+"plan": "plus"
+},
+{
+"id": "00000000-0000-4000-8000-00000000f002",
+"full_name": "Arjun Mehta",
+"headline": "CEO, Brightline Solar",
+"avatar_url": "/zip/img/p-arjun.jpg",
+"member_type": "plus",
+"plan": "plus"
+},
+{
+"id": "00000000-0000-4000-8000-00000000f003",
+"full_name": "Daniel Okafor",
+"headline": "Owner, Northside Logistics",
+"avatar_url": "/zip/img/p-daniel.jpg",
+"member_type": "plus",
+"plan": "plus"
+},
+{
+"id": "00000000-0000-4000-8000-00000000f004",
+"full_name": "Amara Diallo",
+"headline": "Founder, Diallo Imports",
+"avatar_url": "/zip/img/p-amara.jpg",
+"member_type": "plus",
+"plan": "plus"
+},
+{
+"id": "00000000-0000-4000-8000-00000000f005",
+"full_name": "Sara Haddad",
+"headline": "Founder, Clearwater Bookkeeping",
+"avatar_url": "/zip/img/p-sara.jpg",
+"member_type": "advisor",
+"plan": "advisor"
+},
+{
+"id": "00000000-0000-4000-8000-00000000f006",
+"full_name": "Isabelle Gagnon",
+"headline": "President, Studio Gagnon Design",
+"avatar_url": "/zip/img/p-isabelle.jpg",
+"member_type": "advisor",
+"plan": "advisor"
+}
+]
+}

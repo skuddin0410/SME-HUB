@@ -14,6 +14,7 @@ import { ReadyBanner } from "@/components/ready/card";
 import { logDirectorySearch } from "@/app/(hub)/ready-actions";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
+import "@/styles/forsale.css";
 
 export const metadata = pageMeta({ title: "Business directory", description: "Find Canadian small businesses by name, category, city and member rating in the SME Hub directory.", path: "/businesses" });
 
@@ -136,11 +137,13 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
   const view = ["list", "map"].includes(one(sp.view)) ? one(sp.view) : "grid";
   const page = Math.max(1, Number(one(sp.page)) || 1);
 
-  const [{ data }, facetRes] = await Promise.all([
+  const [{ data }, facetRes, saleRes] = await Promise.all([
     supabase.rpc("search_businesses", { q: ftsQuery(q) ?? "", p_cat: category, p_prov: province, p_city: city, p_kind: kind, p_open: open, p_sort: sort, p_limit: SIZE, p_offset: (page - 1) * SIZE }),
     supabase.rpc("directory_facets"),
+    supabase.rpc("sale_browse"),
   ]);
   const rows = (data ?? []) as Row[];
+  const forSale = ((saleRes.data ?? []) as { status: string }[]).filter((l) => l.status === "live").length;
   const facets = (facetRes.data ?? { total: 0, open_now: 0, categories: [], provinces: [], cities: [] }) as Facets;
   const cityRows = view === "map" ? (((await supabase.rpc("business_map_cities", { p_cat: category, p_kind: kind })).data ?? []) as BusinessCity[]) : [];
   const cityOptions = facets.cities.filter((c) => !province || c.province === province).map((c) => c.city);
@@ -211,6 +214,11 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
             )}
           </div>
         </section>
+        <Link className="card fsstrip" href="/for-sale">
+          <span className="sq"><Ic n="key" s={18} /></span>
+          <span className="grow"><b>Businesses for sale</b> <span className="small muted">{forSale} Canadian businesses looking for a new owner. Buy one that’s already running, or list your own.</span></span>
+          <span className="btn sm ghost">See businesses for sale</span>
+        </Link>
         {userId && <ReadyBanner kind="biz" />}
 
         <nav className="bdcats" aria-label="Browse by category">

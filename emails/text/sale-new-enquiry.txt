@@ -1,0 +1,17 @@
+{{buyer_name}} is interested in your business
+
+A BUYER CONTACTED YOU ABOUT YOUR BUSINESS
+About {{sale_title}}.
+
+{{buyer_name}} — {{buyer_role}}
+"{{buyer_msg}}"
+
+How they’ll pay: {{buyer_fund}}
+When: {{buyer_when}}
+Privacy: Agreed to keep your details private
+Your name stays hidden until you choose to share documents with this buyer. Never accept a deposit through the Hub.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

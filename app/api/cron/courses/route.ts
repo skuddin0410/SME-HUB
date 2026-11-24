@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const DAY = 864e5;
-const REASON = "You get this because you take or teach a course on SME Hub.";
+const REASON = "you take or teach a course on SME Hub";
 type Lesson = { id: string; course_id: string; title: string; drip_days: number; position: number; section: { position: number } | null };
 
 /**

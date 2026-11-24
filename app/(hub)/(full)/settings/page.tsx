@@ -7,6 +7,8 @@ import { getHubSettings } from "@/lib/zip/settings-load";
 import { mayCloseAccount } from "@/lib/zip/profile-rules";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
+import "@/styles/forsale.css";
+import { EmailNotifications } from "@/components/forsale/email-pref";
 
 export const metadata = pageMeta({ title: "Settings", description: "Privacy, blocked members and your data on SME Hub.", path: "/settings", index: false });
 
@@ -14,7 +16,10 @@ export default async function SettingsPage() {
   const { supabase, userId } = await requireUser();
   const details = await loadOwnDetails(supabase, userId);
   const ps = await getHubSettings("profiles");
-  const { data: me } = await supabase.from("profiles").select("plan").eq("id", userId).maybeSingle();
+  const [{ data: me }, { data: off }] = await Promise.all([
+    supabase.from("profiles").select("plan").eq("id", userId).maybeSingle(),
+    supabase.from("email_opt_out").select("grp").eq("member_id", userId),
+  ]);
   const canClose = mayCloseAccount(ps, (me as { plan?: string } | null)?.plan);
   return (
     <div className="zip">
@@ -26,6 +31,7 @@ export default async function SettingsPage() {
         </div>
         <div className="setgrid">
           <PrivacyCards details={details} />
+          <EmailNotifications forsale={!((off ?? []) as { grp: string }[]).some((r) => r.grp === "forsale")} />
           {ps.exportData && <div className="card">
             <h2>My data</h2>
             <p className="muted">Download a copy of your profile, posts, comments, connections, recommendations and messages as one file.</p>

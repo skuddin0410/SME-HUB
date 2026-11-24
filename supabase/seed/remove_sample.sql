@@ -3,6 +3,8 @@
 begin;
 -- sample courses (Update 4); enrolments, progress, work and reviews go with them
 delete from courses where is_sample;
+-- sample businesses for sale (Update 5); their saves, enquiries, reports and views go with them
+delete from sale_listings where is_sample;
 delete from posts where is_sample;
 delete from comments where is_sample;
 delete from groups where is_sample and not exists (

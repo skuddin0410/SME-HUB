@@ -13,7 +13,7 @@ export const PUBLIC_PAGES = [
 
 /** A signed-in member for the mock (see mock-supabase.mjs): the cookie the site reads its session from. */
 /** `hub` rides in the token so the mock can answer hub_settings for just this test */
-export function memberCookie(baseURL: string, staff = false, hub?: Record<string, unknown>, extra?: { ready?: number; views?: number; searches?: number }) {
+export function memberCookie(baseURL: string, staff = false, hub?: Record<string, unknown>, extra?: { ready?: number; views?: number; searches?: number; plan?: string }) {
   const sub = staff ? "00000000-0000-4000-8000-000000000002" : "00000000-0000-4000-8000-000000000001";
   const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString("base64url");
   const jwt = `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub, role: "authenticated", aud: "authenticated", exp: 4102444800, iat: 1700000000, ...(hub ? { hub } : {}), ...(extra ?? {}) })}.test`;

@@ -1984,6 +1984,98 @@ export const CATALOGUE: CatalogueEntry[] = [
   "size_kb": 10.4
  },
  {
+  "id": "sale-listing-live",
+  "category": "Businesses for sale",
+  "name": "Business listing is live",
+  "trigger": "Right after a Plus member or Advisor publishes a business for sale",
+  "sender": "SME Hub Business <business@smehub.ca>",
+  "subject": "Your business is listed for sale: {{sale_title}}",
+  "preheader": "Buyers can see it now. Here’s how to get your first enquiries.",
+  "type": "Notification (member can turn off)",
+  "preview_subject": "Your business is listed for sale: {{sale_title}}",
+  "preview_preheader": "Buyers can see it now. Here’s how to get your first enquiries.",
+  "variables": [
+   "manage_url",
+   "sale_area",
+   "sale_name_status",
+   "sale_price",
+   "sale_title",
+   "sale_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 11.3
+ },
+ {
+  "id": "sale-new-enquiry",
+  "category": "Businesses for sale",
+  "name": "New buyer enquiry",
+  "trigger": "When a member contacts the seller of a business for sale",
+  "sender": "SME Hub Business <business@smehub.ca>",
+  "subject": "{{buyer_name}} is interested in your business",
+  "preheader": "{{buyer_fund}} · {{buyer_when}}",
+  "type": "Notification (member can turn off)",
+  "preview_subject": "{{buyer_name}} is interested in your business",
+  "preview_preheader": "{{buyer_fund}} · {{buyer_when}}",
+  "variables": [
+   "buyer_fund",
+   "buyer_msg",
+   "buyer_name",
+   "buyer_photo_url",
+   "buyer_role",
+   "buyer_when",
+   "manage_url",
+   "reply_url",
+   "sale_title"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 10.2
+ },
+ {
+  "id": "sale-enquiry-sent",
+  "category": "Businesses for sale",
+  "name": "Buyer enquiry sent",
+  "trigger": "Right after a member contacts the seller of a business for sale",
+  "sender": "SME Hub Business <business@smehub.ca>",
+  "subject": "Your enquiry was sent: {{buy_title}}",
+  "preheader": "The seller replies in your Hub messages.",
+  "type": "Notification (member can turn off)",
+  "preview_subject": "Your enquiry was sent: {{buy_title}}",
+  "preview_preheader": "The seller replies in your Hub messages.",
+  "variables": [
+   "buy_price",
+   "buy_title",
+   "buy_url",
+   "for_sale_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 8.8
+ },
+ {
+  "id": "sale-saved-update",
+  "category": "Businesses for sale",
+  "name": "Saved listing changed",
+  "trigger": "When the price or status of a business a member saved changes",
+  "sender": "SME Hub Business <business@smehub.ca>",
+  "subject": "Price drop on a business you saved",
+  "preheader": "{{saved_change}}.",
+  "type": "Notification (member can turn off)",
+  "preview_subject": "Price drop on a business you saved",
+  "preview_preheader": "{{saved_change}}.",
+  "variables": [
+   "saved_change",
+   "saved_new",
+   "saved_old",
+   "saved_title",
+   "saved_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 7.9
+ },
+ {
   "id": "approve-email-change",
   "category": "Account and security",
   "name": "Approve email change",

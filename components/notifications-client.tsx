@@ -10,7 +10,7 @@ import { ConnectButton } from "@/components/network-client";
 
 export type Note = {
   id: string;
-  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission";
+  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission" | "sale_enquiry";
   href?: string | null;
   post_id: string | null;
   read_at: string | null;
@@ -27,6 +27,7 @@ const TEXT: Record<Note["type"], string> = {
   connection_accepted: "accepted your invitation. You are now connected",
   course_feedback: "graded your assignment. Your feedback is ready",
   course_submission: "submitted an assignment for you to grade",
+  sale_enquiry: "contacted you about your business for sale",
 };
 const ago = (iso: string) => {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);

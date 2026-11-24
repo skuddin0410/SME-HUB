@@ -50,7 +50,7 @@ export async function enrolPaidCourse(db: SupabaseClient, stripe: Stripe, s: Ses
     await courseMail("course-enrolled", { email, name }, {
       course_title: c.title, course_instructor: ((ins ?? []) as unknown as { profiles: { full_name: string } | null }[]).map((i) => i.profiles?.full_name).filter(Boolean).join(" and "),
       course_lessons: lessons.length, course_length: dur(lessons.reduce((n, l) => n + l.minutes, 0)), course_url: `${siteUrl()}/courses/${c.slug}`,
-      first_lesson: lessons[0]?.title ?? "", start_url: start, reason: "You get this because you take a course on SME Hub.", unsubscribe_url: `${siteUrl()}/settings`,
+      first_lesson: lessons[0]?.title ?? "", start_url: start, reason: "you take a course on SME Hub", unsubscribe_url: `${siteUrl()}/settings`,
     }, `course-enrolled-${m.user_id}-${c.id}`);
   } catch (e) {
     console.error("course purchase emails:", (e as Error).message);
