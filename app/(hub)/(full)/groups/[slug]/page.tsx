@@ -13,7 +13,8 @@ import "@/styles/zip-extra.css";
 import { AUTHOR_FIELDS, fetchPosts, getViewer, PAGE_SIZE, type Author } from "@/lib/hub";
 import { InvitePanel } from "@/components/business-client";
 import { Empty, Pager, PostCard } from "@/components/hub";
-import { Composer, SubmitButton } from "@/components/hub-client";
+import { SubmitButton } from "@/components/hub-client";
+import { PostBox } from "@/components/zip/post-box";
 import { getComposerRules } from "@/lib/zip/settings-load";
 import { joinGroup, leaveGroup, removeGroupInvite } from "@/app/(hub)/actions";
 import { cancelJoinRequest, decideRequest, removeMember, setGroupArchived, setMemberRole } from "@/app/(hub)/group-actions";
@@ -186,7 +187,10 @@ export default async function GroupPage({
               {tab === "posts" && (
                 <>
                   {isAdmin && group.is_private && <InvitePanel groupId={group.id} candidates={candidates} invited={alreadyInvited} />}
-                  {isMember && !archived && <Composer me={viewer.profile} groupId={group.id} placeholder={`Post to ${group.name}`} rules={await getComposerRules()} />}
+                  {isMember && !archived && viewer.profile && (
+                    <PostBox me={viewer.profile} groupId={group.id} rules={await getComposerRules()} staff={viewer.isStaff}
+                      free={!viewer.isStaff && !["plus", "advisor"].includes(String((viewer.profile as { plan?: string }).plan))} />
+                  )}
                   {archived && <Empty title="This group is archived">Posts are kept for reading, but nobody can add new ones.</Empty>}
                   {posts.length === 0 && !archived && (
                     <div className="card"><strong>No posts here yet.</strong><p className="muted">{isMember ? "Be the first. Ask a question or share something that worked." : "Join the group to start the conversation."}</p></div>

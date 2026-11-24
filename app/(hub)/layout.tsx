@@ -7,6 +7,8 @@ import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import "@/styles/profile-completion.css";
 import "@/styles/get-started.css";
+import "@/styles/post-box.css";
+import "@/styles/post-box-extra.css";
 import { HideOn } from "@/components/hide-on";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 import { ReadyProvider } from "@/components/ready/provider";

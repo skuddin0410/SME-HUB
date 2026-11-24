@@ -7,7 +7,8 @@ import { FEED } from "@/lib/feed-rules";
 import { topSignal } from "@/lib/feed";
 import { KINDS, type Kind } from "@/lib/demo";
 import { Empty, PostCard } from "@/components/hub";
-import { Composer } from "@/components/hub-client";
+import { PostBox } from "@/components/zip/post-box";
+import { FeedTools } from "@/components/zip/feed-tools";
 import { canStartPost, getComposerRules, getHubSettings } from "@/lib/zip/settings-load";
 import { FirstWeek, type WeekStep } from "@/components/first-week";
 import { getPostingBusinesses } from "@/lib/business-server";
@@ -32,13 +33,14 @@ const FILTERS: { key: string; label: string }[] = [
 
 type Params = { tag?: string; page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string };
 
+// the "Show:" choices, worded as in the design (Update 9)
 const SCOPES: { key: string; label: string }[] = [
-  { key: "", label: "All" },
-  { key: "mine", label: "My posts" },
-  { key: "reacted", label: "Reacted" },
-  { key: "groups", label: "Groups" },
-  { key: "conn", label: "Connections" },
-  { key: "follow", label: "Following" },
+  { key: "", label: "All updates" },
+  { key: "mine", label: "Created by me" },
+  { key: "reacted", label: "I have reacted to" },
+  { key: "groups", label: "From my groups" },
+  { key: "conn", label: "From my connections" },
+  { key: "follow", label: "From people I follow" },
   { key: "tags", label: "Hashtags I follow" },
 ];
 
@@ -54,6 +56,13 @@ function href(p: Params) {
 }
 
 const NEW_MEMBER_DAYS = 30;
+
+/** Groups the member belongs to, for "Post to" in the post window. */
+async function myGroups(viewer: Awaited<ReturnType<typeof getViewer>>): Promise<{ id: string; name: string }[]> {
+  if (!viewer.userId) return [];
+  const { data } = await viewer.supabase.from("group_members").select("group:groups!inner(id, name, status)").eq("user_id", viewer.userId).eq("group.status", "active").limit(100);
+  return ((data ?? []) as unknown as { group: { id: string; name: string } | null }[]).flatMap((r) => (r.group ? [{ id: r.group.id, name: r.group.name }] : []));
+}
 
 /** The checklist is for new members only, and each step ticks itself from what the member has done. */
 async function firstWeekSteps(viewer: Awaited<ReturnType<typeof getViewer>>): Promise<{ steps: WeekStep[]; count: number } | null> {
@@ -132,30 +141,30 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
       {notReady && miss && !saved && !kind && page === 1 && <ReadyCard where="home" miss={miss} />}
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week.steps} connections={week.count} />}
       {fs.refresh && <FeedRefresh />}
-      {mayPost && <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} rules={await getComposerRules()} tagHints={tr.on && tr.auto ? (await getTagIndex(viewer.supabase)).slice(0, 60).map((t) => ({ tag: t.tag, uses: t.uses })) : undefined} initialText={params.tag && /^[a-z0-9_à-ſ]{2,40}$/i.test(params.tag) ? `#${params.tag.toLowerCase()} ` : undefined} />}
+      {mayPost && viewer.profile && (
+        <PostBox
+          me={viewer.profile}
+          initialKind={compose}
+          groups={await myGroups(viewer)}
+          businesses={await getPostingBusinesses(viewer.userId)}
+          rules={await getComposerRules()}
+          tagHints={tr.on && tr.auto ? (await getTagIndex(viewer.supabase)).slice(0, 60).map((t) => ({ tag: t.tag, uses: t.uses })) : undefined}
+          initialText={params.tag && /^[a-z0-9_à-ſ]{2,40}$/i.test(params.tag) ? `#${params.tag.toLowerCase()} ` : undefined}
+          free={!viewer.isStaff && !["plus", "advisor"].includes(String((viewer.profile as { plan?: string }).plan))}
+          staff={viewer.isStaff}
+        />
+      )}
 
-      <div className="tools">
-        <h2 style={{ font: "700 15px var(--display)" }}>{saved ? "Saved bookmarks" : "Latest from the community"}</h2>
-        <span className="grow" />
-        {!saved && (
-          <Link
-            className="chip"
-            href={href({ ...keep, sort: latest ? undefined : "latest" })}
-            title={latest ? "Showing newest first. Switch to Top Signal" : "Showing what members found most useful. Switch to Latest"}
-          >
-            <Ic n={latest ? "clock" : "spark"} s={13} /> {latest ? "Latest" : "Top Signal"}
-          </Link>
-        )}
-      </div>
-      {viewer.userId && !saved && (
-        <nav className="chips" aria-label="Whose posts">
-          {scopes.map((f) => (
-            <Link key={f.key} href={href({ ...keep, scope: f.key || undefined })} aria-current={(scope ?? "") === f.key ? "true" : undefined} className="chip">
-              {f.label}
-            </Link>
-          ))}
-          <Link href="/scheduled" className="chip">Scheduled</Link>
-        </nav>
+      {saved ? (
+        <div className="tools"><h2 style={{ font: "700 15px var(--display)" }}>Saved bookmarks</h2></div>
+      ) : (
+        <FeedTools
+          show={scopes.map((f) => ({ value: f.key || "all", label: f.label, href: href({ ...keep, scope: f.key || undefined }), on: (scope ?? "") === f.key }))}
+          sort={[
+            { value: "top", label: "Most useful", href: href({ ...keep, sort: undefined }), on: !latest },
+            { value: "latest", label: "Latest", href: href({ ...keep, sort: "latest" }), on: latest },
+          ]}
+        />
       )}
       {(fs.topics || saved) && <nav className="chips" aria-label="Filter the feed">
         {saved ? (

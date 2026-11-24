@@ -24,6 +24,7 @@ const MEMBER = {
 // Help Centre rows: a small set by default, or the whole Help Centre when HELP_FIXTURE points at a file
 const HELP = JSON.parse(fs.readFileSync(process.env.HELP_FIXTURE || new URL("./help-fixture.json", import.meta.url), "utf8"));
 const HELP_VOTES = [];
+const NEW_POSTS = [];
 const port = Number(process.env.MOCK_SUPABASE_PORT || 54398);
 
 const MODSET = { types: { post: { on: true, auto: true, hide: 3 }, comment: { on: true, auto: true, hide: 3 }, photo: { on: true, auto: true, hide: 2 }, group: { on: true, auto: false, hide: 5 }, blog: { on: true, auto: true, hide: 3 }, blogc: { on: true, auto: true, hide: 3 } }, member_report: true, blocking: true, sus_blocks: { on: true, n: 5 }, sus_reports: { on: true, n: 10 }, email_on: true, email_subject: "[SME Hub] {{user.name}} was suspended", email_body: "Review in Moderation." };
@@ -44,6 +45,17 @@ http
       return;
     }
     if (url.pathname === "/__help_votes") return res.end(JSON.stringify(HELP_VOTES));
+    // Updates 9 and 10: new posts from the post window, kept so the tests can read them back
+    if (url.pathname === "/rest/v1/posts" && req.method === "POST") {
+      let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => {
+        let row = {}; try { row = JSON.parse(b); } catch {}
+        const id = `00000000-0000-4000-8000-${String(900000000000 + NEW_POSTS.length)}`;
+        NEW_POSTS.push({ id, ...row });
+        res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? { id } : [{ id }]));
+      });
+      return;
+    }
+    if (url.pathname === "/__posts") return res.end(JSON.stringify(NEW_POSTS));
     const token = String(req.headers.authorization || "").replace(/^Bearer /, "");
     const member = token.startsWith("ey");
     let sub = MEMBER.id;

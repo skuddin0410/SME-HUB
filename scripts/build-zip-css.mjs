@@ -36,4 +36,6 @@ build("design/zip-forsale.css", "styles/forsale.css");
 build("design/zip-get-started.css", "styles/get-started.css");
 // Update 7 (Help Centre inside the site): code/help-centre.css from that package, scoped the same way
 build("design/zip-help.css", "styles/help.css");
+// Updates 9 and 10 (post box and post window): code/post-box.css from the latest of those packages, scoped the same way
+build("design/zip-post-box.css", "styles/post-box.css");
 console.log("ok");
