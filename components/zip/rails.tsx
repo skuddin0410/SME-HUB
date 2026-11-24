@@ -9,15 +9,16 @@ import { Scene } from "@/components/zip/scene";
 import { ZipAv } from "@/components/zip/bits";
 import { JoinGroupButton } from "@/components/feed-client";
 import { RsvpBtn } from "@/components/zip/rsvp-btn";
+import { MemberOfTheDay } from "@/components/zip/motd";
 
 /** Pages that are built in a later phase: not prefetched, so the browser is not left waiting on them. */
 const LATER = ["/matches", "/write", "/ask", "/pavilion"];
 const ART_SCENES = ["laptop", "nodes", "solar", "bars", "law", "ship"];
 
-/** Left rail: the member's shortcuts, then the newest articles. */
+/** Left rail: the member's shortcuts, Member of the Day (Update 11), then the newest articles. */
 export async function ZipLeftRail() {
   const { supabase, userId } = await getViewer();
-  if (!userId) return <ZipArticles />;
+  if (!userId) return <><MemberOfTheDay /><ZipArticles /></>;
   const [inbox, saved] = await Promise.all([
     supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", userId).is("read_at", null),
     supabase.from("saved_posts").select("post_id", { count: "exact", head: true }).eq("user_id", userId),
@@ -42,6 +43,7 @@ export async function ZipLeftRail() {
           </Link>
         ))}
       </div>
+      <MemberOfTheDay />
       <ZipArticles />
     </>
   );
@@ -182,7 +184,7 @@ export async function ZipRightRail() {
         <div className="list">
           <div className="stack"><strong>Monday</strong><span className="muted small">Question of the week</span></div>
           <div className="stack"><strong>Wednesday</strong><span className="muted small">Live session with an expert</span></div>
-          <div className="stack"><strong>Friday</strong><span className="muted small">Member wins and Member of the Week</span></div>
+          <div className="stack"><strong>Friday</strong><span className="muted small">Member wins (Member of the Day every day)</span></div>
         </div>
       </div>
     </>

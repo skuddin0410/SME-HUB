@@ -38,4 +38,6 @@ build("design/zip-get-started.css", "styles/get-started.css");
 build("design/zip-help.css", "styles/help.css");
 // Updates 9 and 10 (post box and post window): code/post-box.css from the latest of those packages, scoped the same way
 build("design/zip-post-box.css", "styles/post-box.css");
+// Update 11 (Member of the Day): code/member-of-the-day.css from that package, scoped the same way
+build("design/zip-motd.css", "styles/motd.css");
 console.log("ok");

@@ -1,0 +1,15 @@
+
+/* ===== Member of the Day (Update 11) ===== */
+.card.motd{padding:0;gap:0;overflow:hidden;border:1px solid #CFE0FB;box-shadow:0 6px 18px rgba(30,64,175,.08)}
+.motd-cov{position:relative;height:96px;background:#E2E8F0}
+.motd-cov img{width:100%;height:100%;object-fit:cover;display:block}
+.motd-badge{position:absolute;left:10px;top:10px;display:inline-flex;gap:5px;align-items:center;background:#C8102E;color:#fff;font:700 11.5px var(--body);letter-spacing:.04em;text-transform:uppercase;padding:5px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.motd-b{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:3px;padding:0 16px 14px}
+.motd-av{position:relative;z-index:1;margin-top:-30px;border:3px solid var(--surface);border-radius:50%;line-height:0}
+.motd-n{font:800 17px var(--display);margin:6px 0 0}.motd-n .namebtn{font:inherit}
+.motd-city{display:inline-flex;gap:3px;align-items:center}
+.motd-q{font-size:13.5px;line-height:1.45;margin:8px 0 4px;color:var(--ink);font-style:italic}
+.motd-acts{display:flex;gap:8px;justify-content:flex-start;flex-wrap:wrap;margin-top:6px}
+.motd-foot{margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line);width:100%}
+.motd-foot a{color:var(--accent);font-weight:600}
+:root.dark .card.motd{border-color:#22407A}

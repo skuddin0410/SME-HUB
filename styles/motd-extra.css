@@ -1,0 +1,2 @@
+/* Update 11: contrast fix for dark mode, as on the other pages (the hand-off's accent is too dark on the dark card) */
+.dark .zip .motd-foot a { color: var(--link); }

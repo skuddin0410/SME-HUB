@@ -9,6 +9,8 @@ import "@/styles/profile-completion.css";
 import "@/styles/get-started.css";
 import "@/styles/post-box.css";
 import "@/styles/post-box-extra.css";
+import "@/styles/motd.css";
+import "@/styles/motd-extra.css";
 import { HideOn } from "@/components/hide-on";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 import { ReadyProvider } from "@/components/ready/provider";

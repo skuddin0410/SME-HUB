@@ -1,0 +1,14 @@
+You’re today’s Member of the Day on SME Hub
+
+YOU’RE TODAY’S MEMBER OF THE DAY, {{first_name}}
+Your profile is featured on the Home page of SME Hub today, {{motd_date}}. Every member and visitor sees it in the left panel, with a button to view your profile and connect with you.
+
+It’s a good day to share your profile with your customers and partners, and to say hello to the members who stop by.
+
+See my profile: {{profile_url}}
+Want a bigger feature? Apply for the Member Spotlight in CanadianSME Small Business Magazine: {{spotlight_url}}
+
+--
+You’re getting this email about your SME Hub account.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

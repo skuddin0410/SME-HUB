@@ -26,6 +26,7 @@ const HELP = JSON.parse(fs.readFileSync(process.env.HELP_FIXTURE || new URL("./h
 const HELP_VOTES = [];
 const NEW_POSTS = [];
 const UPLOADS = new Map();
+const MOTD_PICKS = [];
 const port = Number(process.env.MOCK_SUPABASE_PORT || 54398);
 
 const MODSET = { types: { post: { on: true, auto: true, hide: 3 }, comment: { on: true, auto: true, hide: 3 }, photo: { on: true, auto: true, hide: 2 }, group: { on: true, auto: false, hide: 5 }, blog: { on: true, auto: true, hide: 3 }, blogc: { on: true, auto: true, hide: 3 } }, member_report: true, blocking: true, sus_blocks: { on: true, n: 5 }, sus_reports: { on: true, n: 10 }, email_on: true, email_subject: "[SME Hub] {{user.name}} was suspended", email_body: "Review in Moderation." };
@@ -57,6 +58,22 @@ http
       return;
     }
     if (url.pathname === "/__posts") return res.end(JSON.stringify(NEW_POSTS));
+    // Update 11: Member of the Day, and the team's picks
+    const TODAY = new Date().toLocaleDateString("en-CA", { timeZone: "America/Toronto" });
+    if (url.pathname === "/rest/v1/rpc/motd_today") return res.end(JSON.stringify(TODAY));
+    if (url.pathname === "/rest/v1/rpc/member_of_the_day") return res.end(JSON.stringify({ id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", location: "Toronto, ON", avatar_url: null, about: "We bake small-batch bread and supply cafes across the west end.", day: TODAY }));
+    if (url.pathname === "/rest/v1/member_of_day") {
+      if (req.method === "GET") return res.end(JSON.stringify(MOTD_PICKS));
+      let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => {
+        if (req.method === "DELETE") { const d = String(url.searchParams.get("day") ?? "").replace("eq.", ""); MOTD_PICKS.splice(0, MOTD_PICKS.length, ...MOTD_PICKS.filter((r) => r.day !== d)); }
+        else { try { const r = JSON.parse(b); const row = Array.isArray(r) ? r[0] : r; MOTD_PICKS.splice(0, MOTD_PICKS.length, ...MOTD_PICKS.filter((x) => x.day !== row.day), { ...row, member: { full_name: row.member_id.endsWith("11") ? "Priya Raman" : "Kwame Asante" } }); } catch {} }
+        res.statusCode = 201; res.end("");
+      });
+      return;
+    }
+    if (url.pathname === "/rest/v1/profiles" && url.searchParams.get("ready_count") === "eq.5") {
+      return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery" }, { id: "00000000-0000-4000-8000-000000000012", full_name: "Kwame Asante", headline: "Owner, Asante Legal" }]));
+    }
     // Update 10: photo uploads land in storage, and videos use resumable (tus) uploads
     if (req.method === "POST" && url.pathname.startsWith("/storage/v1/object/media/")) {
       req.resume(); req.on("end", () => res.end(JSON.stringify({ Key: url.pathname.replace("/storage/v1/object/", ""), Id: "x" })));

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Ic } from "@/components/zip/ic";
 import { ZipAv, ago, Join } from "@/components/zip/bits";
+import { MemberOfTheDay } from "@/components/zip/motd";
 import { BLOG } from "@/lib/content";
 import type { Post } from "@/lib/hub";
 
@@ -57,6 +58,7 @@ function LeftRail() {
           </Link>
         </div>
       </div>
+      <MemberOfTheDay />
       <div className="card">
         <div className="row">
           <h2 className="grow eyebrow" style={{ color: "var(--muted)", fontSize: 12 }}>
@@ -96,21 +98,6 @@ function RightRail({ posts, groups }: { posts: Post[]; groups: Group[] }) {
   const trending = [...tags.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
   return (
     <aside className="rail" aria-label="This week">
-      <div className="card">
-        <p className="eyebrow red">Member of the Week</p>
-        <div className="pic" style={{ overflow: "hidden", lineHeight: 0 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/zip/img/story-bakery.jpg" alt="" style={{ width: "100%", height: 150, objectFit: "cover", display: "block" }} />
-        </div>
-        <div className="row">
-          <ZipAv name="Priya Raman" src="/zip/img/p-priya.jpg" size="l" />
-          <div className="stack grow">
-            <strong>Priya Raman</strong>
-            <span className="muted small">Founder, Maple Bakery</span>
-          </div>
-        </div>
-        <p className="muted small">Featured in this month’s CanadianSME Small Business Magazine.</p>
-      </div>
       <div className="card" style={{ borderColor: "#FECACA" }}>
         <div className="row">
           <h2 className="grow">Made in Canada Pavilion</h2>
@@ -195,7 +182,7 @@ function RightRail({ posts, groups }: { posts: Post[]; groups: Group[] }) {
           </div>
           <div className="stack">
             <strong>Friday</strong>
-            <span className="muted small">Member wins and Member of the Week</span>
+            <span className="muted small">Member wins (Member of the Day every day)</span>
           </div>
         </div>
       </div>

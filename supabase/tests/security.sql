@@ -1494,3 +1494,29 @@ select t.expect('a post keeps 10 photos and a video', (select cardinality(images
 select t.expect_denied('photos cannot be changed after posting', $$update posts set images = '{}' where body = 'media post'$$);
 reset role;
 select t.expect('videos have their own public bucket: MP4 or MOV, up to 500 MB', (select public and file_size_limit = 524288000 and allowed_mime_types = array['video/mp4', 'video/quicktime'] from storage.buckets where id = 'post-videos'));
+
+-- ===== Update 11: Member of the Day =====
+reset role; set request.jwt.claim.sub = '';
+delete from member_of_day;
+select set_config('app.ready', '1', false); update profiles set ready_count = 0, ready_at = null; update profiles set ready_count = 5, ready_at = now() where id in ('00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-00000000000b'); select set_config('app.ready', '', false);
+update profiles set status = 'suspended' where id = '00000000-0000-0000-0000-00000000000a';
+set role anon;
+select t.expect('visitors see an automatic Member of the Day: a ready, active member', (select member_of_the_day()->>'id' = '00000000-0000-0000-0000-00000000000b'));
+select t.expect('the day keeps its member, and it is recorded', (select count(*) = 1 from member_of_day where member_id = '00000000-0000-0000-0000-00000000000b' and picked_by is null) and (select member_of_the_day()->>'id' = '00000000-0000-0000-0000-00000000000b'));
+select t.expect_denied('visitors cannot pick the member', $$insert into member_of_day (day, member_id) values (motd_today() + 1, '00000000-0000-0000-0000-00000000000b')$$);
+select t.expect_denied('visitors cannot run the automatic choice directly', $$select motd_auto(motd_today())$$);
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect_denied('members cannot pick the member', $$insert into member_of_day (day, member_id, picked_by) values (motd_today() + 1, auth.uid(), auth.uid())$$);
+select t.expect_denied('members cannot claim the email', $$select motd_claim_email(motd_today())$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+insert into member_of_day (day, member_id, picked_by) values (motd_today() + 1, '00000000-0000-0000-0000-00000000000b', auth.uid());
+select t.expect('the team picks a member for a date', (select count(*) = 1 from member_of_day where day = motd_today() + 1 and picked_by = auth.uid()));
+update member_of_day set member_id = '00000000-0000-0000-0000-00000000000a', picked_by = auth.uid() where day = motd_today();
+select t.expect('a picked member who is suspended is replaced automatically', (select member_of_the_day()->>'id' = '00000000-0000-0000-0000-00000000000b'));
+reset role; delete from member_of_day where day = motd_today();
+insert into member_of_day (day, member_id) values (motd_today() - 30, '00000000-0000-0000-0000-00000000000b');
+set role anon;
+select t.expect('nobody is featured again within 90 days', member_of_the_day() is null);
+reset role;
+update profiles set status = 'active' where id = '00000000-0000-0000-0000-00000000000a';
+select set_config('app.ready', '1', false); update profiles set ready_count = 5, ready_at = now(); select set_config('app.ready', '', false);

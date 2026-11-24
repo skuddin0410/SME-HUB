@@ -18,5 +18,25 @@
   "lists": [],
   "list_fields": [],
   "size_kb": 7.3
+  },
+ {
+  "id": "member-of-the-day",
+  "category": "Activity and milestones",
+  "name": "Member of the Day",
+  "trigger": "Once, on the morning a member is the Member of the Day (Update 11)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "You’re today’s Member of the Day on SME Hub",
+  "preheader": "Your profile is on the Home page of SME Hub all day. Share it with your network.",
+  "type": "Account (always sent)",
+  "preview_subject": "You’re today’s Member of the Day on SME Hub",
+  "preview_preheader": "Your profile is on the Home page of SME Hub all day. Share it with your network.",
+  "variables": [
+   "motd_date",
+   "profile_url",
+   "spotlight_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 7.3
  }
 ]
