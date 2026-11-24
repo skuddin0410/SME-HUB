@@ -6,6 +6,7 @@ import { ZipHeader } from "@/components/zip/header";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import "@/styles/profile-completion.css";
+import "@/styles/get-started.css";
 import { HideOn } from "@/components/hide-on";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 import { ReadyProvider } from "@/components/ready/provider";
