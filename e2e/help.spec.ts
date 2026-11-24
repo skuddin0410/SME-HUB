@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { memberCookie } from "./personas";
 
 /**
  * Next.js 15 sometimes drops a link click after fetching the page (vercel/next.js#83386); a person just clicks
@@ -16,19 +17,64 @@ async function clickTo(page: import("@playwright/test").Page, link: import("@pla
 // Update 7: the full Help Centre inside the site (all 82 articles in e2e/help-fixture.json).
 const KB = JSON.parse(fs.readFileSync(path.join(__dirname, "help-fixture.json"), "utf8")) as { help_articles: { id: string; title: string; html: string }[]; help_topics: { id: string; title: string }[] };
 
-test("Help home sits inside the site, with popular questions, 15 topics and Still need help", async ({ page }) => {
+test("Help home is the support desk: banner, popular searches, 15 topics, most asked questions and 3 help boxes", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await clickTo(page, page.getByRole("link", { name: "Help", exact: true }).first(), /\/help$/);
-  await expect(page.getByRole("heading", { name: "How can we help?", level: 1 })).toBeVisible();
-  await expect(page.getByText("82 step-by-step answers with screenshots.")).toBeVisible();
-  await expect(page.locator(".hcpopi")).toHaveCount(8);
-  await expect(page.locator(".hctopic")).toHaveCount(15);
-  await expect(page.getByRole("link", { name: /Getting started.*6 articles/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Contact us" }).last()).toHaveAttribute("href", "/contact");
+  await expect(page.getByRole("heading", { name: "Hi, how can we help you today?", level: 1 })).toBeVisible();
+  await expect(page.locator(".axeye")).toHaveText("SME Hub Help Centre");
+  await expect(page.locator(".axchip")).toHaveText(["reset password", "add my business", "sell my business", "connect", "upgrade", "report"]);
+  // Topics: all 15, each with its count, linking to the topic page
+  await expect(page.locator(".axtopics li")).toHaveCount(15);
+  await expect(page.locator(".axtopics a").first()).toHaveAttribute("href", "/help/start");
+  await expect(page.locator(".axtopics a").first()).toContainText("Getting started");
+  await expect(page.locator(".axtopics a").first().locator(".axn")).toContainText("6");
+  // Most asked questions: 8, the first open
+  const qs = page.locator(".axpop details");
+  await expect(qs).toHaveCount(8);
+  await expect(qs.first()).toHaveAttribute("open", "");
+  await expect(qs.nth(1)).not.toHaveAttribute("open", "");
+  await expect(qs.first().getByRole("link", { name: "Read the full answer →" })).toHaveAttribute("href", "/help/what-is-smb-hub");
+  // opens with the keyboard
+  await qs.nth(1).locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(qs.nth(1)).toHaveAttribute("open", "");
+  await expect(qs.nth(1).getByText("Join free in about two minutes. No card needed.")).toBeVisible();
+  // the 3 help boxes
+  await expect(page.locator(".axbox")).toHaveCount(3);
+  await expect(page.locator(".axbox.ai").getByRole("link", { name: "Ask a question" })).toHaveAttribute("href", "/ask");
+  await expect(page.locator(".axbox").nth(1)).toContainText("support@smehub.ca · reply within 1 working day");
+  await expect(page.locator(".axbox").nth(1).getByRole("link", { name: "Contact us" })).toHaveAttribute("href", "/contact");
+  await expect(page.getByRole("link", { name: "Go to safety" })).toHaveAttribute("href", "/help/safety");
   await expect(page.locator("header .tbtn", { hasText: "Help" })).toBeVisible(); // the site's own header
   await expect(page.locator("footer").getByRole("link", { name: "Help" })).toHaveAttribute("href", "/help");
   await expect(page).toHaveTitle("Help Centre | SME Hub");
   expect(await page.locator("video, .vbox, .hcvids").count()).toBe(0);
+});
+
+test("a popular search fills the box and shows the results straight away", async ({ page }) => {
+  await page.goto("/help", { waitUntil: "networkidle" });
+  await page.locator(".axchip", { hasText: "reset password" }).click();
+  await expect(page.getByLabel("Search help articles")).toHaveValue("reset password");
+  await expect(page.getByRole("heading", { name: /results? for “reset password”/ })).toBeVisible();
+  await expect(page.locator(".hcitem").first()).toContainText("Forgot your password? Reset it");
+  await expect(page.locator(".axcols")).toHaveCount(0); // results replace the topics and questions
+  await expect(page).toHaveURL(/\/help\?q=reset%20password$/);
+});
+
+test("on phones the most asked questions come before the topics", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto("/help", { waitUntil: "networkidle" });
+  const pop = await page.locator(".axpop").boundingBox();
+  const top = await page.locator(".axtopics").boundingBox();
+  expect(pop!.y).toBeLessThan(top!.y);
+});
+
+test("Help home shows the team's popular searches and most asked questions", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!, false, { help: { chips: ["invoices", "  "], popular: ["sell-your-business", "nope", "what-is-smb-hub"] } })]);
+  await page.goto("/help", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".axchip")).toHaveText(["invoices"]);
+  await expect(page.locator(".axpop summary")).toHaveText(["Sell your business on SME Hub", "What is SME Hub?"]);
+  await expect(page.locator(".axpop details").first()).toHaveAttribute("open", "");
 });
 
 test("search updates as you type and finds the checklist's questions", async ({ page }) => {
@@ -50,8 +96,9 @@ test("search updates as you type and finds the checklist's questions", async ({ 
   await page.goto("/help");
   await box.fill("zzzzqq");
   await expect(page.getByText("No answers found.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "contact the team" })).toHaveAttribute("href", "/contact");
   await page.getByRole("button", { name: "Clear search" }).click();
-  await expect(page.getByRole("heading", { name: "Popular questions" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Most asked questions" })).toBeVisible();
 });
 
 test("typing in the search box on an article jumps to the results", async ({ page }) => {

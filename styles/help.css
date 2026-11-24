@@ -85,3 +85,35 @@
 .zip .modal.hczoom{max-width:min(1200px,94vw);width:auto;gap:10px}
 .zip .modal.hczoom img{max-width:100%;max-height:78vh;display:block;border-radius:10px;border:1px solid var(--line);background:#fff}
 @media(max-width:900px){.zip .hcwrap{grid-template-columns:1fr}.zip .hcside{position:static;order:2}.zip .card.hcart{padding:18px 16px}.zip .hcart h1,.zip .hchero h1{font-size:24px}.zip .hcpn{grid-template-columns:1fr}.zip .hcpn a.nx{grid-column:auto;text-align:left}}
+
+/* Help home: support-desk layout (Update 8) */.zip .axhero{border-radius:18px;background:linear-gradient(135deg,#0B1F4D 0%,#1D4ED8 100%);color:#fff;padding:40px 24px 30px;margin-bottom:22px}
+.zip .axin{max-width:720px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.zip .axeye{font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#BFDBFE;margin:0}
+.zip .axhero h1{font:800 34px/1.15 var(--display);margin:0;color:#fff}
+.zip .axhero .hcsearch{border:0}
+.zip .axchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;font-size:13px;color:#DBEAFE}
+.zip .axchip{all:unset;cursor:pointer;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-size:13px}
+.zip .axchip:hover{background:rgba(255,255,255,.25)}
+.zip .axcols{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+.zip .card.axtopics{padding:14px}.zip .axtopics h2,.zip .axpop h2{font:800 18px var(--display);margin:0 0 8px}
+.zip .axtopics ul{list-style:none;margin:0;padding:0}
+.zip .axtopics a{display:flex;gap:10px;align-items:center;padding:9px 8px;border-radius:10px;color:inherit;text-decoration:none;font-weight:600;font-size:14px}
+.zip .axtopics a:hover{background:#EAF2FF}
+.zip .axic{width:32px;height:32px;border-radius:9px;background:#EAF2FF;color:#1D4ED8;display:grid;place-items:center;flex:none}
+.zip .axn{font-size:12px;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:2px 8px}
+.zip .card.axpop{display:block;padding:16px 18px}
+.zip .axpop details{border-top:1px solid var(--line);padding:12px 0}.zip .axpop details:first-of-type{border-top:0}
+.zip .axpop summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.zip .axpop summary::after{content:'+';color:#1D4ED8;font-size:20px;line-height:1}.zip .axpop details[open] summary::after{content:'–'}
+.zip .axpop details p{margin:8px 0 6px}.zip .axpop details a{color:#1D4ED8;font-weight:600}
+.zip .axhelp{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.zip .card.axbox{gap:6px;align-items:flex-start}.zip .card.axbox.ai{background:linear-gradient(160deg,#EAF2FF,#fff);border-color:#CFE0FB}
+.zip .axbig{width:42px;height:42px;border-radius:12px;background:#EAF2FF;color:#1D4ED8;display:grid;place-items:center}
+
+.dark .zip .axhero{background:linear-gradient(135deg,#0B1222,#1E3A8A)}
+.dark .zip .axtopics a:hover{background:#132447}
+.dark .zip .axic,.dark .zip .axbig{background:#132447;color:#93C5FD}
+.dark .zip .card.axbox.ai{background:linear-gradient(160deg,#132447,var(--surface));border-color:#22407A}
+.dark .zip .axpop summary::after,.dark .zip .axpop details a{color:#93C5FD}
+.zip .axchip:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:900px){.zip .axcols{grid-template-columns:1fr}.zip .axtopics{order:2}.zip .axhelp{grid-template-columns:1fr}.zip .axhero{padding:28px 16px 22px}.zip .axhero h1{font-size:26px}}

@@ -12,7 +12,7 @@ const readQ = () => { try { return sessionStorage.getItem(QKEY) ?? ""; } catch {
 const saveQ = (v: string) => { try { sessionStorage.setItem(QKEY, v); } catch {} };
 
 export type TopicCard = { id: string; title: string; description: string; icon: string; n: number };
-export type PopItem = { id: string; title: string };
+export type PopItem = { id: string; title: string; summary: string };
 
 /** Links from the first Help Centre looked like /help#/a/<id>. The browser keeps that part to itself, so move them on. */
 function useLegacyHash() {
@@ -94,8 +94,8 @@ export function HcTopics({ topics }: { topics: TopicCard[] }) {
   );
 }
 
-/** Help home (hcHome): results update as you type; with no search, popular questions and the topics. */
-export function HelpHome({ count, popular, topics, q0, hits0 }: { count: number; popular: PopItem[]; topics: TopicCard[]; q0: string; hits0: HelpHit[] }) {
+/** Help home (hcHome, Update 8 "support desk"): banner with search and popular searches, topics beside the most asked questions, three help boxes. */
+export function HelpHome({ popular, topics, chips, q0, hits0 }: { popular: PopItem[]; topics: TopicCard[]; chips: string[]; q0: string; hits0: HelpHit[] }) {
   useLegacyHash();
   const path = usePathname();
   const sp = useSearchParams();
@@ -121,39 +121,81 @@ export function HelpHome({ count, popular, topics, q0, hits0 }: { count: number;
   const t = q.trim();
   return (
     <>
-      <section className="hchero">
-        <p className="eyebrow">Help Centre</p>
-        <h1>How can we help?</h1>
-        <p className="muted">{count} step-by-step answers with screenshots.</p>
-        <HcSearchBox big value={q} onChange={change} />
+      <section className="axhero">
+        <div className="axin">
+          <p className="axeye">SME Hub Help Centre</p>
+          <h1>Hi, how can we help you today?</h1>
+          <HcSearchBox big value={q} onChange={change} />
+          {chips.length > 0 && (
+            <div className="axchips">
+              <span>Popular searches:</span>
+              {chips.map((c) => <button key={c} type="button" className="axchip" onClick={() => change(c)}>{c}</button>)}
+            </div>
+          )}
+        </div>
       </section>
       {t ? (
-        <>
-          <section className="hcsec">
-            <h2 aria-live="polite">{hits.length} result{hits.length === 1 ? "" : "s"} for “{t}”</h2>
-            {hits.length ? (
-              <HcList items={hits} />
-            ) : (
-              <div className="card hcnone">
-                <strong>No answers found.</strong>
-                <span className="muted">Try other words, or browse the topics below. You can also <Link href="/contact">contact the team</Link>.</span>
-                <button type="button" className="btn sm ghost" onClick={() => change("")}>Clear search</button>
-              </div>
-            )}
-          </section>
-          <HcTopics topics={topics} />
-        </>
-      ) : (
-        <>
-          <section className="hcsec">
-            <h2>Popular questions</h2>
-            <div className="hcpop">
-              {popular.map((a) => <Link key={a.id} className="hcpopi" href={`/help/${a.id}`}><Ic n="help" s={16} /><span>{a.title}</span></Link>)}
+        <section className="hcsec">
+          <h2 aria-live="polite">{hits.length} result{hits.length === 1 ? "" : "s"} for “{t}”</h2>
+          {hits.length ? (
+            <HcList items={hits} />
+          ) : (
+            <div className="card hcnone">
+              <strong>No answers found.</strong>
+              <span className="muted">Try other words, or browse the topics. You can also <Link href="/contact">contact the team</Link>.</span>
+              <button type="button" className="btn sm ghost" onClick={() => change("")}>Clear search</button>
             </div>
-          </section>
-          <HcTopics topics={topics} />
-          <HcContact />
-        </>
+          )}
+        </section>
+      ) : (
+        <div className="axcols">
+          <aside className="card axtopics">
+            <h2>Topics</h2>
+            <ul>
+              {topics.map((c) => (
+                <li key={c.id}>
+                  <Link href={`/help/${c.id}`}>
+                    <span className="axic"><Ic n={c.icon} s={20} /></span>
+                    <span className="grow">{c.title}</span>
+                    <span className="axn">{c.n}<span className="sr"> articles</span></span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </aside>
+          <div className="stack" style={{ gap: 16, minWidth: 0 }}>
+            <section className="card axpop">
+              <h2>Most asked questions</h2>
+              {popular.map((a, i) => (
+                <details key={a.id} open={i === 0}>
+                  <summary>{a.title}</summary>
+                  <p className="muted">{a.summary}</p>
+                  <Link className="small" href={`/help/${a.id}`}>Read the full answer →</Link>
+                </details>
+              ))}
+            </section>
+            <div className="axhelp">
+              <div className="card axbox ai">
+                <span className="axbig"><Ic n="spark" s={22} /></span>
+                <b>Ask the Hub AI</b>
+                <span className="small muted">Get an instant answer in plain language.</span>
+                <Link className="btn sm" href="/ask" prefetch={false}>Ask a question</Link>
+              </div>
+              <div className="card axbox">
+                <span className="axbig"><Ic n="mail" s={22} /></span>
+                <b>Email the team</b>
+                <span className="small muted">support@smehub.ca · reply within 1 working day</span>
+                <Link className="btn sm ghost" href="/contact">Contact us</Link>
+              </div>
+              <div className="card axbox">
+                <span className="axbig"><Ic n="shield" s={22} /></span>
+                <b>Safety and rules</b>
+                <span className="small muted">Report a problem or read the community guidelines.</span>
+                <Link className="btn sm ghost" href="/help/safety">Go to safety</Link>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

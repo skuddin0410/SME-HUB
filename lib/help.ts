@@ -59,3 +59,16 @@ export function searchHelp(kb: HelpKb, q: string): HelpHit[] {
 /** Topic icons in the zip's icon set (hcIc). */
 const HCIM: Record<string, string> = { spark: "home", user: "edit", feed: "list", story: "play", group: "grid", ai: "spark", pen: "doc", compass: "pin" };
 export const topicIcon = (n: string) => HCIM[n] ?? n;
+
+/** Help home lists the team can edit (Update 8). Popular searches: short words, up to 12. Most asked: the team's choice, else the articles marked popular; 8 at most. */
+export function helpHomeLists(kb: HelpKb, set: { chips?: unknown; popular?: unknown }) {
+  const chips = (Array.isArray(set.chips) ? set.chips : [])
+    .filter((c): c is string => typeof c === "string")
+    .map((c) => c.trim().slice(0, 40))
+    .filter(Boolean)
+    .slice(0, 12);
+  const byId = new Map(kb.articles.map((a) => [a.id, a]));
+  const chosen = (Array.isArray(set.popular) ? set.popular : []).filter((id): id is string => typeof id === "string" && byId.has(id)).map((id) => byId.get(id)!);
+  const list = (chosen.length ? chosen : kb.articles.filter((a) => a.popular)).slice(0, 8);
+  return { chips, popular: list.map((a) => ({ id: a.id, title: a.title, summary: a.summary })) };
+}

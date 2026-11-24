@@ -1,6 +1,6 @@
 /** Defaults for the team settings pages. A saved row only holds what the team changed; the rest comes from here. */
-export type SettingsKey = "profiles" | "feed" | "groups" | "blogs" | "hashtags" | "stories" | "automations";
-export const SETTINGS_KEYS: SettingsKey[] = ["profiles", "feed", "groups", "blogs", "hashtags", "stories", "automations"];
+export type SettingsKey = "profiles" | "feed" | "groups" | "blogs" | "hashtags" | "stories" | "automations" | "help";
+export const SETTINGS_KEYS: SettingsKey[] = ["profiles", "feed", "groups", "blogs", "hashtags", "stories", "automations", "help"];
 export const STTYPES: [string, string][] = [["jpg", "JPG"], ["png", "PNG"], ["webp", "WebP"], ["gif", "GIF"], ["mp4", "MP4"], ["mov", "MOV"], ["webm", "WebM"]];
 
 /** The choices in the workflow builder. */
@@ -80,6 +80,8 @@ export const DEFAULTS = {
     types: { jpg: true, png: true, webp: true, gif: false, mp4: true, mov: true, webm: true } as Record<string, boolean>,
     maxMB: "25", maxVid: "30", perMember: "3", perStory: "5", showViewers: true, likes: true, cleanup: false,
   },
+  /** Help home (Update 8): the popular-search buttons, and which articles show under "Most asked questions" (empty = the articles marked popular). */
+  help: { chips: ["reset password", "add my business", "sell my business", "connect", "upgrade", "report"], popular: [] as string[] },
   automations: (() => {
     const a = flowFromTpl(AUTPL[1]); a.steps = a.steps.slice(0, 3);
     return { flows: [a, flowFromTpl(AUTPL[0]), flowFromTpl(AUTPL[4])] as Flow[], queue: [] as { day: string; time: string; text: string }[] };

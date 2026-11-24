@@ -100,7 +100,7 @@ export async function deleteReportCategory(form: FormData) {
   revalidatePath("/moderation");
 }
 
-const PAGES = ["profiles", "feed", "groups", "blogs", "hashtags", "stories", "automations"];
+const PAGES = ["profiles", "feed", "groups", "blogs", "hashtags", "stories", "automations", "help"];
 export type SaveState = { error?: string; ok?: boolean };
 
 /** One settings page = one row. The page sends its whole choices object as JSON. */

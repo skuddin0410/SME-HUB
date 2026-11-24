@@ -97,3 +97,34 @@ for (const p of ["/automations", "/bizadmin", "/bizadmin?tab=all", "/bizadmin?ta
     });
   }
 }
+
+// Update 8: the team picks the Help home's popular searches and most asked questions.
+test("Help Centre settings: members see the gate, the team edits searches and questions", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto("/helpsettings", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "This page is for the Hub team" })).toBeVisible();
+  await context.clearCookies();
+  await context.addCookies([memberCookie(baseURL!, true)]);
+  await page.goto("/helpsettings", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "Help Centre settings", level: 1 })).toBeVisible();
+  const save = page.getByRole("button", { name: "Save changes" });
+  await expect(save).toBeDisabled();
+  await page.getByRole("button", { name: "Remove report" }).click();
+  await page.getByLabel("Add a popular search").fill("invoices");
+  await page.getByRole("button", { name: "Add", exact: true }).click();
+  await expect(page.locator(".tag", { hasText: "invoices" })).toBeVisible();
+  await expect(page.getByText("Until you choose, Help home shows the articles marked popular.")).toBeVisible();
+  await expect(page.getByText("8 chosen. Remove one to add another.")).toBeVisible();
+  await page.getByRole("button", { name: "Create your account", exact: true }).click(); // take one off
+  await page.getByRole("button", { name: "Move Edit your profile up" }).click();
+  await expect(page.locator(".setgrid ol li").first()).toContainText("What is SME Hub?");
+  await expect(page.locator(".setgrid ol li").nth(1)).toContainText("Edit your profile");
+  await expect(save).toBeEnabled();
+});
+
+test("Help Centre settings has no serious accessibility problems", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!, true)]);
+  await page.goto("/helpsettings", { waitUntil: "networkidle" });
+  const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  expect(r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${v.id}: ${v.nodes.length} (${v.nodes[0]?.target?.join(" ")})`)).toEqual([]);
+});

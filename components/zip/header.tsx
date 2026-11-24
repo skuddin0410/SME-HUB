@@ -42,6 +42,7 @@ const TEAM_MENU: [string, NavItem[]][] = [
       { label: "Member blogs", href: "/blogsettings" },
       { label: "Hashtags", href: "/hashtagsettings" },
       { label: "Stories", href: "/storysettings" },
+      { label: "Help Centre", href: "/helpsettings" },
       { label: "Billing", href: "/admin/billing" },
     ],
   ],

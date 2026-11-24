@@ -1473,3 +1473,13 @@ select t.expect('the summary is empty for members', (select count(*) = 0 from he
 set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
 select t.expect('one answer per person, and answering again changes it', (select yes = 1 and no = 1 from help_feedback_summary() where article_id = 'a7'));
 reset role;
+
+-- ===== Update 8: Help home settings =====
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect_denied('a member cannot change the Help home lists', $$insert into hub_settings (key, value) values ('help', '{"chips": ["x"]}')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+insert into hub_settings (key, value, updated_by) values ('help', '{"chips": ["invoices"], "popular": ["a7"]}', auth.uid());
+select t.expect('the team saves the Help home lists', (select value->'chips'->>0 = 'invoices' from hub_settings where key = 'help'));
+set role anon;
+select t.expect('visitors read the Help home lists', (select count(*) = 1 from hub_settings where key = 'help'));
+reset role;
