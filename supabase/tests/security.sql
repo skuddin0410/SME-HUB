@@ -1455,3 +1455,21 @@ update sale_listings set price = 300000 where id = '00000000-0000-0000-0000-0000
 select t.expect('after a downgrade, existing listings stay and can be edited', (select price = 300000 from sale_listings where id = '00000000-0000-0000-0000-0000000005c2'));
 reset role;
 select t.expect('the for-sale writes are closed to visitors', not has_function_privilege('anon', 'sale_enquire(uuid,text,text,text,boolean)', 'execute') and not has_function_privilege('anon', 'sale_set_hidden(uuid,boolean)', 'execute') and not has_function_privilege('anon', 'sale_share_docs(uuid)', 'execute') and not has_function_privilege('authenticated', 'sale_card(sale_listings,boolean)', 'execute'));
+
+-- ===== Update 7: Help Centre feedback =====
+reset role; set request.jwt.claim.sub = '';
+insert into help_topics (id, title) values ('t7', 'Topic') on conflict do nothing;
+insert into help_articles (id, topic, title, html) values ('a7', 't7', 'Article', '<p>x</p>') on conflict do nothing;
+set role anon;
+select help_vote('a7', false, '22222222-2222-2222-2222-222222222222');
+select help_vote('a7', true, '22222222-2222-2222-2222-222222222222');
+select help_vote('a7', true, 'not-a-key');
+select t.expect_denied('visitors cannot read help feedback', $$select 1 from help_feedback$$);
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select help_vote('a7', false);
+select t.expect('members cannot read help feedback', (select count(*) = 0 from help_feedback));
+select t.expect_denied('members cannot write feedback directly', $$insert into help_feedback (article_id, voter, helpful) values ('a7', 'x', true)$$);
+select t.expect('the summary is empty for members', (select count(*) = 0 from help_feedback_summary()));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+select t.expect('one answer per person, and answering again changes it', (select yes = 1 and no = 1 from help_feedback_summary() where article_id = 'a7'));
+reset role;

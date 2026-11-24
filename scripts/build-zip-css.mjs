@@ -34,4 +34,6 @@ build("design/zip-courses.css", "styles/courses.css");
 build("design/zip-forsale.css", "styles/forsale.css");
 // Update 6 (get started card): code/get-started-blue-steps.css from that package, loaded after the Update 3 styles as the hand-off says
 build("design/zip-get-started.css", "styles/get-started.css");
+// Update 7 (Help Centre inside the site): code/help-centre.css from that package, scoped the same way
+build("design/zip-help.css", "styles/help.css");
 console.log("ok");

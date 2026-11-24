@@ -1,0 +1,9 @@
+/* Update 7: contrast fixes, as for Courses and Businesses for sale (the hand-off's muted grey and accent are too faint here) */
+.zip .hccrumb, .zip .hccrumb > span, .zip .hctop .muted { color: #66666E; }
+.dark .zip .hccrumb, .dark .zip .hccrumb > span, .dark .zip .hctop .muted { color: var(--muted); }
+.dark .zip .hctopic-n { color: var(--link); }
+/* links inside a line of text are underlined, so they don't rely on colour alone */
+.zip .hccrumb a, .zip .hcbody a, .zip .hcnone a, .zip .hcfb a, .zip .hcmain > p.small a { text-decoration: underline; text-underline-offset: 2px; }
+/* the site's base styles remove list bullets; articles use them (as in the hand-off) */
+.zip .hcbody ul { list-style: disc; }
+.zip .hcbody ul > li { display: list-item; }

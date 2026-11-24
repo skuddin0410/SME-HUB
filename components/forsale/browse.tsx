@@ -103,7 +103,7 @@ export function Browse({ all, tabs }: { all: SaleCard[]; tabs: { mine: number; u
           <div className="card fstips">
             <h2 style={{ fontSize: 15 }}><Ic n="shield" s={16} /> Buying safely</h2>
             <span className="small">Never send a deposit through the Hub. Check the numbers with your accountant, and use a lawyer for the purchase agreement.</span>
-            <Link className="small" href="/help/a/buy-a-business">Read our buyer’s guide</Link>
+            <Link className="small" href="/help/buy-a-business">Read our buyer’s guide</Link>
           </div>
         </aside>
         <section className="bdmain">

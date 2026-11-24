@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
       // the rest of smehub.ca's menu, so old links and bookmarks keep working
       ...[
         ["/frequently-asked-questions", "/help"],
+        ["/faq", "/help"],
         ["/general-terms-conditions", "/policies/terms"],
         ["/small-business-hub-community-guidelines", "/policies/community-guidelines"],
         ["/smb-hub-discrimination-policy", "/policies/discrimination-policy"],
@@ -40,6 +41,10 @@ const nextConfig: NextConfig = {
         ["/login", "/auth/login"],
         ["/register", "/auth/sign-up"],
       ].map(([source, destination]) => ({ source, destination, permanent: true })),
+      // Update 7: the Help Centre moved inside the site, with one address per topic and per article
+      { source: "/help/a/:id", destination: "/help/:id", permanent: true },
+      { source: "/help/c/:id", destination: "/help/:id", permanent: true },
+      { source: "/help/search", destination: "/help", permanent: true },
     ];
   },
   async headers() {

@@ -64,7 +64,7 @@ export const SOCIAL = {
 };
 
 export const EVENTS: NavItem[] = [
-  { label: "Small Business Expo", href: "https://www.smeexpo.ca/" },
+  { label: "Small Business Show", href: "https://www.smeexpo.ca/" },
   { label: "Small Business Summit", href: "https://www.smesummit.ca/" },
   { label: "Small Business Awards", href: "https://www.smeawards.ca/" },
   { label: "Canada Business Talks", href: "https://www.smemagazine.ca/business-talks" },

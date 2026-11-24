@@ -24,6 +24,7 @@ const FOOTER_LINKS = [
   ["Community guidelines", "/policies/community-guidelines"],
   ["Discrimination policy", "/policies/discrimination-policy"],
   ["Terms and conditions", "/policies/terms"],
+  ["Privacy policy", "/policies/privacy-policy"],
 ];
 
 const NOTE_TEXT = {

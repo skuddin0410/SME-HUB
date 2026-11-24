@@ -10,7 +10,7 @@ test("about page has the story, benefits and resource centres", async ({ page })
 });
 
 test("help centre shows the contact details", async ({ page }) => {
-  await page.goto("/help/a/contact-support", { waitUntil: "domcontentloaded" });
+  await page.goto("/help/contact-support", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("support@smehub.ca").first()).toBeVisible();
 });
 
