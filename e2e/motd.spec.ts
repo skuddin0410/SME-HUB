@@ -22,7 +22,10 @@ test("members see Member of the Day in the left panel, under the menu and above 
   await expect(card.locator(".motd-foot")).toHaveText(`${today} · Want to be featured?`);
   await expect(card.getByRole("link", { name: "Want to be featured?" })).toHaveAttribute("href", "/spotlight");
   // everything in this card is left-aligned
-  expect(await card.locator(".motd-b").evaluate((el) => [getComputedStyle(el).textAlign, getComputedStyle(el).alignItems])).toEqual(["left", "flex-start"]);
+  // everything starts at the same left edge: photo, name, role, quote, buttons and footer
+  const lefts = await card.locator(".motd-av, .motd-n, .motd-q, .motd-acts, .motd-foot").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
+  expect(new Set(lefts).size).toBe(1);
+  expect(await card.locator(".motd-b").evaluate((el) => getComputedStyle(el).textAlign)).toBe("left");
   await card.getByRole("button", { name: "+ Connect" }).click();
   await expect(card.getByRole("button", { name: "Request sent" })).toBeVisible();
   // the weekly rhythm wording
