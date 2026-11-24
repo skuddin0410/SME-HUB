@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/hub";
 import { BusinessForm } from "@/components/business-form";
+import { getTaxo } from "@/lib/categories-server";
 import { getBusinessSettings } from "@/lib/business-server";
 import { pageMeta } from "@/lib/seo";
 import "@/styles/zip.css";
@@ -24,7 +25,7 @@ export default async function AddBusinessPage() {
         </div>
         {canAdd ? (
           <div className="cols">
-            <section className="mid"><BusinessForm categories={settings.categories} /></section>
+            <section className="mid"><BusinessForm categories={settings.categories} specs={Object.fromEntries((await getTaxo()).map((t) => [t[0], t[2]]))} /></section>
             <aside className="rail" style={{ flex: "1 1 300px" }}>
               <div className="card">
                 <h2>Is it already listed?</h2>

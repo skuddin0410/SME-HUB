@@ -1,0 +1,23 @@
+/* ===== Community resource centres ===== */
+.cmhero{border-radius:22px;overflow:hidden;background:#101828;color:#fff;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch}
+.cmhero img{display:block;height:100%;max-height:420px;width:auto;aspect-ratio:auto;object-fit:contain}
+
+.cmhin{padding:36px;align-self:center;display:flex;flex-direction:column;gap:14px;max-width:680px}
+.cmhin h1{font:700 clamp(32px,4.4vw,50px)/1.05 var(--display);letter-spacing:-.8px;margin:0}
+.cmsub{font-size:17px;line-height:1.6;color:#D0D5DD;margin:0}
+.cmfacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#1F2937;border-radius:18px;overflow:hidden}
+.cmfact{background:#101828;padding:20px;display:flex;flex-direction:column;gap:4px}
+.cmfv{font:700 26px/1.1 var(--display);color:#fff;margin:4px 0 2px}
+.pgart a.pglink{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px;color:var(--link);text-decoration:none}
+.pgart a.pglink:hover{text-decoration:underline}
+a.pglc{text-decoration:none}
+.cmgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}@media (max-width:1000px){.cmgrid{grid-template-columns:1fr 1fr}}@media (max-width:600px){.cmgrid{grid-template-columns:1fr}}
+.cmcard{display:grid;grid-template-columns:150px minmax(0,1fr);border-radius:18px;overflow:hidden;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.cmcard:hover{border-color:var(--link);box-shadow:0 6px 22px rgba(20,23,31,.07)}
+.cmcard img{width:150px;height:100%;min-height:225px;object-fit:cover;object-position:top}
+.cmcard>div{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.cmcard h2{font:600 20px var(--display);margin:0}.cmcard p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.55;flex:1}
+.cmkey{font-size:13px;font-weight:600;color:#B42318;background:#FEF3F2;border-radius:999px;padding:4px 10px;align-self:flex-start}
+.cmgo{font-weight:600;font-size:14px;color:var(--link)}
+@media (max-width:900px){.cmfacts{grid-template-columns:1fr 1fr}.cmhin{padding:24px}}
+@media (max-width:760px){.cmhero{grid-template-columns:1fr}.cmhero img{width:100%;height:340px;max-height:none;object-fit:cover;object-position:center 15%}}

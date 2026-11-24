@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { saveBusiness, type BizState } from "@/app/(hub)/business-actions";
 import { ZipSubmit } from "@/components/zip/submit";
 import { useImageUpload } from "@/lib/upload";
@@ -12,6 +12,7 @@ export type BusinessValues = {
   name?: string;
   kind?: string;
   category?: string;
+  sub?: string;
   city?: string;
   province?: string;
   description?: string;
@@ -25,8 +26,10 @@ export function Notice({ state }: { state: BizState }) {
 }
 
 /** Five quick details to start a page; everything else lives on the manage screen. */
-export function BusinessForm({ values = {}, categories }: { values?: BusinessValues; categories: string[] }) {
+export function BusinessForm({ values = {}, categories, specs = {} }: { values?: BusinessValues; categories: string[]; specs?: Record<string, string[]> }) {
   const [state, action] = useActionState<BizState, FormData>(saveBusiness, {});
+  const [cat, setCat] = useState(values.category ?? "");
+  const subs = specs[cat] ?? [];
   const logo = useImageUpload("logo");
   const cover = useImageUpload("cover");
   return (
@@ -39,11 +42,19 @@ export function BusinessForm({ values = {}, categories }: { values?: BusinessVal
       <div className="bz2col">
         <label>
           Category
-          <select name="category" required defaultValue={values.category ?? ""} className="field">
+          <select name="category" required value={cat} onChange={(e) => setCat(e.target.value)} className="field">
             <option value="">Choose a category</option>
             {categories.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
+          </select>
+        </label>
+        {/* Update 15: the speciality, from the master list */}
+        <label>
+          Speciality
+          <select key={cat} name="sub" defaultValue={cat === values.category ? (values.sub ?? "") : ""} disabled={!subs.length} className="field">
+            <option value="">{subs.length ? "Choose what fits best" : "Choose a category first"}</option>
+            {subs.map((x) => <option key={x} value={x}>{x}</option>)}
           </select>
         </label>
         <label>

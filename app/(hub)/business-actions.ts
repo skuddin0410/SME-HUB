@@ -45,6 +45,8 @@ export async function saveBusiness(_prev: BizState, form: FormData): Promise<Biz
     description: text(form, "description").slice(0, 1000),
     website: websiteUrl(text(form, "website")).slice(0, 200),
   };
+  // Update 15: the speciality (only sent when the form has the picker)
+  if (form.has("sub")) fields.sub = text(form, "sub").slice(0, 80);
   const logo = ownUpload(form, "logo_url", userId);
   if (logo) fields.logo_url = logo;
   const cover = ownUpload(form, "cover_url", userId);

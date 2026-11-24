@@ -1557,3 +1557,34 @@ select t.expect_denied('members cannot write the sent-reminders log', $$insert i
 reset role; set role anon;
 select t.expect_denied('visitors cannot read deadlines', $$select * from deadline_settings$$);
 reset role;
+
+-- ===== Grant Finder (Update 15) =====
+reset role; set role anon; set request.jwt.claim.sub = '';
+select t.expect('visitors can read the programs', (select count(*) = 12 from grant_programs));
+select t.expect_denied('visitors cannot add programs', $$insert into grant_programs (id, name, type) values ('fake', 'Fake grant', 'grant')$$);
+select t.expect_denied('visitors cannot use the AI allowance', $$select grant_ai_take('question')$$);
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+insert into grant_saves (user_id, program_id) values (auth.uid(), 'csbfp');
+select t.expect('a member saves a program', (select count(*) = 1 from grant_saves where user_id = auth.uid()));
+select t.expect('a free member gets 10 AI questions and 1 draft a month', (select (grant_ai_left()->>'questions')::int = 10 and (grant_ai_left()->>'drafts')::int = 1));
+select t.expect('the first draft is allowed', grant_ai_take('draft'));
+select t.expect('the second draft in a month is not', not grant_ai_take('draft'));
+select t.expect_denied('members cannot reset their AI allowance', $$update grant_ai_use set drafts = 0 where user_id = auth.uid()$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+select t.expect('other members cannot see anyone else''s saves', (select count(*) = 0 from grant_saves));
+select t.expect_denied('members cannot add programs', $$insert into grant_programs (id, name, type) values ('fake', 'Fake grant', 'grant')$$);
+
+reset role;
+
+-- ===== Master categories (Update 15) =====
+reset role;
+select t.expect('32 industries and 335 specialities', (select count(*) = 32 from industries) and (select count(*) = 335 from specialities));
+select t.expect('old for-sale industry names move to the new list', (select industry = 'Food & Drink' from sale_listings where slug = 'secret-bakery'));
+select t.expect('the directory uses the same list', (select 'Retail & Shops' = any (categories) and not ('Retail' = any (categories)) from business_settings));
+select t.expect_denied('a speciality must belong to the industry', $$update companies set category = 'Legal', sub = 'Plumbers' where id = (select id from companies limit 1)$$);
+set request.jwt.claim.sub = ''; set role anon;
+select t.expect('visitors can read the list', (select count(*) > 0 from specialities));
+select t.expect_denied('visitors cannot change the list', $$insert into industries (name) values ('Fake')$$);
+select t.expect('anyone can sign up for the weekly briefing', briefing_subscribe('owner@example.ca'));
+select t.expect_denied('only the team reads the sign-ups', $$select * from briefing_signups$$);
+reset role;

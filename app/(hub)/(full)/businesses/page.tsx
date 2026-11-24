@@ -10,11 +10,13 @@ import { KINDS } from "@/lib/business";
 import { getBusinessSettings } from "@/lib/business-server";
 import { PROVINCES } from "@/lib/profile-extra";
 import { pageMeta } from "@/lib/seo";
+import { CATSUBN, TAXO, catTerms } from "@/lib/categories";
 import { ReadyBanner } from "@/components/ready/card";
 import { logDirectorySearch } from "@/app/(hub)/ready-actions";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import "@/styles/forsale.css";
+import "@/styles/categories.css";
 
 export const metadata = pageMeta({ title: "Business directory", description: "Find Canadian small businesses by name, category, city and member rating in the SME Hub directory.", path: "/businesses" });
 
@@ -22,17 +24,14 @@ const SIZE = 24;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
 const KIND_LABEL: Record<string, string> = { storefront: "Visit in person", service: "Comes to you", online: "Online" };
-const CAT_ICON: Record<string, string> = {
-  "Food & Drink": "store", "Catering & Events": "cal", Retail: "tag", "Professional Services": "users", "Finance & Accounting": "coin", Legal: "book",
-  "Construction & Trades": "building", "Home Services": "home", Technology: "spark", "Logistics & Transport": "send", "Health & Wellness": "help",
-  Manufacturing: "building", "Marketing & Design": "edit",
-};
+// Update 15: icons from the master category list
+const CAT_ICON: Record<string, string> = Object.fromEntries(TAXO.map((t) => [t[0], t[1]]));
 const BCOL = ["#1D4ED8", "#B91C1C", "#047857", "#7C3AED", "#B45309", "#0E7490", "#BE185D", "#4D7C0F"];
 const hsh = (s: string) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
 const hue = (s: string) => [212, 12, 152, 32, 268, 190, 340, 96][hsh(s) % 8];
 
 type Row = {
-  id: string; slug: string; name: string; category: string; description: string; logo_url: string | null; cover_url: string | null;
+  id: string; slug: string; name: string; category: string; sub?: string; description: string; logo_url: string | null; cover_url: string | null;
   city: string; province: string; kind: string; rating: number | null; reviews: number; followers: number; is_open: boolean; claimable: boolean;
 };
 type Facets = { total: number; open_now: number; categories: { category: string; n: number }[]; provinces: string[]; cities: { city: string; province: string }[] };
@@ -83,7 +82,7 @@ function Card({ b, list }: { b: Row; list: boolean }) {
             <strong className="bzname">{b.name}</strong>
             {b.claimable && <span className="pill">Unclaimed</span>}
           </span>
-          <span className="muted small">{b.category} · {place}</span>
+          <span className="muted small">{b.category}{b.sub ? ` · ${b.sub}` : ""} · {place}</span>
           <span className="small bzdesc">{b.description}</span>
           <span className="row" style={{ gap: 12, flexWrap: "wrap" }}>
             <Rating b={b} />
@@ -109,7 +108,7 @@ function Card({ b, list }: { b: Row; list: boolean }) {
           <strong className="bzname">{b.name}</strong>
           {b.claimable && <span className="pill">Unclaimed</span>}
         </span>
-        <span className="muted small">{b.category} · {place}</span>
+        <span className="muted small">{b.category}{b.sub ? ` · ${b.sub}` : ""} · {place}</span>
         <span className="small bzdesc">{b.description}</span>
         <span className="bzc2foot">
           <Rating b={b} />
@@ -138,7 +137,12 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
   const page = Math.max(1, Number(one(sp.page)) || 1);
 
   const [{ data }, facetRes, saleRes] = await Promise.all([
-    supabase.rpc("search_businesses", { q: ftsQuery(q) ?? "", p_cat: category, p_prov: province, p_city: city, p_kind: kind, p_open: open, p_sort: sort, p_limit: SIZE, p_offset: (page - 1) * SIZE }),
+    // Update 15: also match specialities; until the database has the new search, fall back to the old one
+    (async () => {
+      const args = { q: ftsQuery(q) ?? "", p_cat: category, p_prov: province, p_city: city, p_kind: kind, p_open: open, p_sort: sort, p_limit: SIZE, p_offset: (page - 1) * SIZE };
+      const r = await supabase.rpc("search_businesses", { ...args, p_terms: catTerms(q) });
+      return r.error ? supabase.rpc("search_businesses", args) : r;
+    })(),
     supabase.rpc("directory_facets"),
     supabase.rpc("sale_browse"),
   ]);
@@ -234,6 +238,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
               <small>{c.n}</small>
             </Link>
           ))}
+          <Link className="bdcat xcatmore" href="/categories"><Ic n="grid" s={18} /><span>All {TAXO.length} industries</span><small>{CATSUBN} specialities</small></Link>
         </nav>
 
         <div className="bdcols">

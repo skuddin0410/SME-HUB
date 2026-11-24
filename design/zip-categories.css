@@ -1,0 +1,14 @@
+.xcatall{display:inline-flex;align-items:center;gap:8px;margin:4px 0 14px;font-weight:600;font-size:14.5px;color:var(--link);text-decoration:none}
+.xcatall:hover{text-decoration:underline}
+.xcatgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.xcat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.xcath{display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;text-align:left;cursor:pointer;color:var(--ink);font:inherit}
+.xcath>span:nth-child(2){flex:1;display:flex;flex-direction:column}
+.xcath b{font:600 16.5px var(--display)}.xcath small{color:var(--muted);font-size:13px}
+.xcath:hover b{color:var(--link)}
+.xcatico{width:40px;height:40px;border-radius:10px;background:#FEF2F2;color:var(--brand);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.xcatsubs{display:flex;flex-wrap:wrap;gap:6px}
+.xcatsubs .chip{font-size:13px}
+@media (max-width:800px){.xcatgrid{grid-template-columns:1fr}}
+.xcatmore{text-decoration:none;color:var(--link)!important;border-style:dashed!important}
+.xcatmore small{color:var(--muted)}

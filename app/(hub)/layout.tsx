@@ -13,6 +13,7 @@ import "@/styles/motd.css";
 import "@/styles/motd-extra.css";
 import "@/styles/province.css";
 import "@/styles/tools.css";
+import "@/styles/grants.css";
 import { HideOn } from "@/components/hide-on";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 import { ReadyProvider } from "@/components/ready/provider";

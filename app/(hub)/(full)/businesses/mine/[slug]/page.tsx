@@ -7,6 +7,7 @@ import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import { SubmitButton } from "@/components/hub-client";
 import { BusinessForm } from "@/components/business-form";
+import { getTaxo } from "@/lib/categories-server";
 import { DetailsForm, EventForm, JobForm, PhotoForm, ProductForm, ServiceForm, TeamAdd, type DetailsValues } from "@/components/business-manage";
 import { deleteEvent, deleteJob, deletePhoto, deleteProduct, deleteService, removeTeamMember, setTeamRole, submitBusiness } from "@/app/(hub)/business-actions";
 import { ROLES, ROLE_CAN, STATUS_LABEL, money } from "@/lib/business";
@@ -100,7 +101,7 @@ export default async function ManageBusinessPage({ params, searchParams }: { par
 <>
       <>
         <h2 style={{ font: "700 16px var(--display)" }}>Basics</h2>
-        <BusinessForm key={c.updated_at} categories={settings.categories} values={{ id: c.id, name: c.name, kind: c.kind, category: c.category, city: c.city, province: c.province, description: c.description, website: c.website }} />
+        <BusinessForm key={c.updated_at} categories={settings.categories} specs={Object.fromEntries((await getTaxo()).map((t) => [t[0], t[2]]))} values={{ id: c.id, name: c.name, kind: c.kind, category: c.category, sub: c.sub, city: c.city, province: c.province, description: c.description, website: c.website }} />
       </>
 
       <div className="card">

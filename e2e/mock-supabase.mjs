@@ -58,6 +58,17 @@ http
       return;
     }
     if (url.pathname === "/__posts") return res.end(JSON.stringify(NEW_POSTS));
+    // Update 15: Grant Finder programs (public)
+    if (url.pathname === "/rest/v1/grant_programs" && (url.searchParams.get("select") || "").includes("by_org")) {
+      const G = [
+        { id: "canexport", name: "CanExport SMEs", by_org: "Trade Commissioner Service (federal)", type: "grant", amount: "Up to $50,000", use_for: "Selling to new markets outside Canada", prov: "CA", deadline: "Opens in intakes; check the official page", checked: "Nov 2026", fit: "Your business sells products you could export", who: ["Canadian business with 1 to 500 employees"], how: ["Check you qualify on the official page", "Apply online on the official page"], url: "https://www.tradecommissioner.gc.ca/" },
+        { id: "starterplus", name: "Starter Company Plus", by_org: "Ontario, through local Small Business Enterprise Centres", type: "grant", amount: "Up to $5,000", use_for: "Starting or growing a small business", prov: "ON", deadline: "Depends on your local centre", checked: "", fit: "You are in Ontario", who: ["Ontario resident, 18 or older"], how: ["Contact your local Small Business Enterprise Centre"], url: "https://www.ontario.ca/page/starter-company-plus" },
+        { id: "abjg", name: "Canada-Alberta Job Grant", by_org: "Alberta", type: "train", amount: "Part of training costs", use_for: "Training your staff", prov: "AB", deadline: "Ongoing", checked: "", fit: "", who: ["Alberta employer"], how: ["Apply before the training starts"], url: "https://www.alberta.ca/canada-alberta-job-grant" },
+      ];
+      const id = (url.searchParams.get("id") || "").replace(/^eq\./, "");
+      if (id) { const g = G.find((x) => x.id === id); if (!g) { res.statusCode = String(req.headers.accept).includes("vnd.pgrst.object") ? 406 : 200; return res.end(String(req.headers.accept).includes("vnd.pgrst.object") ? "{}" : "[]"); } return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? g : [g])); }
+      return res.end(JSON.stringify(G));
+    }
     // Update 11: Member of the Day, and the team's picks
     const TODAY = new Date().toLocaleDateString("en-CA", { timeZone: "America/Toronto" });
     if (url.pathname === "/rest/v1/rpc/motd_today") return res.end(JSON.stringify(TODAY));
@@ -238,7 +249,7 @@ http
     }
     // businesses: a directory with two pages, one published business with services and a review
     const BIZ_ID = "00000000-0000-4000-8000-0000000000c1";
-    const SETTINGS = { create_mode: "all", member_limit: 3, pub_approval: true, review_approval: false, criteria: ["Quality", "Value", "Communication"], categories: ["Food & Drink", "Legal", "Retail", "Other"], tabs: { photos: true, events: true, jobs: true, shop: true } };
+    const SETTINGS = { create_mode: "all", member_limit: 3, pub_approval: true, review_approval: false, criteria: ["Quality", "Value", "Communication"], categories: ["Food & Drink", "Legal", "Retail & Shops", "Other"], tabs: { photos: true, events: true, jobs: true, shop: true } };
     const BIZ = { id: BIZ_ID, slug: "maple-demo", name: "Maple Demo Bakery", category: "Food & Drink", description: "Small-batch bread and pastry.", about: "Small-batch bread, pastry and wholesale boxes for local cafes.", website: "https://maple.example.ca", logo_url: null, cover_url: null, kind: "storefront", status: "published", city: "Toronto", province: "ON", tz: "America/Toronto", service_area: "Greater Toronto Area", booking_url: "", primary_action: "message", appointments: false, hours: { mon: [["09:00", "17:00"]], tue: [["09:00", "17:00"]] }, closures: [], social: {}, claimable: false, owner_id: MEMBER.id, show_address: true, show_email: true, show_phone: true, show_whatsapp: false, updated_at: new Date().toISOString(), created_at: new Date().toISOString() };
     const wantsObject = String(req.headers.accept).includes("vnd.pgrst.object");
     const one = (row) => res.end(JSON.stringify(wantsObject ? row : [row]));
@@ -248,7 +259,7 @@ http
         { id: "00000000-0000-4000-8000-0000000000c2", slug: "asante-demo", name: "Asante Demo Legal", category: "Legal", description: "Contracts and leases.", logo_url: null, cover_url: null, city: "Calgary", province: "AB", kind: "service", rating: null, reviews: 0, followers: 0, is_open: false, claimable: true },
       ]));
     }
-    if (url.pathname === "/rest/v1/rpc/directory_facets") return res.end(JSON.stringify({ total: 4, open_now: 1, categories: [{ category: "Food & Drink", n: 2 }, { category: "Retail", n: 2 }], provinces: ["AB", "ON"], cities: [{ city: "Toronto", province: "ON" }, { city: "Calgary", province: "AB" }] }));
+    if (url.pathname === "/rest/v1/rpc/directory_facets") return res.end(JSON.stringify({ total: 4, open_now: 1, categories: [{ category: "Food & Drink", n: 2 }, { category: "Retail & Shops", n: 2 }], provinces: ["AB", "ON"], cities: [{ city: "Toronto", province: "ON" }, { city: "Calgary", province: "AB" }] }));
     if (url.pathname === "/rest/v1/rpc/business_map_cities") return res.end(JSON.stringify([{ city: "Toronto", province: "ON", businesses: 3 }, { city: "Calgary", province: "AB", businesses: 1 }]));
     if (url.pathname === "/rest/v1/rpc/business_contact") return res.end(JSON.stringify([{ street: "12 Queen St", postal: "M5V 1A1", email: "hello@maple.example.ca", phone: "(416) 555-0100", whatsapp: null }]));
     if (url.pathname === "/rest/v1/rpc/business_follower_count") return res.end("3");

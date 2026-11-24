@@ -42,11 +42,14 @@ test("business tools: the GST/HST calculator gives the zip's checked answers", a
   await expect(page.getByText("$1,130.00").first()).toBeVisible();
 });
 
-test("a resource centre has the guide's sections and start-here links", async ({ page }) => {
+test("a resource centre has the facts, where to start and official links (Update 15)", async ({ page }) => {
   await page.goto("/resources/indigenous-entrepreneurs", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Indigenous Entrepreneurs Resource Centre", level: 1 })).toBeVisible();
-  await expect(page.getByText("Holistic support").first()).toBeVisible();
-  await expect(page.getByRole("link", { name: "Find an advisor" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Indigenous entrepreneurs", level: 1 })).toBeVisible();
+  await expect(page.locator(".cmfact")).toHaveCount(4);
+  await expect(page.getByRole("heading", { name: "Where to start" })).toBeVisible();
+  await expect(page.locator("a.pglc").first()).toHaveAttribute("target", "_blank");
+  await expect(page.getByText(/Reviewed November 2026/).first()).toBeVisible();
   await page.goto("/resources", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("link", { name: /Women Entrepreneurs Resource Centre/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Support for every Canadian entrepreneur", level: 1 })).toBeVisible();
+  await expect(page.locator("a.cmcard")).toHaveCount(5);
 });

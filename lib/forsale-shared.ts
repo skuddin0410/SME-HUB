@@ -1,7 +1,9 @@
 /** Businesses for Sale (Update 5): the hand-off's lists, labels and formatting, shared by the server and the browser. */
+import { CATNAMES, TAXO } from "@/lib/categories";
 
-export const FS_IND = ["Food and drink", "Construction and trades", "Transport and logistics", "Energy and environment", "Retail", "Professional services", "Health and wellness", "Manufacturing", "Tech and online"] as const;
-export const FS_IND_ICON: Record<string, string> = { "Food and drink": "store", "Construction and trades": "building", "Transport and logistics": "send", "Energy and environment": "spark", Retail: "tag", "Professional services": "doc" };
+// Update 15: Businesses for Sale uses the master category list (old names are moved across by the database)
+export const FS_IND = CATNAMES;
+export const FS_IND_ICON: Record<string, string> = Object.fromEntries(TAXO.map((t) => [t[0], t[1]]));
 export type SaleType = "full" | "part" | "assets";
 export const FS_TYPE: Record<SaleType, string> = { full: "Full sale", part: "Partner wanted (part stake)", assets: "Assets only" };
 export type Premises = "lease" | "own" | "home" | "none";

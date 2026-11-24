@@ -53,9 +53,9 @@ const CATEGORIES: [RegExp, string, string[], string[], string][] = [
 const DIRECTORY_CATEGORY: Record<string, string> = {
   "Construction and trades": "Construction & Trades",
   "Food and drink": "Food & Drink",
-  "Accounting and bookkeeping": "Finance & Accounting",
-  "Marketing and design": "Marketing & Design",
-  "Cleaning services": "Home Services",
+  "Accounting and bookkeeping": "Finance, Accounting & Insurance",
+  "Marketing and design": "Marketing, Media & Design",
+  "Cleaning services": "Cleaning & Facilities",
   "Professional services": "Professional Services",
 };
 

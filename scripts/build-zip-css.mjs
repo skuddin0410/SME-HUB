@@ -45,3 +45,8 @@ build("design/zip-province.css", "styles/province.css");
 // Update 13 (business tools and My deadlines): code/tools-and-deadlines.css, scoped the same way
 build("design/zip-tools.css", "styles/tools.css");
 console.log("ok");
+// Update 15: Grant Finder, About page, master categories and community resource centres, scoped the same way
+build("design/zip-grants.css", "styles/grants.css");
+build("design/zip-about.css", "styles/about.css");
+build("design/zip-categories.css", "styles/categories.css");
+build("design/zip-resources.css", "styles/resources.css");

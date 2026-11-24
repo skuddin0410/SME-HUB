@@ -1,5 +1,6 @@
 import { TrendingTags } from "@/components/zip/hashtags";
 import Link from "next/link";
+import { FundingCard } from "@/components/grants/funding-card";
 import { getViewer } from "@/lib/hub";
 import { BLOG } from "@/lib/content";
 import { getMyReady } from "@/lib/ready";
@@ -193,7 +194,7 @@ export async function ZipRightRail() {
         </div>
       </div>
       <DeadlineCard where="bottom" />
-      {/* FundingCard */}
+      <FundingCard />
     </>
   );
 }

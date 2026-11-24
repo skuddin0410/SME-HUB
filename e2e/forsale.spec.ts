@@ -13,7 +13,7 @@ test.describe("visitors", () => {
     await expect(page.getByRole("heading", { name: /Buy a Canadian small business/ })).toBeVisible();
     await expect(page.getByRole("heading", { name: "8 businesses for sale" })).toBeVisible();
     await expect(page.getByText("Members").first()).toBeVisible(); // owner earnings are locked on cards
-    await page.getByRole("button", { name: /^Food and drink/ }).click();
+    await page.getByRole("button", { name: /^Food & Drink/ }).click();
     await expect(page.getByRole("heading", { name: "2 businesses for sale" })).toBeVisible();
     await page.getByRole("button", { name: "Clear all" }).click();
     await page.getByLabel("Search businesses for sale").fill("Halifax");
@@ -125,7 +125,7 @@ test.describe("sellers", () => {
     await expect(page.getByLabel("Headline")).toBeFocused();
     await page.getByLabel("Headline").fill("Family hardware store in downtown Guelph");
     await expect(page.locator(".fsprev .fst")).toHaveText("Family hardware store in downtown Guelph");
-    await page.getByLabel("Industry").selectOption("Retail");
+    await page.getByLabel("Industry").selectOption("Retail & Shops");
     await page.getByLabel("City").fill("Guelph");
     await page.getByLabel("Asking price (CAD)").fill("350,000");
     await page.getByLabel("Yearly sales (CAD)").fill("900000");

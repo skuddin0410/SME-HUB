@@ -20,6 +20,7 @@ type Company = {
   slug: string;
   name: string;
   category: string;
+  sub?: string;
   description: string;
   about: string;
   website: string;
@@ -177,7 +178,7 @@ export default async function BusinessPage({ params, searchParams }: { params: P
               </span>
               <div className="stack grow" style={{ gap: 3, minWidth: 0 }}>
                 <h1 className="bzh1">{company.name}</h1>
-                <span className="muted">{[company.category, KINDS[company.kind], where].filter(Boolean).join(" · ")}</span>
+                <span className="muted">{[company.category, company.sub, KINDS[company.kind], where].filter(Boolean).join(" · ")}</span>
                 <span className="row" style={{ gap: 10, flexWrap: "wrap" }}>
                   {visibleReviews.length > 0 && (
                     <Link href={tabHref("reviews")} className="small" style={{ display: "inline-flex", gap: 6, alignItems: "center", textDecoration: "none", color: "inherit" }}>

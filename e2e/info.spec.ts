@@ -1,12 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-test("about page has the story, benefits and resource centres", async ({ page }) => {
+test("about page has the hero, the magazine, the six ways to grow and the briefing sign-up (Update 15)", async ({ page }) => {
   await page.goto("/about", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Welcome to the CanadianSME Small Business Hub", level: 1 })).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "On this page" }).getByRole("link", { name: "Our story" })).toBeVisible();
-  await expect(page.getByText("The magazine begins")).toBeVisible();
-  await expect(page.getByText("Opportunities for visibility")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Learn more" }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Where Canada’s small business owners meet, learn and grow/, level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "The magazine" })).toBeVisible();
+  await expect(page.locator(".xmagpast li")).toHaveCount(5);
+  await expect(page.locator(".xabcard")).toHaveCount(6);
+  await expect(page.locator(".xfamcard")).toHaveCount(4);
+  await expect(page.getByRole("heading", { name: "Get the weekly Hub briefing" })).toBeVisible();
 });
 
 test("help centre shows the contact details", async ({ page }) => {

@@ -1,3 +1,4 @@
+import { CATNAMES } from "@/lib/categories";
 // Shared rules for the Phase 2 profile fields. Pure, so the browser, the server and the tests all agree.
 
 export const AVAILABILITY = ["Weekday mornings", "Weekday afternoons", "Evenings", "Weekends"] as const;
@@ -80,7 +81,8 @@ export function profileStrength(p: StrengthInput) {
 }
 
 /** The Details section's choices (from the hand-off's profile page). */
-export const INDUSTRIES = ["Food and hospitality", "Retail", "Professional services", "Construction and trades", "Technology", "Manufacturing", "Transportation and trade"] as const;
+/** Update 15: the master category list (old answers are moved across by the database). */
+export const INDUSTRIES = CATNAMES;
 export const TEAM_SIZES = ["Just me", "2 to 5 people", "6 to 20 people", "21 to 50 people"] as const;
 export type CoreAnswers = { nick?: string; industry?: string; founded?: string; team?: string; email?: string; phone?: string; history?: { role: string; org: string; years: string }[] };
 /** Two-letter marks for the social network buttons in Details, as in the hand-off. */
