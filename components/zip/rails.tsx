@@ -2,7 +2,8 @@ import { TrendingTags } from "@/components/zip/hashtags";
 import Link from "next/link";
 import { getViewer } from "@/lib/hub";
 import { BLOG } from "@/lib/content";
-import { profileStrength } from "@/lib/profile-extra";
+import { getMyReady } from "@/lib/ready";
+import { ReadyStrength } from "@/components/ready/card";
 import { Ic } from "@/components/zip/ic";
 import { Scene } from "@/components/zip/scene";
 import { ZipAv } from "@/components/zip/bits";
@@ -73,19 +74,15 @@ function ZipArticles() {
 export async function ZipRightRail() {
   const { supabase, userId, profile } = await getViewer();
   if (!userId || !profile) return <ZipJoinCard />;
-  const [connections, details, businesses, recs, ev, groups, mine, rsv, quest] = await Promise.all([
+  const [connections, ev, groups, mine, rsv, quest] = await Promise.all([
     supabase.rpc("connection_count", { member: userId }),
-    supabase.from("profile_details").select("helps_with, needs").eq("user_id", userId).maybeSingle(),
-    supabase.from("companies").select("id", { count: "exact", head: true }).eq("owner_id", userId),
-    supabase.from("recommendations").select("id", { count: "exact", head: true }).eq("subject_id", userId).eq("hidden", false),
     supabase.from("hub_events").select("id, title, when_label").eq("status", "published").order("position").limit(2),
     supabase.from("groups").select("id, slug, name, is_private, group_members(count)").eq("status", "active").order("created_at", { ascending: false }).limit(4),
     supabase.from("group_members").select("group_id").eq("user_id", userId),
     supabase.from("event_rsvps").select("event_id").eq("user_id", userId),
     supabase.from("posts").select("id, body, kind, author:profiles!posts_author_id_fkey(full_name)").eq("kind", "question").order("created_at", { ascending: false }).limit(12),
   ]);
-  const strength = profileStrength({ ...profile, helps_with: details.data?.helps_with, needs: details.data?.needs, has_business: (businesses.count ?? 0) > 0, recommendations: recs.count ?? 0 });
-  const pct = strength.percent;
+  const ready = await getMyReady();
   const nConn = (connections.data as number | null) ?? 0;
   const event = (ev.data ?? [])[1] ?? (ev.data ?? [])[0];
   const rsvped = ((rsv.data ?? []) as { event_id: string }[]).some((r) => r.event_id === event?.id);
@@ -108,16 +105,7 @@ export async function ZipRightRail() {
             <Link className="namebtn pname" href={`/members/${userId}`}>{profile.full_name}</Link>
             {profile.headline ? <span className="muted small">{profile.headline}</span> : <Link className="linkbtn" href="/profile/edit">+ Add a headline</Link>}
           </div>
-          {pct < 100 ? (
-            <div className="strength">
-              <div className="row"><strong className="grow" style={{ fontWeight: 500, fontSize: 13 }}>Profile strength</strong><b style={{ color: "var(--link)", fontFamily: "var(--display)" }}>{pct}%</b></div>
-              <div className="bar" role="img" aria-label={`Profile strength ${pct} percent`}><i style={{ width: `${pct}%` }} /></div>
-              <div className="row">
-                <span className="muted small grow">{strength.next} (+{strength.step}%)</span>
-                <Link className="linkbtn" style={{ color: "var(--link)", fontWeight: 600, whiteSpace: "nowrap" }} href="/profile/edit">Complete →</Link>
-              </div>
-            </div>
-          ) : null}
+          {ready && <ReadyStrength items={ready.items} />}
           <Link className="linkbtn pbcta" href="/profile/edit"><Ic n="spark" s={14} />Build my profile with AI</Link>
           <div className="pstats">
             <div>

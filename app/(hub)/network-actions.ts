@@ -143,6 +143,7 @@ export async function askIntro(viaId: string, targetId: string, note: string): P
   const { error } = await supabase.from("intro_requests").insert({ requester_id: userId, via_id: viaId, target_id: targetId, note: n.slice(0, 500) });
   if (error) {
     if (error.code === "23505") return { error: "You already asked for this introduction." };
+    if (error.message.includes("profile_not_ready")) return { error: "Add a photo and headline first." };
     if (error.message.includes("at most 5")) return { error: "You can ask for 5 introductions a day." };
     return { error: "That introduction is not possible right now." };
   }

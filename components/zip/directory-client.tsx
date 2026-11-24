@@ -8,6 +8,7 @@ import { requestConnection, removeConnection } from "@/app/(hub)/actions";
 import { toggleFollow } from "@/app/(hub)/network-actions";
 import type { LinkState } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
+import { useReady } from "@/components/ready/provider";
 import { ZipAv } from "@/components/zip/bits";
 import { TYPES } from "@/lib/zip/types";
 import { LAND, MAP_LABELS, NFLD, outline, placeOf, placePins } from "@/lib/zip/geo";
@@ -146,6 +147,7 @@ function SortSelect() {
 
 function Pop({ m, signedIn, link, following }: { m: DirMember; signedIn: boolean; link: LinkState; following: boolean }) {
   const router = useRouter();
+  const ready = useReady();
   const [state, setState] = useState<LinkState>(link);
   const [follows, setFollows] = useState(following);
   const [, start] = useTransition();
@@ -169,10 +171,13 @@ function Pop({ m, signedIn, link, following }: { m: DirMember; signedIn: boolean
           <span className="btn sm ghost" aria-disabled="true">Connected</span>
         ) : (
           <button type="button" className="btn sm ghost" onClick={() => gate(() => {
-            const before = state;
-            const next: LinkState = state === "sent" ? "none" : "sent";
-            setState(next);
-            start(async () => { try { await (before === "sent" ? removeConnection(m.id) : requestConnection(m.id)); } catch { setState(before); } });
+            const run = () => {
+              const before = state;
+              const next: LinkState = state === "sent" ? "none" : "sent";
+              setState(next);
+              start(async () => { try { await (before === "sent" ? removeConnection(m.id) : requestConnection(m.id)); } catch { setState(before); } });
+            };
+            if (ready && state !== "sent") ready.gate("connect", run); else run();
           })}>
             <Ic n="users" s={14} />{state === "sent" ? "Pending" : state === "received" ? "Respond" : "Connect"}
           </button>

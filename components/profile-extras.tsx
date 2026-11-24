@@ -1,5 +1,6 @@
 "use client";
 
+import { useReady } from "@/components/ready/provider";
 import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Loader2 } from "lucide-react";
@@ -225,9 +226,10 @@ export function IntroButton({ targetId, name, candidates }: { targetId: string; 
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<NetState>({});
   const [pending, start] = useTransition();
+  const ready = useReady();
   if (candidates.length === 0) return null;
   if (state.ok) return <span role="status" className="text-sm text-muted-foreground">Introduction requested</span>;
-  if (!open) return <button type="button" className={outline} onClick={() => setOpen(true)}>Ask for an introduction</button>;
+  if (!open) return <button type="button" className={outline} onClick={() => (ready ? ready.gate("askIntro", () => setOpen(true)) : setOpen(true))}>Ask for an introduction</button>;
   return (
     <form
       className="panel grid w-full gap-3 p-4"

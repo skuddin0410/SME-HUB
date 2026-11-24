@@ -1,3 +1,4 @@
+import { ReadyBanner } from "@/components/ready/card";
 import { getHubSettings } from "@/lib/zip/settings-load";
 import Link from "next/link";
 import { getLinks, getViewer } from "@/lib/hub";
@@ -133,6 +134,7 @@ export async function Directory({ searchParams, base }: { searchParams: Record<s
   return (
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
+        {userId && <ReadyBanner kind="people" />}
         <div className="dirhead">
           <p className="eyebrow">Community connections</p>
           <h1>Member directory</h1>

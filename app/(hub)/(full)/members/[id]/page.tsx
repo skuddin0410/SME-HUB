@@ -19,6 +19,10 @@ import { getHubSettings } from "@/lib/zip/settings-load";
 import { customFields, fieldAllowed } from "@/lib/zip/profile-fields";
 import { readMinutes, STATUS_LABEL, when as blogDate, type MemberBlog } from "@/lib/zip/member-blogs";
 import { displayName, profileActions } from "@/lib/zip/profile-rules";
+import { getMyReady, getSignals } from "@/lib/ready";
+import { missLine } from "@/lib/ready-shared";
+import { ReadyAv, } from "@/components/ready/provider";
+import { ReadyCard, SpotlightBanner } from "@/components/ready/card";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -147,6 +151,9 @@ export default async function MemberPage({
   const blogPosts = tab === "blog" ? (((await supabase.from("member_blogs").select("id, title, cat, image_url, blocks, status, published_at, created_at").eq("author_id", id).order("created_at", { ascending: false }).limit(30)).data ?? []) as unknown as Pick<MemberBlog, "id" | "title" | "cat" | "image_url" | "blocks" | "status" | "published_at" | "created_at">[]).filter((b) => b.status === "published" || isMe) : [];
   const groupList = tab === "groups" ? (((await supabase.rpc("profile_groups", { p_member: id })).data ?? []) as Grp[]) : [];
   const connLinks = connList.length ? links : links;
+  const mine = isMe ? await getMyReady() : null;
+  const applied = mine && mine.count === 5 && userId ? ((await supabase.from("spotlight_applications").select("id", { count: "exact", head: true }).eq("member_id", userId).in("status", ["received", "chosen"])).count ?? 0) > 0 : false;
+  const miss = mine && mine.count < 5 ? missLine(mine.items, await getSignals(), { city: mine.city }) : null;
 
   return (
     <div className="zip">
@@ -173,12 +180,14 @@ export default async function MemberPage({
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="cols">
           <section className="mid" style={{ gap: 20 }} aria-label="Profile">
+            {mine && miss && <ReadyCard where="profile" miss={miss} />}
+            {mine && !miss && !applied && <SpotlightBanner />}
             <div className="card phero" data-head={String(ps.header)}>
               <div className="pcover"><Cover seed={member.id} className="h-full w-full" /></div>
               <div className="pinfo">
                 <div className="pavrow">
                   <span className="avwrap">
-                    <ZipAv name={member.full_name || "M"} src={photo(member)} size="hero" />
+                    {isMe && !member.avatar_url ? <ReadyAv me={{ name: member.full_name || "M", avatar: null }} size="hero" /> : <ZipAv name={member.full_name || "M"} src={photo(member)} size="hero" />}
                     {ps.head.online && active?.today && <i className="ondot" title="Active today" />}
                   </span>
                 </div>

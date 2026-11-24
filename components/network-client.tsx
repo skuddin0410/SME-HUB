@@ -8,6 +8,7 @@ import { acceptConnection, removeConnection, requestConnection } from "@/app/(hu
 import type { Author, LinkState } from "@/lib/hub";
 import { MEMBER_LABEL } from "@/lib/demo";
 import { AvatarImg, Cover } from "@/components/hub-client";
+import { useReady } from "@/components/ready/provider";
 
 const cx = (...parts: (string | false | null | undefined)[]) => parts.filter(Boolean).join(" ");
 
@@ -29,6 +30,7 @@ export function ConnectButton({
   onChange?: (state: LinkState) => void;
 }) {
   const router = useRouter();
+  const ready = useReady();
   const [state, setState] = useState<LinkState>(initial);
 
   const go = (next: LinkState, save: () => Promise<unknown>) => {
@@ -95,7 +97,7 @@ export function ConnectButton({
     );
   }
   return (
-    <button type="button" onClick={() => go("sent", () => requestConnection(otherId))} className={cx(base, connect ?? outline)}>
+    <button type="button" onClick={() => { const run = () => go("sent", () => requestConnection(otherId)); if (ready) ready.gate("connect", run); else run(); }} className={cx(base, connect ?? outline)}>
       {variant === "text" ? "+ Connect" : (
         <>
           <UserPlus className="h-4 w-4" />

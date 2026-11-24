@@ -6,12 +6,14 @@ import { removeConnection, requestConnection, acceptConnection } from "@/app/(hu
 import { toggleFollow } from "@/app/(hub)/network-actions";
 import type { LinkState } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
+import { useReady } from "@/components/ready/provider";
 
 /** Connect, Pending and Connected in the guide's buttons. Changes at once and steps back if the save fails. */
 export function ConnectBtn({ otherId, initial, signedIn, small, primary }: { otherId: string; initial: LinkState; signedIn: boolean; small?: boolean; primary?: boolean }) {
   const router = useRouter();
   const [state, setState] = useState<LinkState>(initial);
   const [, start] = useTransition();
+  const ready = useReady();
   const sm = small ? " sm" : "";
   const go = (next: LinkState, save: () => Promise<unknown>) => {
     if (!signedIn) return router.push("/auth/sign-up");
@@ -22,7 +24,7 @@ export function ConnectBtn({ otherId, initial, signedIn, small, primary }: { oth
   if (state === "connected") return <span className={`btn${sm} ghost`} aria-pressed="true"><Ic n="check" s={14} />Connected</span>;
   if (state === "sent") return <button type="button" className={`btn${sm} ghost`} aria-pressed="true" onClick={() => go("none", () => removeConnection(otherId))}><Ic n="clock" s={14} />Pending</button>;
   if (state === "received") return <button type="button" className={`btn${sm}`} onClick={() => go("connected", () => acceptConnection(otherId))}><Ic n="check" s={14} />Accept</button>;
-  return <button type="button" className={`btn${sm}${primary ? "" : " ghost"}`} aria-pressed="false" onClick={() => go("sent", () => requestConnection(otherId))}><Ic n="users" s={14} />Connect</button>;
+  return <button type="button" className={`btn${sm}${primary ? "" : " ghost"}`} aria-pressed="false" onClick={() => { const run = () => go("sent", () => requestConnection(otherId)); if (ready) ready.gate("connect", run); else run(); }}><Ic n="users" s={14} />Connect</button>;
 }
 
 export function FollowBtn({ otherId, initial, signedIn, small }: { otherId: string; initial: boolean; signedIn: boolean; small?: boolean }) {

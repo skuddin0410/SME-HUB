@@ -10,6 +10,8 @@ import { KINDS } from "@/lib/business";
 import { getBusinessSettings } from "@/lib/business-server";
 import { PROVINCES } from "@/lib/profile-extra";
 import { pageMeta } from "@/lib/seo";
+import { ReadyBanner } from "@/components/ready/card";
+import { logDirectorySearch } from "@/app/(hub)/ready-actions";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -125,6 +127,8 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
   const category = settings.categories.includes(one(sp.category)) ? one(sp.category) : "";
   const province = (PROVINCES as readonly string[]).includes(one(sp.province)) ? one(sp.province) : "";
   const city = one(sp.city).slice(0, 80);
+  // a real signal for "owners near you searched for businesses like yours" (Update 3)
+  if (userId && (q || category || province || city)) await logDirectorySearch(q, category, city, province);
   const kind = one(sp.kind) in KINDS ? one(sp.kind) : "";
   const open = one(sp.open) === "1";
   const sortKey = one(sp.sort);
@@ -207,6 +211,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
             )}
           </div>
         </section>
+        {userId && <ReadyBanner kind="biz" />}
 
         <nav className="bdcats" aria-label="Browse by category">
           <Link className="bdcat" aria-current={!category ? "true" : undefined} href={href({ category: "", page: "" })}>

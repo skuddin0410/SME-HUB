@@ -14,6 +14,9 @@ import { getPostingBusinesses } from "@/lib/business-server";
 import { getMyTags, aliasesOf, getTagIndex, getTagRules } from "@/lib/zip/hashtags-server";
 import { extractTags } from "@/lib/zip/hashtags";
 import { pageMeta } from "@/lib/seo";
+import { getMyReady, getSignals } from "@/lib/ready";
+import { missLine } from "@/lib/ready-shared";
+import { ReadyCard } from "@/components/ready/card";
 
 export const metadata = pageMeta({ title: "Feed", description: "What Canadian small business owners are posting: questions, wins, offers and hiring.", path: "/feed" });
 
@@ -116,13 +119,17 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
   });
   const fetched = scope === "tags" ? fetchedAll.filter((p) => extractTags(p.body, tr).some((t) => followed.includes(t))) : fetchedAll;
   const posts = latest || saved || before || scope ? fetched : topSignal(fetched);
-  const week = viewer.userId && viewer.profile ? await firstWeekSteps(viewer) : null;
+  const mine = viewer.userId ? await getMyReady() : null;
+  const notReady = !!mine && mine.count < 5;
+  const miss = notReady ? missLine(mine.items, await getSignals(), { city: mine.city }) : null;
+  const week = viewer.userId && viewer.profile && !notReady ? await firstWeekSteps(viewer) : null;
   const keep = { kind, scope, sort: latest ? "latest" : undefined, saved: saved ? "1" : undefined };
   const last = fetched[fetched.length - 1];
   const older = fetched.length === FEED.pageSize && last ? `${last.created_at}_${last.id}` : null;
 
   return (
     <>
+      {notReady && miss && !saved && !kind && page === 1 && <ReadyCard where="home" miss={miss} />}
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week.steps} connections={week.count} />}
       {fs.refresh && <FeedRefresh />}
       {mayPost && <Composer alwaysOpen me={viewer.profile} initialKind={compose} businesses={await getPostingBusinesses(viewer.userId)} rules={await getComposerRules()} tagHints={tr.on && tr.auto ? (await getTagIndex(viewer.supabase)).slice(0, 60).map((t) => ({ tag: t.tag, uses: t.uses })) : undefined} initialText={params.tag && /^[a-z0-9_à-ſ]{2,40}$/i.test(params.tag) ? `#${params.tag.toLowerCase()} ` : undefined} />}

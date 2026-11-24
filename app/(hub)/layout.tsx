@@ -5,8 +5,11 @@ import type { NavNote } from "@/components/site-nav";
 import { ZipHeader } from "@/components/zip/header";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
+import "@/styles/profile-completion.css";
 import { HideOn } from "@/components/hide-on";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
+import { ReadyProvider } from "@/components/ready/provider";
+import { getMyReady } from "@/lib/ready";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +90,19 @@ export default async function HubShell({ children }: { children: React.ReactNode
   }
   const threads = [...threadMap.values()].slice(0, 8);
 
+  // profile completion: the member's five checks, and whether the AI set-up should open by itself (a new member, not ready, no draft yet)
+  const ready = await getMyReady();
+  let signupSite = "";
+  let autoOpen = false;
+  if (ready && profile && ready.count < 5 && Date.now() - new Date(profile.created_at).getTime() < 30 * 86_400_000) {
+    const [claims, drafts] = await Promise.all([
+      supabase.auth.getClaims(),
+      supabase.from("profile_drafts").select("id", { count: "exact", head: true }).eq("member_id", userId!),
+    ]);
+    signupSite = String((claims.data?.claims?.user_metadata as { website?: string } | undefined)?.website ?? "").slice(0, 300);
+    autoOpen = (drafts.count ?? 0) === 0;
+  }
+
   type NoteRow = { id: string; type: keyof typeof NOTE_TEXT; post_id: string | null; read_at: string | null; created_at: string; actor: Author };
   const notes: NavNote[] = ((latest.data ?? []) as unknown as NoteRow[]).map((n) => ({
     id: n.id,
@@ -97,7 +113,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
     unread: !n.read_at,
   }));
 
-  return (
+  const shell = (
     <div className="min-h-screen">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white">
         Skip to content
@@ -174,4 +190,5 @@ export default async function HubShell({ children }: { children: React.ReactNode
       {profile && userId && <MessagingDock me={{ id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url }} threads={threads} unread={inbox.count ?? 0} />}
     </div>
   );
+  return ready ? <ReadyProvider me={ready} website={signupSite} autoOpen={autoOpen}>{shell}</ReadyProvider> : shell;
 }
