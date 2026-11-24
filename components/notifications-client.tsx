@@ -10,7 +10,8 @@ import { ConnectButton } from "@/components/network-client";
 
 export type Note = {
   id: string;
-  type: "like" | "comment" | "connection_request" | "connection_accepted";
+  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission";
+  href?: string | null;
   post_id: string | null;
   read_at: string | null;
   created_at: string;
@@ -24,6 +25,8 @@ const TEXT: Record<Note["type"], string> = {
   comment: "commented on your post",
   connection_request: "invited you to connect",
   connection_accepted: "accepted your invitation. You are now connected",
+  course_feedback: "graded your assignment. Your feedback is ready",
+  course_submission: "submitted an assignment for you to grade",
 };
 const ago = (iso: string) => {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -43,7 +46,7 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
 
   const shown = notes.filter((n) => tab === "all" || (tab === "posts" ? n.type === "like" || n.type === "comment" : n.type.startsWith("connection")));
   const unread = notes.filter((n) => !n.read_at).length;
-  const href = (n: Note) => (n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network/connections" : `/members/${n.actor.id}`);
+  const href = (n: Note) => (n.href ? n.href : n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network/connections" : `/members/${n.actor.id}`);
 
   const read = (id: string) => {
     setNotes((all) => all.map((n) => (n.id === id && !n.read_at ? { ...n, read_at: new Date().toISOString() } : n)));

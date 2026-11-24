@@ -7,8 +7,8 @@ import { deleteReportCategory, moderate, saveModerationSettings, saveReportCateg
 
 export const metadata = { title: "Moderation", robots: { index: false } };
 
-const MTYPES: [string, string][] = [["post", "Feed posts"], ["comment", "Comments"], ["photo", "Photos"], ["group", "Groups"], ["blog", "Member blog posts"], ["blogc", "Blog comments"]];
-type Rep = { id: string; reason: string; created_at: string; post_id: string | null; profile_id: string | null; reporter: { full_name: string } | null };
+const MTYPES: [string, string][] = [["post", "Feed posts"], ["comment", "Comments"], ["photo", "Photos"], ["group", "Groups"], ["blog", "Member blog posts"], ["blogc", "Blog comments"], ["creview", "Course reviews"]];
+type Rep = { id: string; reason: string; note?: string; created_at: string; post_id: string | null; profile_id: string | null; course_review_id?: string | null; reporter: { full_name: string } | null };
 type Person = { id: string; full_name: string; headline: string | null; avatar_url: string | null; status: string };
 type TypeSet = Record<string, { on: boolean; auto: boolean; hide: number }>;
 
@@ -23,7 +23,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
   const mf = first(sp.mf);
 
   const [repsRes, blocksRes, settingsRes, catsRes] = await Promise.all([
-    supabase.from("reports").select("id, reason, created_at, post_id, profile_id, reporter:profiles!reports_reporter_id_fkey(full_name)").eq("status", "open").order("created_at", { ascending: false }).limit(1000),
+    supabase.from("reports").select("id, reason, note, created_at, post_id, profile_id, course_review_id, reporter:profiles!reports_reporter_id_fkey(full_name)").eq("status", "open").order("created_at", { ascending: false }).limit(1000),
     supabase.from("blocks").select("blocked_id").limit(5000),
     supabase.from("mod_settings").select("*").maybeSingle(),
     supabase.from("report_categories").select("id, name, description, show").order("position"),
@@ -31,8 +31,10 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
   const reps = (repsRes.data ?? []) as unknown as Rep[];
   const postReps = new Map<string, Rep[]>();
   const memReps = new Map<string, Rep[]>();
+  const crReps = new Map<string, Rep[]>();
   for (const r of reps) {
-    if (r.post_id) postReps.set(r.post_id, [...(postReps.get(r.post_id) ?? []), r]);
+    if (r.course_review_id) crReps.set(r.course_review_id, [...(crReps.get(r.course_review_id) ?? []), r]);
+    else if (r.post_id) postReps.set(r.post_id, [...(postReps.get(r.post_id) ?? []), r]);
     else if (r.profile_id) memReps.set(r.profile_id, [...(memReps.get(r.profile_id) ?? []), r]);
   }
   const blockCount = new Map<string, number>();
@@ -44,6 +46,11 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
     postIds.length ? supabase.from("posts").select("id, title, body, hidden_at, author:profiles!posts_author_id_fkey(id, full_name, avatar_url)").in("id", postIds) : Promise.resolve({ data: [] }),
     memIds.length ? supabase.from("profiles").select("id, full_name, headline, avatar_url, status").in("id", memIds) : Promise.resolve({ data: [] }),
   ]);
+  const crIds = [...crReps.keys()];
+  const { data: crRows } = crIds.length ? await supabase.from("course_reviews").select("id, body, hidden_at, course:courses(title), member:profiles!course_reviews_member_id_fkey(id, full_name, avatar_url)").in("id", crIds) : { data: [] };
+  type CrRow = { id: string; body: string; hidden_at: string | null; course: { title: string } | null; member: { id: string; full_name: string; avatar_url: string | null } | null };
+  let crItems = ((crRows ?? []) as unknown as CrRow[]).map((r) => ({ id: r.id, r, n: crReps.get(r.id)!.length }));
+  if (cf === "hidden") crItems = crItems.filter((x) => x.r.hidden_at);
   const posts = new Map(((postsRes.data ?? []) as unknown as { id: string; title: string | null; body: string; hidden_at: string | null; author: { id: string; full_name: string; avatar_url: string | null } | null }[]).map((p) => [p.id, p]));
   const people = new Map(((peopleRes.data ?? []) as Person[]).map((p) => [p.id, p]));
 
@@ -55,7 +62,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
   if (mf === "suspended") mem = mem.filter((x) => x.m!.status === "suspended");
   mem.sort((a, b) => b.blocks + b.n - (a.blocks + a.n));
 
-  const totalContent = postIds.length;
+  const totalContent = postIds.length + crIds.length;
   const totalMembers = memIds.length;
   const tabs: [string, string][] = [["content", `Reported content (${totalContent})`], ["stories", "Stories (0)"], ["members", `Flagged members (${totalMembers})`], ["settings", "Settings"]];
   const s = settingsRes.data as { types: TypeSet; member_report: boolean; blocking: boolean; sus_blocks: { on: boolean; n: number }; sus_reports: { on: boolean; n: number }; email_on: boolean; email_subject: string; email_body: string } | null;
@@ -93,7 +100,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
               </span>
             </div>
           </div>
-          {items.length ? (
+          {items.length || crItems.length ? (
             <div className="cmpwrap" style={{ border: 0 }} tabIndex={0} role="region" aria-label="Reported content">
               <table className="modtbl">
                 <thead><tr><th scope="col"><span className="sr">Select</span></th><th scope="col">Content</th><th scope="col">Owner</th><th scope="col">Reports</th><th scope="col">Status</th><th scope="col"><span className="sr">Actions</span></th></tr></thead>
@@ -115,6 +122,27 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
                           </details>
                           <button type="submit" name="op" value={`${p!.hidden_at ? "show" : "hide"}:${id}`} className="btn sm ghost">{p!.hidden_at ? "Unhide" : "Hide"}</button>
                           <button type="submit" name="op" value={`dismiss:${id}`} className="btn sm ghost">Dismiss</button>
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {crItems.map(({ id, r, n }) => (
+                    <tr key={id}>
+                      <td><input type="checkbox" name="sel" value={`cr:${id}`} aria-label="Select" /></td>
+                      <td><span className="tag">Course review</span> {`Review of ${r.course?.title ?? "a course"}: ${r.body.slice(0, 60)}`}</td>
+                      <td><span className="row" style={{ gap: 8 }}><ZipAv name={r.member?.full_name || "M"} src={r.member?.avatar_url} size="s" />{r.member?.full_name}</span></td>
+                      <td><span className="cnt"><Ic n="flag" s={14} />{n}</span></td>
+                      <td>{r.hidden_at ? <span className="pill hid">Hidden</span> : <span className="muted small">Visible</span>}</td>
+                      <td>
+                        <span className="row" style={{ justifyContent: "flex-end", flexWrap: "wrap", alignItems: "flex-start" }}>
+                          <details>
+                            <summary className="btn sm ghost">View report</summary>
+                            <ul className="small" style={{ margin: "8px 0 0", paddingLeft: 16, maxWidth: 260 }}>
+                              {crReps.get(id)!.map((x) => <li key={x.id}><b>{x.reason}</b> · {x.reporter?.full_name ?? "A member"} · {timeAgo(x.created_at)}{x.note ? <> · “{x.note}”</> : null}</li>)}
+                            </ul>
+                          </details>
+                          <button type="submit" name="op" value={`${r.hidden_at ? "crshow" : "crhide"}:${id}`} className="btn sm ghost">{r.hidden_at ? "Unhide" : "Hide"}</button>
+                          <button type="submit" name="op" value={`crdismiss:${id}`} className="btn sm ghost">Dismiss</button>
                         </span>
                       </td>
                     </tr>
@@ -181,7 +209,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
           <form action={saveModerationSettings} className="stack" style={{ display: "contents" }}>
             <div className="card">
               <h2>What members can report</h2>
-              <p className="muted small">A switch for every kind of content, and how many reports hide it on its own. Only feed posts are reportable so far.</p>
+              <p className="muted small">A switch for every kind of content, and how many reports hide it on its own. Feed posts and course reviews are reportable so far.</p>
               {MTYPES.map(([k, l]) => (
                 <div className="setrow" key={k}>
                   <label className="row" style={{ gap: 8 }}><input type="checkbox" name={`on_${k}`} defaultChecked={s.types[k]?.on} />{l}</label>

@@ -37,12 +37,10 @@ test("blocked members page explains how to block and lists nobody when empty", a
   await expect(page.getByText("You have not blocked anyone.")).toBeVisible();
 });
 
-test("courses page lists the course with a start button and the teach card", async ({ page }) => {
+test("courses page is the catalogue from the guide", async ({ page }) => {
   await page.goto("/courses", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Courses", level: 1 })).toBeVisible();
-  await page.getByRole("button", { name: /Start course/ }).first().click();
-  await expect(page.getByText("being added")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Become an SME Advisor" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Learn what your business needs/, level: 1 })).toBeVisible();
+  await expect(page.getByRole("link", { name: "My learning" }).first()).toBeVisible();
 });
 
 test("who viewed your profile shows the 30-day chart and the upgrade note for hidden viewers", async ({ page }) => {

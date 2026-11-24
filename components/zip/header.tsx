@@ -45,6 +45,7 @@ const TEAM_MENU: [string, NavItem[]][] = [
     ],
   ],
   ["Business Directory", [{ label: "Business Profiles", href: "/bizadmin" }]],
+  ["Courses", [{ label: "Manage courses", href: "/courses/manage" }]],
 ];
 
 function Chev() {

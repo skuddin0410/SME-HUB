@@ -16,15 +16,28 @@ export async function moderate(form: FormData) {
   const op = text(form, "op");
   let verb: string;
   let targets: string[];
+  // course reviews (Update 4) sit in the same table; their ticked rows carry a "cr:" prefix
+  let crTargets: string[] = [];
   if (op) {
     const [v, id] = op.split(":");
     verb = v;
     targets = ids([id ?? ""]);
+    if (verb.startsWith("cr")) { crTargets = targets; targets = []; verb = verb.slice(2); }
   } else {
     verb = text(form, "bulk");
-    targets = ids(form.getAll("sel").map(String));
+    const sel = form.getAll("sel").map(String);
+    targets = ids(sel.filter((x) => !x.startsWith("cr:")));
+    crTargets = ids(sel.filter((x) => x.startsWith("cr:")).map((x) => x.slice(3)));
   }
-  if (!targets.length) return;
+  if (crTargets.length) {
+    if (verb === "hide" || verb === "show") fail((await supabase.from("course_reviews").update({ hidden_at: verb === "hide" ? new Date().toISOString() : null }).in("id", crTargets)).error);
+    else if (verb === "dismiss") fail((await supabase.from("reports").update({ status: "resolved" }).in("course_review_id", crTargets).eq("status", "open")).error);
+    revalidatePath("/courses", "layout");
+  }
+  if (!targets.length) {
+    revalidatePath("/moderation");
+    return;
+  }
 
   if (verb === "hide" || verb === "show") {
     fail((await supabase.from("posts").update({ hidden_at: verb === "hide" ? new Date().toISOString() : null }).in("id", targets)).error);
@@ -39,7 +52,7 @@ export async function moderate(form: FormData) {
   revalidatePath("/moderation");
 }
 
-const TYPES = ["post", "comment", "photo", "group", "blog", "blogc"];
+const TYPES = ["post", "comment", "photo", "group", "blog", "blogc", "creview"];
 const num = (v: string, min: number, max: number, d: number) => {
   const n = parseInt(v, 10);
   return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : d;

@@ -23,6 +23,8 @@ const OLD_RESOURCES: [string, string][] = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Update 4: the sample course videos, captions and worksheet are served by /api/course-media after an access check
+  outputFileTracingIncludes: { "/api/course-media": ["./content/course-media/**"] },
   async redirects() {
     return [
       ...OLD_GUIDES.map((g) => ({ source: `/business-guide-${g}`, destination: `/guides/${g}`, permanent: true })),

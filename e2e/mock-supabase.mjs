@@ -4,6 +4,7 @@
 // then /auth/v1/user and the viewer's own profile row answer, so signed-in pages can be checked.
 import http from "node:http";
 import fs from "node:fs";
+import { handleCourses } from "./mock-courses.mjs";
 
 const MEMBER = {
   id: "00000000-0000-4000-8000-000000000001",
@@ -42,6 +43,7 @@ http
     let claims = {};
     try { claims = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString()); } catch {}
     const staff = member && sub.endsWith("0002");
+    if (handleCourses(req, res, url, { member, staff, sub })) return;
     if (staff) {
       const STAFF = { ...MEMBER, id: sub, full_name: "Team Lead", role: "admin" };
       if (url.pathname === "/auth/v1/user") return res.end(JSON.stringify({ id: sub, aud: "authenticated", role: "authenticated", email: "team@example.test", app_metadata: {}, user_metadata: {}, created_at: MEMBER.created_at }));

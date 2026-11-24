@@ -1,0 +1,9 @@
+/* Update 4: the site's base styles remove list bullets; the hand-off's course pages keep the browser's bullets here. */
+.zip .crmain ul:not([class]), .zip .crlmain ul:not([class]), .zip .crgform ul:not([class]) { list-style: disc; }
+.zip .crmain ul:not([class]) li, .zip .crlmain ul:not([class]) li { display: list-item; }
+/* Contrast: the hand-off's grey and blue on these backgrounds fall just under 4.5:1; one step darker (or lighter in dark mode). */
+.zip .crtabs a:not([aria-current]), .zip .crlp, .zip .crls li.crcur > a .muted { color: #66666E; }
+.dark .zip .crtabs a:not([aria-current]), .dark .zip .crlp, .dark .zip .crls li.crcur > a .muted { color: var(--muted); }
+.dark .zip .crtopic { color: var(--link); }
+.dark .zip .crprice.free { color: #34D399; }
+.dark .zip .crrt { color: #FBBF24; }

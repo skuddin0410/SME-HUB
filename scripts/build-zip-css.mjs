@@ -28,4 +28,6 @@ function build(from, to) {
 build("design/zip-source.css", "styles/zip.css");
 // Update 3 (profile completion): the stylesheet that came with it, scoped the same way
 build("design/zip-profile-completion.css", "styles/profile-completion.css");
+// Update 4 (courses): code/courses-source/cr.css from that package, scoped the same way
+build("design/zip-courses.css", "styles/courses.css");
 console.log("ok");
