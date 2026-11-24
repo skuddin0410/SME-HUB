@@ -169,3 +169,5 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
   .zip .btn, .zip .chip, .zip .act { transition: background .15s, color .15s, transform .1s; }
   .zip .btn:active, .zip .chip:active, .zip .act:active { transform: scale(.98); }
 }
+/* profile Details: the hand-off's accent links are too dark on the dark card */
+.dark .zip .fd .linkbtn { color: var(--link) !important; }
