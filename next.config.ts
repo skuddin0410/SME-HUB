@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       ...OLD_GUIDES.map((g) => ({ source: `/business-guide-${g}`, destination: `/guides/${g}`, permanent: true })),
+      // Update 12: the hand-off's guide addresses (/guide-alberta and so on) open the same pages
+      ...OLD_GUIDES.map((g) => ({ source: `/guide-${g}`, destination: `/guides/${g}`, permanent: true })),
       ...OLD_RESOURCES.map(([from, to]) => ({ source: `/${from}`, destination: `/resources/${to}`, permanent: true })),
       // the rest of smehub.ca's menu, so old links and bookmarks keep working
       ...[

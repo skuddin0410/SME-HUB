@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { GUIDES, RESOURCE_PAGES } from "@/lib/content";
 import { findFull, type FullPage } from "@/lib/smehub";
-import { ABBR, RES, checklist } from "@/lib/zip/centres";
+import { GPROVS, RES, checklist } from "@/lib/zip/centres";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -22,10 +22,10 @@ export function ZipGuidesIndex() {
         <h1>Business guides</h1>
         <p className="lead">A guide to starting, running and growing a business in every province and territory.</p>
         <div className="feat">
-          {GUIDES.map((g) => (
-            <Link key={g.slug} href={`/guides/${g.slug}`} style={{ border: "1px solid var(--line)", borderRadius: 12, padding: 14, display: "flex", flexDirection: "column", gap: 4, textDecoration: "none", color: "var(--ink)" }}>
-              <strong>{ABBR[g.slug] ?? g.name}</strong>
-              <span className="muted small">{g.name}</span>
+          {GPROVS.map(([slug, name, desc]) => (
+            <Link key={slug} href={`/guides/${slug}`} style={{ border: "1px solid var(--line)", borderRadius: 12, padding: 14, display: "flex", flexDirection: "column", gap: 4, textDecoration: "none", color: "var(--ink)" }}>
+              <strong>{name}</strong>
+              <span className="muted small">{desc}</span>
             </Link>
           ))}
         </div>
@@ -113,15 +113,17 @@ export function ZipCentrePage({ page }: { page: FullPage }) {
 }
 
 export function ZipGuidePage({ page }: { page: FullPage }) {
-  const g = GUIDES.find((x) => page.path === `/guides/${x.slug}`);
-  const n = g?.name ?? page.heads[0];
+  // Update 12: the name and short description come from the guide list (GPROVS), never from the business province codes
+  const gp = GPROVS.find(([slug]) => page.path === `/guides/${slug}`);
+  const n = gp?.[1] ?? GUIDES.find((x) => page.path === `/guides/${x.slug}`)?.name ?? page.heads[0].replace(/:$/, "").replace(/^The | Small Business Guide$/g, "");
   return (
     <Wrap>
       <div className="card doc">
         <Link className="small" href="/guides" style={{ color: "var(--muted)", fontWeight: 600 }}>← All province guides</Link>
         <p className="eyebrow">Province-wide resources</p>
         <h1>The {n} Small Business Guide</h1>
-        <p className="lead">{page.intro}</p>
+        {gp && <p className="lead">{gp[2]}</p>}
+        <p>{page.intro}</p>
         <h2>Starting checklist</h2>
         <Faq items={checklist(n)} />
         <h2>What to know before you start</h2>

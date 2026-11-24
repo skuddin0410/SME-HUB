@@ -8,6 +8,26 @@ export const RES: Record<string, { title: string; lead: string; feat: [string, s
   lgbtq: { title: "LGBTQ+ Entrepreneurs Resource Centre", lead: "A platform created to support and amplify the growth of LGBTQ+-owned businesses across Canada, powered by CanadianSME Small Business Magazine.", feat: [["Inclusive education", "Workshops, webinars and courses tailored to LGBTQ+ entrepreneurs."], ["Networking and collaboration", "Events and groups for meeting other owners."], ["Funding guidance", "Help finding grants, loans and investors."], ["Mentorship", "Support from experienced LGBTQ+ business owners and allies."]] },
 };
 
+/**
+ * Update 12: the province guides (the hand-off's GPROVS): slug, name and the short description under each guide's title.
+ * Kept apart from the business province list (lib/forsale-shared PROVS: code, name), which the directory and Businesses for Sale use.
+ */
+export const GPROVS: [string, string, string][] = [
+  ["alberta", "Alberta", "A commercially active province with strong resources, market access and government support."],
+  ["british-columbia", "British Columbia", "A strong entrepreneurial ecosystem with good market access and support."],
+  ["manitoba", "Manitoba", "A diverse central-province economy for establishing, operating and expanding a business."],
+  ["new-brunswick", "New Brunswick", "Local economic conditions, market access and government support for every stage of a business."],
+  ["newfoundland-and-labrador", "Newfoundland and Labrador", "A resource-based coastal economy with a long fisheries history and varied sectors."],
+  ["northwest-territories", "Northwest Territories", "Abundant resources, business opportunities and entrepreneurial incubators."],
+  ["nova-scotia", "Nova Scotia", "Opportunities in technology, ocean industries, agriculture, fisheries, tourism and sustainable energy."],
+  ["nunavut", "Nunavut", "Resources and insights for establishing, managing and growing an enterprise in the territory."],
+  ["ontario", "Ontario", "Tools and information for starting, running and growing an Ontario business, organised by stage."],
+  ["prince-edward-island", "Prince Edward Island", "Startup, management and scaling resources, including help with regulation and working capital."],
+  ["quebec", "Quebec", "The key steps for establishing, operating and expanding a small business in Quebec."],
+  ["saskatchewan", "Saskatchewan", "Resources and advice for starting, operating and scaling a company in the province."],
+  ["yukon", "Yukon", "Tools and insights for setting up, running and expanding a small business in the territory."],
+];
+
 export const ABBR: Record<string, string> = { alberta: "AB", "british-columbia": "BC", manitoba: "MB", "new-brunswick": "NB", "newfoundland-and-labrador": "NL", "nova-scotia": "NS", "northwest-territories": "NT", nunavut: "NU", ontario: "ON", "prince-edward-island": "PE", quebec: "QC", saskatchewan: "SK", yukon: "YT" };
 
 export const checklist = (n: string): [string, string][] => [
