@@ -271,7 +271,7 @@ export const POLICIES: Policy[] = [
     slug: "community-guidelines",
     label: "Community guidelines",
     title: "Community guidelines",
-    intro: "SMB Hub works when members treat each other with respect and share what they know. These guidelines apply to posts, comments, groups, messages and business listings.",
+    intro: "SME Hub works when members treat each other with respect and share what they know. These guidelines apply to posts, comments, groups, messages and business listings.",
     sections: [
       { heading: "What we value", points: [
         "Respect. Disagree with ideas, never attack people.",
@@ -302,19 +302,19 @@ export const POLICIES: Policy[] = [
       ] },
       { heading: "How we enforce this", text: "Our team may review content. Depending on how serious the problem is, we may remove a post, send a warning, suspend an account or remove a member for good. This list is not complete, and we may act on other behaviour that harms the community." },
       { heading: "Report a problem", text: "Use Report in the menu on any post, or email support@smehub.ca with a link or screenshot. Reports are reviewed by our team." },
-      { heading: "Changes", text: "We may update these guidelines. Continuing to use SMB Hub means you accept the current version." },
+      { heading: "Changes", text: "We may update these guidelines. Continuing to use SME Hub means you accept the current version." },
     ],
   },
   {
     slug: "discrimination-policy",
     label: "Discrimination policy",
     title: "Discrimination policy",
-    intro: "SMB Hub is an inclusive community. Every member, staff member and volunteer is entitled to fair treatment, online and at our events and workshops.",
+    intro: "SME Hub is an inclusive community. Every member, staff member and volunteer is entitled to fair treatment, online and at our events and workshops.",
     sections: [
       { heading: "Our position", points: [
         "We do not allow discrimination based on any protected characteristic.",
         "Discrimination includes unfair or hostile treatment, withholding an opportunity or benefit, and creating an intimidating environment.",
-        "Everyone who takes part in SMB Hub is responsible for following this policy.",
+        "Everyone who takes part in SME Hub is responsible for following this policy.",
       ] },
       { heading: "Raising a concern", text: "Tell our team. Concerns are handled in confidence. Where we find the policy was broken, we may take disciplinary action, up to ending a membership." },
       { heading: "Prevention and education", text: "We share education and resources on diversity and inclusion, and encourage members, staff and volunteers to take part in training." },
@@ -326,10 +326,10 @@ export const POLICIES: Policy[] = [
     slug: "terms",
     label: "Terms and conditions",
     title: "Terms and conditions",
-    intro: "A plain-language summary of the terms for using SMB Hub, operated by Cmarketing Inc., Mississauga, Ontario. By using the site you accept these terms and our privacy policy.",
+    intro: "A plain-language summary of the terms for using SME Hub, operated by Cmarketing Inc., Mississauga, Ontario. By using the site you accept these terms and our privacy policy.",
     sections: [
       { heading: "Using the site", points: [
-        "Follow the law when you use SMB Hub and when you buy anything through it.",
+        "Follow the law when you use SME Hub and when you buy anything through it.",
         "No harassment, discrimination, spam, malware or hacking.",
         "Do not misstate who you are, and do not try to enter another member's account or a restricted area.",
         "We can end anyone's access at any time, without notice.",
@@ -345,7 +345,7 @@ export const POLICIES: Policy[] = [
         "Copying, redistributing or adapting our content needs written permission.",
       ] },
       { heading: "Information, not advice", points: [
-        "Content on SMB Hub is general information and education. It is not legal, financial or tax advice.",
+        "Content on SME Hub is general information and education. It is not legal, financial or tax advice.",
         "We do not guarantee accuracy. Speak to a qualified professional before making a decision.",
         "We do not control or endorse third-party websites or content that members or pages link to.",
       ] },
@@ -371,7 +371,7 @@ export const POLICIES: Policy[] = [
     slug: "privacy-policy",
     label: "Privacy policy",
     title: "Privacy policy",
-    intro: "How SMB Hub collects, uses and protects your information.",
+    intro: "How SME Hub collects, uses and protects your information.",
     draft: "Draft for review. Your live site has no privacy policy page yet, although the terms refer to one. A lawyer should approve this text before it is published.",
     sections: [
       { heading: "What we collect", points: ["Account details you give us: name, email address, business name, city and profile information.", "What you post: posts, comments, messages, business listings and photos.", "How you use the site: pages viewed, groups joined and device information."] },

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getHubSettings } from "@/lib/zip/settings-load";
 
-// Downloads everything the signed-in member has on SMB Hub as one JSON file.
+// Downloads everything the signed-in member has on SME Hub as one JSON file.
 export async function GET() {
   if (!(await getHubSettings("profiles")).exportData) return new Response("Downloading your data is turned off. Ask the Hub team.", { status: 403 });
   const supabase = await createClient();

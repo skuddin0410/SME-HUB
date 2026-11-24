@@ -18,7 +18,7 @@ export function ZipGuidesIndex() {
   return (
     <Wrap>
       <div className="card doc">
-        <p className="eyebrow">About SMB Hub</p>
+        <p className="eyebrow">About SME Hub</p>
         <h1>Business guides</h1>
         <p className="lead">A guide to starting, running and growing a business in every province and territory.</p>
         <div className="feat">

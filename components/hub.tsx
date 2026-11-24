@@ -38,7 +38,7 @@ export function PersonLine({ person, extra, size = 44, degree }: { person: Autho
           {degree && <span className="text-xs text-muted-foreground">· {DEGREE_LABEL[degree]}</span>}
           <TierBadge type={person.member_type} />
         </div>
-        <p className="truncate text-xs text-muted-foreground">{extra ?? (person.headline || "SMB Hub member")}</p>
+        <p className="truncate text-xs text-muted-foreground">{extra ?? (person.headline || "SME Hub member")}</p>
       </div>
     </div>
   );
@@ -78,7 +78,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
                 Business page · posted by <Link href={`/members/${post.author.id}`}>{post.author.full_name || "a team member"}</Link>
               </>
             ) : (
-              post.author.headline || "SMB Hub member"
+              post.author.headline || "SME Hub member"
             )}
           </span>
           <span className="row" style={{ gap: 6, flexWrap: "wrap", marginTop: 2 }}>
@@ -91,7 +91,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
                 · {post.group.name}
               </Link>
             )}
-            {post.author.member_type === "advisor" && !post.business && <span className="tag">SMB Advisor</span>}
+            {post.author.member_type === "advisor" && !post.business && <span className="tag">SME Advisor</span>}
             {post.author.member_type !== "advisor" && post.author.member_type !== "owner" && !post.business && <TierBadge type={post.author.member_type} always />}
             {post.kind !== "update" && <span className={`tag ${post.kind}`}>{KINDS[post.kind].label}</span>}
             {post.profile_pinned && <span className="tag">Pinned on profile</span>}

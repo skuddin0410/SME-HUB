@@ -83,7 +83,7 @@ export function DetailsForm({ details, profileType, nets, extra = [] }: { detail
         <select name="profile_type" defaultValue={profileType} disabled={locked} className="field font-normal">
           {typeOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
-        {locked && <span className="text-xs font-normal text-muted-foreground">The SMB Hub team sets this one.</span>}
+        {locked && <span className="text-xs font-normal text-muted-foreground">The SME Hub team sets this one.</span>}
       </label>
       <label className="grid gap-1.5 text-sm font-medium">
         I can help with

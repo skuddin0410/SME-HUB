@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const where = data.city ? ` in ${data.city}, ${data.province}` : "";
   return pageMeta({
     title: data.category ? `${data.name} - ${data.category}${where}` : data.name,
-    description: data.description || `${data.name}${where} is listed in the SMB Hub business directory.`,
+    description: data.description || `${data.name}${where} is listed in the SME Hub business directory.`,
     path: `/businesses/${slug}`,
     image: data.cover_url || data.logo_url,
     // only published pages belong in search results; a draft seen by its team stays out

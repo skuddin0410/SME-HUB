@@ -7,7 +7,7 @@ import type { Metadata } from "next";
  */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
 export const INDEXABLE = SITE_URL !== "";
-export const SITE_NAME = "SMB Hub";
+export const SITE_NAME = "SME Hub";
 export const SITE_DESCRIPTION = "Canada's small business network. Connect, learn and grow with entrepreneurs, professionals and business leaders across Canada.";
 
 /** One or two sentences for a search result, cut at a word. */

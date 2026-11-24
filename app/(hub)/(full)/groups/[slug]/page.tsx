@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!data) return { title: "Group not found" };
   return pageMeta({
     title: `${data.name} group`,
-    description: data.description || `${data.name} is a group on SMB Hub, Canada's small business network.`,
+    description: data.description || `${data.name} is a group on SME Hub, Canada's small business network.`,
     path: `/groups/${slug}`,
     index: !data.is_private,
   });

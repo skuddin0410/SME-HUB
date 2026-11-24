@@ -46,7 +46,7 @@ export default async function CmsStaff() {
         <Card title="Add an admin">
           <form action={cmsGrantAdmin} className="grid gap-3">
             <label className="grid gap-1 text-[0.8438rem] font-medium text-zinc-700">
-              Their SMB Hub email
+              Their SME Hub email
               <input name="email" type="email" required placeholder="name@canadiansme.ca" className={INPUT} />
             </label>
             <ConfirmSubmit className={BTN_PRIMARY} confirm="Give this person full CMS access?">Give CMS access</ConfirmSubmit>

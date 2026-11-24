@@ -54,7 +54,7 @@ export function VerifyForm({ email: emailFromUrl }: { email: string }) {
           <div className="icon ok"><CheckIcon /></div>
           <h1 ref={h1} tabIndex={-1}>You’re in, {first || "there"}!</h1>
           <p className="sub">Your email is confirmed and your welcome email is on its way. Let’s set up your profile so the right people can find you.</p>
-          <Link className="btn p" href="/profile/edit">Set up my profile</Link>
+          <Link className="btn p" href="/feed">Set up my profile</Link>
           <p className="hint" style={{ marginTop: 14 }}>It takes about 3 minutes. AI can write your introduction for you.</p>
         </div>
       </section>

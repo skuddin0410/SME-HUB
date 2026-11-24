@@ -197,7 +197,7 @@ export function MessagingApp({
               <ZipAv name={other.full_name} src={other.avatar_url} />
               <div className="stack grow">
                 <Link href={`/members/${other.id}`} className="namebtn">{other.full_name}</Link>
-                <span className="muted small">{other.headline || "SMB Hub member"}</span>
+                <span className="muted small">{other.headline || "SME Hub member"}</span>
               </div>
             </div>
             <div className="stack" style={{ gap: 8, padding: "12px 0", borderTop: "1px solid var(--line)", maxHeight: 460, overflowY: "auto" }}>

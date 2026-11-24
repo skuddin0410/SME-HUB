@@ -6,7 +6,7 @@ import { pageMeta } from "@/lib/seo";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
-export const metadata = pageMeta({ title: "Add a business", description: "Add your business to the SMB Hub directory.", path: "/businesses/new", index: false });
+export const metadata = pageMeta({ title: "Add a business", description: "Add your business to the SME Hub directory.", path: "/businesses/new", index: false });
 
 export default async function AddBusinessPage() {
   const { supabase, userId, isStaff } = await requireUser();

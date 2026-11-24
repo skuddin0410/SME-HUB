@@ -219,7 +219,7 @@ export async function GroupsCard() {
   );
 }
 
-/** Right rail, top: SMB Hub's social accounts. */
+/** Right rail, top: SME Hub's social accounts. */
 export function SocialCard() {
   return (
     <div className="panel p-4 space-y-3">

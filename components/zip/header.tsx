@@ -21,7 +21,7 @@ const HUB_MENU: NavItem[] = [
   { label: "Business Directory", href: "/businesses" },
   { label: "My Businesses", href: "/businesses/mine" },
   { label: "Member blogs", href: "/member-blogs" },
-  { label: "SMB Advisors", href: "/smb-advisor" },
+  { label: "SME Advisors", href: "/smb-advisor" },
   { label: "Member Spotlight", href: "/spotlight" },
   { label: "Membership plans", href: "/membership-plans" },
   { label: "Blog", href: "/blog" },
@@ -128,13 +128,13 @@ export function ZipHeader({
     <header className="top">
       <div ref={bar} className="wrap hd">
         <div className="lgroup">
-          <Link className="logo" href={me ? "/feed" : "/"} aria-label="SMB Hub home">
+          <Link className="logo" href={me ? "/feed" : "/"} aria-label="SME Hub home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="on-light" src="/brand/zip-logo.webp" alt="SMB Hub" width={125} height={32} />
+            <img className="on-light" src="/brand/zip-logo.webp" alt="SME Hub" width={125} height={32} />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="on-dark" src="/brand/smb-hub-logo-on-dark.png" alt="SMB Hub" width={125} height={32} />
+            <img className="on-dark" src="/brand/smb-hub-logo-on-dark.png" alt="SME Hub" width={125} height={32} />
           </Link>
-          <button type="button" className="spill" onClick={() => setPalette(true)} aria-label="Search SMB Hub">
+          <button type="button" className="spill" onClick={() => setPalette(true)} aria-label="Search SME Hub">
             <Ic n="search" />
             <span style={{ flex: "1 1 auto", textAlign: "left", fontSize: 13 }}>Search</span>
             <kbd aria-hidden="true">⌘K</kbd>
@@ -254,7 +254,7 @@ export function ZipHeader({
 
         {open === "about" && (
           <div className="mega">
-            <Col title="About SMB Hub" items={ABOUT_MENU} />
+            <Col title="About SME Hub" items={ABOUT_MENU} />
             <Col title="SMB resources" items={RESOURCES_MENU} />
             <Col title="Province-wide resources" items={PROVINCE_MENU} />
           </div>

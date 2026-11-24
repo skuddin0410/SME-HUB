@@ -53,6 +53,8 @@ export function ReadyProvider({ me, website, autoOpen, children }: { me: ReadyMe
   const [note, setNote] = useState("");
   const noteTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const after = useRef<(() => void) | null>(null);
+  const open = useRef(false);
+  open.current = modal !== null;
 
   const toast = useCallback((t: string) => {
     setNote(t);
@@ -104,6 +106,7 @@ export function ReadyProvider({ me, website, autoOpen, children }: { me: ReadyMe
       if (localStorage.getItem(SKIP_KEY) === me.id) return;
     } catch {}
     const t = setTimeout(() => {
+      if (open.current) return; // the member already opened something themselves
       if (website) void runRead(website);
       else openAi();
     }, 400);

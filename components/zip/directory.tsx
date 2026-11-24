@@ -112,7 +112,7 @@ export async function Directory({ searchParams, base }: { searchParams: Record<s
             <div className="stack" style={{ gap: 6 }}>
               <span className="small"><strong>Membership</strong></span>
               <div className="chips">
-                {[["", "Everyone"], ["advisor", "SMB Advisors"], ["plus", "Plus members"], ["free", "Free members"]].map(([v, l]) => (
+                {[["", "Everyone"], ["advisor", "SME Advisors"], ["plus", "Plus members"], ["free", "Free members"]].map(([v, l]) => (
                   <Link key={v} href={`${base}?${new URLSearchParams({ q, province, type, sort, help, avail, ...(v ? { plan: v } : {}), ...(founding ? { founding: "1" } : {}), more: "1" })}`} className="chip" aria-current={plan === v ? "true" : undefined}>{l}</Link>
                 ))}
               </div>

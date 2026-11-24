@@ -31,7 +31,7 @@ export const PLAN_FEATURES: Record<PlanKey, string[]> = {
   ],
   advisor: [
     "=Everything in Plus, and:",
-    "SMB Advisor badge on your profile and posts",
+    "SME Advisor badge on your profile and posts",
     "A place on the Advisors page and in the feed slider",
     "Members book free intro calls with you",
     "Post 4 offers a month",
@@ -56,7 +56,7 @@ export const COMPARE: CompareRow[] = [
   ["g", "Get found"],
   ["Company listing in the directory", "Standard", "Featured", "Featured"],
   ["Made in Canada Pavilion listing", 1, 1, 1],
-  ["SMB Advisor badge and Advisors page", 0, 0, 1],
+  ["SME Advisor badge and Advisors page", 0, 0, 1],
   ["Shown in the advisor slider in the feed", 0, 0, 1],
   ["g", "AI tools"],
   ["People to meet and warm introductions", 1, 1, 1],

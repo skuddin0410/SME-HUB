@@ -31,27 +31,27 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 
 /**
- * The SMB Hub logo from smehub.ca: the red maple roundel and the SMB HUB wordmark
+ * The SME Hub logo from smehub.ca: the red maple roundel and the SME HUB wordmark
  * (public/brand, transparent PNGs at twice the size they are shown, so they stay sharp on retina screens).
  * On small phones only the roundel shows; onDark swaps in the white-lettered version.
  */
 export function Logo({ href = "/feed", onDark = false }: { onDark?: boolean; href?: string; large?: boolean }) {
   return (
-    <Link href={href} aria-label="SMB Hub home" className="flex items-center shrink-0 group">
+    <Link href={href} aria-label="SME Hub home" className="flex items-center shrink-0 group">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={onDark ? "/brand/smb-hub-logo-on-dark.png" : "/brand/smb-hub-logo.png"}
-        alt="SMB Hub"
+        alt="SME Hub"
         width={874}
         height={224}
         className={`hidden sm:block h-8 w-auto group-hover:opacity-90 transition-opacity no-dim ${onDark ? "" : "dark:!hidden"}`}
       />
       {!onDark && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src="/brand/smb-hub-logo-on-dark.png" alt="SMB Hub" width={874} height={224} className="hidden dark:sm:block h-8 w-auto no-dim" />
+        <img src="/brand/smb-hub-logo-on-dark.png" alt="SME Hub" width={874} height={224} className="hidden dark:sm:block h-8 w-auto no-dim" />
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/smb-hub-mark.png" alt="SMB Hub" width={226} height={224} className="sm:hidden h-8 w-8" />
+      <img src="/brand/smb-hub-mark.png" alt="SME Hub" width={226} height={224} className="sm:hidden h-8 w-8" />
     </Link>
   );
 }
@@ -163,7 +163,7 @@ export function SiteNav({
           <button
             type="button"
             onClick={() => setPalette(true)}
-            aria-label="Search SMB Hub"
+            aria-label="Search SME Hub"
             className="hidden sm:flex lg:hidden w-8 h-8 rounded-full bg-[#F7F7F8] border border-[#E5E5E8] items-center justify-center text-zinc-800 shrink-0"
           >
             <Search className="w-3.5 h-3.5" />
@@ -206,7 +206,7 @@ export function SiteNav({
             </button>
             {open === "about" && (
               <div className={`${POPOVER} w-[min(42.5rem,calc(100vw-2rem))] p-4 grid grid-cols-[1fr_1fr_1.35fr] gap-4`}>
-                <MegaColumn title="About SMB Hub" items={ABOUT_MENU} />
+                <MegaColumn title="About SME Hub" items={ABOUT_MENU} />
                 <MegaColumn title="SMB resources" items={RESOURCES_MENU} />
                 <MegaColumn title="Province-wide resources" items={PROVINCE_MENU} dense />
               </div>
@@ -410,7 +410,7 @@ export function SiteNav({
             className="flex w-full items-center gap-2 h-9 px-3.5 rounded-full bg-[#F7F7F8] border border-[#E5E5E8] text-[0.875rem] text-zinc-500"
           >
             <Search className="w-3.5 h-3.5 text-zinc-400" />
-            Search SMB Hub...
+            Search SME Hub...
           </button>
           {me && (
             <div className="grid grid-cols-2 gap-2">
@@ -530,7 +530,7 @@ export function CommandPalette({ onClose, signedIn }: { onClose: () => void; sig
       onClick={(e) => e.target === e.currentTarget && onClose()}
       role="dialog"
       aria-modal="true"
-      aria-label="Search SMB Hub"
+      aria-label="Search SME Hub"
     >
       <div className="w-full max-w-lg bg-white rounded-2xl border border-[#E5E5E8] shadow-popover overflow-hidden fade-in">
         <form

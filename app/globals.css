@@ -33,7 +33,7 @@
     --tint: 207.3 44% 95.1%; /* #edf3f8 search fields, selected rows */
     --card-edge: 240 5.9% 90.6%; /* hairline #E5E5E8 around cards */
   }
-  /* dark theme: the handoff tokens (docs: SMB Hub design guide, section 4) */
+  /* dark theme: the handoff tokens (docs: SME Hub design guide, section 4) */
   .dark {
     color-scheme: dark;
     --background: 220 22% 8%; /* #101319 */

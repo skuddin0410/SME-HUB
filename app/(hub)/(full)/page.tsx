@@ -6,7 +6,7 @@ import { VisitorHome } from "@/components/zip/visitor-home";
 import { pageMeta } from "@/lib/seo";
 
 export const metadata = pageMeta({
-  title: "SMB Hub: Canada's small business community",
+  title: "SME Hub: Canada's small business community",
   description: "A free community for Canadian small-business owners. Get known, get answers, get customers.",
   path: "/",
 });

@@ -148,7 +148,7 @@ export function PersonCard({
           {person.full_name || "Member"}
           {degree && <span className="text-xs font-normal text-muted-foreground"> · {degree === 1 ? "1st" : degree === 2 ? "2nd" : "3rd+"}</span>}
         </Link>
-        <p className="mt-0.5 line-clamp-2 min-h-[2.5rem] text-sm leading-5 text-muted-foreground">{person.headline || "SMB Hub member"}</p>
+        <p className="mt-0.5 line-clamp-2 min-h-[2.5rem] text-sm leading-5 text-muted-foreground">{person.headline || "SME Hub member"}</p>
         <p className="mb-2 mt-auto pt-2 text-xs text-muted-foreground">
           {note ?? (person.member_type !== "owner" ? MEMBER_LABEL[person.member_type] : person.location || " ")}
         </p>
@@ -175,7 +175,7 @@ export function Invitations({ people }: { people: Person[] }) {
             <AvatarImg person={p} size={56} />
             <span className="min-w-0">
               <span className="block truncate text-sm font-semibold hover:underline">{p.full_name}</span>
-              <span className="block truncate text-xs text-muted-foreground">{p.headline || "SMB Hub member"}</span>
+              <span className="block truncate text-xs text-muted-foreground">{p.headline || "SME Hub member"}</span>
             </span>
           </Link>
           <ConnectButton otherId={p.id} initial="received" signedIn onChange={(s) => setAnswered((a) => ({ ...a, [p.id]: s === "connected" ? "connected" : "none" }))} />

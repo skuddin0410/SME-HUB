@@ -23,7 +23,7 @@ const MEMBER = {
 const HELP = JSON.parse(fs.readFileSync(process.env.HELP_FIXTURE || new URL("./help-fixture.json", import.meta.url), "utf8"));
 const port = Number(process.env.MOCK_SUPABASE_PORT || 54398);
 
-const MODSET = { types: { post: { on: true, auto: true, hide: 3 }, comment: { on: true, auto: true, hide: 3 }, photo: { on: true, auto: true, hide: 2 }, group: { on: true, auto: false, hide: 5 }, blog: { on: true, auto: true, hide: 3 }, blogc: { on: true, auto: true, hide: 3 } }, member_report: true, blocking: true, sus_blocks: { on: true, n: 5 }, sus_reports: { on: true, n: 10 }, email_on: true, email_subject: "[SMB Hub] {{user.name}} was suspended", email_body: "Review in Moderation." };
+const MODSET = { types: { post: { on: true, auto: true, hide: 3 }, comment: { on: true, auto: true, hide: 3 }, photo: { on: true, auto: true, hide: 2 }, group: { on: true, auto: false, hide: 5 }, blog: { on: true, auto: true, hide: 3 }, blogc: { on: true, auto: true, hide: 3 } }, member_report: true, blocking: true, sus_blocks: { on: true, n: 5 }, sus_reports: { on: true, n: 10 }, email_on: true, email_subject: "[SME Hub] {{user.name}} was suspended", email_body: "Review in Moderation." };
 http
   .createServer((req, res) => {
     const url = new URL(req.url, "http://localhost");
@@ -39,6 +39,8 @@ http
     const member = token.startsWith("ey");
     let sub = MEMBER.id;
     try { sub = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString()).sub || MEMBER.id; } catch {}
+    let claims = {};
+    try { claims = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString()); } catch {}
     const staff = member && sub.endsWith("0002");
     if (staff) {
       const STAFF = { ...MEMBER, id: sub, full_name: "Team Lead", role: "admin" };
@@ -77,6 +79,17 @@ http
     if (url.pathname === "/rest/v1/rpc/hashtag_followers") return res.end(JSON.stringify([{ tag: "grants", followers: 5 }]));
     if (url.pathname === "/rest/v1/hashtag_follows") return res.end(req.method === "GET" ? JSON.stringify([{ tag: "grants" }]) : "[]");
     if (url.pathname === "/rest/v1/rpc/connection_count") return res.end("10");
+    // profile completion (Update 3): a test can sign in with { ready: 0..5 } in its token to be a member with that many of the 5 items done
+    if (url.pathname === "/rest/v1/rpc/my_ready_items") {
+      const n = typeof claims.ready === "number" ? claims.ready : 5;
+      return res.end(JSON.stringify([{ photo: n > 0, headline: n > 1, city: n > 2, helps: n > 3, biz: n > 4, ready_count: n }]));
+    }
+    if (url.pathname === "/rest/v1/rpc/my_profile_signals") return res.end(JSON.stringify([{ views_7d: claims.views ?? 0, searches_7d: claims.searches ?? 0 }]));
+    if (url.pathname === "/rest/v1/rpc/team_profile_stats") return res.end(JSON.stringify([{ joined_7d: 46, ready_7d: 17, older_not_ready: 128, trend: [22, 26, 29, 31, 35, 37] }]));
+    if (url.pathname === "/rest/v1/rpc/team_profile_followup") return res.end(JSON.stringify([
+      { id: "00000000-0000-4000-8000-0000000000d1", full_name: "Nadia Rahman", avatar_url: null, headline: "Owner, Nadia’s Kitchen", location: "Brampton, ON", founding_number: 1, created_at: new Date(Date.now() - 86400000).toISOString(), last_visit: new Date().toISOString(), missing: ["photo", "biz"], ready_count: 3, status: "new" },
+      { id: "00000000-0000-4000-8000-0000000000d2", full_name: "Owen Clarke", avatar_url: null, headline: "", location: "Halifax, NS", founding_number: null, created_at: new Date(Date.now() - 3 * 86400000).toISOString(), last_visit: null, missing: ["headline", "helps", "biz"], ready_count: 2, status: "called" },
+    ]));
     if (url.pathname === "/rest/v1/rpc/follower_count") return res.end("27");
     if (url.pathname === "/rest/v1/rpc/profile_last_active") return res.end(JSON.stringify(new Date().toISOString()));
     if (url.pathname === "/rest/v1/rpc/get_profile_details") return res.end(JSON.stringify([{ user_id: PRIYA.id, helps_with: ["Wholesale", "Food retail"], needs: ["Packaging suppliers"], availability: [], social_links: {} }]));

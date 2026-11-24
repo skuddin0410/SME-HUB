@@ -216,7 +216,7 @@ export async function ZipStoryPage({ section, slug }: { section: SectionKey; slu
             </div>
             <div className="card">
               <h2>Want advice on this?</h2>
-              <p className="muted small">Ask an SMB Advisor a question, or book a free 15-minute call.</p>
+              <p className="muted small">Ask an SME Advisor a question, or book a free 15-minute call.</p>
               <Link className="btn sm" style={{ alignSelf: "flex-start" }} href="/smb-advisor">Find an advisor</Link>
             </div>
           </aside>

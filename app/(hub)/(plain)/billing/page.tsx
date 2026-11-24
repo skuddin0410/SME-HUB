@@ -8,7 +8,7 @@ import { DOWNGRADE_RULES, LIMIT_ROWS, PLAN_INFO, type PlanKey } from "@/lib/bill
 import { billingConfigured } from "@/lib/stripe";
 import { pageMeta } from "@/lib/seo";
 
-export const metadata = { ...pageMeta({ title: "Plan and billing", description: "Your SMB Hub plan, renewal date and billing.", path: "/billing", index: false }) };
+export const metadata = { ...pageMeta({ title: "Plan and billing", description: "Your SME Hub plan, renewal date and billing.", path: "/billing", index: false }) };
 
 const STATUS: Record<string, string> = {
   active: "Active",

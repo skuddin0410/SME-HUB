@@ -12,7 +12,7 @@ test("skip link is first, and Escape closes a header menu", async ({ page, conte
   await expect(skip).toBeVisible();
   await page.getByRole("button", { name: "About" }).focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByText("About SMB Hub").first()).toBeVisible();
+  await expect(page.getByText("About SME Hub").first()).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "About" })).toHaveAttribute("aria-expanded", "false");
 });

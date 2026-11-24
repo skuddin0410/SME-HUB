@@ -22,7 +22,7 @@ export const EXPLORE_MENU: NavItem[] = [
   { label: "Groups", href: "/groups" },
   { label: "Members", href: "/members" },
   { label: "Explore businesses", href: "/businesses" },
-  { label: "SMB Advisors", href: "/smb-advisor" },
+  { label: "SME Advisors", href: "/smb-advisor" },
   { label: "Membership plans", href: "/membership-plans" },
   { label: "Blog", href: "/blog" },
   { label: "News", href: "/news" },

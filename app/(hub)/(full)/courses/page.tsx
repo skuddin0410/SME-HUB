@@ -14,7 +14,7 @@ export default function CoursesPage() {
         <div className="pagehead">
           <p className="eyebrow">Explore the Hub</p>
           <h1>Courses</h1>
-          <p className="muted">Short courses taught by SMB Advisors and guest experts.</p>
+          <p className="muted">Short courses taught by SME Advisors and guest experts.</p>
         </div>
         <div className="grid">
           {COURSES.map((c) => (
@@ -23,14 +23,14 @@ export default function CoursesPage() {
               <span className="tag question" style={{ alignSelf: "flex-start" }}>{c.category}</span>
               <h2 style={{ fontSize: 17, lineHeight: 1.3 }}>{c.title}</h2>
               <p className="muted">{c.about}</p>
-              <p className="small muted">{c.instructor} · {c.lessons} lessons · {c.price}</p>
+              <p className="small muted">{c.instructor} · {c.lessons} {c.lessons === 1 ? "lesson" : "lessons"} · {c.price}</p>
               <SoonButton title={c.title} />
             </div>
           ))}
           <div className="card" style={{ justifyContent: "center", alignItems: "flex-start", borderStyle: "dashed" }}>
             <h2 style={{ fontSize: 17 }}>Teach a course</h2>
-            <p className="muted">SMB Advisors can create and sell courses to members.</p>
-            <Link className="btn ghost" href="/smb-advisor">Become an SMB Advisor</Link>
+            <p className="muted">SME Advisors can create and sell courses to members.</p>
+            <Link className="btn ghost" href="/smb-advisor">Become an SME Advisor</Link>
           </div>
         </div>
       </div>

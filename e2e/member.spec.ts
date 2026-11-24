@@ -10,7 +10,7 @@ for (const width of SCREEN_WIDTHS) {
   test(`member home fits a ${width}px screen`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/feed", { waitUntil: "domcontentloaded" });
-    await expect(page.getByText("Get started on SMB Hub")).toBeVisible();
+    await expect(page.getByText("Get started on SME Hub")).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, "no sideways scroll").toBeLessThanOrEqual(1);
   });
@@ -42,7 +42,7 @@ test("dark mode switches, is remembered after a reload, and still fits", async (
 test("first-week checklist can be hidden and stays hidden", async ({ page }) => {
   await page.goto("/feed", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Hide this checklist" }).click();
-  await expect(page.getByText("Get started on SMB Hub")).toBeHidden();
+  await expect(page.getByText("Get started on SME Hub")).toBeHidden();
   await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Get started on SMB Hub")).toBeHidden();
+  await expect(page.getByText("Get started on SME Hub")).toBeHidden();
 });

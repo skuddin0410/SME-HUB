@@ -45,7 +45,7 @@ export function ZipContact() {
   return (
     <Wrap>
       <div className="card doc">
-        <p className="eyebrow">About SMB Hub</p>
+        <p className="eyebrow">About SME Hub</p>
         <h1>Contact us</h1>
         <p className="lead">Questions about your account, a membership plan or working with CanadianSME? Call or email and our team will help.</p>
         <div className="feat">
@@ -64,9 +64,9 @@ export function ZipMagazine() {
   return (
     <Wrap>
       <div className="card doc">
-        <p className="eyebrow">About SMB Hub</p>
+        <p className="eyebrow">About SME Hub</p>
         <h1>CanadianSME Small Business Magazine</h1>
-        <p className="lead">The magazine behind SMB Hub. Each issue covers growth, innovation and marketing for Canadian small and medium businesses.</p>
+        <p className="lead">The magazine behind SME Hub. Each issue covers growth, innovation and marketing for Canadian small and medium businesses.</p>
         <p className="eyebrow">Latest issue</p>
         <h2>{MAGAZINE.issue}</h2>
         <iframe src={MAGAZINE.reader} title={`CanadianSME Small Business Magazine, ${MAGAZINE.issue}`} allowFullScreen loading="lazy" style={{ width: "100%", aspectRatio: "4/3", border: "1px solid var(--line)", borderRadius: 12, background: "var(--surface-2)" }} />
@@ -108,7 +108,7 @@ export function ZipPolicy({ slug }: { slug: string }) {
 }
 
 const BEN: [string, string, string, string, string, string][] = [
-  ["Guidance and mentorship", "Manuals, plus direct advice from experienced SMB Advisors.", "/smb-advisor", "users", "#2563EB", "Meet the advisors"],
+  ["Guidance and mentorship", "Manuals, plus direct advice from experienced SME Advisors.", "/smb-advisor", "users", "#2563EB", "Meet the advisors"],
   ["Access to resources", "How-to guides on everything from your first idea to regulatory compliance.", "/guides", "book", "#0F766E", "Open the guides"],
   ["Access to training courses", "Expert-led courses on marketing, sales, finance and strategy.", "/courses", "book", "#7C3AED", "Browse courses"],
   ["Exclusive offers from partners", "Member discounts from partners that lower your early costs.", "/membership-plans", "tag", "#B45309", "See the plans"],
@@ -157,7 +157,7 @@ export async function ZipAbout() {
   ];
   return (
     <Wrap wide>
-      <section className="abh" aria-label="About SMB Hub">
+      <section className="abh" aria-label="About SME Hub">
         <img src="/zip/img/community.jpg" alt="" />
         <div className="in">
           <p className="eyebrow">About us · From CanadianSME Small Business Magazine</p>

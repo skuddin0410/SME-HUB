@@ -15,7 +15,7 @@ import { logDirectorySearch } from "@/app/(hub)/ready-actions";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
-export const metadata = pageMeta({ title: "Business directory", description: "Find Canadian small businesses by name, category, city and member rating in the SMB Hub directory.", path: "/businesses" });
+export const metadata = pageMeta({ title: "Business directory", description: "Find Canadian small businesses by name, category, city and member rating in the SME Hub directory.", path: "/businesses" });
 
 const SIZE = 24;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";

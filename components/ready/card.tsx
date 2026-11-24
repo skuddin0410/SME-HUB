@@ -82,12 +82,12 @@ export function ReadyStrength({ items }: { items: ReadyItems }) {
   const nx = READY_ROWS.find(([k]) => !items[k]);
   return (
     <div className="strength">
-      <div className="row"><strong className="grow" style={{ fontWeight: 500, fontSize: 13 }}>Profile ready</strong><b style={{ color: "var(--accent)", fontFamily: "var(--display)" }}>{n} of 5</b></div>
+      <div className="row"><strong className="grow" style={{ fontWeight: 500, fontSize: 13 }}>Profile ready</strong><b style={{ color: "var(--link)", fontFamily: "var(--display)" }}>{n} of 5</b></div>
       <div className="bar" role="img" aria-label={`${n} of 5 ready`}><i style={{ width: `${n * 20}%` }} /></div>
       {nx ? (
         <div className="row">
           <span className="muted small grow">Next: {nx[1].toLowerCase()}</span>
-          <button type="button" className="linkbtn" style={{ color: "var(--accent)", fontWeight: 600, whiteSpace: "nowrap" }} onClick={() => r?.next()}>Finish →</button>
+          <button type="button" className="linkbtn" style={{ color: "var(--link)", fontWeight: 600, whiteSpace: "nowrap" }} onClick={() => r?.next()}>Finish →</button>
         </div>
       ) : (
         <span className="muted small">Ready. You show up in search, the Directory and suggestions.</span>

@@ -20,7 +20,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
     return (
       <div className="zip"><div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="card" style={{ maxWidth: 640, margin: "40px auto", textAlign: "center", alignItems: "center" }}>
-          <h1 style={{ font: "800 24px var(--display)" }}>Blogging is open to {rules.who === "advisor" ? "SMB Advisors" : "Plus members and SMB Advisors"}</h1>
+          <h1 style={{ font: "800 24px var(--display)" }}>Blogging is open to {rules.who === "advisor" ? "SME Advisors" : "Plus members and SME Advisors"}</h1>
           <p className="muted">Your current plan can read and save every post. Upgrade to write your own.</p>
           <Link className="btn" href="/membership-plans">See membership plans</Link>
         </div>

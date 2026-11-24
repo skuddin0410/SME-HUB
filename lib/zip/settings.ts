@@ -41,7 +41,7 @@ export const DEFAULTS = {
     connect: true, follow: true, autoFollow: true, gate: false, actions: [["connect", true], ["message", true], ["follow", true]] as [string, boolean][],
     invites: true, del: "free", exportData: true,
     nets: { linkedin: true, facebook: true, instagram: true, x: true, youtube: true, tiktok: true, whatsapp: true, pinterest: false, threads: false, reddit: false, medium: false, telegram: false, snapchat: false } as Record<string, boolean>,
-    types: [["owner", "Business owner", "#F4F4F5", "#27272A"], ["advisor", "SMB Advisor", "#DBEAFE", "#1D4ED8"], ["maker", "Canadian maker", "#FEE2E2", "#B91C1C"], ["provider", "Service provider", "#DCFCE7", "#15803D"], ["team", "Hub team", "#EDE9FE", "#6D28D9"]] as [string, string, string, string][],
+    types: [["owner", "Business owner", "#F4F4F5", "#27272A"], ["advisor", "SME Advisor", "#DBEAFE", "#1D4ED8"], ["maker", "Canadian maker", "#FEE2E2", "#B91C1C"], ["provider", "Service provider", "#DCFCE7", "#15803D"], ["team", "Hub team", "#EDE9FE", "#6D28D9"]] as [string, string, string, string][],
     access: { owner: null, advisor: null, maker: null, provider: ["advisor", "maker", "provider", "team"], team: null } as Record<string, string[] | null>,
     auto: { owner: ["funding"], advisor: ["funding"], maker: ["trade"], provider: ["ai"], team: [] } as Record<string, string[]>,
     fields: [

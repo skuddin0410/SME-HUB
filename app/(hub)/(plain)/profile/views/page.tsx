@@ -4,7 +4,7 @@ import { requireUser, MEMBER_TYPES } from "@/lib/hub";
 import { pageMeta } from "@/lib/seo";
 import { AvatarImg } from "@/components/hub-client";
 
-export const metadata = pageMeta({ title: "Who viewed your profile", description: "Members who looked at your SMB Hub profile in the last 30 days.", path: "/profile/views", index: false });
+export const metadata = pageMeta({ title: "Who viewed your profile", description: "Members who looked at your SME Hub profile in the last 30 days.", path: "/profile/views", index: false });
 
 type Viewer = { viewer_id: string | null; last_at: string; shown: boolean };
 

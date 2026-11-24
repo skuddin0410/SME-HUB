@@ -103,7 +103,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpResult> {
         province,
         ...(input.newsletter ? { newsletter: "true", newsletter_wording: NEWSLETTER_WORDING } : {}),
       },
-      emailRedirectTo: `${site}/auth/callback?next=/profile/edit`,
+      emailRedirectTo: `${site}/auth/callback?next=/feed`,
     },
   });
   if (error) {
@@ -152,7 +152,7 @@ export async function resendCode(emailIn: string): Promise<{ ok: boolean }> {
   const supabase = await createClient();
   const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `resend:${email}`, p_max: 5, p_window: "1 hour" });
   if (allowed === false) return { ok: false };
-  const { error } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: `${site}/auth/callback?next=/profile/edit` } });
+  const { error } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: `${site}/auth/callback?next=/feed` } });
   return { ok: !error };
 }
 

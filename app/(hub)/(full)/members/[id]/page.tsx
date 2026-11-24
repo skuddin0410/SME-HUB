@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const name = member.full_name || "Member";
   return pageMeta({
     title: member.headline ? `${name} - ${member.headline}` : name,
-    description: member.bio || [member.headline, member.location, `${name} is on SMB Hub, Canada's small business network.`].filter(Boolean).join(". "),
+    description: member.bio || [member.headline, member.location, `${name} is on SME Hub, Canada's small business network.`].filter(Boolean).join(". "),
     path: `/members/${id}`,
     image: photo(member),
     type: "profile",

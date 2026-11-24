@@ -25,7 +25,7 @@ import { AvatarImg, SignOutButton } from "@/components/hub-client";
 import { CmsNav, LiveSync } from "@/components/cms/client";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: { default: "CMS", template: "%s · SMB Hub CMS" }, robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: { default: "CMS", template: "%s · SME Hub CMS" }, robots: { index: false, follow: false } };
 
 const ic = "h-4 w-4";
 
@@ -87,7 +87,7 @@ export default async function CmsLayout({ children }: { children: React.ReactNod
       <aside className="flex flex-col gap-5 border-b border-zinc-200 bg-white p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r">
         <Link href="/cms" className="flex items-center gap-2 px-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/smb-hub-logo.png" alt="SMB Hub" width={874} height={224} className="h-7 w-auto" />
+          <img src="/brand/smb-hub-logo.png" alt="SME Hub" width={874} height={224} className="h-7 w-auto" />
           <span className="rounded-md bg-zinc-900 px-1.5 py-0.5 text-[0.6875rem] font-bold uppercase tracking-wider text-white">CMS</span>
         </Link>
         <CmsNav groups={groups} />

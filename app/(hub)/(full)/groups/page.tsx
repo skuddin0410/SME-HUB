@@ -10,7 +10,7 @@ import { JoinBtn, StartGroup } from "@/components/zip/groups-client";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
-export const metadata = pageMeta({ title: "Groups", description: "Join groups on SMB Hub to talk with other Canadian business owners about your industry, city or topic.", path: "/groups" });
+export const metadata = pageMeta({ title: "Groups", description: "Join groups on SME Hub to talk with other Canadian business owners about your industry, city or topic.", path: "/groups" });
 
 type Group = {
   id: string; slug: string; name: string; description: string; is_private: boolean; category: string; cover: string; join_mode: string;

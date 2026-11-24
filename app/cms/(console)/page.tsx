@@ -4,7 +4,7 @@ import { MEMBER_TYPES } from "@/lib/hub";
 import { Badge, Card, PageHeader, Person, PLAN_TONE, Stat } from "@/components/cms/ui";
 import { ActivityList, peopleFor } from "@/components/cms/activity";
 
-export const metadata = { title: { absolute: "Dashboard · SMB Hub CMS" } };
+export const metadata = { title: { absolute: "Dashboard · SME Hub CMS" } };
 
 type Overview = Record<string, number> & {
   plans: Record<string, number>;
@@ -71,7 +71,7 @@ export default async function CmsDashboard() {
 
   return (
     <>
-      <PageHeader title="Dashboard" description="Everything happening on SMB Hub, updated live." />
+      <PageHeader title="Dashboard" description="Everything happening on SME Hub, updated live." />
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-6">
         <Stat label="Members" value={o.members} hint={`${o.signed_in_7d} signed in this week`} href="/cms/members" />

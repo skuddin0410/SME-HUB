@@ -8,8 +8,8 @@ import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
 export const metadata = pageMeta({
-  title: "SMB Advisors",
-  description: "Experienced advisors who serve Canadian small businesses: accountants, lawyers, consultants and coaches on SMB Hub.",
+  title: "SME Advisors",
+  description: "Experienced advisors who serve Canadian small businesses: accountants, lawyers, consultants and coaches on SME Hub.",
   path: "/smb-advisor",
 });
 
@@ -18,7 +18,7 @@ type Row = {
   advisor_profiles: { field: string; years: number; helped: number; rating: number | null; about: string; services: { name: string; text: string }[] } | { field: string; years: number; helped: number; rating: number | null; about: string; services: { name: string; text: string }[] }[] | null;
 };
 
-/** Members on the SMB Advisor plan, with what the plan includes. */
+/** Members on the SME Advisor plan, with what the plan includes. */
 export default async function SmbAdvisorPage({ searchParams }: { searchParams: Promise<{ q?: string; field?: string }> }) {
   const sp = await searchParams;
   const { supabase, userId } = await getViewer();
@@ -45,7 +45,7 @@ export default async function SmbAdvisorPage({ searchParams }: { searchParams: P
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="pagehead">
           <p className="eyebrow">Explore the Hub</p>
-          <h1>SMB Advisors</h1>
+          <h1>SME Advisors</h1>
           <p className="muted">Accountants, lawyers, consultants and coaches who work with Canadian small businesses. Open a profile to see their services, reviews and free call times.</p>
         </div>
         <LiveForm className="tools" role="search">
@@ -70,7 +70,7 @@ export default async function SmbAdvisorPage({ searchParams }: { searchParams: P
                   <div className="stack grow" style={{ flexBasis: 300, gap: 6 }}>
                     <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
                       <Link className="namebtn" style={{ font: "700 17px var(--display)" }} href={`/members/${m.id}`}>{m.full_name || "Advisor"}</Link>
-                      <span className="tag">SMB Advisor</span>
+                      <span className="tag">SME Advisor</span>
                       {a?.field && <span className="tag">{a.field}</span>}
                     </div>
                     <span className="muted">{[m.headline, m.location].filter(Boolean).join(" · ")}</span>
@@ -95,12 +95,12 @@ export default async function SmbAdvisorPage({ searchParams }: { searchParams: P
             })}
           </div>
         ) : (
-          <div className="card"><strong>{all.length ? "No advisors match." : "No advisors listed yet."}</strong><p className="muted">{all.length ? "Try another topic." : "Advisors appear here once they join the SMB Advisor plan."}</p></div>
+          <div className="card"><strong>{all.length ? "No advisors match." : "No advisors listed yet."}</strong><p className="muted">{all.length ? "Try another topic." : "Advisors appear here once they join the SME Advisor plan."}</p></div>
         )}
 
         <div className="card doc" style={{ marginTop: 14 }}>
-          <h2>Become an SMB Advisor</h2>
-          <p className="lead">For experts who serve small businesses. The plan includes an SMB Advisor badge on your profile and posts, and:</p>
+          <h2>Become an SME Advisor</h2>
+          <p className="lead">For experts who serve small businesses. The plan includes an SME Advisor badge on your profile and posts, and:</p>
           <div className="feat">
             <div><strong>A national network</strong><span className="muted small">Reach owners across Canada and build a client base.</span></div>
             <div><strong>Host events and courses</strong><span className="muted small">Run sessions for members and sell your courses on the Hub.</span></div>

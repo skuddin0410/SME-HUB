@@ -42,7 +42,7 @@ test("courses page lists the course with a start button and the teach card", asy
   await expect(page.getByRole("heading", { name: "Courses", level: 1 })).toBeVisible();
   await page.getByRole("button", { name: /Start course/ }).first().click();
   await expect(page.getByText("being added")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Become an SMB Advisor" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Become an SME Advisor" })).toBeVisible();
 });
 
 test("who viewed your profile shows the 30-day chart and the upgrade note for hidden viewers", async ({ page }) => {

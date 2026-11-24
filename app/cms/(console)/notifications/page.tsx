@@ -43,7 +43,7 @@ export default async function CmsNotifications({ searchParams }: { searchParams:
                   <tr key={n.id}>
                     <td className={`${TD} max-w-[13.75rem]`}><Person person={n.user} size={26} /></td>
                     <td className={TD}><Badge tone="blue">{n.type.replace(/_/g, " ")}</Badge></td>
-                    <td className={`${TD} max-w-[13.75rem]`}>{n.actor ? <Person person={n.actor} size={26} /> : <span className="text-zinc-400">SMB Hub</span>}</td>
+                    <td className={`${TD} max-w-[13.75rem]`}>{n.actor ? <Person person={n.actor} size={26} /> : <span className="text-zinc-400">SME Hub</span>}</td>
                     <td className={TD}>{n.post_id ? <Link href={`/cms/posts/${n.post_id}`} className="text-blue-600 hover:underline">Open</Link> : <span className="text-zinc-400">—</span>}</td>
                     <td className={`${TD} whitespace-nowrap text-zinc-600`}>{fmtDate(n.created_at, true)}</td>
                     <td className={TD}>{n.read_at ? <Badge tone="green">Read</Badge> : <Badge tone="amber">Unread</Badge>}</td>

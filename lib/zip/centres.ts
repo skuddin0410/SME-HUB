@@ -16,5 +16,5 @@ export const checklist = (n: string): [string, string][] => [
   ["3. Set up your tax accounts", "Get a business number from the Canada Revenue Agency and open the accounts you need, such as GST/HST and payroll."],
   ["4. Check licences and permits", "Find the municipal, provincial or territorial, and federal licences your business needs. The BizPaL service lists them by location and industry."],
   ["5. Look for funding", "Use the AI Grant Finder to see grants and loans that fit your business, and ask in the Funding & Grants group."],
-  ["6. Find advisors and peers", `Connect with SMB Advisors and with other owners in ${n} through the People page.`],
+  ["6. Find advisors and peers", `Connect with SME Advisors and with other owners in ${n} through the People page.`],
 ];

@@ -31,7 +31,7 @@ export function FirstWeek({ steps, connections = 0 }: { steps: WeekStep[]; conne
       <div className="row" style={{ flexWrap: "wrap" }}>
         <div className="stack grow" style={{ gap: 2, flexBasis: 240 }}>
           <p className="eyebrow">Your first week</p>
-          <h2 id="first-week-title" style={{ font: "800 19px var(--display)" }}>Get started on SMB Hub</h2>
+          <h2 id="first-week-title" style={{ font: "800 19px var(--display)" }}>Get started on SME Hub</h2>
         </div>
         <span className="muted small">{done} of {steps.length} done</span>
         <button type="button" className="linkbtn muted small" onClick={hide} aria-label="Hide this checklist">✕</button>

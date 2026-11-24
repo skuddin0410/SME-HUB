@@ -8,7 +8,7 @@ import { mayCloseAccount } from "@/lib/zip/profile-rules";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
-export const metadata = pageMeta({ title: "Settings", description: "Privacy, blocked members and your data on SMB Hub.", path: "/settings", index: false });
+export const metadata = pageMeta({ title: "Settings", description: "Privacy, blocked members and your data on SME Hub.", path: "/settings", index: false });
 
 export default async function SettingsPage() {
   const { supabase, userId } = await requireUser();

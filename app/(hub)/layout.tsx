@@ -145,9 +145,9 @@ export default async function HubShell({ children }: { children: React.ReactNode
           <div className="wrap">
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="on-light" src="/brand/zip-logo.webp" alt="SMB Hub" width={117} height={30} />
+              <img className="on-light" src="/brand/zip-logo.webp" alt="SME Hub" width={117} height={30} />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="on-dark" src="/brand/smb-hub-logo-on-dark.png" alt="SMB Hub" width={117} height={30} />
+              <img className="on-dark" src="/brand/smb-hub-logo-on-dark.png" alt="SME Hub" width={117} height={30} />
               <span>A place for small business owners and entrepreneurs to connect and trade experience, tools and advice, from financing to expansion.</span>
             </div>
             <div>

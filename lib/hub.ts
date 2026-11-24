@@ -65,7 +65,7 @@ export const MEMBER_TYPES: Record<Profile["member_type"], string> = {
   owner: "Business Owner",
   plus: "SMB Plus",
   elite: "SMB Elite",
-  advisor: "SMB Advisor",
+  advisor: "SME Advisor",
 };
 
 export const AUTHOR_FIELDS = "id, full_name, headline, avatar_url, member_type";

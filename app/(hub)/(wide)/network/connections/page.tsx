@@ -102,7 +102,7 @@ export default async function NetworkPage() {
         )}
 
         {nearby.length > 0 && <Suggestions title={`People you may know in ${city}`} people={nearby} signedIn visible={4} />}
-        <Suggestions title={nearby.length ? "More people on SMB Hub" : "People you may know"} people={others} signedIn />
+        <Suggestions title={nearby.length ? "More people on SME Hub" : "People you may know"} people={others} signedIn />
 
         {sent.length > 0 && (
           <section id="sent" className="panel scroll-mt-24">

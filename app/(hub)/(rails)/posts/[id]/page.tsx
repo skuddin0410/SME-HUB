@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const [post] = await fetchPosts(viewer.supabase, viewer.userId, { postId: id });
   if (!post) return { title: "Post not found" };
   return pageMeta({
-    title: `${post.author.full_name || "A member"} on SMB Hub: ${snippet(post.body, 60)}`,
+    title: `${post.author.full_name || "A member"} on SME Hub: ${snippet(post.body, 60)}`,
     description: post.body,
     path: `/posts/${id}`,
     image: post.image_url,

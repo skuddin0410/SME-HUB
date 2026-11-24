@@ -250,7 +250,7 @@ export async function cmsGrantAdmin(form: FormData) {
   if (!email.includes("@")) throw new Error("Enter the member's email address.");
   const { data } = await supabase.rpc("cms_users", { p_search: email, p_limit: 5 });
   const match = ((data ?? []) as { id: string; email: string }[]).find((u) => u.email.toLowerCase() === email);
-  if (!match) throw new Error("No SMB Hub account uses that email. They need to sign up first.");
+  if (!match) throw new Error("No SME Hub account uses that email. They need to sign up first.");
   fail((await supabase.from("profiles").update({ role: "admin" }).eq("id", match.id)).error);
   await done(supabase, "staff.grant", "profiles", match.id, { email });
 }

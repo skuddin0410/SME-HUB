@@ -36,7 +36,7 @@ function AdminLoginForm() {
       <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-white">
         <ShieldCheck className="h-5 w-5" />
       </span>
-      <h1 className="mt-4 text-2xl font-bold">SMB Hub admin</h1>
+      <h1 className="mt-4 text-2xl font-bold">SME Hub admin</h1>
       <p className="mb-5 text-sm text-muted-foreground">Sign in with a staff account to manage the Hub.</p>
       <label className="mb-3 grid gap-1.5 text-sm font-medium">
         Email

@@ -5,7 +5,7 @@ import { COMPARE, PLAN_FEATURES, PLAN_INFO, type PlanKey } from "@/lib/billing";
 import { startCheckout } from "@/app/(hub)/billing-actions";
 import { SubmitButton } from "@/components/hub-client";
 
-export const metadata = pageMeta({ title: "Membership plans", description: "Join free. Upgrade when it pays for itself. Compare Free, Plus and Advisor on SMB Hub. Prices in Canadian dollars.", path: "/membership-plans" });
+export const metadata = pageMeta({ title: "Membership plans", description: "Join free. Upgrade when it pays for itself. Compare Free, Plus and Advisor on SME Hub. Prices in Canadian dollars.", path: "/membership-plans" });
 
 const NOTES: Record<string, string> = {
   unavailable: "Online checkout is being set up. Please check back soon, or contact us and the team will set up your plan.",
