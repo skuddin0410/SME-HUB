@@ -32,7 +32,11 @@ test("a business page shows tabs, services, hours and the owner's reply", async 
   await page.goto("/businesses/maple-demo");
   await expect(page.getByRole("heading", { level: 1, name: "Maple Demo Bakery" })).toBeVisible();
   const tabs = page.getByRole("navigation", { name: "Business page sections" });
-  await tabs.getByRole("link", { name: "services" }).click();
+  // Next.js 15 sometimes drops a link click after fetching the page (vercel/next.js#83386); click again, as a person would
+  await expect(async () => {
+    if (!/tab=services/.test(page.url())) await tabs.getByRole("link", { name: "services" }).click({ timeout: 2000 });
+    await expect(page).toHaveURL(/tab=services/, { timeout: 3000 });
+  }).toPass({ timeout: 20_000 });
   await expect(page.getByText("Wholesale boxes")).toBeVisible();
   await expect(page.getByText("From $60.00")).toBeVisible();
   await expect(page.getByText("Ask for a quote")).toBeVisible();
