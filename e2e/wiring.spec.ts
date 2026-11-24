@@ -5,20 +5,25 @@ import { memberCookie } from "./personas";
 const MEMBER = "/members/00000000-0000-4000-8000-000000000011";
 
 test.describe("saved settings change the live pages", () => {
+  // Updates 9 and 10: the post form is in the post window, so the tests open it first
   test("feed: polls, cover and schedule off, title required", async ({ page, context, baseURL }) => {
     await context.addCookies([memberCookie(baseURL!, false, { feed: { polls: false, cover: false, schedule: false, title: "required" } })]);
-    await page.goto("/feed", { waitUntil: "domcontentloaded" });
-    await expect(page.getByRole("button", { name: "Poll" })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Schedule" })).toHaveCount(0);
-    await expect(page.getByLabel("Cover picture")).toHaveCount(0);
-    await expect(page.getByPlaceholder("Title", { exact: true })).toBeVisible();
+    await page.goto("/feed", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Start a post" }).click();
+    const dlg = page.getByRole("dialog", { name: "Test Member" });
+    await expect(dlg.getByPlaceholder("Title", { exact: true })).toBeVisible();
+    await expect(dlg.getByRole("button", { name: "Add a poll" })).toHaveCount(0);
+    await expect(dlg.getByRole("button", { name: "Schedule" })).toHaveCount(0);
+    await expect(dlg.getByRole("switch", { name: /cover image/ })).toHaveCount(0);
   });
 
   test("feed: no title field when titles are off", async ({ page, context, baseURL }) => {
     await context.addCookies([memberCookie(baseURL!, false, { feed: { title: "off" } })]);
-    await page.goto("/feed", { waitUntil: "domcontentloaded" });
+    await page.goto("/feed", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Start a post" }).click();
+    const dlg = page.getByRole("dialog", { name: "Test Member" });
+    await expect(dlg.getByRole("button", { name: "Add a poll" })).toBeVisible();
     await expect(page.getByLabel("Post title")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Poll" })).toBeVisible();
   });
 
   test("feed: the topic bar can be hidden", async ({ page, context, baseURL }) => {
