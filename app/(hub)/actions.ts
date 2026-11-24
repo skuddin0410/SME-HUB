@@ -29,10 +29,20 @@ export type FormState = { error?: string; ok?: number };
  * so nobody can attach another member's file or an outside link.
  */
 function ownUpload(form: FormData, field: string, userId: string): string | null {
-  const url = text(form, field);
+  return ownPicture(text(form, field), userId);
+}
+function ownPicture(url: string, userId: string): string | null {
   if (!url) return null;
   const prefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/media/${userId}/`;
   if (!url.startsWith(prefix) || !/^[a-z]+-[0-9a-f-]{36}\.(jpg|png)$/.test(url.slice(prefix.length))) throw new Error("That picture cannot be used.");
+  return url;
+}
+
+/** Update 10: a post's video, uploaded by this member to the post-videos bucket. */
+function ownVideo(url: string, userId: string): string | null {
+  if (!url) return null;
+  const prefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/post-videos/${userId}/`;
+  if (!url.startsWith(prefix) || !/^video-[0-9a-f-]{36}\.(mp4|mov)$/.test(url.slice(prefix.length))) throw new Error("That video cannot be used.");
   return url;
 }
 
@@ -74,8 +84,14 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const groupId = text(form, "group_id") ? uuid(text(form, "group_id")) : null;
   const rawKind = text(form, "kind");
   const kind = ["question", "win", "offer", "hiring", "intro"].includes(rawKind) ? rawKind : "update";
-  const image_url = ownUpload(form, "image_url", userId);
+  // Update 10: up to 10 photos (the first is also image_url, which every older view shows) and 1 video
+  const many = form.getAll("images").map(String).filter(Boolean);
+  if (many.length > 10) return { error: "A post can have up to 10 photos." };
+  const images = many.map((u) => ownPicture(u, userId)!);
+  const image_url = images[0] ?? ownUpload(form, "image_url", userId);
   const cover_url = ownUpload(form, "cover_url", userId);
+  const video_url = ownVideo(text(form, "video_url"), userId);
+  const video_poster = video_url ? ownUpload(form, "video_poster", userId) : null;
   const titleRule = String(rules.title);
   const title = titleRule === "off" ? "" : text(form, "title").slice(0, FEED.titleMax);
   if (titleRule === "required" && !title) return { error: "Add a title to your post." };
@@ -106,7 +122,7 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const business_id = text(form, "business_id") ? uuid(text(form, "business_id")) : null;
   const { data, error } = await supabase
     .from("posts")
-    .insert({ author_id: userId, body, visibility: business_id ? "public" : visibility, kind, group_id: business_id ? null : groupId, business_id, image_url, cover_url, title, comments_closed, scheduled_at, quoted_post_id })
+    .insert({ author_id: userId, body, visibility: business_id ? "public" : visibility, kind, group_id: business_id ? null : groupId, business_id, image_url, cover_url, title, comments_closed, scheduled_at, quoted_post_id, ...(images.length ? { images } : {}), ...(video_url ? { video_url, video_poster } : {}) })
     .select("id")
     .single();
   if (error) return { error: error.message };

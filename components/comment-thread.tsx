@@ -6,6 +6,7 @@ import { Loader2, Pencil, Reply, Trash2 } from "lucide-react";
 import { addComment, deleteComment, editComment } from "@/app/(hub)/actions";
 import type { CommentRow, Profile } from "@/lib/hub";
 import { canEdit } from "@/lib/feed-rules";
+import { LinkedText } from "@/components/zip/short-link";
 
 type Me = (Pick<Profile, "id" | "full_name" | "avatar_url"> & { headline?: string | null }) | null;
 
@@ -120,7 +121,7 @@ export function CommentThread({
             <button type="button" onClick={() => setEditing(null)} className="text-xs text-zinc-500">Cancel</button>
           </div>
         ) : (
-          <p className="text-xs text-zinc-800 mt-1 leading-relaxed whitespace-pre-wrap break-words">{c.body}</p>
+          <p className="text-xs text-zinc-800 mt-1 leading-relaxed whitespace-pre-wrap break-words"><LinkedText text={c.body} /></p>
         )}
         {!flat && !isReply && me && !closed && (
           <button type="button" onClick={() => { setReplyTo(replyTo === c.id ? null : c.id); setDraft(""); }} className="mt-1.5 inline-flex items-center gap-1 text-[0.75rem] font-medium text-zinc-500 hover:text-zinc-900">

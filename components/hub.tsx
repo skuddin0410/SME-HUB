@@ -9,6 +9,7 @@ import { ConnectButton } from "@/components/network-client";
 import { SaveButton } from "@/components/feed-client";
 import { KINDS } from "@/lib/demo";
 import { ZipAv } from "@/components/zip/bits";
+import { PostMedia } from "@/components/zip/post-media";
 
 export type Viewer = { userId: string | null; profile: Profile | null; isStaff: boolean };
 
@@ -93,7 +94,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
             )}
             {post.author.member_type === "advisor" && !post.business && <span className="tag">SME Advisor</span>}
             {post.author.member_type !== "advisor" && post.author.member_type !== "owner" && !post.business && <TierBadge type={post.author.member_type} always />}
-            {post.kind !== "update" && <span className={`tag ${post.kind}`}>{KINDS[post.kind].label}</span>}
+            <span className={`tag ${post.kind}`}>{KINDS[post.kind].label}</span>
             {post.profile_pinned && <span className="tag">Pinned on profile</span>}
             {VISIBILITY_LABEL[post.visibility] && <span className="tag">{VISIBILITY_LABEL[post.visibility]}</span>}
           </span>
@@ -113,10 +114,15 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
       <PostBody text={post.body} tags={tr.on ? tr : null} />
       {post.quoted && <QuoteEmbed quoted={post.quoted} />}
       {post.poll && <PollView postId={post.id} poll={post.poll} signedIn={!!viewer.userId} />}
-      {post.image_url && (
+      {post.images.length > 0 || post.video_url ? (
+        <PostMedia images={post.images} video={post.video_url} poster={post.video_poster} />
+      ) : post.image_url && (
         <div className="rounded-xl overflow-hidden border border-[#E5E5E8] bg-zinc-100">
           <img src={post.image_url} alt="" loading="lazy" className="w-full max-h-[22.5rem] object-cover" />
         </div>
+      )}
+      {post.kind === "question" && post.comments === 0 && (
+        <p className="small" style={{ fontWeight: 600, color: "var(--brand-ink)" }}>No answers yet. Can you help?</p>
       )}
       <PostActions
         postId={post.id}

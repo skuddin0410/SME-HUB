@@ -148,6 +148,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           groups={await myGroups(viewer)}
           businesses={await getPostingBusinesses(viewer.userId)}
           rules={await getComposerRules()}
+          tagRules={tr.on ? { per: tr.per, min: tr.min, max: tr.max, blocked: tr.blocked, removed: tr.removed, merge: tr.merge } : null}
           tagHints={tr.on && tr.auto ? (await getTagIndex(viewer.supabase)).slice(0, 60).map((t) => ({ tag: t.tag, uses: t.uses })) : undefined}
           initialText={params.tag && /^[a-z0-9_à-ſ]{2,40}$/i.test(params.tag) ? `#${params.tag.toLowerCase()} ` : undefined}
           free={!viewer.isStaff && !["plus", "advisor"].includes(String((viewer.profile as { plan?: string }).plan))}

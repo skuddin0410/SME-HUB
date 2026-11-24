@@ -15,9 +15,16 @@ import { InvitePanel } from "@/components/business-client";
 import { Empty, Pager, PostCard } from "@/components/hub";
 import { SubmitButton } from "@/components/hub-client";
 import { PostBox } from "@/components/zip/post-box";
+import { getTagRules } from "@/lib/zip/hashtags-server";
 import { getComposerRules } from "@/lib/zip/settings-load";
 import { joinGroup, leaveGroup, removeGroupInvite } from "@/app/(hub)/actions";
 import { cancelJoinRequest, decideRequest, removeMember, setGroupArchived, setMemberRole } from "@/app/(hub)/group-actions";
+
+/** Update 10: hashtag suggestions in the post window follow the team's hashtag rules. */
+async function postTagRules() {
+  const tr = await getTagRules();
+  return tr.on ? { per: tr.per, min: tr.min, max: tr.max, blocked: tr.blocked, removed: tr.removed, merge: tr.merge } : null;
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -188,7 +195,7 @@ export default async function GroupPage({
                 <>
                   {isAdmin && group.is_private && <InvitePanel groupId={group.id} candidates={candidates} invited={alreadyInvited} />}
                   {isMember && !archived && viewer.profile && (
-                    <PostBox me={viewer.profile} groupId={group.id} rules={await getComposerRules()} staff={viewer.isStaff}
+                    <PostBox me={viewer.profile} groupId={group.id} rules={await getComposerRules()} staff={viewer.isStaff} tagRules={await postTagRules()}
                       free={!viewer.isStaff && !["plus", "advisor"].includes(String((viewer.profile as { plan?: string }).plan))} />
                   )}
                   {archived && <Empty title="This group is archived">Posts are kept for reading, but nobody can add new ones.</Empty>}

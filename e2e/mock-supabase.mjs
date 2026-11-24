@@ -25,6 +25,7 @@ const MEMBER = {
 const HELP = JSON.parse(fs.readFileSync(process.env.HELP_FIXTURE || new URL("./help-fixture.json", import.meta.url), "utf8"));
 const HELP_VOTES = [];
 const NEW_POSTS = [];
+const UPLOADS = new Map();
 const port = Number(process.env.MOCK_SUPABASE_PORT || 54398);
 
 const MODSET = { types: { post: { on: true, auto: true, hide: 3 }, comment: { on: true, auto: true, hide: 3 }, photo: { on: true, auto: true, hide: 2 }, group: { on: true, auto: false, hide: 5 }, blog: { on: true, auto: true, hide: 3 }, blogc: { on: true, auto: true, hide: 3 } }, member_report: true, blocking: true, sus_blocks: { on: true, n: 5 }, sus_reports: { on: true, n: 10 }, email_on: true, email_subject: "[SME Hub] {{user.name}} was suspended", email_body: "Review in Moderation." };
@@ -32,7 +33,7 @@ http
   .createServer((req, res) => {
     const url = new URL(req.url, "http://localhost");
     res.setHeader("access-control-allow-origin", "*");
-    res.setHeader("access-control-allow-headers", "*");
+    res.setHeader("access-control-allow-headers", String(req.headers["access-control-request-headers"] || "*")); // "*" leaves out Authorization
     res.setHeader("access-control-allow-methods", "*");
     if (req.method === "OPTIONS") return res.end();
     res.setHeader("content-type", "application/json");
@@ -56,6 +57,31 @@ http
       return;
     }
     if (url.pathname === "/__posts") return res.end(JSON.stringify(NEW_POSTS));
+    // Update 10: photo uploads land in storage, and videos use resumable (tus) uploads
+    if (req.method === "POST" && url.pathname.startsWith("/storage/v1/object/media/")) {
+      req.resume(); req.on("end", () => res.end(JSON.stringify({ Key: url.pathname.replace("/storage/v1/object/", ""), Id: "x" })));
+      return;
+    }
+    if (url.pathname.startsWith("/storage/v1/upload/resumable")) {
+      res.setHeader("tus-resumable", "1.0.0");
+      res.setHeader("access-control-expose-headers", "Location, Upload-Offset, Upload-Length, Tus-Resumable");
+      let n = 0; req.on("data", (c) => (n += c.length));
+      req.on("end", () => {
+        const id = url.pathname.split("/")[5];
+        if (req.method === "POST") {
+          const len = Number(req.headers["upload-length"] || 0), key = `u${UPLOADS.size}`;
+          UPLOADS.set(key, { len, off: n });
+          res.statusCode = 201; res.setHeader("location", `http://127.0.0.1:${port}/storage/v1/upload/resumable/${key}`); res.setHeader("upload-offset", String(n));
+          return res.end();
+        }
+        const u = UPLOADS.get(id) ?? { len: 0, off: 0 };
+        if (req.method === "PATCH") u.off += n;
+        res.statusCode = req.method === "PATCH" ? 204 : 200;
+        res.setHeader("upload-offset", String(u.off)); res.setHeader("upload-length", String(u.len));
+        res.end();
+      });
+      return;
+    }
     const token = String(req.headers.authorization || "").replace(/^Bearer /, "");
     const member = token.startsWith("ey");
     let sub = MEMBER.id;
@@ -166,6 +192,14 @@ http
       const row = scheduled ? postRow({ id: "00000000-0000-4000-8000-0000000000a2", status: "scheduled", scheduled_at: new Date(Date.now() + 86400_000).toISOString(), title: "Launch day", body: "Our spring box is live." , author: { ...AUTHOR, id: MEMBER.id } }) : postRow({});
       res.setHeader("content-range", "0-0/1");
       if ((url.searchParams.get("or") || "").includes("body.ilike")) return res.end(JSON.stringify([postRow({ body: "Which wholesale box size sells best for you? #wholesale #grants" })]));
+      // Update 10: a post with a video, 5 photos and a long link, and one with 2 photos
+      if (url.searchParams.get("id") === "eq.00000000-0000-4000-8000-0000000000a5") {
+        const imgs = ["account-page", "account-privacy", "acct-change-password", "acct-email-example", "acct-forgot"].map((f) => `/help-media/${f}.webp`);
+        return res.end(JSON.stringify([postRow({ id: "00000000-0000-4000-8000-0000000000a5", kind: "update", title: "", body: "Founded in 2001, we now stock video conferencing kits. See https://www.yealink.com/en/product-list/video-conferencing?utm_source=smehub for the range.", image_url: imgs[0], images: imgs, video_url: "/zip/img/story-show.mp4", video_poster: null })]));
+      }
+      if (url.searchParams.get("id") === "eq.00000000-0000-4000-8000-0000000000a6") {
+        return res.end(JSON.stringify([postRow({ id: "00000000-0000-4000-8000-0000000000a6", kind: "update", title: "", body: "Our new shop front.", image_url: "/help-media/account-page.webp", images: ["/help-media/account-page.webp", "/help-media/account-privacy.webp"] })]));
+      }
       return res.end(JSON.stringify([row]));
     }
     if (url.pathname === "/rest/v1/polls") {

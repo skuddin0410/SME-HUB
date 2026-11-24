@@ -2,21 +2,23 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
-import { useFormStatus } from "react-dom";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { createPost, type FormState } from "@/app/(hub)/actions";
-import { improvePost } from "@/app/(hub)/post-actions";
-import { useImageUpload } from "@/lib/upload";
+import { aiHashtags, improvePost } from "@/app/(hub)/post-actions";
+import { POST_MEDIA, readVideo, uploadImage, uploadVideo } from "@/lib/upload";
+import { shortLink, suggestTags, URL_RX } from "@/lib/zip/post-text";
+import { tagOk, type TagRules } from "@/lib/zip/hashtags";
 import { FEED } from "@/lib/feed-rules";
 import { KINDS, type Kind } from "@/lib/demo";
 import type { ComposerRules } from "@/lib/zip/settings-load";
 
-/** The post types in the window, in the design's order, with their icons (Update 9). */
-const TYPES: Kind[] = ["question", "win", "hiring", "intro", "offer"];
-const TYPE_ICON: Record<string, string> = { question: "help", win: "trophy", offer: "tag", hiring: "brief", intro: "hand" };
+/** The post types in the window, in the design's order, with their icons. Update 10 adds Update, first and the default. */
+const TYPES: Kind[] = ["update", "question", "win", "hiring", "intro", "offer"];
+const TYPE_ICON: Record<string, string> = { update: "doc", question: "help", win: "trophy", offer: "tag", hiring: "brief", intro: "hand" };
 const PROMPT: Record<string, string> = {
+  update: "What do you want to share with the community?",
   question: "What do you want to ask the community?",
   win: "What went well? Share the result and what made the difference.",
   hiring: "What role are you hiring for?",
@@ -26,18 +28,20 @@ const PROMPT: Record<string, string> = {
 const VIS: [string, string][] = [["public", "Everyone"], ["members", "Members only"], ["connections", "My connections"], ["private", "Only me"]];
 
 type Me = { id: string; full_name: string | null; avatar_url: string | null };
+type Photo = { key: string; preview: string; url: string; busy: boolean };
+type Video = { preview: string; name: string; url: string; poster: string; busy: boolean; pct: number };
 
-function PostBtn({ disabled, sched }: { disabled: boolean; sched: boolean }) {
-  const { pending } = useFormStatus();
+function PostBtn({ disabled, sched, pending }: { disabled: boolean; sched: boolean; pending: boolean }) {
   return <button type="submit" className="btn" disabled={pending || disabled}>{pending ? "Posting…" : sched ? "Schedule" : "Post"}</button>;
 }
 
 /**
- * The post box in the feed and the post window (Update 9). The box is a "Start a post" bar with shortcuts;
- * the window holds the same form as before. Closing the window keeps the draft.
+ * The post box in the feed and the post window (Updates 9 and 10). The box is a "Start a post" bar with shortcuts;
+ * the window holds the post form. Closing the window keeps the draft. Update 10 adds up to 10 photos, 1 video,
+ * short links, hashtag suggestions, the Update type and one line of labelled buttons at the bottom.
  */
 export function PostBox({
-  me, groupId, groups = [], businesses = [], rules, tagHints, initialKind, initialText, free, staff,
+  me, groupId, groups = [], businesses = [], rules, tagHints, tagRules, initialKind, initialText, free, staff,
 }: {
   me: Me;
   groupId?: string;
@@ -46,6 +50,8 @@ export function PostBox({
   businesses?: { id: string; name: string }[];
   rules?: ComposerRules;
   tagHints?: { tag: string; uses: number }[];
+  /** the team's hashtag rules, when hashtags are on in posts; suggestions follow them */
+  tagRules?: TagRules | null;
   initialKind?: Kind;
   initialText?: string;
   /** Free members see Offer locked */
@@ -54,7 +60,22 @@ export function PostBox({
   staff: boolean;
 }) {
   const router = useRouter();
-  const [state, action] = useActionState<FormState, FormData>(createPost, {});
+  // Posting calls the server directly rather than through a form transition, so the window closes as soon as the post
+  // is saved, even when Next.js is slow to show the refreshed page (vercel/next.js#83386).
+  const [state, setState] = useState<FormState>({});
+  const [pending, setPending] = useState(false);
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (pending) return;
+    setPending(true);
+    try {
+      setState(await createPost({}, new FormData(e.currentTarget)));
+    } catch {
+      setState({ error: "Your post was not saved. Check your connection and try again." });
+    } finally {
+      setPending(false);
+    }
+  };
   const [open, setOpen] = useState(!!initialKind || !!initialText);
   const [lock, setLock] = useState(false);
   const [kind, setKind] = useState<Kind>(initialKind ?? "update");
@@ -68,25 +89,29 @@ export function PostBox({
   const [closeC, setCloseC] = useState(false);
   const [note, setNote] = useState("");
   const [sug, setSug] = useState<{ q: string; list: { tag: string; uses: number }[] } | null>(null);
+  const [aiTags, setAiTags] = useState<{ for: string; tags: string[] } | null>(null);
   const [improving, startImprove] = useTransition();
-  const photo = useImageUpload("post");
-  const clearPhoto = photo.clear;
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [video, setVideo] = useState<Video | null>(null);
+  const photoRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const pollMax = Math.min(FEED.pollMax, Math.max(FEED.pollMin, rules?.pollMax ?? FEED.pollMax));
   const toGroup = to.startsWith("g:") ? to.slice(2) : "";
+  const busy = photos.some((p) => p.busy) || !!video?.busy;
+  const firstPhoto = photos.find((p) => p.url)?.url ?? "";
 
   const focusText = () => setTimeout(() => {
     const t = textRef.current;
     if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); }
   }, 40);
-  const show = (k?: Kind, pick = false) => {
+  const show = (k?: Kind, pick?: "photo" | "video") => {
     opener.current = document.activeElement as HTMLElement | null;
     if (k) setKind(k);
     setLock(false);
     setOpen(true);
-    if (pick) setTimeout(() => fileRef.current?.click(), 60);
+    if (pick) setTimeout(() => (pick === "photo" ? photoRef : videoRef).current?.click(), 60);
     else focusText();
   };
   const close = () => {
@@ -112,15 +137,63 @@ export function PostBox({
     window.addEventListener("smbhub:compose", on);
     return () => window.removeEventListener("smbhub:compose", on);
   }, []);
-  // after a successful post: window closes, the box goes back to "Start a post", the new post shows at the top
+  // after a successful post: the window closes, the box goes back to "Start a post", the type goes back to Update
   useEffect(() => {
     if (!state.ok) return;
     setBody(""); setTitle(""); setKind("update"); setPoll(null); setSched(false); setCover(false); setCloseC(false); setNote("");
-    clearPhoto();
-    if (fileRef.current) fileRef.current.value = "";
+    setPhotos([]); setVideo(null); setAiTags(null);
     setOpen(false);
     router.refresh();
-  }, [state.ok, clearPhoto, router]);
+  }, [state.ok, router]);
+  // better hashtag suggestions from AI, when the server has it, after a pause in typing
+  useEffect(() => {
+    if (!open || !tagRules || body.replace(/#\w+/g, "").trim().length < 40) return;
+    const t = setTimeout(() => { aiHashtags(body).then((tags) => setAiTags({ for: body, tags })).catch(() => {}); }, 1200);
+    return () => clearTimeout(t);
+  }, [body, open, tagRules]);
+
+  const addPhotos = (files: FileList | null) => {
+    const all = [...(files ?? [])].filter((f) => f.type.startsWith("image/"));
+    if (!all.length) return;
+    const room = POST_MEDIA.photos - photos.length;
+    const tooBig = all.filter((f) => f.size > POST_MEDIA.photoMB * 1024 * 1024);
+    const ok = all.filter((f) => f.size <= POST_MEDIA.photoMB * 1024 * 1024);
+    const take = ok.slice(0, Math.max(0, room));
+    const msgs: string[] = [];
+    if (ok.length > room) msgs.push(`You can add up to ${POST_MEDIA.photos} photos. We added the first ${Math.max(0, room)}.`);
+    if (tooBig.length) msgs.push(`Photos can be up to ${POST_MEDIA.photoMB} MB each.`);
+    setNote(msgs.join(" "));
+    const added = take.map((f) => ({ key: crypto.randomUUID(), preview: URL.createObjectURL(f), url: "", busy: true, file: f }));
+    setPhotos((cur) => [...cur, ...added.map(({ key, preview, url, busy: b }) => ({ key, preview, url, busy: b }))]);
+    for (const a of added) {
+      uploadImage(a.file, "post")
+        .then((url) => setPhotos((cur) => cur.map((p) => (p.key === a.key ? { ...p, url, busy: false } : p))))
+        .catch((e) => {
+          setPhotos((cur) => cur.filter((p) => p.key !== a.key));
+          setNote(e instanceof Error ? e.message : "A photo did not upload. Try again.");
+        });
+    }
+  };
+  const addVideo = async (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith("video/")) { setNote("That file isn’t a video"); return; }
+    if (file.size > POST_MEDIA.videoMB * 1024 * 1024) { setNote(`Videos can be up to ${POST_MEDIA.videoMB} MB and ${POST_MEDIA.videoMinutes} minutes long`); return; }
+    const meta = await readVideo(file);
+    if (meta.seconds > POST_MEDIA.videoMinutes * 60) { setNote(`Videos can be up to ${POST_MEDIA.videoMB} MB and ${POST_MEDIA.videoMinutes} minutes long`); return; }
+    setNote("");
+    const preview = URL.createObjectURL(file);
+    setVideo({ preview, name: file.name, url: "", poster: "", busy: true, pct: 0 });
+    try {
+      const [url, poster] = await Promise.all([
+        uploadVideo(file, (pct) => setVideo((v) => (v && v.preview === preview ? { ...v, pct } : v))),
+        meta.poster ? uploadImage(new File([meta.poster], "poster.jpg", { type: "image/jpeg" }), "post").catch(() => "") : Promise.resolve(""),
+      ]);
+      setVideo((v) => (v && v.preview === preview ? { ...v, url, poster, busy: false, pct: 100 } : v));
+    } catch (e) {
+      setVideo((v) => (v && v.preview === preview ? null : v));
+      setNote(e instanceof Error ? e.message : "The video did not upload. Try again.");
+    }
+  };
 
   const suggest = (el: HTMLTextAreaElement) => {
     const m = tagHints ? /#([A-Za-z0-9_À-ſ]*)$/.exec(el.value.slice(0, el.selectionStart ?? el.value.length)) : null;
@@ -137,6 +210,12 @@ export function PostBox({
     setSug(null);
     setTimeout(() => { el.focus(); el.setSelectionRange(before.length, before.length); }, 0);
   };
+  /** A suggested hashtag goes at the end of the post. */
+  const addTag = (tag: string) => {
+    const x = body.replace(/\s+$/, "");
+    setBody(`${x}${x ? (/#\w+$/.test(x) ? " " : "\n\n") : ""}#${tag} `);
+    focusText();
+  };
   const improve = () => {
     if (!body.trim()) { setNote("Write a few words first"); return; }
     startImprove(async () => {
@@ -146,13 +225,24 @@ export function PostBox({
     });
   };
 
-  const has = body.trim() || photo.preview;
-  const draftLine = body.trim() ? body.trim().slice(0, 60) + (body.trim().length > 60 ? "…" : "") : "Photo";
+  const known = (tagHints ?? []).map((t) => t.tag);
+  const ok = (t: string) => (tagRules ? tagOk(t, tagRules) : true);
+  const have = new Set((body.toLowerCase().match(/#(\w+)/g) ?? []).map((x) => x.slice(1)));
+  const tags = !tagRules ? [] : aiTags?.for === body && aiTags.tags.length ? aiTags.tags.filter((t) => !have.has(t)) : suggestTags(body, known, ok);
+  const urls = body.match(URL_RX) ?? [];
+  const askHint = kind === "update" && /\?\s*$/.test(body.trim());
+
+  const has = body.trim() || photos.length || video;
+  const draftLine = body.trim() ? body.trim().slice(0, 60) + (body.trim().length > 60 ? "…" : "") : video ? "Video" : "Photos";
   const shortcuts: [string, string, string, () => void][] = [
-    ["img", "Photo", "#378FE9", () => show(undefined, true)],
+    ["img", "Photo", "#378FE9", () => show(undefined, "photo")],
+    ["video", "Video", "#16A34A", () => show(undefined, "video")],
     ["help", "Question", "#1D4ED8", () => show("question")],
     ["brief", "Hiring", "#7C3AED", () => show("hiring")],
   ];
+  const keyClick = (ref: React.RefObject<HTMLInputElement | null>) => (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ref.current?.click(); }
+  };
 
   return (
     <>
@@ -190,10 +280,12 @@ export function PostBox({
               </div>
             </div>
           )}
-          <form action={action} style={lock ? { display: "none" } : { display: "flex", flexDirection: "column" }}>
+          <form onSubmit={submit} style={lock ? { display: "none" } : { display: "flex", flexDirection: "column" }}>
             <input type="hidden" name="kind" value={kind} />
-            <input type="hidden" name="image_url" value={photo.url} />
-            {cover && photo.url && <input type="hidden" name="cover_url" value={photo.url} />}
+            {photos.filter((p) => p.url).map((p) => <input key={p.key} type="hidden" name="images" value={p.url} />)}
+            {video?.url && <input type="hidden" name="video_url" value={video.url} />}
+            {video?.poster && <input type="hidden" name="video_poster" value={video.poster} />}
+            {cover && firstPhoto && <input type="hidden" name="cover_url" value={firstPhoto} />}
             {groupId && <input type="hidden" name="group_id" value={groupId} />}
             {!groupId && toGroup && <input type="hidden" name="group_id" value={toGroup} />}
             {!groupId && <input type="hidden" name="visibility" value={toGroup ? "public" : to} />}
@@ -232,7 +324,7 @@ export function PostBox({
                 return (
                   <button key={k} type="button" className="cpt" aria-pressed={kind === k}
                     aria-label={locked ? "Offer, for Plus members and Advisors" : undefined}
-                    onClick={() => (locked ? setLock(true) : setKind(kind === k ? "update" : k))}>
+                    onClick={() => (locked ? setLock(true) : setKind(k))}>
                     <Ic n={TYPE_ICON[k]} s={15} />{KINDS[k].label}{locked && <> <Ic n="crown" s={13} /></>}
                   </button>
                 );
@@ -260,17 +352,60 @@ export function PostBox({
               ) : sug.q.length >= 2 ? <span className="muted small">New hashtag: #{sug.q}</span> : null)}
             </div>
 
-            {photo.preview && (
-              <div className="cpimg">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="pic" src={photo.preview} alt="Photo to post" style={photo.busy ? { opacity: 0.6 } : undefined} />
-                <button type="button" className="cpx cprm" aria-label="Remove photo" onClick={() => { photo.clear(); setCover(false); if (fileRef.current) fileRef.current.value = ""; }}><Ic n="x" s={16} /></button>
+            <div className="cpsug">
+              {askHint && (
+                <div className="cphint">
+                  <Ic n="help" s={15} />
+                  <span>Asking for help? Mark it as a <b>Question</b> so members who can help see it.</span>
+                  <button type="button" className="btn sm ghost" onClick={() => setKind("question")}>Make it a question</button>
+                </div>
+              )}
+              {tags.length > 0 && (
+                <div className="cptags">
+                  <span className="small muted">Suggested hashtags:</span>
+                  {tags.map((x) => <button key={x} type="button" className="cptag" onClick={() => addTag(x)}>#{x}</button>)}
+                </div>
+              )}
+              {urls.length > 0 && (
+                <div className="cplinks small muted">
+                  <Ic n="ext" s={13} /> Links will show short: {urls.slice(0, 3).map((u, i) => <span key={i}>{i > 0 && ", "}<b>{shortLink(u)}</b></span>)}
+                </div>
+              )}
+            </div>
+
+            {(photos.length > 0 || video) && (
+              <div className="cpmedia">
+                {photos.length > 0 && (
+                  <>
+                    <div className="cpthumbs">
+                      {photos.map((p, i) => (
+                        <div key={p.key} className="cpth">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={p.preview} alt={`Photo ${i + 1}`} style={p.busy ? { opacity: 0.6 } : undefined} />
+                          <button type="button" className="cpthx" aria-label={`Remove photo ${i + 1}`} onClick={() => setPhotos((cur) => cur.filter((x) => x.key !== p.key))}><Ic n="x" s={14} /></button>
+                        </div>
+                      ))}
+                      {photos.length < POST_MEDIA.photos && (
+                        <label htmlFor="cpphotos" className="cpth cpadd" tabIndex={0} onKeyDown={keyClick(photoRef)}>
+                          <Ic n="plus" s={18} /><span className="small">Add</span>
+                        </label>
+                      )}
+                    </div>
+                    <p className="small muted cpnote">{photos.length} of {POST_MEDIA.photos} photos{busy && photos.some((p) => p.busy) ? " · uploading…" : ""}</p>
+                  </>
+                )}
+                {video && (
+                  <div className="cpvid">
+                    <video src={video.preview} controls playsInline preload="metadata" aria-label="Video to post" />
+                    <button type="button" className="cpx cprm" aria-label="Remove video" onClick={() => setVideo(null)}><Ic n="x" s={16} /></button>
+                    <span className="small muted">{video.name}{video.busy ? ` · uploading ${video.pct}%` : ""}</span>
+                  </div>
+                )}
               </div>
             )}
 
             <div className="cpextra">
-              {photo.error && <p className="small" style={{ color: "var(--err, #B91C1C)" }}>{photo.error}</p>}
-              {photo.preview && rules?.cover !== false && (
+              {firstPhoto && rules?.cover !== false && (
                 <button type="button" className="sw" role="switch" aria-checked={cover} onClick={() => setCover(!cover)}>
                   <i aria-hidden="true" /><span>Use this photo as a cover image at the top of the post</span>
                 </button>
@@ -312,14 +447,23 @@ export function PostBox({
             </div>
 
             <div className="cpf">
-              <input ref={fileRef} className="sr" type="file" id="photo" accept="image/*" onChange={(e) => photo.pick(e.target.files?.[0])} />
-              <label htmlFor="photo" className="cpi" title="Add photo" aria-label="Add photo" tabIndex={0}
-                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileRef.current?.click(); } }}><Ic n="img" s={20} /></label>
-              {rules?.polls !== false && !poll && <button type="button" className="cpi" title="Add poll" aria-label="Add poll" onClick={() => setPoll(["", ""])}><Ic n="poll" s={20} /></button>}
-              <button type="button" className="cpi" title="Improve with AI" aria-label="Improve with AI" disabled={improving} onClick={improve}><Ic n="spark" s={20} /></button>
-              {staff && rules?.schedule !== false && !sched && <button type="button" className="cpi" title="Schedule" aria-label="Schedule" onClick={() => setSched(true)}><Ic n="clock" s={20} /></button>}
+              <input ref={photoRef} className="sr" type="file" id="cpphotos" accept="image/*" multiple tabIndex={-1} aria-hidden="true"
+                onChange={(e) => { addPhotos(e.target.files); e.target.value = ""; }} />
+              <label htmlFor="cpphotos" className="cpi" title={`Add photos (up to ${POST_MEDIA.photos})`} aria-label={`Add photos, up to ${POST_MEDIA.photos}`} tabIndex={0} onKeyDown={keyClick(photoRef)}>
+                <Ic n="img" s={18} /><span>Photo</span>
+              </label>
+              <input ref={videoRef} className="sr" type="file" id="cpvideo" accept="video/mp4,video/quicktime,.mp4,.mov" tabIndex={-1} aria-hidden="true"
+                onChange={(e) => { void addVideo(e.target.files?.[0]); e.target.value = ""; }} />
+              {!video && (
+                <label htmlFor="cpvideo" className="cpi" title="Add a video" aria-label="Add a video" tabIndex={0} onKeyDown={keyClick(videoRef)}>
+                  <Ic n="video" s={18} /><span>Video</span>
+                </label>
+              )}
+              {rules?.polls !== false && !poll && <button type="button" className="cpi" title="Add a poll" aria-label="Add a poll" onClick={() => setPoll(["", ""])}><Ic n="poll" s={18} /><span>Poll</span></button>}
+              <button type="button" className="cpi" title="Improve with AI" aria-label="Improve with AI" disabled={improving} onClick={improve}><Ic n="spark" s={18} /><span>Improve with AI</span></button>
+              {staff && rules?.schedule !== false && !sched && <button type="button" className="cpi" title="Schedule" aria-label="Schedule" onClick={() => setSched(true)}><Ic n="clock" s={18} /><span>Schedule</span></button>}
               <span className="grow" />
-              <PostBtn disabled={photo.busy || improving} sched={sched} />
+              <PostBtn disabled={busy || improving} sched={sched} pending={pending} />
             </div>
           </form>
         </div>

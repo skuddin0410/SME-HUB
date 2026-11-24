@@ -1483,3 +1483,14 @@ select t.expect('the team saves the Help home lists', (select value->'chips'->>0
 set role anon;
 select t.expect('visitors read the Help home lists', (select count(*) = 1 from hub_settings where key = 'help'));
 reset role;
+
+-- ===== Update 10: photos and a video in a post =====
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+select t.expect_denied('post photos must be in our storage', $$insert into posts (author_id, body, images) values (auth.uid(), 'x', array['https://evil.example/a.jpg'])$$);
+select t.expect_denied('a post has 10 photos at most', $$insert into posts (author_id, body, images) select auth.uid(), 'x', array_agg('https://kjxbjqcmtjopamxyojzs.supabase.co/storage/v1/object/public/media/00000000-0000-0000-0000-00000000000a/post-' || g || '.jpg') from generate_series(1, 11) g$$);
+select t.expect_denied('a post video must be in the post-videos bucket', $$insert into posts (author_id, body, video_url) values (auth.uid(), 'x', 'https://kjxbjqcmtjopamxyojzs.supabase.co/storage/v1/object/public/media/x.mp4')$$);
+insert into posts (author_id, body, images, video_url) select auth.uid(), 'media post', array_agg('https://kjxbjqcmtjopamxyojzs.supabase.co/storage/v1/object/public/media/00000000-0000-0000-0000-00000000000a/post-' || g || '.jpg'), 'https://kjxbjqcmtjopamxyojzs.supabase.co/storage/v1/object/public/post-videos/00000000-0000-0000-0000-00000000000a/video-1.mp4' from generate_series(1, 10) g;
+select t.expect('a post keeps 10 photos and a video', (select cardinality(images) = 10 and video_url like '%/post-videos/%' from posts where body = 'media post'));
+select t.expect_denied('photos cannot be changed after posting', $$update posts set images = '{}' where body = 'media post'$$);
+reset role;
+select t.expect('videos have their own public bucket: MP4 or MOV, up to 500 MB', (select public and file_size_limit = 524288000 and allowed_mime_types = array['video/mp4', 'video/quicktime'] from storage.buckets where id = 'post-videos'));

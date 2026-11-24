@@ -53,6 +53,10 @@ export type Post = {
   scheduled_at: string | null;
   quoted: QuotedPost | null;
   poll: PollData | null;
+  /** Update 10: up to 10 photos (the first is also image_url) and 1 video with its poster picture */
+  images: string[];
+  video_url: string | null;
+  video_poster: string | null;
 };
 
 export type QuotedPost = { id: string; body: string; title: string; created_at: string; author: Pick<Author, "id" | "full_name" | "avatar_url"> };
@@ -117,7 +121,7 @@ export async function requireStaff() {
   return { ...viewer, userId: viewer.userId, profile: viewer.profile as Profile };
 }
 
-const POST_SELECT = `id, body, image_url, visibility, kind, created_at, pinned_at, group_id, title, cover_url, edited_at, comments_closed, profile_pinned, status, scheduled_at, quoted_post_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), business:companies!posts_business_id_fkey(id, name, slug, logo_url), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
+const POST_SELECT = `id, body, image_url, images, video_url, video_poster, visibility, kind, created_at, pinned_at, group_id, title, cover_url, edited_at, comments_closed, profile_pinned, status, scheduled_at, quoted_post_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), business:companies!posts_business_id_fkey(id, name, slug, logo_url), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
 
 type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link" | "counts" | "saved" | "quoted" | "poll"> & {
   quoted_post_id: string | null;
@@ -221,6 +225,9 @@ export async function fetchPosts(
     const likes = r.reactions[0]?.count ?? 0;
     return {
       ...r,
+      images: r.images ?? [],
+      video_url: r.video_url ?? null,
+      video_poster: r.video_poster ?? null,
       link: links.get(r.author.id) ?? "none",
       likes,
       comments: r.comments[0]?.count ?? 0,

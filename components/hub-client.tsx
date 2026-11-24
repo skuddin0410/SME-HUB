@@ -23,6 +23,8 @@ import {
 import type { CommentRow, Profile } from "@/lib/hub";
 import { REACTION_LABEL, type ReactionKind } from "@/lib/reactions";
 import { splitTags, type TagRules } from "@/lib/zip/hashtags";
+import { splitLinks } from "@/lib/zip/post-text";
+import { ShortLink } from "@/components/zip/short-link";
 import { CommentThread } from "@/components/comment-thread";
 import { ComposerOptions } from "@/components/composer-options";
 import { DEMO_IMAGES, demoAvatar, demoCover, KINDS, type Kind } from "@/lib/demo";
@@ -136,7 +138,9 @@ export function PostBody({ text, tags }: { text: string; tags?: TagRules | null 
   return (
     <div>
       <p className={cx("text-[0.9062rem] text-zinc-900 leading-[1.6] whitespace-pre-line break-words", long && !open && "line-clamp-5")}>
-        {tags ? splitTags(text, tags).map((x, i) => (x.tag ? <Link key={i} href={`/hashtags/${x.tag}`} className="hlink">{x.text}</Link> : x.text)) : text}
+        {splitLinks(text).map((seg, j) =>
+          seg.href ? <ShortLink key={j} piece={seg} /> : tags ? splitTags(seg.text, tags).map((x, i) => (x.tag ? <Link key={`${j}-${i}`} href={`/hashtags/${x.tag}`} className="hlink">{x.text}</Link> : x.text)) : seg.text,
+        )}
       </p>
       {long && (
         <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-xs font-semibold text-blue-600 hover:underline">

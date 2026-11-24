@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Upload } from "tus-js-client";
 
 /**
  * Photos go from the browser straight to storage, shrunk first.
@@ -10,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
  */
 const SETTINGS = {
   avatar: { side: 512, type: "image/jpeg" },
-  post: { side: 1600, type: "image/jpeg" },
+  post: { side: 2000, type: "image/jpeg" }, // Update 10: photos in posts up to 2000 px; re-drawing them drops location data (EXIF)
   cover: { side: 1600, type: "image/jpeg" },
   logo: { side: 512, type: "image/png" }, // PNG keeps a logo's transparent background
 } as const;
@@ -84,4 +85,68 @@ export function useImageUpload(kind: ImageKind, initial: string | null = null) {
     setError(null);
   }, []);
   return { preview, url, busy, error, pick, clear };
+}
+
+/** Update 10: the limits for a post's photos and video. */
+export const POST_MEDIA = { photos: 10, photoMB: 10, videoMB: 500, videoMinutes: 10 } as const;
+
+/** Reads a video's length in the browser (the server has no video tools), and a still from it for the poster. */
+export function readVideo(file: File): Promise<{ seconds: number; poster: Blob | null }> {
+  return new Promise((resolve) => {
+    const v = document.createElement("video");
+    const src = URL.createObjectURL(file);
+    let done = false;
+    const finish = (seconds: number, poster: Blob | null) => { if (done) return; done = true; URL.revokeObjectURL(src); resolve({ seconds, poster }); };
+    v.preload = "metadata";
+    v.muted = true;
+    v.playsInline = true;
+    v.onloadedmetadata = () => { v.currentTime = Math.min(1, (v.duration || 0) / 2); };
+    v.onseeked = () => {
+      try {
+        const scale = Math.min(1, 1280 / Math.max(v.videoWidth, v.videoHeight, 1));
+        const c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(v.videoWidth * scale));
+        c.height = Math.max(1, Math.round(v.videoHeight * scale));
+        c.getContext("2d")?.drawImage(v, 0, 0, c.width, c.height);
+        c.toBlob((b) => finish(v.duration, b), "image/jpeg", 0.82);
+      } catch {
+        finish(v.duration, null);
+      }
+    };
+    v.onerror = () => finish(Number.NaN, null);
+    setTimeout(() => finish(v.duration || Number.NaN, null), 15000);
+    v.src = src;
+  });
+}
+
+/**
+ * Uploads a post's video in 6 MB pieces that pick up where they stopped (resumable upload),
+ * to the member's own folder in the post-videos bucket. Returns its public address.
+ */
+export async function uploadVideo(file: File, onProgress?: (pct: number) => void): Promise<string> {
+  const ext = /\.mov$/i.test(file.name) || file.type === "video/quicktime" ? "mov" : "mp4";
+  if (!/^video\/(mp4|quicktime)$/.test(file.type) && !/\.(mp4|mov)$/i.test(file.name)) throw new Error("Choose an MP4 or MOV video.");
+  if (file.size > POST_MEDIA.videoMB * 1024 * 1024) throw new Error(`Videos can be up to ${POST_MEDIA.videoMB} MB and ${POST_MEDIA.videoMinutes} minutes long`);
+  const supabase = createClient();
+  const { data } = await supabase.auth.getSession();
+  const session = data.session;
+  if (!session) throw new Error("Sign in again to upload a video.");
+  const name = `${session.user.id}/video-${crypto.randomUUID()}.${ext}`;
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  await new Promise<void>((resolve, reject) => {
+    const up = new Upload(file, {
+      endpoint: `${base}/storage/v1/upload/resumable`,
+      retryDelays: [0, 3000, 5000, 10000, 20000],
+      headers: { authorization: `Bearer ${session.access_token}`, "x-upsert": "false" },
+      uploadDataDuringCreation: true,
+      removeFingerprintOnSuccess: true,
+      chunkSize: 6 * 1024 * 1024, // the size Supabase expects for each piece
+      metadata: { bucketName: "post-videos", objectName: name, contentType: ext === "mov" ? "video/quicktime" : "video/mp4", cacheControl: "31536000" },
+      onError: () => reject(new Error("The video did not upload. Check your connection and try again.")),
+      onProgress: (sent, total) => onProgress?.(total ? Math.round((sent / total) * 100) : 0),
+      onSuccess: () => resolve(),
+    });
+    up.start();
+  });
+  return `${base}/storage/v1/object/public/post-videos/${name}`;
 }
