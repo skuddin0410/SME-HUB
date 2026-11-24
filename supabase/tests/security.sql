@@ -1234,3 +1234,129 @@ select t.expect_denied('a member cannot log a search for someone else', $$insert
 select t.expect('members cannot read the search log', (select count(*) = 0 from directory_searches));
 reset role;
 select t.expect('the new functions are closed to visitors', not has_function_privilege('anon', 'my_ready_items()', 'execute') and not has_function_privilege('anon', 'team_profile_followup(text)', 'execute') and not has_function_privilege('authenticated', 'refresh_ready(uuid)', 'execute') and not has_function_privilege('authenticated', 'profile_ready_items(uuid)', 'execute'));
+
+-- ===== Update 4: Courses =====
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000004c1','inst@x.ca'), ('00000000-0000-0000-0000-0000000004c2','learn@x.ca'), ('00000000-0000-0000-0000-0000000004c3','other@x.ca');
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+insert into courses (id, slug, title, summary, cover_url, order_rule) values ('00000000-0000-0000-0000-00000000c001', 'cash', 'Cash', 'S', '/sample/courses/c.jpg', 'seq');
+insert into course_instructors (course_id, member_id) values ('00000000-0000-0000-0000-00000000c001', '00000000-0000-0000-0000-0000000004c1');
+insert into course_sections (id, course_id, title) values ('00000000-0000-0000-0000-00000000c0a1', '00000000-0000-0000-0000-00000000c001', 'One');
+insert into lessons (id, course_id, section_id, title, type, position, free_preview, drip_days) values
+ ('00000000-0000-0000-0000-00000000c011', '00000000-0000-0000-0000-00000000c001', '00000000-0000-0000-0000-00000000c0a1', 'Intro', 'video', 0, true, 0),
+ ('00000000-0000-0000-0000-00000000c012', '00000000-0000-0000-0000-00000000c001', '00000000-0000-0000-0000-00000000c0a1', 'Read', 'text', 1, false, 0),
+ ('00000000-0000-0000-0000-00000000c013', '00000000-0000-0000-0000-00000000c001', '00000000-0000-0000-0000-00000000c0a1', 'Plan', 'assignment', 2, false, 0),
+ ('00000000-0000-0000-0000-00000000c014', '00000000-0000-0000-0000-00000000c001', '00000000-0000-0000-0000-00000000c0a1', 'Quiz', 'quiz', 3, false, 0),
+ ('00000000-0000-0000-0000-00000000c015', '00000000-0000-0000-0000-00000000c001', '00000000-0000-0000-0000-00000000c0a1', 'Later', 'text', 4, false, 2);
+insert into lesson_content (lesson_id, course_id, body, video_path, captions_path) values
+ ('00000000-0000-0000-0000-00000000c011', '00000000-0000-0000-0000-00000000c001', '{hi}', 'x.mp4', 'x.vtt'),
+ ('00000000-0000-0000-0000-00000000c012', '00000000-0000-0000-0000-00000000c001', '{secret text}', '', '');
+insert into lesson_files (lesson_id, course_id, name, path) values ('00000000-0000-0000-0000-00000000c012', '00000000-0000-0000-0000-00000000c001', 'w.xlsx', '00000000-0000-0000-0000-00000000c001/00000000-0000-0000-0000-00000000c012/f/w.xlsx');
+insert into assignments (lesson_id, course_id, brief, marks, pass_mark) values ('00000000-0000-0000-0000-00000000c013', '00000000-0000-0000-0000-00000000c001', 'Do it', 10, 6);
+insert into quizzes (lesson_id, course_id, pass_pct, time_limit_min, attempts) values ('00000000-0000-0000-0000-00000000c014', '00000000-0000-0000-0000-00000000c001', 50, 10, 2);
+insert into quiz_questions (lesson_id, course_id, position, question, options, correct_index) values
+ ('00000000-0000-0000-0000-00000000c014', '00000000-0000-0000-0000-00000000c001', 0, 'Q1', array['a','b'], 1),
+ ('00000000-0000-0000-0000-00000000c014', '00000000-0000-0000-0000-00000000c001', 1, 'Q2', array['a','b'], 0);
+select t.expect('a draft is invisible to members and visitors', true);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c2';
+select t.expect('a member cannot see a draft course', (select count(*) = 0 from courses where slug = 'cash'));
+select t.expect_denied('a member cannot create a course', $$insert into courses (slug) values ('mine')$$);
+select t.expect_denied('a member cannot enrol in a draft', $$select enrol_free('00000000-0000-0000-0000-00000000c001')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c1';
+select t.expect('the instructor sees the draft and its answers', (select count(*) = 1 from courses where slug = 'cash') and (select count(*) = 2 from quiz_questions));
+update courses set status = 'published', title = 'Cash flow' where slug = 'cash';
+select t.expect('an instructor cannot publish but can edit', (select status = 'draft' and title = 'Cash flow' from courses where slug = 'cash'));
+select t.expect_denied('an instructor cannot publish through the function', $$select publish_course('00000000-0000-0000-0000-00000000c001')$$);
+update lesson_content set captions_path = '' where lesson_id = '00000000-0000-0000-0000-00000000c011';
+select t.expect('the checklist blocks a video without captions', not course_publish_ok('00000000-0000-0000-0000-00000000c001'));
+select t.expect_denied('asking to publish an incomplete course is refused', $$select ask_publish_course('00000000-0000-0000-0000-00000000c001')$$);
+update lesson_content set captions_path = 'x.vtt' where lesson_id = '00000000-0000-0000-0000-00000000c011';
+insert into lesson_content (lesson_id, course_id, body) values ('00000000-0000-0000-0000-00000000c015', '00000000-0000-0000-0000-00000000c001', '{later}');
+select ask_publish_course('00000000-0000-0000-0000-00000000c001');
+select t.expect('a complete course can be sent to the team', (select publish_asked_at is not null from courses where slug = 'cash'));
+select t.expect_denied('an instructor cannot add instructors', $$insert into course_instructors (course_id, member_id) values ('00000000-0000-0000-0000-00000000c001', '00000000-0000-0000-0000-0000000004c3')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+select publish_course('00000000-0000-0000-0000-00000000c001');
+reset role; set request.jwt.claim.sub = '';
+set role anon;
+select t.expect('a visitor sees the published course and its outline', (select count(*) = 1 from courses where slug = 'cash') and (select count(*) = 5 from lessons));
+select t.expect('a visitor opens only the free preview lesson', (select string_agg(body[1], ',') = 'hi' from lesson_content));
+select t.expect('a visitor never sees quiz answers', (select count(*) = 0 from quiz_questions));
+select t.expect('a visitor cannot read lesson files', not course_object_ok('00000000-0000-0000-0000-00000000c001/00000000-0000-0000-0000-00000000c012/f/w.xlsx'));
+select t.expect('a visitor can play the free preview video', course_object_ok('00000000-0000-0000-0000-00000000c001/00000000-0000-0000-0000-00000000c011/v/x.mp4'));
+select t.expect_denied('a visitor cannot enrol', $$select enrol_free('00000000-0000-0000-0000-00000000c001')$$);
+reset role;
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c2';
+select t.expect('not enrolled: the reading is locked', (select count(*) = 1 from lesson_content) and (lesson_access('00000000-0000-0000-0000-00000000c012') ->> 'why') = 'enrol');
+select t.expect('not enrolled: downloads stay locked even on the free preview', not lesson_download_ok('00000000-0000-0000-0000-00000000c011'));
+select enrol_free('00000000-0000-0000-0000-00000000c001');
+select t.expect('in order: the second lesson waits for the first', (lesson_access('00000000-0000-0000-0000-00000000c012') ->> 'why') = 'order');
+select t.expect_denied('a locked lesson cannot be marked complete', $$select mark_lesson_done('00000000-0000-0000-0000-00000000c012')$$);
+select mark_lesson_done('00000000-0000-0000-0000-00000000c011');
+select t.expect('after the first lesson the reading opens', lesson_open_ok('00000000-0000-0000-0000-00000000c012') and (select count(*) = 2 from lesson_content));
+select t.expect('enrolled: the download opens', course_object_ok('00000000-0000-0000-0000-00000000c001/00000000-0000-0000-0000-00000000c012/f/w.xlsx'));
+select save_video_pos('00000000-0000-0000-0000-00000000c011', 134);
+select t.expect('the video position is saved against the account', (select video_pos = 134 from lesson_progress where lesson_id = '00000000-0000-0000-0000-00000000c011'));
+select mark_lesson_done('00000000-0000-0000-0000-00000000c012');
+select t.expect_denied('a submission with nothing in it is refused', $$select submit_assignment('00000000-0000-0000-0000-00000000c013', '', '', '', 0)$$);
+select t.expect_denied('a file outside your own folder is refused', $$select submit_assignment('00000000-0000-0000-0000-00000000c013', '', 'submissions/00000000-0000-0000-0000-0000000004c3/00000000-0000-0000-0000-00000000c013/x.pdf', 'x.pdf', 10)$$);
+select submit_assignment('00000000-0000-0000-0000-00000000c013', 'my plan', '', '', 0);
+select t.expect('a submission is on time and counts as done (submit rule)', (select not late from submissions) and lesson_open_ok('00000000-0000-0000-0000-00000000c014'));
+select t.expect('a learner cannot grade', (select count(*) = 0 from submissions where grade_marks is not null));
+select t.expect_denied('a learner cannot grade through the function', $$select grade_submission((select id from submissions limit 1), 9, 'x')$$);
+select t.expect_denied('a learner cannot score a quiz in preview', $$select quiz_preview_score('00000000-0000-0000-0000-00000000c014', '{}')$$);
+select t.expect('the quiz view has no answers', (select not (quiz_view('00000000-0000-0000-0000-00000000c014')::text like '%correct%')));
+select quiz_start('00000000-0000-0000-0000-00000000c014');
+select t.expect('the same attempt comes back after a refresh', (select quiz_start('00000000-0000-0000-0000-00000000c014')) = (select id from quiz_attempts where submitted_at is null));
+select quiz_answer((select id from quiz_attempts where submitted_at is null), 0, 0);
+select t.expect_denied('an answer that does not exist is refused', $$select quiz_answer((select id from quiz_attempts where submitted_at is null), 1, 7)$$);
+select t.expect('a wrong quiz does not pass', (select not (quiz_submit((select id from quiz_attempts where submitted_at is null)) ->> 'passed')::boolean));
+update quiz_attempts set passed = true;
+select t.expect('a learner cannot change their own attempt directly', (select count(*) = 0 from quiz_attempts where passed));
+select quiz_start('00000000-0000-0000-0000-00000000c014');
+select quiz_answer((select id from quiz_attempts where submitted_at is null), 0, 1);
+select quiz_answer((select id from quiz_attempts where submitted_at is null), 1, 0);
+select t.expect('the right answers pass', (select (quiz_submit((select id from quiz_attempts where submitted_at is null)) ->> 'passed')::boolean));
+select t.expect_denied('no attempts after passing', $$select quiz_start('00000000-0000-0000-0000-00000000c014')$$);
+select t.expect('a drip lesson stays locked until its day', (lesson_access('00000000-0000-0000-0000-00000000c015') ->> 'why') = 'drip');
+reset role; set request.jwt.claim.sub = '';
+update enrolments set enrolled_at = now() - interval '3 days' where member_id = '00000000-0000-0000-0000-0000000004c2';
+-- an open attempt whose time ran out is submitted with the answers so far
+insert into quiz_attempts (member_id, lesson_id, course_id, started_at, answers) values ('00000000-0000-0000-0000-0000000004c3', '00000000-0000-0000-0000-00000000c014', '00000000-0000-0000-0000-00000000c001', now() - interval '11 minutes', '{"0":0}');
+insert into enrolments (member_id, course_id) values ('00000000-0000-0000-0000-0000000004c3', '00000000-0000-0000-0000-00000000c001');
+insert into course_prefs (member_id, hide_from_classmates) values ('00000000-0000-0000-0000-0000000004c3', true);
+update courses set order_rule = 'any' where slug = 'cash';
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c3';
+select t.expect('a timed-out attempt is submitted automatically', (select (quiz_view('00000000-0000-0000-0000-00000000c014') -> 'done' -> 0 ->> 'timed_out')::boolean));
+reset role; update courses set order_rule = 'seq' where slug = 'cash'; set role authenticated;
+select t.expect('another learner cannot read my work', (select count(*) = 0 from submissions));
+select t.expect_denied('a review needs one finished lesson', $$insert into course_reviews (course_id, member_id, stars, body) values ('00000000-0000-0000-0000-00000000c001', auth.uid(), 5, 'Great course really')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c2';
+select t.expect('the drip lesson opens on its day', lesson_open_ok('00000000-0000-0000-0000-00000000c015'));
+select t.expect('hidden classmates are not shown, and nothing but name and photo', (select count(*) = 0 from course_classmates('00000000-0000-0000-0000-00000000c001')));
+insert into course_reviews (course_id, member_id, stars, body) values ('00000000-0000-0000-0000-00000000c001', auth.uid(), 5, 'Clear and quick, thanks');
+select t.expect_denied('one review per learner', $$insert into course_reviews (course_id, member_id, stars, body) values ('00000000-0000-0000-0000-00000000c001', auth.uid(), 4, 'Second review here')$$);
+update course_reviews set hidden_at = null, stars = 4 where member_id = auth.uid();
+select t.expect('a learner can edit their review', (select stars = 4 from course_reviews where member_id = auth.uid()));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c1';
+select t.expect('the instructor sees the learner work, not a stranger''s progress elsewhere', (select count(*) = 1 from submissions));
+select grade_submission((select id from submissions limit 1), 9, 'Strong plan');
+select t.expect('grading notifies the learner', (select count(*) = 1 from submissions where grade_marks = 9));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c3';
+select t.expect_denied('a member who is not an instructor cannot grade', $$select grade_submission((select id from submissions limit 1), 1, 'x')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c2';
+select t.expect_denied('a member cannot report their own review', $$insert into reports (reporter_id, course_review_id, reason) select auth.uid(), id, 'x' from course_reviews where member_id = auth.uid()$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000004c3';
+insert into reports (reporter_id, course_review_id, reason) select auth.uid(), id, 'Spam' from course_reviews limit 1;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+insert into reports (reporter_id, course_review_id, reason) select auth.uid(), id, 'Spam' from course_reviews limit 1;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+insert into reports (reporter_id, course_review_id, reason) select auth.uid(), id, 'Spam' from course_reviews limit 1;
+select t.expect('three reports hide a course review', (select count(*) = 0 from course_reviews));
+select t.expect_denied('a member cannot enrol themselves in a paid course', $$select enrol_paid(auth.uid(), '00000000-0000-0000-0000-00000000c001', 'pi_x', 100, 13, 'HST')$$);
+select t.expect_denied('a member cannot insert an enrolment directly', $$insert into enrolments (member_id, course_id) values (auth.uid(), '00000000-0000-0000-0000-00000000c001')$$);
+delete from courses where slug = 'cash';
+select t.expect('a member cannot delete a course', (select count(*) = 1 from courses where slug = 'cash'));
+reset role;
+select t.expect('paid enrolment is idempotent per payment', (select enrol_paid('00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-00000000c001', 'pi_1', 4900, 637, 'HST (13%, Ontario)')) = (select enrol_paid('00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-00000000c001', 'pi_1', 4900, 637, 'HST (13%, Ontario)')));
+select t.expect('the courses functions are closed to visitors where they write', not has_function_privilege('anon', 'enrol_free(uuid)', 'execute') and not has_function_privilege('authenticated', 'enrol_paid(uuid,uuid,text,integer,integer,text)', 'execute') and not has_function_privilege('anon', 'quiz_start(uuid)', 'execute'));
