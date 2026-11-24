@@ -1544,3 +1544,16 @@ set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
 select t.expect('the Hub team sees every field', (select d->'phone'->>'v' = '(902) 555-0101' from (select profile_details_section('00000000-0000-0000-0000-00000000000b') d) x));
 reset role;
 select t.expect('the field list is not callable from the API', not has_function_privilege('anon', 'profile_field_list()', 'execute') and not has_function_privilege('authenticated', 'profile_field_list()', 'execute'));
+
+-- ===== My deadlines (Update 13): private to each member =====
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+insert into deadline_settings (user_id, setup) values (auth.uid(), '{"prov":"NS","type":"sole"}');
+insert into deadline_custom (user_id, title, due) values (auth.uid(), 'Licence renewal', current_date + 7);
+select t.expect('a member keeps their own deadlines', (select count(*) = 1 from deadline_custom where user_id = auth.uid()));
+select t.expect_denied('a member cannot add a deadline for someone else', $$insert into deadline_custom (user_id, title, due) values ('00000000-0000-0000-0000-00000000000c', 'x', current_date)$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+select t.expect('other members cannot see anyone else''s deadlines', (select count(*) = 0 from deadline_custom) and (select count(*) = 0 from deadline_settings));
+select t.expect_denied('members cannot write the sent-reminders log', $$insert into deadline_sent (user_id, key, lead) values (auth.uid(), 'k', 7)$$);
+reset role; set role anon;
+select t.expect_denied('visitors cannot read deadlines', $$select * from deadline_settings$$);
+reset role;

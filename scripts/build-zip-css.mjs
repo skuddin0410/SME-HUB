@@ -40,4 +40,8 @@ build("design/zip-help.css", "styles/help.css");
 build("design/zip-post-box.css", "styles/post-box.css");
 // Update 11 (Member of the Day): code/member-of-the-day.css from that package, scoped the same way
 build("design/zip-motd.css", "styles/motd.css");
+// Updates 13 and 14 (province guides): code/province-guides.css from Update 14, scoped the same way
+build("design/zip-province.css", "styles/province.css");
+// Update 13 (business tools and My deadlines): code/tools-and-deadlines.css, scoped the same way
+build("design/zip-tools.css", "styles/tools.css");
 console.log("ok");

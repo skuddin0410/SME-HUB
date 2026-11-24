@@ -6,11 +6,13 @@ import { useState } from "react";
 import { markNotificationRead, markNotificationsRead } from "@/app/(hub)/actions";
 import type { Author, LinkState } from "@/lib/hub";
 import { ZipAv } from "@/components/zip/bits";
+import { Ic } from "@/components/zip/ic";
 import { ConnectButton } from "@/components/network-client";
 
 export type Note = {
   id: string;
-  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission" | "sale_enquiry";
+  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission" | "sale_enquiry" | "deadline";
+  note?: string | null;
   href?: string | null;
   post_id: string | null;
   read_at: string | null;
@@ -28,6 +30,7 @@ const TEXT: Record<Note["type"], string> = {
   course_feedback: "graded your assignment. Your feedback is ready",
   course_submission: "submitted an assignment for you to grade",
   sale_enquiry: "contacted you about your business for sale",
+  deadline: "",
 };
 const ago = (iso: string) => {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -103,12 +106,16 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
             className="row"
             style={{ alignItems: "flex-start", padding: "14px 16px", borderTop: "1px solid var(--line)", cursor: "pointer", background: n.read_at ? undefined : "var(--surface-2)" }}
           >
-            <Link href={`/members/${n.actor.id}`} onClick={(e) => e.stopPropagation()} style={{ display: "flex", flex: "none" }} aria-label={n.actor.full_name || "Member"}>
-              <ZipAv name={n.actor.full_name || "Member"} src={n.actor.avatar_url} />
-            </Link>
+            {n.type === "deadline" ? (
+              <span className="tlico" aria-hidden="true" style={{ flex: "none", width: 40, height: 40, display: "grid", placeItems: "center" }}><Ic n="cal2" s={18} /></span>
+            ) : (
+              <Link href={`/members/${n.actor.id}`} onClick={(e) => e.stopPropagation()} style={{ display: "flex", flex: "none" }} aria-label={n.actor.full_name || "Member"}>
+                <ZipAv name={n.actor.full_name || "Member"} src={n.actor.avatar_url} />
+              </Link>
+            )}
             <div className="grow stack" style={{ gap: 2 }}>
               <p>
-                <strong>{n.actor.full_name || "A member"}</strong> {TEXT[n.type]}.
+                {n.type === "deadline" ? <><strong>Reminder:</strong> {n.note || "a deadline is coming up"}.</> : <><strong>{n.actor.full_name || "A member"}</strong> {TEXT[n.type]}.</>}
                 {!n.read_at && <span className="sr"> Unread</span>}
               </p>
               {n.excerpt && <p className="muted small" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{n.excerpt}</p>}

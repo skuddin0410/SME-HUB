@@ -11,6 +11,8 @@ import "@/styles/post-box.css";
 import "@/styles/post-box-extra.css";
 import "@/styles/motd.css";
 import "@/styles/motd-extra.css";
+import "@/styles/province.css";
+import "@/styles/tools.css";
 import { HideOn } from "@/components/hide-on";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 import { ReadyProvider } from "@/components/ready/provider";
@@ -68,7 +70,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
     userId
       ? supabase
           .from("notifications")
-          .select(`id, type, post_id, read_at, created_at, actor:profiles!notifications_actor_id_fkey(${AUTHOR_FIELDS})`)
+          .select(`id, type, post_id, href, note, read_at, created_at, actor:profiles!notifications_actor_id_fkey(${AUTHOR_FIELDS})`)
           .eq("user_id", userId)
           .order("created_at", { ascending: false })
           .limit(5)
@@ -109,12 +111,12 @@ export default async function HubShell({ children }: { children: React.ReactNode
     autoOpen = (drafts.count ?? 0) === 0;
   }
 
-  type NoteRow = { id: string; type: keyof typeof NOTE_TEXT; post_id: string | null; read_at: string | null; created_at: string; actor: Author };
+  type NoteRow = { id: string; type: keyof typeof NOTE_TEXT | "deadline"; post_id: string | null; href?: string | null; note?: string | null; read_at: string | null; created_at: string; actor: Author };
   const notes: NavNote[] = ((latest.data ?? []) as unknown as NoteRow[]).map((n) => ({
     id: n.id,
-    actor: n.actor?.full_name || "A member",
-    text: NOTE_TEXT[n.type] ?? "sent you an update",
-    href: n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network/connections" : `/members/${n.actor?.id}`,
+    actor: n.type === "deadline" ? "Reminder:" : n.actor?.full_name || "A member",
+    text: n.type === "deadline" ? n.note || "a deadline is coming up" : (NOTE_TEXT as Record<string, string>)[n.type] ?? "sent you an update",
+    href: n.href ? n.href : n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network/connections" : `/members/${n.actor?.id}`,
     ago: shortAgo(n.created_at),
     unread: !n.read_at,
   }));

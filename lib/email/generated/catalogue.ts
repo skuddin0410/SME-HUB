@@ -2114,5 +2114,30 @@ export const CATALOGUE: CatalogueEntry[] = [
   "lists": [],
   "list_fields": [],
   "size_kb": 7.3
+ },
+ {
+  "id": "deadline-reminder",
+  "category": "Deadlines and reminders",
+  "name": "Deadline reminder",
+  "trigger": "7 days and 1 day before a deadline in My deadlines (member chooses 14, 7 and/or 1 day)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "Reminder: {{dl_title}} is due {{dl_when}}",
+  "preheader": "Due {{dl_date}}. Here’s what to do and where.",
+  "type": "Notification (member can turn off)",
+  "preview_subject": "Reminder: GST/HST return and payment is due in 7 days",
+  "preview_preheader": "Due Monday, February 1, 2027. Here’s what to do and where.",
+  "variables": [
+   "dl_date",
+   "dl_detail",
+   "dl_done_url",
+   "dl_settings_url",
+   "dl_title",
+   "dl_url",
+   "dl_when",
+   "dl_where"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9.5
  }
 ];

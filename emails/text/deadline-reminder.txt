@@ -1,0 +1,17 @@
+Reminder: {{dl_title}} is due {{dl_when}}
+
+{{dl_title}} IS DUE {{dl_when}}
+
+What: {{dl_title}}
+Due: {{dl_date}}
+Details: {{dl_detail}}
+File or pay with: {{dl_where}}
+
+Mark as done: {{dl_done_url}}
+See all my deadlines: {{dl_url}}
+Dates follow the CRA’s general rules for the answers you gave. Your CRA account always shows your exact dates. Change reminders in My deadlines.
+
+--
+You’re getting this because {{reason}}. Choose which emails you get ({{preferences_url}}) or turn off these notifications ({{unsubscribe_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

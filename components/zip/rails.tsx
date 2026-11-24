@@ -10,6 +10,7 @@ import { ZipAv } from "@/components/zip/bits";
 import { JoinGroupButton } from "@/components/feed-client";
 import { RsvpBtn } from "@/components/zip/rsvp-btn";
 import { MemberOfTheDay } from "@/components/zip/motd";
+import { DeadlineCard } from "@/components/tools/deadline-card";
 
 /** Pages that are built in a later phase: not prefetched, so the browser is not left waiting on them. */
 const LATER = ["/matches", "/write", "/ask", "/pavilion"];
@@ -30,6 +31,9 @@ export async function ZipLeftRail() {
     ["/groups", "users", "Groups", <Ic key="r" n="right" s={16} />],
     ["/write", "edit", "Write a blog post", <Ic key="r" n="right" s={16} />],
     ["/businesses/mine", "store", "My Businesses", <Ic key="r" n="right" s={16} />],
+    ["/grants", "coin", "Grant Finder", <Ic key="r" n="right" s={16} />],
+    ["/deadlines", "cal2", "My deadlines", <Ic key="r" n="right" s={16} />],
+    ["/tools", "calc", "Business tools", <Ic key="r" n="right" s={16} />],
     ["/feed?saved=1", "bookmark", "Saved bookmarks", saved.count ?? 0],
   ];
   return (
@@ -93,6 +97,7 @@ export async function ZipRightRail() {
   const questions = ((quest.data ?? []) as unknown as { id: string; body: string; author: { full_name: string | null } | null }[]).slice(0, 3);
   return (
     <>
+      <DeadlineCard where="top" />
       <div className="card pcard">
         <div className="pban" />
         <div className="pbody">
@@ -187,6 +192,8 @@ export async function ZipRightRail() {
           <div className="stack"><strong>Friday</strong><span className="muted small">Member wins (Member of the Day every day)</span></div>
         </div>
       </div>
+      <DeadlineCard where="bottom" />
+      {/* FundingCard */}
     </>
   );
 }

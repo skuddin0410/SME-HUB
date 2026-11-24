@@ -16,11 +16,15 @@ type Me = { id: string; full_name: string; avatar_url: string | null; headline?:
 /** The guide's "Explore the Hub" list, limited to the pages this site has built. */
 const HUB_MENU: NavItem[] = [
   { label: "Groups", href: "/groups" },
-  { label: "Events", href: "/events" },
   { label: "Members", href: "/members" },
+  { label: "Hashtags", href: "/hashtags" },
   { label: "Business Directory", href: "/businesses" },
+  { label: "Grant Finder", href: "/grants" },
+  { label: "Business tools", href: "/tools" },
+  { label: "My deadlines", href: "/deadlines" },
   { label: "My Businesses", href: "/businesses/mine" },
   { label: "Businesses for Sale", href: "/for-sale" },
+  { label: "Events", href: "/events" },
   { label: "Member blogs", href: "/member-blogs" },
   { label: "SME Advisors", href: "/smb-advisor" },
   { label: "Member Spotlight", href: "/spotlight" },
