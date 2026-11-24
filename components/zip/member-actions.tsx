@@ -63,3 +63,14 @@ export function MoreMenu({ copyPath, blockName, onBlock }: { copyPath: string; b
     </div>
   );
 }
+
+/** The profile's web address in Details; selecting it copies the link. */
+export function CopyProfileLink({ path }: { path: string }) {
+  const [done, setDone] = useState(false);
+  return (
+    <button type="button" className="linkbtn" style={{ color: "var(--accent)", fontWeight: 600 }}
+      onClick={async () => { try { await navigator.clipboard.writeText(location.origin + path); setDone(true); } catch { /* the link is in the address bar */ } }}>
+      {`smehub.ca${path}`}{done && <span className="muted small" role="status"> · Copied</span>}
+    </button>
+  );
+}

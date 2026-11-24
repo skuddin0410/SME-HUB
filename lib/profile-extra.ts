@@ -78,3 +78,10 @@ export function profileStrength(p: StrengthInput) {
   const percent = Math.round(((STEPS.length - left.length) / STEPS.length) * 100);
   return { percent, next: left[0]?.label ?? null, remaining: left.map((s) => s.label), step: Math.round(100 / STEPS.length) };
 }
+
+/** The Details section's choices (from the hand-off's profile page). */
+export const INDUSTRIES = ["Food and hospitality", "Retail", "Professional services", "Construction and trades", "Technology", "Manufacturing", "Transportation and trade"] as const;
+export const TEAM_SIZES = ["Just me", "2 to 5 people", "6 to 20 people", "21 to 50 people"] as const;
+export type CoreAnswers = { nick?: string; industry?: string; founded?: string; team?: string; email?: string; phone?: string; history?: { role: string; org: string; years: string }[] };
+/** Two-letter marks for the social network buttons in Details, as in the hand-off. */
+export const SOCIAL_MARK: Record<string, string> = { linkedin: "in", facebook: "fb", instagram: "ig", x: "x", youtube: "yt", tiktok: "tt", whatsapp: "wa", pinterest: "pi", threads: "th", reddit: "re", medium: "md", telegram: "tg", snapchat: "sc" };

@@ -10,13 +10,14 @@ import { Cover } from "@/components/hub-client";
 import { blockMember } from "@/app/(hub)/actions";
 import { MyTagsCard } from "@/components/zip/hashtags";
 import { IntroButton, RecActions, RecommendForm, RequestRecButton, type Candidate } from "@/components/profile-extras";
-import { PROFILE_TYPES, RELATIONSHIPS, SOCIAL_NETWORKS } from "@/lib/profile-extra";
+import { PROFILE_TYPES, RELATIONSHIPS } from "@/lib/profile-extra";
 import { ConnectBtn, FollowBtn, MoreMenu } from "@/components/zip/member-actions";
 import { Ic } from "@/components/zip/ic";
+import { ProfileDetails, type DetailCell } from "@/components/zip/profile-details";
+import type { Field } from "@/lib/zip/settings";
 import { ZipAv } from "@/components/zip/bits";
 import { TYPES } from "@/lib/zip/types";
 import { getHubSettings } from "@/lib/zip/settings-load";
-import { customFields, fieldAllowed } from "@/lib/zip/profile-fields";
 import { readMinutes, STATUS_LABEL, when as blogDate, type MemberBlog } from "@/lib/zip/member-blogs";
 import { displayName, profileActions } from "@/lib/zip/profile-rules";
 import { getMyReady, getSignals } from "@/lib/ready";
@@ -114,6 +115,9 @@ export default async function MemberPage({
     userId && !isMe ? supabase.from("recommendation_requests").select("requester_id").eq("requester_id", userId).eq("asked_id", id).maybeSingle() : null,
     supabase.rpc("profile_last_active", { p_id: id }),
   ]);
+  // the Details section: every profile field the team set up, with what this viewer may see (the database decides)
+  const sectionRow = tab === "about" ? await supabase.rpc("profile_details_section", { p_member: id }) : null;
+  const cells = (sectionRow?.data ?? null) as Record<string, DetailCell> | null;
   const details = ((detailRows.data ?? [])[0] ?? null) as (Details & { user_id: string }) | null;
   const followers = typeof followerRow.data === "number" ? followerRow.data : null;
   const following = !!followRow?.data;
@@ -270,9 +274,6 @@ export default async function MemberPage({
                   {details && details.availability.length > 0 && (
                     <div className="stack" style={{ gap: 6 }}><span className="eyebrow">Free to chat</span><span>{details.availability.join(", ")}</span></div>
                   )}
-                  {customFields(ps.fields).filter((f) => details?.custom_fields?.[f.k] && fieldAllowed(f.vis, { self: isMe, signedIn: !!userId, connected: link === "connected", staff: viewer.isStaff })).map((f) => (
-                    <div key={f.k} className="stack" style={{ gap: 6 }}><span className="eyebrow">{f.l}</span><span>{details!.custom_fields![f.k]}</span></div>
-                  ))}
                 </div>
 
                 {isMe && <MyTagsCard />}
@@ -311,16 +312,7 @@ export default async function MemberPage({
                   </div>
                 )}
 
-                {details && Object.keys(details.social_links ?? {}).length > 0 && (
-                  <div className="card psec">
-                    <h2>Find me online</h2>
-                    <div className="chips">
-                      {SOCIAL_NETWORKS.filter(([k]) => details.social_links[k] && (ps.nets as Record<string, boolean>)[k] !== false).map(([k, label]) => (
-                        <a key={k} href={details.social_links[k]} target="_blank" rel="noreferrer nofollow" className="chip">{label}</a>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                {cells && <ProfileDetails fields={ps.fields as Field[]} cells={cells} me={isMe} path={`/members/${id}`} nets={ps.nets as Record<string, boolean>} />}
 
                 {listings.length > 0 && (
                   <div className="card psec">

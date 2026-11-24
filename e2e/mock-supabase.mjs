@@ -159,6 +159,19 @@ http
     ]));
     if (url.pathname === "/rest/v1/rpc/follower_count") return res.end("27");
     if (url.pathname === "/rest/v1/rpc/profile_last_active") return res.end(JSON.stringify(new Date().toISOString()));
+    // the profile Details section: Priya's, as a member who is not connected to her sees it; and the signed-in member's own
+    if (url.pathname === "/rest/v1/rpc/profile_details_section") {
+      let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => {
+        let id = ""; try { id = JSON.parse(b).p_member; } catch {}
+        const c = (vis, ok, v) => ({ vis, ok, v: ok ? v : null });
+        const own = member && id === sub;
+        if (own) return res.end(JSON.stringify({ first: c("public", true, "Test"), last: c("public", true, "Member"), nick: c("members", true, null), biz: c("public", true, "Test Bakery"), industry: c("public", true, null), city: c("public", true, null), founded: c("members", true, null), team: c("members", true, null), email: c("conn", true, null), phone: c("conn", true, null), web: c("public", true, null), social: c("public", true, null), history: c("members", true, null) }));
+        res.end(JSON.stringify({ first: c("public", true, "Priya"), last: c("public", true, "Raman"), nick: c("members", member, "Pri"), biz: c("public", true, "Maple Bakery"), industry: c("public", true, "Food and hospitality"), city: c("public", true, "Toronto, ON"), founded: c("public", true, "2014"), team: c("members", member, "6 to 20 people"),
+          email: c("conn", false, "x"), phone: c("conn", false, "x"), web: c("public", true, "https://maplebakery.example"), social: c("public", true, { linkedin: "https://linkedin.com/in/priya", instagram: "https://instagram.com/maple" }),
+          history: c("members", member, [{ role: "Pastry chef", org: "Hotel Le Germain", years: "2008 to 2014" }]) }));
+      });
+      return;
+    }
     if (url.pathname === "/rest/v1/rpc/get_profile_details") return res.end(JSON.stringify([{ user_id: PRIYA.id, helps_with: ["Wholesale", "Food retail"], needs: ["Packaging suppliers"], availability: [], social_links: {} }]));
     if (url.pathname === "/rest/v1/recommendations") {
       const r = (i, id, name, headline, rel, body) => ({ id: `rec${i}`, author_id: `00000000-0000-4000-8000-0000000000${id}`, relationship: rel, body, hidden: false, created_at: "2026-10-12T12:00:00Z", author: { id: `00000000-0000-4000-8000-0000000000${id}`, full_name: name, headline } });

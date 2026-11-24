@@ -30,7 +30,7 @@ export default async function SettingsPage() {
           <p className="muted">Choose who sees each part of your profile, download your data, or close your account.</p>
         </div>
         <div className="setgrid">
-          <PrivacyCards details={details} />
+          <PrivacyCards details={details} fields={(ps.fields as { k: string; g: string; l: string; vis: string; lock: boolean }[]).filter((f) => f.k !== "city" && f.k !== "social")} />
           <EmailNotifications forsale={!((off ?? []) as { grp: string }[]).some((r) => r.grp === "forsale")} />
           {ps.exportData && <div className="card">
             <h2>My data</h2>

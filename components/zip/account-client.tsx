@@ -8,7 +8,7 @@ import { ZipSubmit } from "@/components/zip/submit";
 
 type Details = { visibility: Record<string, string>; private_browsing: boolean };
 
-const LOCKED: [string, string, string][] = [["First name", "About", "public"], ["Last name", "About", "public"], ["Business name", "Business", "public"], ["Industry", "Business", "public"]];
+type TeamField = { k: string; g: string; l: string; vis: string; lock: boolean };
 const GROUP: Record<string, string> = { location: "Business", helps_with: "Work history", needs: "Work history", availability: "Contact", social_links: "Contact", followers: "About" };
 
 function Notice({ s }: { s: NetState }) {
@@ -27,7 +27,7 @@ function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: 
 }
 
 /** Privacy table and profile-view switch share one form, so one Save covers both. */
-export function PrivacyCards({ details }: { details: Details }) {
+export function PrivacyCards({ details, fields }: { details: Details; /** the Details fields from Profile settings (city and social links have their own rows) */ fields: TeamField[] }) {
   const [state, action] = useActionState<NetState, FormData>(saveDetails, {});
   const [record, setRecord] = useState(!details.private_browsing);
   return (
@@ -37,10 +37,19 @@ export function PrivacyCards({ details }: { details: Details }) {
       <div className="card" style={{ gridColumn: "1/-1" }}>
         <h2>Who can see each part of my profile</h2>
         <div className="ftable">
-          {LOCKED.map(([l, g, v]) => (
-            <div className="frow2" key={l}>
-              <span className="stack grow" style={{ gap: 1 }}><strong>{l}</strong><span className="muted small">{g}</span></span>
-              <span className="muted small" style={{ display: "flex", gap: 5, alignItems: "center" }}><Ic n="lock" s={12} />{VISIBILITY_LEVELS[v as "public"]} · set by the Hub team</span>
+          {fields.filter((f) => f.lock).map((f) => (
+            <div className="frow2" key={f.k}>
+              <span className="stack grow" style={{ gap: 1 }}><strong>{f.l}</strong><span className="muted small">{f.g}</span></span>
+              <span className="muted small" style={{ display: "flex", gap: 5, alignItems: "center" }}><Ic n="lock" s={12} />{VISIBILITY_LEVELS[f.vis as "public"] ?? VISIBILITY_LEVELS.public} · set by the Hub team</span>
+            </div>
+          ))}
+          {fields.filter((f) => !f.lock).map((f) => (
+            <div className="frow2" key={f.k}>
+              <span className="stack grow" style={{ gap: 1 }}><strong>{f.l}</strong><span className="muted small">{f.g}</span></span>
+              <label className="sr" htmlFor={`mv-${f.k}`}>Who can see {f.l}</label>
+              <select id={`mv-${f.k}`} name={`vis_${f.k}`} className="field" style={{ width: "auto", minHeight: 38 }} defaultValue={details.visibility[f.k] ?? f.vis}>
+                {Object.entries(VISIBILITY_LEVELS).map(([v, t]) => <option key={v} value={v}>{t}</option>)}
+              </select>
             </div>
           ))}
           {VISIBILITY_FIELDS.map(([f, l]) => (

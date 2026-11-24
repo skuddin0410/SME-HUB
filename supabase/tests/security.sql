@@ -1520,3 +1520,27 @@ select t.expect('nobody is featured again within 90 days', member_of_the_day() i
 reset role;
 update profiles set status = 'active' where id = '00000000-0000-0000-0000-00000000000a';
 select set_config('app.ready', '1', false); update profiles set ready_count = 5, ready_at = now(); select set_config('app.ready', '', false);
+
+-- ===== Profile Details section =====
+reset role; set request.jwt.claim.sub = '';
+update profiles set full_name = 'Bob Baker', location = 'Halifax, NS', website = 'https://bob.example' where id = '00000000-0000-0000-0000-00000000000b';
+update profiles set status = 'active' where id in ('00000000-0000-0000-0000-00000000000a', '00000000-0000-0000-0000-00000000000b');
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000b';
+insert into profile_details (user_id, core, visibility) values (auth.uid(), '{"nick":"Bobby","founded":"2012","team":"Just me","email":"bob@bob.example","phone":"(902) 555-0101","history":[{"role":"Baker","org":"Old Mill","years":"2005 to 2012"}]}', '{"founded":"public"}')
+  on conflict (user_id) do update set core = excluded.core, visibility = excluded.visibility;
+select t.expect_denied('a year founded must be a year', $$update profile_details set core = core || '{"founded":"long ago"}' where user_id = auth.uid()$$);
+select t.expect_denied('a contact email must look like one', $$update profile_details set core = core || '{"email":"nope"}' where user_id = auth.uid()$$);
+select t.expect_denied('up to 6 past roles', $$update profile_details set core = jsonb_set(core, '{history}', (select jsonb_agg(jsonb_build_object('role', 'r' || g)) from generate_series(1, 7) g)) where user_id = auth.uid()$$);
+select t.expect_denied('only the built-in Details answers are kept', $$update profile_details set core = core || '{"salary":"x"}' where user_id = auth.uid()$$);
+select t.expect('the member sees every field of their own Details', (select (d->'email'->>'ok')::boolean and d->'email'->>'v' = 'bob@bob.example' and d->'first'->>'v' = 'Bob' and d->'last'->>'v' = 'Baker' from (select profile_details_section(auth.uid()) d) x));
+reset role; set request.jwt.claim.sub = ''; set role anon;
+select t.expect('visitors see public fields only, and which ones are hidden', (select d->'city'->>'v' = 'Halifax, NS' and d->'web'->>'v' = 'https://bob.example' and d->'founded'->>'v' = '2012'
+  and not (d->'nick'->>'ok')::boolean and d->'nick'->'v' = 'null'::jsonb and d->'email'->>'vis' = 'conn' and not (d->'email'->>'ok')::boolean and d->'email'->'v' = 'null'::jsonb
+  from (select profile_details_section('00000000-0000-0000-0000-00000000000b') d) x));
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+select t.expect('members see members-only fields but not connections-only ones', (select d->'nick'->>'v' = 'Bobby' and d->'history'->'v'->0->>'role' = 'Baker' and d->'phone'->'v' = 'null'::jsonb
+  from (select profile_details_section('00000000-0000-0000-0000-00000000000b') d) x));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+select t.expect('the Hub team sees every field', (select d->'phone'->>'v' = '(902) 555-0101' from (select profile_details_section('00000000-0000-0000-0000-00000000000b') d) x));
+reset role;
+select t.expect('the field list is not callable from the API', not has_function_privilege('anon', 'profile_field_list()', 'execute') and not has_function_privilege('authenticated', 'profile_field_list()', 'execute'));

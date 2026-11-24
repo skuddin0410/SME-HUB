@@ -4,7 +4,8 @@ import { mayCloseAccount } from "@/lib/zip/profile-rules";
 import { cleanAnswer, customFields } from "@/lib/zip/profile-fields";
 import { getHubSettings } from "@/lib/zip/settings-load";
 import { requireUser } from "@/lib/hub";
-import { cleanSocialUrl, SELF_TYPES, SOCIAL_NETWORKS, splitList, VISIBILITY_FIELDS, VISIBILITY_LEVELS, AVAILABILITY, RELATIONSHIPS } from "@/lib/profile-extra";
+import { cleanSocialUrl, SELF_TYPES, SOCIAL_NETWORKS, splitList, VISIBILITY_FIELDS, VISIBILITY_LEVELS, AVAILABILITY, RELATIONSHIPS, INDUSTRIES, TEAM_SIZES, type CoreAnswers } from "@/lib/profile-extra";
+import type { Field } from "@/lib/zip/settings";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -55,11 +56,43 @@ export async function saveDetails(_prev: NetState, form: FormData): Promise<NetS
       else answers[fld.k] = v;
     }
     row.custom_fields = answers;
+    // the built-in Details answers
+    const core: CoreAnswers = {};
+    const nick = text(form, "core_nick").slice(0, 60);
+    if (nick) core.nick = nick;
+    const ind = text(form, "core_industry");
+    if ((INDUSTRIES as readonly string[]).includes(ind)) core.industry = ind;
+    const founded = text(form, "core_founded");
+    if (founded) {
+      if (!/^(18|19|20)\d\d$/.test(founded) || Number(founded) > new Date().getFullYear()) return { error: "Year founded needs to be a year, like 2012." };
+      core.founded = founded;
+    }
+    const team = text(form, "core_team");
+    if ((TEAM_SIZES as readonly string[]).includes(team)) core.team = team;
+    const email = text(form, "core_email").slice(0, 120);
+    if (email) {
+      if (!/^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(email)) return { error: "That contact email does not look right." };
+      core.email = email;
+    }
+    const phone = text(form, "core_phone");
+    if (phone) {
+      if (!/^[0-9+()\-. ]{7,25}$/.test(phone)) return { error: "That phone number does not look right." };
+      core.phone = phone;
+    }
+    const roles = form.getAll("core_h_role").map(String), orgs = form.getAll("core_h_org").map(String), years = form.getAll("core_h_years").map(String);
+    const history = roles.map((r, i) => ({ role: r.trim().slice(0, 80), org: (orgs[i] ?? "").trim().slice(0, 80), years: (years[i] ?? "").trim().slice(0, 40) })).filter((h) => h.role).slice(0, 6);
+    if (history.length) core.history = history;
+    row.core = core;
   } else if (section === "privacy") {
     const visibility: Record<string, string> = {};
     for (const [field] of VISIBILITY_FIELDS) {
       const v = text(form, `vis_${field}`);
       if (v in VISIBILITY_LEVELS && v !== "public") visibility[field] = v;
+    }
+    // the Details fields the team left unlocked: a choice is kept only when it differs from the team's default
+    for (const f of ((ps0.fields ?? []) as Field[]).filter((x) => !x.lock && x.k !== "social")) {
+      const v = text(form, `vis_${f.k}`);
+      if (v in VISIBILITY_LEVELS && v !== f.vis) visibility[f.k] = v;
     }
     row.visibility = visibility;
     row.private_browsing = form.get("private_browsing") === "on";

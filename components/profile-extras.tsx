@@ -1,6 +1,7 @@
 "use client";
 
 import { useReady } from "@/components/ready/provider";
+import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Loader2 } from "lucide-react";
@@ -18,7 +19,7 @@ import {
   writeRecommendation,
   type NetState,
 } from "@/app/(hub)/network-actions";
-import { AVAILABILITY, PROFILE_TYPES, RELATIONSHIPS, SELF_TYPES, SOCIAL_NETWORKS, VISIBILITY_FIELDS, VISIBILITY_LEVELS } from "@/lib/profile-extra";
+import { AVAILABILITY, INDUSTRIES, PROFILE_TYPES, RELATIONSHIPS, SELF_TYPES, SOCIAL_NETWORKS, TEAM_SIZES, VISIBILITY_FIELDS, VISIBILITY_LEVELS, type CoreAnswers } from "@/lib/profile-extra";
 
 const cx = (...p: (string | false | null | undefined)[]) => p.filter(Boolean).join(" ");
 const solid = "press inline-flex h-8 items-center gap-1.5 rounded-xl bg-primary px-4 text-base font-semibold text-white transition-colors hover:bg-primary/90 disabled:opacity-60";
@@ -33,6 +34,8 @@ export type Details = {
   custom_fields?: Record<string, string>;
   visibility: Record<string, string>;
   private_browsing: boolean;
+  /** answers to the built-in Details fields: nickname, industry, year founded, team size, contact email, phone, work history */
+  core?: CoreAnswers;
 };
 
 function Notice({ state }: { state: NetState }) {
@@ -105,6 +108,7 @@ export function DetailsForm({ details, profileType, nets, extra = [] }: { detail
           ))}
         </fieldset>
       )}
+      <CoreFields core={details.core ?? {}} />
       <fieldset className="grid gap-1.5 text-sm font-medium">
         <legend className="mb-1.5">When I am free to chat</legend>
         <div className="flex flex-wrap gap-x-5 gap-y-2 font-normal">
@@ -127,6 +131,48 @@ export function DetailsForm({ details, profileType, nets, extra = [] }: { detail
       <Notice state={state} />
       <SubmitButton className="self-start">Save details</SubmitButton>
     </form>
+  );
+}
+
+/** The built-in Details fields (the hand-off's profile Details): shown on the profile to the audience set for each. */
+function CoreFields({ core }: { core: CoreAnswers }) {
+  const [rows, setRows] = useState(() => (core.history ?? []).map((r, i) => ({ ...r, id: `h${i}` })));
+  const input = "field font-normal";
+  return (
+    <fieldset className="grid gap-3 text-sm font-medium">
+      <legend className="mb-1.5">Details</legend>
+      <p className="text-xs font-normal text-muted-foreground">These show in the Details section of your profile. You choose who sees each one in <Link href="/settings" className="font-semibold text-primary hover:underline">privacy settings</Link>.</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="grid gap-1.5">Nickname<input name="core_nick" defaultValue={core.nick ?? ""} maxLength={60} className={input} /></label>
+        <label className="grid gap-1.5">Industry
+          <select name="core_industry" defaultValue={core.industry ?? ""} className={input}>
+            <option value="">Not set</option>
+            {INDUSTRIES.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+        </label>
+        <label className="grid gap-1.5">Year founded<input name="core_founded" type="number" min={1800} max={new Date().getFullYear()} defaultValue={core.founded ?? ""} className={input} /></label>
+        <label className="grid gap-1.5">Team size
+          <select name="core_team" defaultValue={core.team ?? ""} className={input}>
+            <option value="">Not set</option>
+            {TEAM_SIZES.map((x) => <option key={x} value={x}>{x}</option>)}
+          </select>
+        </label>
+        <label className="grid gap-1.5">Contact email<input name="core_email" type="email" defaultValue={core.email ?? ""} maxLength={120} placeholder="hello@yourbusiness.ca" className={input} /></label>
+        <label className="grid gap-1.5">Phone<input name="core_phone" type="tel" defaultValue={core.phone ?? ""} maxLength={25} placeholder="(416) 555-0123" className={input} /></label>
+      </div>
+      <div className="grid gap-2">
+        <span>Past businesses and roles</span>
+        {rows.map((r, i) => (
+          <div key={r.id} className="grid gap-2 sm:grid-cols-[1fr_1fr_8rem_auto] items-end">
+            <label className="grid gap-1 text-xs text-muted-foreground">Role<input name="core_h_role" defaultValue={r.role} maxLength={80} required className={`${input} text-sm text-foreground`} /></label>
+            <label className="grid gap-1 text-xs text-muted-foreground">Business<input name="core_h_org" defaultValue={r.org} maxLength={80} className={`${input} text-sm text-foreground`} /></label>
+            <label className="grid gap-1 text-xs text-muted-foreground">Years<input name="core_h_years" defaultValue={r.years} maxLength={40} placeholder="2015 to 2020" className={`${input} text-sm text-foreground`} /></label>
+            <button type="button" className={quiet} aria-label={`Remove past role ${i + 1}`} onClick={() => setRows(rows.filter((x) => x.id !== r.id))}>Remove</button>
+          </div>
+        ))}
+        {rows.length < 6 && <button type="button" className={`${quiet} self-start`} onClick={() => setRows([...rows, { role: "", org: "", years: "", id: `n${Date.now()}` }])}>+ Add a past role</button>}
+      </div>
+    </fieldset>
   );
 }
 
