@@ -16,6 +16,8 @@ create function t.expect(label text, ok boolean) returns text language sql as $$
   select case when ok then 'PASS  ' else 'FAIL  ' end || label $$;
 grant usage on schema t to anon, authenticated;
 
+-- every test member has a photo and a headline unless a test says otherwise (Update 3: connecting needs both)
+alter table profiles alter column avatar_url set default 'https://kjxbjqcmtjopamxyojzs.supabase.co/storage/v1/object/public/media/t/p.jpg', alter column headline set default 'Owner, Test Co';
 insert into auth.users (id, email) values
  ('00000000-0000-0000-0000-00000000000a','alice@x.ca'), ('00000000-0000-0000-0000-00000000000b','bob@x.ca'),
  ('00000000-0000-0000-0000-00000000000c','carol@x.ca'), ('00000000-0000-0000-0000-00000000000d','dave@x.ca');
@@ -160,6 +162,7 @@ select t.expect('degrees: connection is 1st, friend of a friend is 2nd, stranger
     '00000000-0000-0000-0000-00000000000b', '00000000-0000-0000-0000-00000000000c', '00000000-0000-0000-0000-00000000000d']::uuid[])));
 select t.expect('degrees: no row for yourself', (select count(*) = 0 from connection_degrees(array['00000000-0000-0000-0000-00000000000a']::uuid[])));
 select t.expect('mutual connections counted', mutual_connections('00000000-0000-0000-0000-00000000000c') = 1);
+reset role; select set_config('app.ready', '1', false); update profiles set ready_count = 5, ready_at = now() where id = '00000000-0000-0000-0000-00000000000b'; select set_config('app.ready', '', false); set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
 select t.expect('people search matches the start of a word and a stemmed word',
   (select count(*) = 1 from search_profiles('dan:* & logistic:*')));
 select t.expect('post search column is filled', (select count(*) > 0 from posts where fts @@ to_tsquery('english', 'pub:*')));
@@ -434,6 +437,8 @@ select t.expect('a member who hides their city is not on the map', (select sum(m
 select t.expect('map can be narrowed to a province', (select count(*) = 0 from member_map_cities(null, 'ON') where location = 'Montréal, QC'));
 reset role; delete from profile_details where user_id = :e4; set role authenticated;
 
+-- (Update 3: only members with a ready profile are in search, so these test members are marked ready first)
+reset role; select set_config('app.ready', '1', false); update profiles set ready_count = 5, ready_at = now(); select set_config('app.ready', '', false); set role authenticated;
 -- search ignores accents and respects hidden fields
 set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000001e2';
 select t.expect('Montreal finds Montréal', (select count(*) = 1 from search_members('montreal') where id = :e1));
@@ -1133,3 +1138,99 @@ set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000
 select t.expect_denied('members cannot write help articles', $$update help_articles set title = 'x'$$);
 select t.expect_denied('members cannot write help topics', $$delete from help_topics$$);
 reset role;
+
+-- ===== Update 3: profile completion (0046) =====
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email, raw_user_meta_data) values
+ ('00000000-0000-0000-0000-0000000006a1', 'zed@x.ca', '{"first_name":"Zed","last_name":"Blank"}'),
+ ('00000000-0000-0000-0000-0000000006a2', 'yara@x.ca', '{"first_name":"Yara","last_name":"Seen"}'),
+ ('00000000-0000-0000-0000-0000000006a3', 'xena@x.ca', '{"first_name":"Xena","last_name":"Other"}');
+update profiles set avatar_url = null, headline = '', location = '' where id = '00000000-0000-0000-0000-0000000006a1';
+select t.expect('a new profile with nothing filled in is 0 of 5', (select ready_count = 0 and ready_at is null from profiles where id = '00000000-0000-0000-0000-0000000006a1'));
+select t.expect('the member with a photo and headline from the start is 2 of 5', (select ready_count = 2 from profiles where id = '00000000-0000-0000-0000-0000000006a3'));
+
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006a1';
+update profiles set ready_count = 5, ready_at = now() where id = auth.uid();
+select t.expect('a member cannot set their own ready count', (select ready_count = 0 and ready_at is null from profiles where id = auth.uid()));
+select t.expect_denied('without a photo and headline a member cannot ask to connect', $$insert into connections (requester_id, addressee_id) values (auth.uid(), '00000000-0000-0000-0000-0000000006a2')$$);
+select t.expect_denied('without a photo and headline a member cannot ask for an introduction', $$insert into intro_requests (requester_id, via_id, target_id, note) values (auth.uid(), '00000000-0000-0000-0000-0000000006a2', '00000000-0000-0000-0000-0000000006a3', 'hi')$$);
+update profiles set avatar_url = 'https://kjxbjqcmtjopamxyojzs.supabase.co/storage/v1/object/public/media/t/zed.jpg' where id = auth.uid();
+select t.expect('adding a photo makes it 1 of 5', (select ready_count = 1 from profiles where id = auth.uid()));
+select t.expect_denied('a photo alone is not enough to connect', $$insert into connections (requester_id, addressee_id) values (auth.uid(), '00000000-0000-0000-0000-0000000006a2')$$);
+update profiles set headline = 'Owner, Zed Reno' where id = auth.uid();
+select t.expect('a headline makes it 2 of 5', (select ready_count = 2 from profiles where id = auth.uid()));
+insert into connections (requester_id, addressee_id) values (auth.uid(), '00000000-0000-0000-0000-0000000006a2');
+select t.expect('with a photo and headline the member can connect', (select count(*) = 1 from connections where requester_id = auth.uid()));
+
+-- member search leaves out members who are not ready
+reset role; set role anon;
+select t.expect('a member who is not ready is not in member search', not exists (select 1 from member_directory('Zed')) and not exists (select 1 from search_members('Zed')));
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006a1';
+update profiles set location = 'Mississauga, ON' where id = auth.uid();
+insert into profile_details (user_id, helps_with) values (auth.uid(), array['Renovation quotes']);
+select t.expect('city and a tag make it 4 of 5', (select ready_count = 4 from profiles where id = auth.uid()));
+select t.expect('my_ready_items shows what is missing', (select not biz and helps and city and headline and photo and ready_count = 4 from my_ready_items()));
+select t.expect_denied('a member who is not ready cannot apply for the Spotlight', $$insert into spotlight_applications (member_id, answers, consent_wording) values (auth.uid(), '{"q1":"a"}', 'ok')$$);
+select apply_profile_draft(null, '{"title":"Owner","biz":"Zed Reno","city":"Mississauga, ON","about":"I renovate homes.","helps":["Renovation quotes","Kitchens"],"category":"Construction & Trades","desc":"We renovate homes.","services":["Kitchens","Bathrooms"]}'::jsonb, true);
+select t.expect('saving the draft makes a DRAFT business page and the profile is 5 of 5', (select ready_count = 5 and ready_at is not null from profiles where id = auth.uid()) and (select count(*) = 1 from companies where owner_id = auth.uid() and status = 'draft' and name = 'Zed Reno' and province = 'ON' and city = 'Mississauga'));
+select t.expect('the services came with the draft page', (select count(*) = 2 from business_services s join companies c on c.id = s.company_id where c.owner_id = auth.uid()));
+select t.expect('the headline, city, introduction and tags were saved', (select headline = 'Owner, Zed Reno' and location = 'Mississauga, ON' and bio = 'I renovate homes.' from profiles where id = auth.uid()) and (select helps_with = array['Renovation quotes','Kitchens'] from profile_details where user_id = auth.uid()));
+select apply_profile_draft(null, '{"title":"Owner","biz":"Zed Reno","city":"Mississauga, ON","helps":["A"]}'::jsonb, true);
+select t.expect('saving again does not make a second business page', (select count(*) = 1 from companies where owner_id = auth.uid()));
+delete from companies where owner_id = auth.uid();
+select t.expect('removing the business page takes it back to 4 of 5', (select ready_count = 4 and ready_at is null from profiles where id = auth.uid()));
+insert into companies (owner_id, slug, name) values (auth.uid(), 'zed-reno-2', 'Zed Reno');
+select t.expect('a new page counts again: 5 of 5', (select ready_count = 5 and ready_at is not null from profiles where id = auth.uid()));
+
+reset role; set role anon;
+select t.expect('a ready member shows up in member search', exists (select 1 from member_directory('Zed')) and exists (select 1 from search_members('Zed')));
+reset role;
+
+-- Member Spotlight: ready members only, one open application, the team decides
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006a1';
+insert into spotlight_applications (member_id, answers, consent_wording) values (auth.uid(), '{"q1":"a","q2":"b"}', 'CanadianSME can use my photo');
+select t.expect('a ready member can apply, and the consent is stored with a time', (select count(*) = 1 and bool_and(consent_at is not null) from spotlight_applications));
+select t.expect_denied('only one open application at a time', $$insert into spotlight_applications (member_id, answers, consent_wording) values (auth.uid(), '{}', 'x')$$);
+update spotlight_applications set status = 'chosen';
+select t.expect('a member cannot choose themselves', (select status = 'received' from spotlight_applications));
+select t.expect_denied('a member cannot apply as someone else', $$insert into spotlight_applications (member_id, answers, consent_wording) values ('00000000-0000-0000-0000-0000000006a2', '{}', 'x')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006a2';
+select t.expect('other members cannot read an application', (select count(*) = 0 from spotlight_applications));
+reset role; set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+select t.expect('the team reads applications', (select count(*) = 1 from spotlight_applications));
+update spotlight_applications set status = 'chosen', chosen_by = auth.uid(), chosen_at = now();
+select t.expect('the team can choose a member', (select count(*) = 1 from spotlight_applications where status = 'chosen'));
+reset role;
+
+-- the team's follow-up list: team only
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006a2';
+select t.expect('members get nothing from the follow-up list', (select count(*) = 0 from team_profile_followup('all')));
+select t.expect('members get nothing from the follow-up numbers', (select joined_7d = 0 and ready_7d = 0 from team_profile_stats()));
+select t.expect_denied('a member cannot set a follow-up status', $$select set_followup('00000000-0000-0000-0000-0000000006a1', 'called')$$);
+select t.expect_denied('a member cannot send a team message', $$select team_message_member('00000000-0000-0000-0000-0000000006a1', 'hi')$$);
+select t.expect('members cannot read follow-up rows', (select count(*) = 0 from profile_followups));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+select t.expect('the team sees members who are not ready, and not those who are', (select count(*) > 0 and bool_and(ready_count < 5) from team_profile_followup('all')) and not exists (select 1 from team_profile_followup('all') where full_name = 'Zed Blank'));
+select t.expect('the missing items come with each member', (select missing = array['city','helps','biz'] and ready_count = 2 from team_profile_followup('all') where full_name = 'Xena Other'));
+select set_followup('00000000-0000-0000-0000-0000000006a3', 'called');
+select t.expect('the team can record a follow-up', (select status = 'called' from team_profile_followup('all') where full_name = 'Xena Other'));
+select team_message_member('00000000-0000-0000-0000-0000000006a3', 'I can set up your profile for you in 5 minutes.');
+select t.expect('the message reaches the member from the team member and keeps the status', (select count(*) = 1 from messages where recipient_id = '00000000-0000-0000-0000-0000000006a3' and sender_id = auth.uid()) and (select status = 'called' from team_profile_followup('all') where full_name = 'Xena Other'));
+select t.expect('"ready now" lists a member who got ready this week', exists (select 1 from team_profile_followup('ready') where full_name = 'Zed Blank'));
+select t.expect('the numbers count the members who joined this week', (select joined_7d >= 3 and ready_7d >= 1 and cardinality(trend) = 6 from team_profile_stats()));
+reset role;
+
+-- real numbers for the yellow line
+insert into directory_searches (searcher_id, q, category, city, province) values
+ ('00000000-0000-0000-0000-0000000006a2', '', 'Construction & Trades', '', 'ON'),
+ ('00000000-0000-0000-0000-0000000006a3', 'kitchen renovation', '', 'Mississauga', 'ON'),
+ ('00000000-0000-0000-0000-0000000006a3', 'plumber', '', 'Toronto', 'ON'),
+ ('00000000-0000-0000-0000-0000000006a2', '', 'Food & Drink', '', 'ON'),
+ ('00000000-0000-0000-0000-0000000006a1', '', 'Construction & Trades', '', 'ON');
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006a1';
+select t.expect('searches near me that mention what I do are counted, my own and other cities are not', (select searches_7d = 2 from my_profile_signals()));
+insert into directory_searches (searcher_id, category) values (auth.uid(), 'x');
+select t.expect_denied('a member cannot log a search for someone else', $$insert into directory_searches (searcher_id) values ('00000000-0000-0000-0000-0000000006a2')$$);
+select t.expect('members cannot read the search log', (select count(*) = 0 from directory_searches));
+reset role;
+select t.expect('the new functions are closed to visitors', not has_function_privilege('anon', 'my_ready_items()', 'execute') and not has_function_privilege('anon', 'team_profile_followup(text)', 'execute') and not has_function_privilege('authenticated', 'refresh_ready(uuid)', 'execute') and not has_function_privilege('authenticated', 'profile_ready_items(uuid)', 'execute'));
