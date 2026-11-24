@@ -2,13 +2,23 @@ import { expect, test } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 
+/**
+ * Next.js 15 sometimes drops a link click after fetching the page (vercel/next.js#83386); a person just clicks
+ * again. The tests do the same, so they check our pages rather than that bug.
+ */
+async function clickTo(page: import("@playwright/test").Page, link: import("@playwright/test").Locator, url: RegExp) {
+  await expect(async () => {
+    if (!url.test(page.url())) await link.click({ timeout: 2000 });
+    await expect(page).toHaveURL(url, { timeout: 3000 });
+  }).toPass({ timeout: 20_000 });
+}
+
 // Update 7: the full Help Centre inside the site (all 82 articles in e2e/help-fixture.json).
 const KB = JSON.parse(fs.readFileSync(path.join(__dirname, "help-fixture.json"), "utf8")) as { help_articles: { id: string; title: string; html: string }[]; help_topics: { id: string; title: string }[] };
 
 test("Help home sits inside the site, with popular questions, 15 topics and Still need help", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await page.getByRole("link", { name: "Help", exact: true }).first().click();
-  await expect(page).toHaveURL(/\/help$/);
+  await clickTo(page, page.getByRole("link", { name: "Help", exact: true }).first(), /\/help$/);
   await expect(page.getByRole("heading", { name: "How can we help?", level: 1 })).toBeVisible();
   await expect(page.getByText("82 step-by-step answers with screenshots.")).toBeVisible();
   await expect(page.locator(".hcpopi")).toHaveCount(8);
@@ -33,7 +43,7 @@ test("search updates as you type and finds the checklist's questions", async ({ 
   await expect(page.locator(".hcitem").first()).toContainText("Forgot your password? Reset it");
   await box.fill("sell my business");
   await expect(page.locator(".hcitem").first()).toContainText("Sell your business on SME Hub");
-  await page.locator(".hcitem").first().click();
+  await clickTo(page, page.locator(".hcitem").first(), /\/help\/sell-your-business$/);
   await expect(page.locator(".hcside").getByLabel("Search help articles")).toHaveValue("sell my business");
   await page.goto("/help/account");
   await expect(page.getByRole("link", { name: "See search results for “sell my business”" })).toBeVisible();
@@ -54,8 +64,7 @@ test("typing in the search box on an article jumps to the results", async ({ pag
 test("a topic page lists its articles; an article has the topic menu, steps, feedback and previous/next", async ({ page, request }) => {
   await page.goto("/help/profile", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "Your profile", level: 1 })).toBeVisible();
-  await page.locator(".hcitem", { hasText: "Get featured: the Member Spotlight" }).click();
-  await expect(page).toHaveURL(/\/help\/member-spotlight$/);
+  await clickTo(page, page.locator(".hcitem", { hasText: "Get featured: the Member Spotlight" }), /\/help\/member-spotlight$/);
   await expect(page.getByRole("heading", { name: "Get featured: the Member Spotlight", level: 1 })).toBeVisible();
   await expect(page.locator(".hcsub a[aria-current=page]")).toHaveText("Get featured: the Member Spotlight");
   await expect(page.getByRole("link", { name: /Previous/ })).toBeVisible();

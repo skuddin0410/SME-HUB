@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Ic } from "@/components/zip/ic";
-import { searchHelpAction, voteHelp } from "@/app/(hub)/help-actions";
+import { voteHelp } from "@/app/(hub)/help-actions";
 import type { HelpHit } from "@/lib/help";
 
 const QKEY = "smehub.help.q";
@@ -116,7 +116,7 @@ export function HelpHome({ count, popular, topics, q0, hits0 }: { count: number;
     const n = ++seq.current;
     window.history.replaceState(null, "", v.trim() ? `${path}?q=${encodeURIComponent(v)}` : path);
     if (!v.trim()) return setHits([]);
-    void searchHelpAction(v).then((r) => { if (n === seq.current) setHits(r); });
+    fetch(`/api/help-search?q=${encodeURIComponent(v)}`).then((r) => r.json() as Promise<HelpHit[]>).then((r) => { if (n === seq.current) setHits(r); }).catch(() => {});
   };
   const t = q.trim();
   return (

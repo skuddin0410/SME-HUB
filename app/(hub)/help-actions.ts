@@ -2,14 +2,8 @@
 
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { loadHelp, searchHelp, type HelpHit } from "@/lib/help";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/** Results as you type (the same ranking as the page itself). */
-export async function searchHelpAction(q: string): Promise<HelpHit[]> {
-  return searchHelp(await loadHelp(), String(q ?? "").slice(0, 200));
-}
 
 /** "Was this helpful?" One answer per member, or per visitor's browser, per article; answering again changes it. */
 export async function voteHelp(articleId: string, helpful: boolean): Promise<{ ok: boolean }> {
