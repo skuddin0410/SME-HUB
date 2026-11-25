@@ -2,6 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { POST } from "@/app/api/auth/send-email/route";
 import { signWebhook } from "@/lib/auth/webhook";
+import { SITE_URL } from "@/lib/seo";
+
+// links use the server's own address when one is set (Amplify: https://test.smehub.ca), else the address the request came to
+const origin = SITE_URL || "https://smehub.ca";
 
 const secret = `v1,whsec_${Buffer.from("route-test-secret-value").toString("base64")}`;
 const body = JSON.stringify({
@@ -27,6 +31,7 @@ describe("POST /api/auth/send-email", () => {
   beforeEach(() => {
     vi.stubEnv("SEND_EMAIL_HOOK_SECRET", secret);
     vi.stubEnv("RESEND_API_KEY", "re_test");
+    vi.stubEnv("EMAIL_DOMAIN", "smehub.ca");
     vi.stubGlobal("fetch", fetchMock);
     fetchMock.mockReset().mockResolvedValue(new Response(JSON.stringify({ id: "em" }), { status: 200 }));
   });
@@ -35,13 +40,13 @@ describe("POST /api/auth/send-email", () => {
     vi.unstubAllGlobals();
   });
 
-  it("sends the confirmation from hello@ and answers {}", async () => {
+  it("sends the confirmation from support@ and answers {}", async () => {
     const res = await POST(request());
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({});
     const sent = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(sent.from).toBe("SME Hub <support@smehub.ca>");
-    expect(sent.html).toContain("https://smehub.ca/auth/confirm?token_hash=h1");
+    expect(sent.html).toContain(`${origin}/auth/confirm?token_hash=h1`);
   });
   it("rejects an unsigned request and sends nothing", async () => {
     const res = await POST(request(body, false));
