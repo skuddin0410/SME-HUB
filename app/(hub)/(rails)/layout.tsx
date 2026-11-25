@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { ZipLeftRail, ZipRightRail } from "@/components/zip/rails";
+import { SkRail } from "@/components/zip/skeletons";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -12,11 +14,12 @@ export default function RailsLayout({ children }: { children: React.ReactNode })
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="cols">
           <aside className="rail" aria-label="Your shortcuts">
-            <ZipLeftRail />
+            {/* Speed: the side columns load on their own, so the page (and its loading shape) never waits for them */}
+            <Suspense fallback={<SkRail cards={1} />}><ZipLeftRail /></Suspense>
           </aside>
           <section className="mid pgmid" style={{ display: "flex", flexDirection: "column" }}>{children}</section>
           <aside className="rail" aria-label="Your account">
-            <ZipRightRail />
+            <Suspense fallback={<SkRail />}><ZipRightRail /></Suspense>
           </aside>
         </div>
       </div>

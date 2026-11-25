@@ -198,23 +198,23 @@ export async function fetchPosts(
 
   // reaction kinds, the viewer's own reaction and reposts; posts still render if this call fails
   type Extra = { post_id: string; kinds: ReactionKind[]; my_kind: ReactionKind | null; reposts: number; reposted: boolean; counts?: Partial<Record<ReactionKind, number>>; saved?: boolean };
-  const { data: extraRows } = await supabase.rpc("post_extras", { ids: rows.map((r) => r.id) });
-  const extras = new Map(((extraRows ?? []) as Extra[]).map((e) => [e.post_id, e]));
-
-  const links = await getLinks();
-
-  // quoted posts and polls, fetched together for the whole page
-  const quotedIds = [...new Set(rows.map((r) => r.quoted_post_id).filter((x): x is string => !!x))];
-  const quotedMap = new Map<string, QuotedPost>();
-  if (quotedIds.length) {
-    const { data: q } = await supabase.from("posts").select(`id, body, title, created_at, author:profiles!posts_author_id_fkey(id, full_name, avatar_url)`).in("id", quotedIds);
-    for (const x of (q ?? []) as unknown as QuotedPost[]) quotedMap.set(x.id, x);
-  }
+  // Speed: reactions, connections, quoted posts, polls and my poll votes are asked for in one round
   const ids = rows.map((r) => r.id);
-  const { data: pollRows } = await supabase.from("polls").select("post_id, closes_at, poll_options(id, label, votes, position)").in("post_id", ids);
+  const quotedIds = [...new Set(rows.map((r) => r.quoted_post_id).filter((x): x is string => !!x))];
+  const [{ data: extraRows }, links, quoted, { data: pollRows }, mine] = await Promise.all([
+    supabase.rpc("post_extras", { ids }),
+    getLinks(),
+    quotedIds.length
+      ? supabase.from("posts").select(`id, body, title, created_at, author:profiles!posts_author_id_fkey(id, full_name, avatar_url)`).in("id", quotedIds)
+      : Promise.resolve({ data: [] }),
+    supabase.from("polls").select("post_id, closes_at, poll_options(id, label, votes, position)").in("post_id", ids),
+    userId ? supabase.from("poll_votes").select("post_id, option_id").in("post_id", ids) : Promise.resolve({ data: [] }),
+  ]);
+  const extras = new Map(((extraRows ?? []) as Extra[]).map((e) => [e.post_id, e]));
+  const quotedMap = new Map<string, QuotedPost>();
+  for (const x of (quoted.data ?? []) as unknown as QuotedPost[]) quotedMap.set(x.id, x);
   const pollMap = new Map<string, PollData>();
   if (pollRows?.length) {
-    const mine = userId ? await supabase.from("poll_votes").select("post_id, option_id").in("post_id", ids) : { data: [] };
     const myVotes = new Map(((mine.data ?? []) as { post_id: string; option_id: string }[]).map((v) => [v.post_id, v.option_id]));
     for (const p of pollRows as unknown as { post_id: string; closes_at: string; poll_options: { id: string; label: string; votes: number; position: number }[] }[]) {
       pollMap.set(p.post_id, { closesAt: p.closes_at, options: [...p.poll_options].sort((a, b) => a.position - b.position).map(({ id, label, votes }) => ({ id, label, votes })), myVote: myVotes.get(p.post_id) ?? null });

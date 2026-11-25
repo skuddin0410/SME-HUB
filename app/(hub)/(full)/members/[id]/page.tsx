@@ -101,10 +101,8 @@ export default async function MemberPage({
   const pvOn = isMe && !!ps.pv.on;
   const tab: (typeof TABS)[number][0] | "views" = pvOn && sp.tab === "views" ? "views" : tab0;
 
-  // visiting someone else's profile counts as a view (the database skips private browsers and blocked pairs)
-  if (userId && !isMe && ps.pv.on) await supabase.rpc("record_profile_view", { p_id: id });
-
-  const [links, posts, listingRows, countRow, otherRows, mutualRow, detailRows, followerRow, followRow, recRows, askedRows, myRecRows, activeRow] = await Promise.all([
+  // Speed: every read below (and recording the visit) happens at the same time
+  const [links, posts, listingRows, countRow, otherRows, mutualRow, detailRows, followerRow, followRow, recRows, askedRows, myRecRows, activeRow, sectionRow, candRow] = await Promise.all([
     getLinks(),
     tab === "posts" ? fetchPosts(supabase, userId, { authorId: id, page }) : Promise.resolve([]),
     supabase.from("companies").select("slug, name, category, logo_url").eq("owner_id", id).order("created_at").limit(4),
@@ -118,9 +116,12 @@ export default async function MemberPage({
     isMe && userId ? supabase.from("recommendation_requests").select("requester_id, requester:profiles!recommendation_requests_requester_id_fkey(full_name)").eq("asked_id", userId) : null,
     userId && !isMe ? supabase.from("recommendation_requests").select("requester_id").eq("requester_id", userId).eq("asked_id", id).maybeSingle() : null,
     supabase.rpc("profile_last_active", { p_id: id }),
+    // the Details section: every profile field the team set up, with what this viewer may see (the database decides)
+    tab === "about" ? supabase.rpc("profile_details_section", { p_member: id }) : null,
+    userId && !isMe ? supabase.rpc("intro_candidates", { p_target: id }) : null,
+    // visiting someone else's profile counts as a view (the database skips private browsers and blocked pairs)
+    userId && !isMe && ps.pv.on ? supabase.rpc("record_profile_view", { p_id: id }) : null,
   ]);
-  // the Details section: every profile field the team set up, with what this viewer may see (the database decides)
-  const sectionRow = tab === "about" ? await supabase.rpc("profile_details_section", { p_member: id }) : null;
   const cells = (sectionRow?.data ?? null) as Record<string, DetailCell> | null;
   const details = ((detailRows.data ?? [])[0] ?? null) as (Details & { user_id: string }) | null;
   const followers = typeof followerRow.data === "number" ? followerRow.data : null;
@@ -131,7 +132,7 @@ export default async function MemberPage({
   const requests = ((askedRows?.data ?? []) as unknown as { requester_id: string; requester: { full_name: string } | null }[]);
   const myRec = recs.find((r) => r.author_id === userId);
   const candidates: Candidate[] =
-    userId && !isMe ? (((await supabase.rpc("intro_candidates", { p_target: id })).data ?? []) as Candidate[]) : [];
+    ((candRow?.data ?? []) as Candidate[]);
   const link = links.get(id) ?? "none";
   const listings = (listingRows.data ?? []) as Listing[];
   const connections = typeof countRow.data === "number" ? countRow.data : null;

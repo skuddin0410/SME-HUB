@@ -3,10 +3,29 @@ import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
 import { KEEP_COOKIE, withKeep } from "./keep";
 
+/**
+ * Speed: the session only needs refreshing when its access token is close to expiring. A fresh token (or no session
+ * at all) skips the call to Supabase here, so a page change does not wait on it. This is not a sign-in check: every
+ * page still verifies the session itself (getViewer), so skipping here never lets anyone in.
+ */
+function needsRefresh(request: NextRequest) {
+  const parts = request.cookies.getAll().filter((c) => /^sb-.+-auth-token(\.\d+)?$/.test(c.name));
+  if (!parts.length) return false;
+  try {
+    const raw = parts.sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true })).map((c) => c.value).join("");
+    const json = raw.startsWith("base64-") ? atob(raw.slice(7).replace(/-/g, "+").replace(/_/g, "/")) : decodeURIComponent(raw);
+    const exp = Number((JSON.parse(json) as { expires_at?: number }).expires_at);
+    return !exp || exp - Date.now() / 1000 < 120;
+  } catch {
+    return true;
+  }
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
+  if (!needsRefresh(request)) return supabaseResponse;
 
   // If the env vars are not set, skip proxy check. You can remove this
   // once you setup the project.

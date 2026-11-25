@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { TrendingTags } from "@/components/zip/hashtags";
 import Link from "next/link";
 import { FundingCard } from "@/components/grants/funding-card";
@@ -81,15 +82,15 @@ function ZipArticles() {
 export async function ZipRightRail() {
   const { supabase, userId, profile } = await getViewer();
   if (!userId || !profile) return <ZipJoinCard />;
-  const [connections, ev, groups, mine, rsv, quest] = await Promise.all([
+  const [connections, ev, groups, mine, rsv, quest, ready] = await Promise.all([
     supabase.rpc("connection_count", { member: userId }),
     supabase.from("hub_events").select("id, title, when_label").eq("status", "published").order("position").limit(2),
     supabase.from("groups").select("id, slug, name, is_private, group_members(count)").eq("status", "active").order("created_at", { ascending: false }).limit(4),
     supabase.from("group_members").select("group_id").eq("user_id", userId),
     supabase.from("event_rsvps").select("event_id").eq("user_id", userId),
     supabase.from("posts").select("id, body, kind, author:profiles!posts_author_id_fkey(full_name)").eq("kind", "question").order("created_at", { ascending: false }).limit(12),
+    getMyReady(),
   ]);
-  const ready = await getMyReady();
   const nConn = (connections.data as number | null) ?? 0;
   const event = (ev.data ?? [])[1] ?? (ev.data ?? [])[0];
   const rsvped = ((rsv.data ?? []) as { event_id: string }[]).some((r) => r.event_id === event?.id);
@@ -98,7 +99,7 @@ export async function ZipRightRail() {
   const questions = ((quest.data ?? []) as unknown as { id: string; body: string; author: { full_name: string | null } | null }[]).slice(0, 3);
   return (
     <>
-      <DeadlineCard where="top" />
+      <Suspense fallback={null}><DeadlineCard where="top" /></Suspense>
       <div className="card pcard">
         <div className="pban" />
         <div className="pbody">
@@ -160,7 +161,7 @@ export async function ZipRightRail() {
         )}
       </div>
 
-      <TrendingTags />
+      <Suspense fallback={null}><TrendingTags /></Suspense>
 
       {event && (
         <div className="card">
@@ -193,8 +194,8 @@ export async function ZipRightRail() {
           <div className="stack"><strong>Friday</strong><span className="muted small">Member wins (Member of the Day every day)</span></div>
         </div>
       </div>
-      <DeadlineCard where="bottom" />
-      <FundingCard />
+      <Suspense fallback={null}><DeadlineCard where="bottom" /></Suspense>
+      <Suspense fallback={null}><FundingCard /></Suspense>
     </>
   );
 }

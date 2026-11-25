@@ -30,8 +30,14 @@ const MOTD_PICKS = [];
 const port = Number(process.env.MOCK_SUPABASE_PORT || 54398);
 
 const MODSET = { types: { post: { on: true, auto: true, hide: 3 }, comment: { on: true, auto: true, hide: 3 }, photo: { on: true, auto: true, hide: 2 }, group: { on: true, auto: false, hide: 5 }, blog: { on: true, auto: true, hide: 3 }, blogc: { on: true, auto: true, hide: 3 } }, member_report: true, blocking: true, sus_blocks: { on: true, n: 5 }, sus_reports: { on: true, n: 10 }, email_on: true, email_subject: "[SME Hub] {{user.name}} was suspended", email_body: "Review in Moderation." };
+// MOCK_DELAY_MS: pretend each database call takes this long (to measure how a page waits on the database)
+let DELAY = Number(process.env.MOCK_DELAY_MS || 0);
+let DELAY_PATH = ""; // when set, only addresses containing it are slowed (so other tests running at the same time are not)
 http
-  .createServer((req, res) => {
+  .createServer(function (req, res) {
+    if (req.url.startsWith("/__delay")) { const q = new URL(req.url, "http://x").searchParams; DELAY = Number(q.get("ms") || 0); DELAY_PATH = q.get("path") || ""; return res.end("{}"); }
+    if (DELAY && !req.__delayed && req.method !== "OPTIONS" && (!DELAY_PATH || req.url.includes(DELAY_PATH))) { req.__delayed = 1; return setTimeout(() => this.emit("request", req, res), DELAY); }
+    if (process.env.MOCK_TRACE) { const t0 = Date.now(); res.on("finish", () => console.log(`TRACE ${t0} ${req.method} ${req.url.slice(0, 120)}`)); }
     const url = new URL(req.url, "http://localhost");
     res.setHeader("access-control-allow-origin", "*");
     res.setHeader("access-control-allow-headers", String(req.headers["access-control-request-headers"] || "*")); // "*" leaves out Authorization

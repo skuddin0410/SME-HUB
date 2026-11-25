@@ -23,6 +23,9 @@ const OLD_RESOURCES: [string, string][] = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Speed: a page opened in the last 30 seconds is shown again at once from the browser's memory (fresh data is
+  // fetched after any change a member makes), and pages that are prefetched keep their loading shape for 5 minutes.
+  experimental: { staleTimes: { dynamic: 30, static: 300 } },
   // Update 4: the sample course videos, captions and worksheet are served by /api/course-media after an access check
   outputFileTracingIncludes: { "/api/course-media": ["./content/course-media/**"] },
   async redirects() {

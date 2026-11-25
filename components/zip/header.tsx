@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { usePendingPath } from "@/components/nav-pending";
 import { useEffect, useRef, useState } from "react";
 import { Ic } from "@/components/zip/ic";
 import { CommandPalette, PALETTE_EVENT, type NavNote } from "@/components/site-nav";
@@ -87,7 +88,10 @@ export function ZipHeader({
   messages?: number;
   notes?: NavNote[];
 }) {
-  const pathname = usePathname();
+  // Speed: while a page is opening, its tab lights up straight away
+  const pending = usePendingPath();
+  const current = usePathname();
+  const pathname = pending ?? current;
   const [open, setOpen] = useState<null | "about" | "explore" | "team" | "notes" | "me">(null);
   const [palette, setPalette] = useState(false);
   const [unreadNow, setUnreadNow] = useState(unread);

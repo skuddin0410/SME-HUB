@@ -104,34 +104,47 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
   if (!viewer.userId) redirect("/");
   const saved = params.saved === "1" && !!viewer.userId;
   const compose = params.compose && params.compose in KINDS ? (params.compose as Kind) : undefined;
-  const fs = await getHubSettings("feed");
-  const tr = await getTagRules();
+  // Speed: everything below depends only on who is signed in, so it is asked for at the same time, not one after another
+  const [fs, tr] = await Promise.all([getHubSettings("feed"), getTagRules()]);
   const scopes = SCOPES.filter((x) => !x.key || (x.key === "tags" ? tr.on && tr.follow : (fs.filters as Record<string, boolean>)[x.key] !== false));
   const scope = viewer.userId && scopes.some((x) => x.key && x.key === params.scope) ? params.scope : undefined;
-  const mayPost = !!viewer.userId && (await canStartPost(viewer.supabase, viewer.userId));
   const before = parseCursor(params.before);
-  const followed = scope === "tags" ? await getMyTags(viewer.supabase, viewer.userId) : [];
-  const aliases = followed.flatMap((t) => aliasesOf(t, tr.merge));
-  const fetchedAll = scope === "tags" && !aliases.length ? [] : await fetchPosts(viewer.supabase, viewer.userId, {
-    page,
-    before,
-    kind,
-    savedBy: saved ? viewer.userId! : undefined,
-    mine: scope === "mine",
-    reactedBy: scope === "reacted" ? viewer.userId! : undefined,
-    groupsOnly: scope === "groups",
-    connectionsOnly: scope === "conn",
-    followingOnly: scope === "follow",
-    relevant: !!fs.relevant && !scope && !saved && !kind,
-    tags: scope === "tags" ? aliases : undefined,
-    limit: FEED.pageSize,
+  const followedP = scope === "tags" ? getMyTags(viewer.supabase, viewer.userId) : Promise.resolve([] as string[]);
+  const postsP = followedP.then((followed) => {
+    const aliases = followed.flatMap((t) => aliasesOf(t, tr.merge));
+    return scope === "tags" && !aliases.length ? [] : fetchPosts(viewer.supabase, viewer.userId, {
+      page,
+      before,
+      kind,
+      savedBy: saved ? viewer.userId! : undefined,
+      mine: scope === "mine",
+      reactedBy: scope === "reacted" ? viewer.userId! : undefined,
+      groupsOnly: scope === "groups",
+      connectionsOnly: scope === "conn",
+      followingOnly: scope === "follow",
+      relevant: !!fs.relevant && !scope && !saved && !kind,
+      tags: scope === "tags" ? aliases : undefined,
+      limit: FEED.pageSize,
+    });
   });
+  const readyP = getMyReady().then(async (mine) => {
+    const notReady = !!mine && mine.count < 5;
+    const miss = notReady && mine ? missLine(mine.items, await getSignals(), { city: mine.city }) : null;
+    const week = viewer.profile && !notReady ? await firstWeekSteps(viewer) : null;
+    return { notReady, miss, week };
+  });
+  const [mayPost, followed, fetchedAll, { notReady, miss, week }, groups, businesses, rules, tagIndex] = await Promise.all([
+    canStartPost(viewer.supabase, viewer.userId),
+    followedP,
+    postsP,
+    readyP,
+    myGroups(viewer),
+    getPostingBusinesses(viewer.userId),
+    getComposerRules(),
+    tr.on && tr.auto ? getTagIndex(viewer.supabase) : Promise.resolve([]),
+  ]);
   const fetched = scope === "tags" ? fetchedAll.filter((p) => extractTags(p.body, tr).some((t) => followed.includes(t))) : fetchedAll;
   const posts = latest || saved || before || scope ? fetched : topSignal(fetched);
-  const mine = viewer.userId ? await getMyReady() : null;
-  const notReady = !!mine && mine.count < 5;
-  const miss = notReady ? missLine(mine.items, await getSignals(), { city: mine.city }) : null;
-  const week = viewer.userId && viewer.profile && !notReady ? await firstWeekSteps(viewer) : null;
   const keep = { kind, scope, sort: latest ? "latest" : undefined, saved: saved ? "1" : undefined };
   const last = fetched[fetched.length - 1];
   const older = fetched.length === FEED.pageSize && last ? `${last.created_at}_${last.id}` : null;
@@ -145,11 +158,11 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
         <PostBox
           me={viewer.profile}
           initialKind={compose}
-          groups={await myGroups(viewer)}
-          businesses={await getPostingBusinesses(viewer.userId)}
-          rules={await getComposerRules()}
+          groups={groups}
+          businesses={businesses}
+          rules={rules}
           tagRules={tr.on ? { per: tr.per, min: tr.min, max: tr.max, blocked: tr.blocked, removed: tr.removed, merge: tr.merge } : null}
-          tagHints={tr.on && tr.auto ? (await getTagIndex(viewer.supabase)).slice(0, 60).map((t) => ({ tag: t.tag, uses: t.uses })) : undefined}
+          tagHints={tr.on && tr.auto ? tagIndex.slice(0, 60).map((t) => ({ tag: t.tag, uses: t.uses })) : undefined}
           initialText={params.tag && /^[a-z0-9_à-ſ]{2,40}$/i.test(params.tag) ? `#${params.tag.toLowerCase()} ` : undefined}
           free={!viewer.isStaff && !["plus", "advisor"].includes(String((viewer.profile as { plan?: string }).plan))}
           staff={viewer.isStaff}

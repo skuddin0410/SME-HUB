@@ -1,0 +1,18 @@
+# Speed: calls the site every 5 minutes so AWS Amplify's server stays awake and the first click is not slow.
+# Uses the SITE_URL repository secret (the same as the email jobs). Until it is set, the job skips quietly.
+name: Keep warm
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Wake the server
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          if [ -z "$SITE_URL" ]; then echo "Not set up yet"; exit 0; fi
+          for p in /api/ping /feed /network; do curl -fsS -o /dev/null -w "$p %{http_code} %{time_total}s\n" "$SITE_URL$p" || true; done

@@ -62,3 +62,12 @@ export function SkProfile() {
     </div>
   );
 }
+
+/** A side column: two or three cards, shown while the column's own data loads (the page itself does not wait for it). */
+export function SkRail({ cards = 2 }: { cards?: number }) {
+  return (
+    <div className="stack sk" style={{ gap: 16 }} aria-hidden="true">
+      {Array.from({ length: cards }, (_, i) => <div className="card skcard sk" key={i}><Sk w="50%" h={16} /><Sk /><Sk w="80%" /><Sk w={96} h={30} style={{ borderRadius: 10 }} /></div>)}
+    </div>
+  );
+}
