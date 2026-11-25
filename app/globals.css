@@ -279,12 +279,11 @@
 .dark img { filter: brightness(0.92); }
 .dark .no-dim img, .dark img.no-dim { filter: none; }
 
-/* Messaging pop-up: sits in the right rail column (same right edge and width as the rail cards),
-   so it lines up with the page at every screen size instead of floating over the cards. */
-.msg-dock { right: 1rem; width: 20rem; }
-@media (min-width: 64rem) {
-  .msg-dock {
-    right: max(2rem, calc((100vw - 96rem) / 2 + 2rem));
-    width: clamp(14rem, calc((min(100vw, 96rem) - 4rem - 13.75rem) / 4 + 2.5rem), 24rem);
-  }
-}
+/* Messaging pop-up: a compact bar tucked into the bottom-right corner (as on LinkedIn). */
+.msg-dock { right: 1rem; width: 18rem; }
+@media (min-width: 64rem) { .msg-dock { right: 1.25rem; width: 18rem; } }
+
+
+/* One content width for every page: the same as the navbar (1360px wide, 32px side padding; 12px on phones). */
+.hubw { width: 100%; max-width: 1360px; margin-left: auto; margin-right: auto; padding-left: 32px; padding-right: 32px; }
+@media (max-width: 700px) { .hubw { padding-left: 12px; padding-right: 12px; } }

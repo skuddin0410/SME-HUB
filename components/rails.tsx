@@ -248,7 +248,7 @@ export function SocialCard() {
 /** Profile-style pages: a wide main column and one right column. */
 export function TwoCol({ children, aside }: { children: React.ReactNode; aside: React.ReactNode }) {
   return (
-    <div className="max-w-[96rem] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+    <div className="hubw py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
       <main className="lg:col-span-9 flex min-w-0 flex-col gap-4">{children}</main>
       <aside className="lg:col-span-3 hidden space-y-4 lg:block">{aside}</aside>
     </div>

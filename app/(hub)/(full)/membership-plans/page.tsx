@@ -59,7 +59,7 @@ export default async function PlansPage({ searchParams }: { searchParams: Promis
   const cell = (v: string | 0 | 1) => (v === 1 ? <span className="font-extrabold text-green-700" role="img" aria-label="Included">✓</span> : v === 0 ? <span className="text-zinc-400" role="img" aria-label="Not included">—</span> : v);
 
   return (
-    <div className="mx-auto w-full max-w-[76rem] flex-1 px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+    <div className="hubw flex-1 pb-16 pt-8">
       <div className="flex flex-col items-center gap-2.5 pb-6 pt-4 text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.1em] text-muted-foreground">Membership</p>
         <h1 className="max-w-[20ch] font-display text-[clamp(1.75rem,4vw,2.75rem)] font-extrabold leading-[1.08] tracking-tight">Join free. Upgrade when it pays for itself.</h1>
