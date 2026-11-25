@@ -93,4 +93,6 @@ export const LOADERS: Record<string, () => Promise<{ html: string; text: string 
   "approve-email-change": () => import("./approve-email-change"),
   "member-of-the-day": () => import("./member-of-the-day"),
   "deadline-reminder": () => import("./deadline-reminder"),
+  "contact-copy": () => import("./contact-copy"),
+  "contact-inbox": () => import("./contact-inbox"),
 };

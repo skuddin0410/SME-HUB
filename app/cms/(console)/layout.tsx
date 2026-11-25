@@ -87,7 +87,7 @@ export default async function CmsLayout({ children }: { children: React.ReactNod
       <aside className="flex flex-col gap-5 border-b border-zinc-200 bg-white p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r">
         <Link href="/cms" className="flex items-center gap-2 px-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/smb-hub-logo.png" alt="SME Hub" width={874} height={224} className="h-7 w-auto" />
+          <img src="/brand/sme-hub-logo-no-tagline.png" alt="SME Hub" width={941} height={241} className="h-7 w-auto" />
           <span className="rounded-md bg-zinc-900 px-1.5 py-0.5 text-[0.6875rem] font-bold uppercase tracking-wider text-white">CMS</span>
         </Link>
         <CmsNav groups={groups} />

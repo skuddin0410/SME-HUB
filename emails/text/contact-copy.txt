@@ -1,0 +1,16 @@
+We got your message
+
+THANKS, YOUR MESSAGE IS ON ITS WAY
+Hi {{first_name}}, we got your message about {{ct_topic}}.
+A real person on our Mississauga team answers every message, usually within one business day. We’ll reply to this email address.
+
+[YOUR MESSAGE]
+{{ct_message}}
+
+Quick answers in Help: {{help_url}}
+Go to SME Hub: {{hub_url}}
+
+--
+You’re getting this because you sent a message from the SME Hub contact page. It’s a one-time copy; we won’t add you to any list.
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

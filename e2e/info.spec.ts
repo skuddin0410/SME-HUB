@@ -21,7 +21,16 @@ test("contact form asks for a message and sends it", async ({ page }) => {
   await page.getByLabel("Your email").fill("pat@example.com");
   await page.getByLabel("Your message").fill("Can I list two locations?");
   await page.getByRole("button", { name: "Send message" }).click();
-  await expect(page.getByRole("status")).toContainText("Thanks");
+  await page.getByLabel("What is it about?").selectOption("listing");
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.locator(".xctok")).toContainText("Thanks, your message is on its way");
+});
+
+test("contact page lists who to contact for each topic (Update 24)", async ({ page }) => {
+  await page.goto("/contact", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "We’re here to help", level: 1 })).toBeVisible();
+  await expect(page.getByRole("list").getByText("Advertising, sponsorship and partnerships")).toBeVisible();
+  await expect(page.getByRole("link", { name: "info@canadiansme.ca" }).first()).toBeVisible();
 });
 
 test("privacy policy and terms render in the policy frame", async ({ page }) => {
@@ -32,8 +41,10 @@ test("privacy policy and terms render in the policy frame", async ({ page }) => 
   await expect(page.getByRole("heading", { name: "Terms and conditions", level: 1 })).toBeVisible();
 });
 
-test("magazine page shows the latest issue reader", async ({ page }) => {
+test("how SME Hub works replaces the magazine page (Update 23)", async ({ page }) => {
   await page.goto("/magazine", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "CanadianSME Small Business Magazine", level: 1 })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Small Business Podcast" }).first()).toBeVisible();
+  await expect(page).toHaveURL(/\/how-sme-hub-works$/);
+  await expect(page.getByRole("heading", { name: "How SME Hub works", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Up and running in four steps" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Contact us/ }).last()).toHaveAttribute("href", "/contact");
 });

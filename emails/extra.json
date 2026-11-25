@@ -63,5 +63,48 @@
   "lists": [],
   "list_fields": [],
   "size_kb": 9.5
+ },
+ {
+  "id": "contact-copy",
+  "category": "Contact",
+  "name": "Contact message copy",
+  "trigger": "Right after someone sends a message from the Contact us page (Update 24)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "We got your message",
+  "preheader": "We answer every message, usually within one business day.",
+  "type": "Account (always sent)",
+  "preview_subject": "We got your message",
+  "preview_preheader": "We answer every message, usually within one business day.",
+  "variables": [
+   "ct_message",
+   "ct_topic",
+   "first_name"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "contact-inbox",
+  "category": "Contact",
+  "name": "New contact message (to the topic's inbox)",
+  "trigger": "When someone sends a message from the Contact us page (Update 24); goes to support@smehub.ca or info@canadiansme.ca by topic",
+  "sender": "SME Hub Community Team <community@smehub.ca>",
+  "subject": "New contact message: {{ct_topic}}",
+  "preheader": "{{ct_name}} wrote from the contact page.",
+  "type": "Hub team alert (internal)",
+  "preview_subject": "New contact message: {{ct_topic}}",
+  "preview_preheader": "{{ct_name}} wrote from the contact page.",
+  "variables": [
+   "admin_url",
+   "ct_business",
+   "ct_email",
+   "ct_message",
+   "ct_name",
+   "ct_topic"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
  }
 ]

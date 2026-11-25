@@ -1,0 +1,15 @@
+New contact message: {{ct_topic}}
+
+NEW MESSAGE: {{ct_topic}}
+From {{ct_name}} ({{ct_email}}){{ct_business}}.
+Reply to this email to answer them directly. A copy is also saved in the Hub database.
+
+[THEIR MESSAGE]
+{{ct_message}}
+
+Reply by email: mailto:{{ct_email}}
+Open the Hub admin: {{admin_url}}
+
+--
+You’re getting this because this inbox handles contact page messages for this topic. Internal: not sent to members.
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -69,6 +69,16 @@ test("the member directory filters by place and shows the chosen member beside t
   await expect(page.getByLabel("Availability")).toBeVisible();
 });
 
+test("the member map groups members by city and picks a member from a pin (Update 25)", async ({ page }) => {
+  await page.goto("/members", { waitUntil: "domcontentloaded" });
+  const map = page.locator(".mpmap");
+  await expect(map.locator(".mpkey")).toContainText("8 members in 7 cities");
+  const pin = map.getByRole("button", { name: /Luc Bouchard/ });
+  await pin.click();
+  await expect(pin).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("link", { name: "View profile" })).toBeVisible();
+});
+
 test("the member directory switches between cards and a list", async ({ page }) => {
   await page.goto("/network", { waitUntil: "domcontentloaded" });
   // a click made before the page is ready can be lost on a busy machine, so try again until it takes

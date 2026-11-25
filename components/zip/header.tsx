@@ -142,9 +142,9 @@ export function ZipHeader({
         <div className="lgroup">
           <Link className="logo" href={me ? "/feed" : "/"} aria-label="SME Hub home">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="on-light" src="/brand/zip-logo.webp" alt="SME Hub" width={125} height={32} />
+            <img className="on-light" src="/brand/sme-hub-logo-no-tagline.png" alt="SME Hub" width={164} height={42} />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="on-dark" src="/brand/smb-hub-logo-on-dark.png" alt="SME Hub" width={125} height={32} />
+            <img className="on-dark" src="/brand/sme-hub-logo-header-dark.png" alt="SME Hub" width={164} height={42} />
           </Link>
           <button type="button" className="spill" onClick={() => setPalette(true)} aria-label="Search SME Hub">
             <Ic n="search" />

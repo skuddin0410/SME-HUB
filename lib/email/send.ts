@@ -7,6 +7,8 @@ export type SendInput = Rendered & {
   to: string;
   /** Same key within 24 hours = the provider sends it once, even if we call twice. */
   idempotencyKey?: string;
+  /** Overrides the usual reply address for this one message. */
+  replyTo?: string;
 };
 
 export type SendResult = { id: string } | { skipped: true };
@@ -44,7 +46,8 @@ export async function sendEmail(input: SendInput, fetchImpl: typeof fetch = fetc
     subject: input.subject,
     html: input.html,
     text: input.text,
-    ...(replyTo() ? { reply_to: replyTo() } : {}),
+    // a message can name its own reply address (the contact inbox replies straight to the sender)
+    ...(input.replyTo ? { reply_to: input.replyTo } : replyTo() ? { reply_to: replyTo() } : {}),
   });
   const headers: Record<string, string> = {
     Authorization: `Bearer ${key}`,

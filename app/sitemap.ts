@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     supabase.rpc("sale_browse"),
   ]);
 
-  const fixed = ["/feed", "/members", "/businesses", "/groups", "/about", "/membership-plans", "/help", "/contact", "/magazine", "/courses", "/for-sale", "/guides", "/resources"];
+  const fixed = ["/feed", "/members", "/businesses", "/groups", "/about", "/membership-plans", "/help", "/contact", "/how-sme-hub-works", "/courses", "/for-sale", "/guides", "/resources"];
   const stories = Object.values(SECTIONS).flatMap((s) => [s.path, ...s.items.map((i) => `${s.path}/${i.slug}`)]);
   const reference = [...GUIDES.map((g) => `/guides/${g.slug}`), ...RESOURCE_PAGES.map((r) => `/resources/${r.slug}`), ...POLICIES.map((p) => `/policies/${p.slug}`)];
 

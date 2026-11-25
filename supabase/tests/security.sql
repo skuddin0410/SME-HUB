@@ -1588,3 +1588,12 @@ select t.expect_denied('visitors cannot change the list', $$insert into industri
 select t.expect('anyone can sign up for the weekly briefing', briefing_subscribe('owner@example.ca'));
 select t.expect_denied('only the team reads the sign-ups', $$select * from briefing_signups$$);
 reset role;
+
+-- ===== Contact us (Update 24) =====
+reset role; set request.jwt.claim.sub = ''; set role anon;
+insert into contact_messages (name, email, message, business, topic) values ('Pat', 'pat@example.ca', 'Hello there', 'Pat Co', 'listing');
+select t.expect_denied('a contact topic must be one of the list', $$insert into contact_messages (name, email, message, topic) values ('Pat', 'pat2@example.ca', 'Hi', 'spam')$$);
+insert into contact_messages (name, email, message) select 'Pat', 'flood@example.ca', 'Hi' from generate_series(1, 5);
+select t.expect_denied('one address can send at most 5 messages an hour', $$insert into contact_messages (name, email, message) values ('Pat', 'flood@example.ca', 'Hi')$$);
+select t.expect_denied('visitors cannot read contact messages', $$select * from contact_messages$$);
+reset role;

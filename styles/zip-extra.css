@@ -29,6 +29,7 @@ button.spill{font:inherit;color:#A1A1AA}
 .dark .zip .tag.badge{background:#B42318}
 .zip .logo img.on-dark{display:none}.dark .zip .logo img.on-light{display:none}.dark .zip .logo img.on-dark{display:block}
 .zip footer.big img.on-dark{display:none}.dark .zip footer.big img.on-light{display:none}.dark .zip footer.big img.on-dark{display:block}
+.zip footer.big img.lgfull.on-dark{display:none}.dark .zip footer.big img.lgfull.on-light{display:none}.dark .zip footer.big img.lgfull.on-dark{display:block}
 .dark .zip .btn.line{color:var(--link);border-color:var(--link)}
 .dark .zip .bzopen.open{color:#4ADE80}.dark .zip .bzopen.closed{color:#F87171}
 .dark .zip .act.blue{color:var(--link)}

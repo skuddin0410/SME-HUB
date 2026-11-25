@@ -24,7 +24,7 @@ export function Hero({
   return (
     <section className="relative overflow-hidden rounded-3xl border border-[#E5E5E8] bg-white p-6 sm:p-8 shadow-card">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/smb-hub-mark.png" alt="" aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 w-48 opacity-[0.06] select-none" />
+      <img src="/brand/sme-hub-icon.png" alt="" aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 w-48 opacity-[0.06] select-none" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-600 via-red-500 to-blue-600" />
       {back && (
         <Link href={back.href} className="mb-4 inline-flex items-center gap-1 text-xs font-semibold text-zinc-500 hover:text-zinc-900">

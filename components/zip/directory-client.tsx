@@ -12,7 +12,7 @@ import { Ic } from "@/components/zip/ic";
 import { useReady } from "@/components/ready/provider";
 import { ZipAv } from "@/components/zip/bits";
 import { TYPES } from "@/lib/zip/types";
-import { LAND, MAP_LABELS, NFLD, outline, placeOf, placePins } from "@/lib/zip/geo";
+import { MemberMap } from "@/components/zip/member-map";
 
 export type DirMember = {
   id: string;
@@ -44,7 +44,7 @@ export function DirectoryBody({ members: all, signedIn, links, following, form, 
   const [view, setView] = useState<"grid" | "list">(rules?.dview === "list" ? "list" : "grid");
   const [selId, setSelId] = useState<string | null>(null);
   const sel = members.find((m) => m.id === selId) ?? members[0] ?? null;
-  const pins = placePins(members.flatMap((m) => { const at = placeOf(m.city); return at ? [{ id: m.id, at }] : []; }));
+  const province = useSearchParams().get("province") ?? "";
 
   return (
     <div className="dirwrap">
@@ -105,27 +105,10 @@ export function DirectoryBody({ members: all, signedIn, links, following, form, 
         )}
       </section>
 
-      <aside className="dirmap" aria-label="Member map">
-        <div className="mapbox">
-          <svg className="land" viewBox="0 0 700 300" aria-hidden="true">
-            <path d={outline(LAND) + outline(NFLD)} className="landfill" strokeWidth={1} strokeLinejoin="round" />
-            {MAP_LABELS.map(([t, lng, lat]) => {
-              const c = [Math.round((lng + 141) * 7.8 * 10) / 10 + 4, Math.round((66 - lat) * 12.2 * 10) / 10];
-              return <text key={t} x={c[0]} y={c[1]} fontSize={9} fontWeight={600} textAnchor="middle" fill="var(--maplab)">{t}</text>;
-            })}
-          </svg>
-          {members.map((m) => {
-            const at = pins.get(m.id);
-            if (!at) return null;
-            return (
-              <button key={m.id} type="button" className="pin" aria-pressed={sel?.id === m.id} aria-label={`${m.name}, ${m.city}`} onClick={() => setSelId(m.id)} style={{ left: `${at.left}%`, top: `${at.top}%` }}>
-                <ZipAv name={m.name} src={m.avatar} size="s" />
-              </button>
-            );
-          })}
-          <span className="maphint">Simplified map of Canada</span>
-        </div>
-        {sel ? <Pop m={sel} signedIn={signedIn} link={links[sel.id] ?? "none"} following={following.includes(sel.id)} key={sel.id} /> : <div className="pop"><span className="muted small">Choose a member from the list or the map.</span></div>}
+      <aside className="dirmap mpmap" aria-label="Member map">
+        {/* Update 25: the real map of Canada */}
+        <MemberMap members={members} sel={sel} onPick={setSelId} province={province} />
+        {sel ? <Pop m={sel} signedIn={signedIn} link={links[sel.id] ?? "none"} following={following.includes(sel.id)} key={sel.id} /> : <div className="pop"><span className="muted small">Choose a member from the list or tap a pin on the map.</span></div>}
       </aside>
     </div>
   );

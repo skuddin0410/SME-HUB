@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: { default: `${SITE_NAME}: Canada's small business network`, template: `%s | ${SITE_NAME}` },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  openGraph: { siteName: SITE_NAME, type: "website", locale: "en_CA", images: [{ url: "/smb-hub-logo.png" }] },
+  openGraph: { siteName: SITE_NAME, type: "website", locale: "en_CA", images: [{ url: "/brand/sme-hub-logo-full.png" }] },
   // closed to search engines until the real domain is set (see lib/seo.ts)
   robots: INDEXABLE ? { index: true, follow: true } : { index: false, follow: false },
 };

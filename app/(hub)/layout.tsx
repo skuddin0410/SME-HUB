@@ -17,6 +17,7 @@ import "@/styles/province.css";
 import "@/styles/tools.css";
 import "@/styles/grants.css";
 import "@/styles/province-extra.css";
+import "@/styles/u16-25.css";
 import { HideOn } from "@/components/hide-on";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 import { ReadyProvider } from "@/components/ready/provider";
@@ -30,7 +31,9 @@ const FOOTER_LINKS = [
   ["Members", "/members"],
   ["Groups", "/groups"],
   ["Membership plans", "/membership-plans"],
+  ["How SME Hub works", "/how-sme-hub-works"],
   ["Help", "/help"],
+  ["Contact us", "/contact"],
   ["Community guidelines", "/policies/community-guidelines"],
   ["Discrimination policy", "/policies/discrimination-policy"],
   ["Terms and conditions", "/policies/terms"],
@@ -163,9 +166,9 @@ export default async function HubShell({ children }: { children: React.ReactNode
           <div className="wrap">
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="on-light" src="/brand/zip-logo.webp" alt="SME Hub" width={117} height={30} />
+              <img className="on-light lgfull" src="/brand/sme-hub-logo-full.png" alt="SME HUB, Canada’s Small Business Network." width={234} height={60} />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="on-dark" src="/brand/smb-hub-logo-on-dark.png" alt="SME Hub" width={117} height={30} />
+              <img className="on-dark lgfull" src="/brand/sme-hub-logo-full-on-dark.png" alt="SME HUB, Canada’s Small Business Network." width={234} height={60} />
               <span>A place for small business owners and entrepreneurs to connect and trade experience, tools and advice, from financing to expansion.</span>
             </div>
             <div>

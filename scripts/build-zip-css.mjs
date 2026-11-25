@@ -50,3 +50,6 @@ build("design/zip-grants.css", "styles/grants.css");
 build("design/zip-about.css", "styles/about.css");
 build("design/zip-categories.css", "styles/categories.css");
 build("design/zip-resources.css", "styles/resources.css");
+// Updates 16 to 25: the styles added to the zip preview (logo sizes, post glow, category pills and buttons, dark logo,
+// How SME Hub works, Contact us, member map), scoped the same way
+build("design/zip-u16-25.css", "styles/u16-25.css");

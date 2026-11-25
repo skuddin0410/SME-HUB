@@ -21,11 +21,11 @@ export async function memberEmail(id: string): Promise<{ email: string; name: st
 }
 
 /** Sends one course email. Never throws: a failed email must not undo an enrolment, a grade or a purchase. */
-export async function courseMail(id: string, to: { email: string; name?: string | null } | null, vars: Record<string, unknown>, key?: string) {
+export async function courseMail(id: string, to: { email: string; name?: string | null } | null, vars: Record<string, unknown>, key?: string, replyTo?: string) {
   if (!to?.email) return;
   try {
     const msg = await renderEmail(id, { ...commonVars(siteUrl(), to.name), ...vars });
-    await sendEmail({ to: to.email, idempotencyKey: key, ...msg });
+    await sendEmail({ to: to.email, idempotencyKey: key, replyTo, ...msg });
   } catch (e) {
     console.error(`course email ${id}:`, (e as Error).message);
   }

@@ -8,7 +8,7 @@ export function AuthFrame({ right, children }: { right?: React.ReactNode; childr
       <header className="top">
         <Link href="/auth/login" aria-label="SME Hub home">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/sme-hub-logo.png" srcSet="/brand/sme-hub-logo.png 2x, /brand/sme-hub-logo@3x.png 3x" alt="SME Hub" width={176} height={46} />
+          <img src="/brand/sme-hub-logo-full.png" alt="SME HUB, Canada’s Small Business Network." width={180} height={46} />
         </Link>
         {right ? <div className="r">{right}</div> : null}
       </header>

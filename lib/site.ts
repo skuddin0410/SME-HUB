@@ -5,7 +5,7 @@ export type NavItem = { label: string; href: string };
 
 export const ABOUT_MENU: NavItem[] = [
   { label: "About us", href: "/about" },
-  { label: "CanadianSME Magazine", href: "/magazine" },
+  { label: "How SME Hub works", href: "/how-sme-hub-works" },
   { label: "Business guides", href: "/guides" },
   { label: "Contact", href: "/contact" },
 ];

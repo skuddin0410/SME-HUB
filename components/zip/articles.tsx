@@ -110,7 +110,7 @@ export async function ZipStoryIndex({ section, q = "", cat = "" }: { section: Se
             <h2 style={{ fontSize: 18 }}>Get every edition of CanadianSME Magazine</h2>
             <p>A new issue each month, free to read online.</p>
           </div>
-          <Link className="btn light" href="/magazine">Subscribe now</Link>
+          <a className="btn light" href="https://canadiansme.ca/" target="_blank" rel="noopener">Subscribe now</a>
         </div>
       </div>
     </div>

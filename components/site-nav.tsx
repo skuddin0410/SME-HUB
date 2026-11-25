@@ -40,7 +40,7 @@ export function Logo({ href = "/feed", onDark = false }: { onDark?: boolean; hre
     <Link href={href} aria-label="SME Hub home" className="flex items-center shrink-0 group">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={onDark ? "/brand/smb-hub-logo-on-dark.png" : "/brand/smb-hub-logo.png"}
+        src={onDark ? "/brand/sme-hub-logo-header-dark.png" : "/brand/sme-hub-logo-no-tagline.png"}
         alt="SME Hub"
         width={874}
         height={224}
@@ -48,10 +48,10 @@ export function Logo({ href = "/feed", onDark = false }: { onDark?: boolean; hre
       />
       {!onDark && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src="/brand/smb-hub-logo-on-dark.png" alt="SME Hub" width={874} height={224} className="hidden dark:sm:block h-8 w-auto no-dim" />
+        <img src="/brand/sme-hub-logo-header-dark.png" alt="SME Hub" width={941} height={241} className="hidden dark:sm:block h-8 w-auto no-dim" />
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/smb-hub-mark.png" alt="SME Hub" width={226} height={224} className="sm:hidden h-8 w-8" />
+      <img src="/brand/sme-hub-icon.png" alt="SME Hub" width={243} height={241} className="sm:hidden h-8 w-8" />
     </Link>
   );
 }

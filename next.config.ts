@@ -47,6 +47,9 @@ const nextConfig: NextConfig = {
         ["/register", "/auth/sign-up"],
       ].map(([source, destination]) => ({ source, destination, permanent: true })),
       // Update 7: the Help Centre moved inside the site, with one address per topic and per article
+      // Update 23: the CanadianSME Magazine page is replaced by How SME Hub works
+      { source: "/magazine", destination: "/how-sme-hub-works", permanent: true },
+      { source: "/hubguide", destination: "/how-sme-hub-works", permanent: true },
       { source: "/help/a/:id", destination: "/help/:id", permanent: true },
       { source: "/help/c/:id", destination: "/help/:id", permanent: true },
       { source: "/help/search", destination: "/help", permanent: true },
