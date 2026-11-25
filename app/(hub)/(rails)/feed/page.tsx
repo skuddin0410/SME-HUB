@@ -34,7 +34,7 @@ const FILTERS: { key: string; label: string }[] = [
 ];
 
 
-type Params = { tag?: string; page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string };
+type Params = { tag?: string; page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string; text?: string };
 
 // the "Show:" choices, worded as in the design (Update 9)
 const SCOPES: { key: string; label: string }[] = [
@@ -168,7 +168,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           rules={rules}
           tagRules={tr.on ? { per: tr.per, min: tr.min, max: tr.max, blocked: tr.blocked, removed: tr.removed, merge: tr.merge } : null}
           tagHints={tr.on && tr.auto ? tagIndex.slice(0, 60).map((t) => ({ tag: t.tag, uses: t.uses })) : undefined}
-          initialText={params.tag && /^[a-z0-9_à-ſ]{2,40}$/i.test(params.tag) ? `#${params.tag.toLowerCase()} ` : undefined}
+          initialText={params.tag && /^[a-z0-9_à-ſ]{2,40}$/i.test(params.tag) ? `#${params.tag.toLowerCase()} ` : params.text ? String(params.text).slice(0, 500) : undefined}
           free={!viewer.isStaff && !["plus", "advisor"].includes(String((viewer.profile as { plan?: string }).plan))}
           staff={viewer.isStaff}
         />

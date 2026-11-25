@@ -15,7 +15,7 @@ import { MemberOfTheDay } from "@/components/zip/motd";
 import { DeadlineCard } from "@/components/tools/deadline-card";
 
 /** Pages that are built in a later phase: not prefetched, so the browser is not left waiting on them. */
-const LATER = ["/matches", "/ask"];
+const LATER = ["/matches"];
 const ART_SCENES = ["laptop", "nodes", "solar", "bars", "law", "ship"];
 
 /** Left rail: the member's shortcuts, Member of the Day (Update 11), then the newest articles. */

@@ -97,3 +97,20 @@ export function handleStories(req, res, url, { member, staff, sub }) {
   if (p === "/rest/v1/rpc/story_highlight_save" || p === "/rest/v1/rpc/story_highlight_add" || p === "/rest/v1/rpc/story_highlight_delete") return send(id(91));
   return false;
 }
+
+// Ask the Hub: this month's allowance and answers built from the sample posts
+let ASK_USED = 0;
+export function handleAsk(req, res, url, { member }) {
+  const p = url.pathname;
+  const send = (x) => { res.end(JSON.stringify(x)); return true; };
+  if (p === "/__reset_ask") { ASK_USED = 0; res.end("{}"); return true; }
+  if (!member) return false;
+  if (p === "/rest/v1/rpc/hub_ai_left") return send({ used: ASK_USED, limit: 10 });
+  if (p === "/rest/v1/rpc/hub_ai_take") { if (ASK_USED >= 10) return send(false); ASK_USED++; return send(true); }
+  if (p === "/rest/v1/rpc/hub_ai_save") return send("00000000-0000-4000-8000-0000000a5001");
+  if (p === "/rest/v1/posts" && (url.searchParams.get("fts") || "").startsWith("fts(english).")) {
+    return send([{ id: "00000000-0000-4000-8000-0000000a5101", title: null, body: "How did you price your first wholesale order?", author: { id: PRIYA.id, full_name: "Priya Raman", avatar_url: null, headline: "Founder, Maple Bakery" }, comments: [{ body: "Start from your cost per unit, then add 30 to 40 percent. Buyers expect case pricing.", author: { id: ISA.id, full_name: "Isabelle Tremblay", avatar_url: null, headline: "Owner, Studio Tremblay" } }] }]);
+  }
+  if (p === "/rest/v1/rpc/search_profiles") return send([{ id: LUC.id, full_name: "Luc Bouchard", avatar_url: null, headline: "Pricing and wholesale for makers" }]);
+  return false;
+}

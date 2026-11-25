@@ -1693,3 +1693,18 @@ select t.expect('pavilion: an edit sends the listing back to review', (select st
 set role anon; set request.jwt.claim.sub = '';
 select t.expect('pavilion: visitors see no pending listings', (select count(*) = 0 from pavilion_listings));
 reset role;
+
+-- ===== Ask the Hub (0061) =====
+reset role; set role authenticated; set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect('ask: a free member starts with 10 questions', (select (hub_ai_left() ->> 'limit')::int = 10 and (hub_ai_left() ->> 'used')::int = 0));
+select count(*) from generate_series(1, 10) where hub_ai_take();
+select t.expect('ask: the 11th question in a month is refused', not hub_ai_take());
+select hub_ai_save('How do I price a new service?', 'Start from your costs.', '{}') is not null;
+select t.expect('ask: a member sees their own history', (select count(*) = 1 from ai_asks));
+select t.expect_denied('ask: members cannot reset their allowance', $$update hub_ai_use set asks = 0 where user_id = auth.uid()$$);
+select t.expect_denied('ask: members cannot write answers directly', $$insert into ai_asks (user_id, question) values (auth.uid(), 'Fake question')$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000003';
+select t.expect('ask: nobody else sees a member''s questions', (select count(*) = 0 from ai_asks));
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000004';
+select t.expect('ask: the team has no limit', (select hub_ai_left() ->> 'limit' is null) and hub_ai_take());
+reset role;

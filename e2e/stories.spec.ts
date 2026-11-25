@@ -146,3 +146,25 @@ test("a member asks for an introduction and exhibits a product for review", asyn
   await expect(page.locator(".toast")).toHaveText("Sent to the Hub team for review");
   await expect(page.getByText("Your listing · waiting for the Hub team")).toBeVisible();
 });
+
+// ===== Ask the Hub =====
+test("Ask the Hub answers from member posts and members who can help, and counts the allowance", async ({ page, context, baseURL, request }) => {
+  await request.get(`${MOCK}/__reset_ask`);
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto("/ask", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: /Ask the Hub/, level: 1 })).toBeVisible();
+  await expect(page.getByText("10 of 10 free questions left this month")).toBeVisible();
+  await page.getByLabel("Your question").fill("How should I price wholesale orders?");
+  await page.getByRole("button", { name: "Ask", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "How should I price wholesale orders?" })).toBeVisible();
+  await expect(page.getByText("What members have said")).toBeVisible();
+  await expect(page.getByText("Start from your cost per unit")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Luc Bouchard" })).toBeVisible();
+  await expect(page.getByText("9 of 10 free questions left this month")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Ask the community" })).toHaveAttribute("href", /\/feed\?compose=question&text=How/);
+});
+
+test("visitors are asked to join before asking", async ({ page }) => {
+  await page.goto("/ask", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Join free to ask the Hub’s AI assistant. Free members get 10 questions a month.")).toBeVisible();
+});
