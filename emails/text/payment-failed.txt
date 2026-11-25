@@ -7,7 +7,7 @@ Hi {{first_name}}, we tried to charge {{fail_amount}} to your {{card}} for SME H
 We’ll try again on {{retry_date}}. If it fails again, your account moves to the Free plan. You keep your profile, connections and posts.
 
 Update my card: {{update_card_url}}
-Common reasons: an expired card, a new card number, or your bank blocking an online payment. Questions? billing@smehub.ca
+Common reasons: an expired card, a new card number, or your bank blocking an online payment. Questions? support@smehub.ca
 
 --
 You’re getting this email because of a payment or plan change on your SME Hub account. Keep it for your records.

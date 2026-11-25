@@ -14,7 +14,7 @@ GST/HST number: {{gst_no}}
 
 Start the course: {{start_url}}
 Download PDF receipt: {{invoice_url}}
-Not what you expected? Email billing@smehub.ca within 14 days for a full refund if you’ve completed less than a quarter of the course.
+Not what you expected? Email support@smehub.ca within 14 days for a full refund if you’ve completed less than a quarter of the course.
 
 --
 You’re getting this email because of a payment or plan change on your SME Hub account. Keep it for your records.

@@ -8,13 +8,13 @@ import { EmailError, sendEmail } from "@/lib/email/send";
 describe("senders", () => {
   afterEach(() => vi.unstubAllEnvs());
   it("uses smehub.ca by default", () => {
-    expect(senderAddress("security")).toBe("security@smehub.ca");
-    expect(fromHeader("hello")).toBe("SME Hub <hello@smehub.ca>");
-    expect(fromHeader("community")).toBe("SME Hub Community Team <community@smehub.ca>");
+    expect(senderAddress("security")).toBe("support@smehub.ca");
+    expect(fromHeader("hello")).toBe("SME Hub <support@smehub.ca>");
+    expect(fromHeader("community")).toBe("SME Hub Community Team <support@smehub.ca>");
   });
   it("can switch domain", () => {
     vi.stubEnv("EMAIL_DOMAIN", "Staging.SMEHub.ca");
-    expect(senderAddress("billing")).toBe("billing@staging.smehub.ca");
+    expect(senderAddress("billing")).toBe("support@staging.smehub.ca");
   });
   it("sends replies to support@", () => {
     expect(replyTo()).toBe("support@smehub.ca");
@@ -88,14 +88,14 @@ describe("sendEmail", () => {
     expect(init.headers.Authorization).toBe("Bearer re_test");
     expect(init.headers["Idempotency-Key"]).toBe("welcome-1");
     const body = JSON.parse(init.body);
-    expect(body.from).toBe("SME Hub <hello@smehub.ca>");
+    expect(body.from).toBe("SME Hub <support@smehub.ca>");
     expect(body.reply_to).toBe("support@smehub.ca");
     expect(body.to).toEqual(["ana@example.com"]);
   });
   it("security emails send from security@", async () => {
     const f = vi.fn().mockResolvedValue(ok());
     await sendEmail(msg, f);
-    expect(JSON.parse(f.mock.calls[0][1].body).from).toBe("SME Hub Security <security@smehub.ca>");
+    expect(JSON.parse(f.mock.calls[0][1].body).from).toBe("SME Hub Security <support@smehub.ca>");
   });
   it("retries once on a provider error, then succeeds", async () => {
     const f = vi.fn().mockResolvedValueOnce(new Response("down", { status: 503 })).mockResolvedValueOnce(ok());

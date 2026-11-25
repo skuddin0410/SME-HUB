@@ -13,7 +13,7 @@ function hookError(status: number, message: string) {
 
 /**
  * Supabase Auth "Send Email" hook. Supabase calls this instead of sending its own emails,
- * so every account email uses our templates and goes out from security@ through Resend.
+ * so every account email uses our templates and goes out from support@ through Resend.
  * Only requests signed with SEND_EMAIL_HOOK_SECRET are accepted.
  */
 export async function POST(request: NextRequest) {

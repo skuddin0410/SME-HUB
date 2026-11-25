@@ -40,7 +40,7 @@ describe("POST /api/auth/send-email", () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({});
     const sent = JSON.parse(fetchMock.mock.calls[0][1].body);
-    expect(sent.from).toBe("SME Hub <hello@smehub.ca>");
+    expect(sent.from).toBe("SME Hub <support@smehub.ca>");
     expect(sent.html).toContain("https://smehub.ca/auth/confirm?token_hash=h1");
   });
   it("rejects an unsigned request and sends nothing", async () => {

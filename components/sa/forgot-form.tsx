@@ -52,7 +52,7 @@ export function ForgotForm() {
           </p>
           <div className="alert i" style={{ textAlign: "left" }}>
             <span>
-              <b>Don’t see it?</b>Check spam and promotions. The email comes from security@smehub.ca with the subject “Reset your SME Hub password”.
+              <b>Don’t see it?</b>Check spam and promotions. The email comes from support@smehub.ca with the subject “Reset your SME Hub password”.
             </span>
           </div>
           {note && <div className="alert w" role="status" style={{ textAlign: "left" }}><span>{note}</span></div>}

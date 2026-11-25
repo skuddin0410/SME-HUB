@@ -32,4 +32,4 @@ export async function courseMail(id: string, to: { email: string; name?: string 
 }
 
 /** The Hub team's inbox for team alerts (a server setting, with the hand-off's address as the default). */
-export const teamInbox = () => ({ email: process.env.HUB_TEAM_EMAIL || "community@smehub.ca", name: "Hub team" });
+export const teamInbox = () => ({ email: process.env.HUB_TEAM_EMAIL || "support@smehub.ca", name: "Hub team" });

@@ -27,11 +27,13 @@ export function emailDomain() {
   return (process.env.EMAIL_DOMAIN ?? "smehub.ca").trim().toLowerCase();
 }
 
-export function senderAddress(sender: Sender) {
-  return `${sender}@${emailDomain()}`;
+/** Every email goes out from the one inbox the team reads, support@ (each sender keeps its own name). */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- kept so callers still say which sender
+export function senderAddress(_sender: Sender) {
+  return `support@${emailDomain()}`;
 }
 
-/** "SME Hub Security <security@smehub.ca>" */
+/** "SME Hub Security <support@smehub.ca>" */
 export function fromHeader(sender: Sender) {
   return `${DISPLAY[sender]} <${senderAddress(sender)}>`;
 }
