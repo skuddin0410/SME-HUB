@@ -1730,3 +1730,54 @@ set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
 select t.expect('matches: the other member is told about the booking', exists (select 1 from notifications where type = 'match_booked' and user_id = auth.uid()));
 select t.expect('matches: and cannot read my answers', (select count(*) = 0 from match_prefs));
 reset role;
+
+-- ===== Advisor booking (0063) =====
+reset role;
+insert into advisor_profiles (user_id, field, years) values ('5707e000-0000-0000-0000-000000000002', 'Finance', 8) on conflict (user_id) do update set active = true;
+set role authenticated; set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+insert into advisor_slots (advisor_id, starts_at) values (auth.uid(), now() + interval '2 days'), (auth.uid(), now() + interval '3 days');
+select t.expect_denied('advisors: a time must be at least an hour away', $$insert into advisor_slots (advisor_id, starts_at) values (auth.uid(), now() + interval '10 minutes')$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000003';
+select t.expect_denied('advisors: a member cannot add times for an advisor', $$insert into advisor_slots (advisor_id, starts_at) values ('5707e000-0000-0000-0000-000000000002', now() + interval '5 days')$$);
+select t.expect('advisors: members see the open times', (select count(*) = 2 from advisor_slots));
+select advisor_book((select id from advisor_slots order by starts_at limit 1), 'Can you look at my cash flow?');
+select t.expect_denied('advisors: one upcoming call per advisor', $$select advisor_book((select id from advisor_slots where booked_by is null limit 1), '')$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000001';
+select t.expect('advisors: a booked time is gone for everyone else', (select count(*) = 1 from advisor_slots));
+select t.expect_denied('advisors: no review without a call', $$insert into advisor_reviews (advisor_id, member_id, rating, body) values ('5707e000-0000-0000-0000-000000000002', auth.uid(), 5, 'Great advice, thank you so much.')$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect('advisors: the advisor sees the booking and the question, and is told', (select question = 'Can you look at my cash flow?' from advisor_slots where booked_by is not null)
+  and exists (select 1 from notifications where type = 'advisor_booking' and user_id = auth.uid()));
+select advisor_cancel((select id from advisor_slots where booked_by is not null));
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000003';
+select t.expect('advisors: a cancelled call opens the time again and tells the member', (select count(*) = 2 from advisor_slots) and exists (select 1 from notifications where type = 'advisor_cancel' and user_id = auth.uid()));
+insert into advisor_seats (advisor_id, member_id) values ('5707e000-0000-0000-0000-000000000002', auth.uid());
+select t.expect('advisors: a member saves a seat', (select count(*) = 1 from advisor_seats));
+reset role;
+
+-- ===== Moderation log, restore, business reports (0064) =====
+reset role; set role authenticated; set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000004';
+update profiles set status = 'suspended' where id = '5707e000-0000-0000-0000-000000000003';
+select t.expect('log: a suspension is logged with who did it', (select actor_id = auth.uid() and action = 'suspend' from mod_log where kind = 'member' order by at desc limit 1));
+select mod_restore((select id from mod_log where kind = 'member' and action = 'suspend' order by at desc limit 1));
+select t.expect('log: restore lifts the suspension and is logged', (select status = 'active' from profiles where id = '5707e000-0000-0000-0000-000000000003')
+  and exists (select 1 from mod_log where kind = 'member' and action = 'unsuspend'));
+select t.expect_denied('log: a restored action cannot be restored twice', $$select mod_restore((select id from mod_log where kind = 'member' and action = 'suspend' order by at desc limit 1))$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000003';
+select t.expect_denied('log: members cannot restore', $$select mod_restore((select id from mod_log limit 1))$$);
+select t.expect('log: members cannot read the log', (select count(*) = 0 from mod_log));
+reset role; set request.jwt.claim.sub = '';
+insert into companies (owner_id, slug, name, status) values ('5707e000-0000-0000-0000-000000000001', 'report-me', 'Report Me Inc', 'published');
+update companies set status = 'published' where slug = 'report-me';
+select id as rep_co from companies where slug = 'report-me' \gset
+set role authenticated; set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000003';
+insert into business_reports (company_id, reporter_id, reason) values (:'rep_co', auth.uid(), 'Fake or impersonating');
+select t.expect_denied('reports: a reason must be from the list', format($$insert into business_reports (company_id, reporter_id, reason) values (%L, auth.uid(), 'I do not like them')$$, :'rep_co'));
+select t.expect('reports: members cannot read reports', (select count(*) = 0 from business_reports));
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000004';
+select biz_report_act((select id from business_reports limit 1), 'remove');
+select t.expect('reports: removing takes the page down, closes the report and is logged', (select status = 'deleted' from companies where slug = 'report-me')
+  and (select status = 'actioned' from business_reports limit 1) and exists (select 1 from mod_log where kind = 'business' and action = 'remove'));
+select mod_restore((select id from mod_log where kind = 'business' and action = 'remove' limit 1));
+select t.expect('reports: the page can be restored from the log', (select status = 'published' from companies where slug = 'report-me'));
+reset role;

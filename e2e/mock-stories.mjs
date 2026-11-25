@@ -3,7 +3,6 @@
 // The files are the hand-off's own images ("sample/..." paths), which the app streams from content/story-media.
 import fs from "node:fs";
 
-const ME = "00000000-0000-4000-8000-000000000001";
 // the Made in Canada Pavilion's 13 sample exhibitors (data/09_made_in_canada_pavilion.json)
 const PAV = JSON.parse(fs.readFileSync(new URL("./pavilion-fixture.json", import.meta.url), "utf8"));
 const PAV_NEW = [];
@@ -138,5 +137,50 @@ export function handleMatches(req, res, url, { member }) {
   }
   if (p === "/rest/v1/rpc/match_book") { body(req).then((b) => { MM_BOOK.push({ other_id: b.p_other, action: "book", slot: b.p_slot, feedback: null }); res.end("null"); }); return true; }
   if (p === "/rest/v1/rpc/match_skip" || p === "/rest/v1/rpc/match_feedback") return send(null);
+  return false;
+}
+
+// Advisor booking, team screens, moderation log and business reports
+const ADVP = { user_id: PRIYA.id, field: "Food and retail", years: 11, helped: 64, rating: 4.9, reply: "Same day", langs: "English, Tamil", creds: ["Founder, Maple Bakery (11 years)", "Supplies 40+ cafes and grocers"], services: [{ name: "Wholesale readiness check", text: "Is your product, pricing and packaging ready for a grocer?" }, { name: "Pricing for retail", text: "Set a wholesale price that still leaves you a margin." }], session_title: "Landing your first wholesale account", session_at: new Date(Date.now() + 20 * 864e5).toISOString(), active: true };
+let ADV_SLOTS, ADV_LOG, CONTACT;
+export function resetTeam() {
+  const at = (d) => new Date(Date.now() + d * 864e5).toISOString();
+  ADV_SLOTS = [1, 2, 3].map((d) => ({ id: `00000000-0000-4000-8000-0000000ad00${d}`, advisor_id: PRIYA.id, starts_at: at(d + 1), minutes: 15, booked_by: null, question: "", booker: null }));
+  ADV_LOG = [{ id: "00000000-0000-4000-8000-0000000c0001", at: new Date().toISOString(), action: "hide", kind: "post", target_id: "00000000-0000-4000-8000-0000000000a1", label: "GROW YOUR BUSINESS FAST!!!", undone_at: null, actor: null, undoer: null }];
+  CONTACT = [{ id: "00000000-0000-4000-8000-0000000cc001", name: "Pat Morgan", email: "pat@example.ca", business: "Morgan Renovations", topic: "listing", message: "Can I list two locations?", created_at: new Date().toISOString(), handled_at: null, team_note: "", user_id: null }];
+}
+resetTeam();
+export function handleTeam(req, res, url, { staff, sub }) {
+  const p = url.pathname;
+  const q = url.searchParams;
+  const send = (x) => { res.end(JSON.stringify(x)); return true; };
+  const one = (row) => send(String(req.headers.accept).includes("vnd.pgrst.object") ? row : row ? [row] : []);
+  if (p === "/__reset_team") { resetTeam(); res.end("{}"); return true; }
+  if (p === "/rest/v1/advisor_profiles") {
+    const u = (q.get("user_id") || "").replace("eq.", "");
+    if (u) return one(u === PRIYA.id ? (q.get("select") === "user_id" ? { user_id: PRIYA.id } : ADVP) : null);
+    return send(staff ? [{ ...ADVP, profile: { full_name: "Priya Raman", avatar_url: null, headline: "Founder, Maple Bakery" } }] : []);
+  }
+  if (p === "/rest/v1/advisor_slots") {
+    const booked = q.get("booked_by");
+    if (booked === "is.null") return send(ADV_SLOTS.filter((s) => !s.booked_by));
+    if (booked?.startsWith("eq.")) return send(ADV_SLOTS.filter((s) => s.booked_by === booked.slice(3) && (q.get("starts_at") || "").startsWith("gt.")));
+    return send(ADV_SLOTS);
+  }
+  if (p === "/rest/v1/rpc/advisor_book") { body(req).then((b) => { const s = ADV_SLOTS.find((x) => x.id === b.p_slot); if (s) { s.booked_by = sub; s.question = b.p_question; s.booker = { id: sub, full_name: "Test Member" }; } res.end("null"); }); return true; }
+  if (p === "/rest/v1/rpc/advisor_cancel") { body(req).then((b) => { const s = ADV_SLOTS.find((x) => x.id === b.p_slot); if (s) { s.booked_by = null; s.booker = null; } res.end("null"); }); return true; }
+  if (p === "/rest/v1/advisor_reviews") return send([{ member_id: LUC.id, rating: 5, body: "Priya rewrote my sell sheet in one call. Two stores said yes the next week.", status: "published", member: { full_name: "Luc Bouchard", avatar_url: null, headline: "Director, Atelier Bouchard" }, advisor_id: PRIYA.id }]);
+  if (p === "/rest/v1/advisor_seats") { if (req.method === "POST") { res.statusCode = 201; return send([]); } return one(null); }
+  if (!staff) return false;
+  if (p === "/rest/v1/mod_log") return send(ADV_LOG);
+  if (p === "/rest/v1/rpc/mod_restore") { body(req).then((b) => { const l = ADV_LOG.find((x) => x.id === b.p_log); if (l) { l.undone_at = new Date().toISOString(); l.undoer = { full_name: "Team Lead" }; } res.end("null"); }); return true; }
+  if (p === "/rest/v1/contact_messages") {
+    if (req.method === "PATCH") { body(req).then((b) => { const id = (q.get("id") || "").replace("eq.", ""); const m = CONTACT.find((x) => x.id === id); if (m) Object.assign(m, b); res.end("[]"); }); return true; }
+    if (q.get("select") === "id") { res.setHeader("content-range", `0-0/${CONTACT.filter((m) => !m.handled_at).length}`); return send([]); }
+    const h = q.get("handled_at");
+    return send(CONTACT.filter((m) => h === "is.null" ? !m.handled_at : h === "not.is.null" ? !!m.handled_at : true));
+  }
+  if (p === "/rest/v1/business_reports") return send([{ id: "00000000-0000-4000-8000-0000000b7001", company_id: "00000000-0000-4000-8000-0000000000b9", review_author_id: null, reason: "Fake or impersonating", company: { name: "Maple Bakery Demo", slug: "maple-demo" } }]);
+  if (p === "/rest/v1/rpc/biz_report_act") return send(null);
   return false;
 }

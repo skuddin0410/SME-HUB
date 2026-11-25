@@ -25,7 +25,7 @@ test("the team sees reported content, flagged members and settings", async ({ pa
 });
 
 import AxeBuilder from "@axe-core/playwright";
-for (const tab of ["content", "members", "settings"]) {
+for (const tab of ["content", "stories", "members", "log", "settings"]) {
   for (const dark of [false, true]) {
     test(`moderation ${tab} ${dark ? "dark" : "light"} has no serious accessibility problems`, async ({ page, context, baseURL }) => {
       await context.addCookies([memberCookie(baseURL!, true)]);

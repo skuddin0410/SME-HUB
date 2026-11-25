@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ModStoriesSection } from "@/components/stories/sections";
+import { ModLog } from "@/components/zip/mod-log";
 import { timeAgo } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
@@ -19,7 +20,8 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
   const sp = await searchParams;
   const { supabase, gate } = await teamViewer("Moderation");
   if (gate) return gate;
-  const tab = ["content", "stories", "members", "settings"].includes(first(sp.tab)) ? first(sp.tab) : "content";
+  const tab = ["content", "stories", "members", "log", "settings"].includes(first(sp.tab)) ? first(sp.tab) : "content";
+  const lf = ["auto", "undoable"].includes(first(sp.lf)) ? first(sp.lf) : "";
   const cf = first(sp.cf);
   const mf = first(sp.mf);
 
@@ -65,7 +67,12 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
 
   const totalContent = postIds.length + crIds.length;
   const totalMembers = memIds.length;
-  const tabs: [string, string][] = [["content", `Reported content (${totalContent})`], ["stories", "Stories (0)"], ["members", `Flagged members (${totalMembers})`], ["settings", "Settings"]];
+  const [pendStories, repStories] = await Promise.all([
+    supabase.from("stories").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("reports").select("story_id").not("story_id", "is", null).eq("status", "open").limit(1000),
+  ]);
+  const storyCount = (pendStories.count ?? 0) + new Set(((repStories.data ?? []) as { story_id: string }[]).map((r) => r.story_id)).size;
+  const tabs: [string, string][] = [["content", `Reported content (${totalContent})`], ["stories", `Stories (${storyCount})`], ["members", `Flagged members (${totalMembers})`], ["log", "Log"], ["settings", "Settings"]];
   const s = settingsRes.data as { types: TypeSet; member_report: boolean; blocking: boolean; sus_blocks: { on: boolean; n: number }; sus_reports: { on: boolean; n: number }; email_on: boolean; email_subject: string; email_body: string } | null;
   const cats = (catsRes.data ?? []) as { id: string; name: string; description: string; show: string }[];
 
@@ -88,6 +95,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
       </nav>
 
       {tab === "stories" && <ModStoriesSection />}
+      {tab === "log" && <ModLog filter={lf} />}
 
       {tab === "content" && (
         <form action={moderate} className="stack" style={{ gap: 16 }}>

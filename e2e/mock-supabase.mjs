@@ -6,7 +6,7 @@ import http from "node:http";
 import fs from "node:fs";
 import { handleCourses } from "./mock-courses.mjs";
 import { handleForsale } from "./mock-forsale.mjs";
-import { handleAsk, handleMatches, handleStories } from "./mock-stories.mjs";
+import { handleAsk, handleMatches, handleStories, handleTeam } from "./mock-stories.mjs";
 
 const MEMBER = {
   id: "00000000-0000-4000-8000-000000000001",
@@ -141,6 +141,7 @@ http
     if (handleStories(req, res, url, { member, staff, sub })) return;
     if (handleAsk(req, res, url, { member })) return;
     if (handleMatches(req, res, url, { member })) return;
+    if (handleTeam(req, res, url, { staff, sub })) return;
     if (staff) {
       const STAFF = { ...MEMBER, id: sub, full_name: "Team Lead", role: "admin" };
       if (url.pathname === "/auth/v1/user") return res.end(JSON.stringify({ id: sub, aud: "authenticated", role: "authenticated", email: "team@example.test", app_metadata: {}, user_metadata: {}, created_at: MEMBER.created_at }));

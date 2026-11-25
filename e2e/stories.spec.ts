@@ -216,3 +216,96 @@ test("Home shows the Good morning card with people worth meeting once the member
   await expect(page.getByText(/people are worth meeting today/)).toBeVisible();
   await expect(page.getByRole("link", { name: "Draft a message" }).first()).toHaveAttribute("href", /\/messages\?with=/);
 });
+
+// ===== Advisor booking =====
+const PRIYA_URL = "/members/00000000-0000-4000-8000-000000000011";
+test("an advisor's profile shows the advisor sections and a member books a free call", async ({ page, context, baseURL, request }) => {
+  await request.get(`${MOCK}/__reset_team`);
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto(PRIYA_URL, { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: "Book a free call" })).toHaveAttribute("href", /#advbook$/);
+  await expect(page.getByRole("heading", { name: "SMB Advisor" })).toBeVisible();
+  await expect(page.getByText("years of experience")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "How Priya can help" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Next live session" })).toBeVisible();
+  await expect(page.getByText("Priya rewrote my sell sheet")).toBeVisible();
+  const book = page.locator("#advbook");
+  await book.locator(".slots .chip").first().click();
+  await book.getByLabel(/What would you like to talk about/).fill("Pricing for my first grocer.");
+  await book.getByRole("button", { name: /^Book / }).click();
+  await expect(page.getByText("Call booked.")).toBeVisible();
+  await expect(page.locator(".toast")).toHaveText("Call booked with Priya");
+});
+
+// ===== Team screens, moderation log, business reports =====
+test("the team manages advisor profiles and call times", async ({ page, context, baseURL, request }) => {
+  await request.get(`${MOCK}/__reset_team`);
+  await context.addCookies([memberCookie(baseURL!, true)]);
+  await page.goto("/team/advisors", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Advisor profiles", level: 1 })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Priya Raman" })).toBeVisible();
+  await expect(page.getByText("3 open · 0 booked")).toBeVisible();
+  await page.getByText("Edit advisor profile").click();
+  await expect(page.getByLabel("Field")).toHaveValue("Food and retail");
+});
+
+test("members see the team gate on advisor profiles and contact messages", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto("/team/contact", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "This page is for the Hub team" })).toBeVisible();
+  await page.goto("/team/advisors", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "This page is for the Hub team" })).toBeVisible();
+});
+
+test("the team reads contact messages and marks them handled", async ({ page, context, baseURL, request }) => {
+  await request.get(`${MOCK}/__reset_team`);
+  await context.addCookies([memberCookie(baseURL!, true)]);
+  await page.goto("/team/contact", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Contact messages", level: 1 })).toBeVisible();
+  await expect(page.getByText("Can I list two locations?")).toBeVisible();
+  await expect(page.locator(".tag", { hasText: "Business listings and the directory" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Reply by email" })).toHaveAttribute("href", /^mailto:pat@example\.ca\?subject=/);
+  await page.getByRole("button", { name: "Mark as handled" }).click();
+  await expect(page.locator(".toast")).toHaveText("Marked as handled");
+});
+
+test("the moderation log lists actions and restores one", async ({ page, context, baseURL, request }) => {
+  await request.get(`${MOCK}/__reset_team`);
+  await context.addCookies([memberCookie(baseURL!, true)]);
+  await page.goto("/moderation?tab=log", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Moderation log" })).toBeVisible();
+  await expect(page.getByText("Automatic", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Restore" }).click();
+  await expect(page.getByText("Restored", { exact: true }).first()).toBeVisible();
+});
+
+test("business reports reach the Reports queue in Business Profiles", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!, true)]);
+  await page.goto("/bizadmin", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Reported for: Fake or impersonating")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Remove page" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Keep it" })).toBeVisible();
+});
+
+test("a member reports a business review", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto("/businesses/maple-demo?tab=reviews", { waitUntil: "domcontentloaded" });
+  await page.locator(".bzrev").getByRole("button", { name: "Report" }).first().click();
+  const dlg = page.getByRole("dialog", { name: "Report this review" });
+  await dlg.getByRole("radio", { name: "Spam" }).click();
+  await dlg.getByRole("button", { name: "Send report" }).click();
+  await expect(page.locator(".toast")).toHaveText("Thanks. The Hub team will review it under our community guidelines.");
+});
+
+for (const path of ["/team/advisors", "/team/contact"]) {
+  for (const dark of [false, true]) {
+    test(`${path} has no serious accessibility problems (${dark ? "dark" : "light"})`, async ({ page, context, baseURL, request }) => {
+      await request.get(`${MOCK}/__reset_team`);
+      await context.addCookies([memberCookie(baseURL!, true)]);
+      await page.addInitScript((d) => { try { localStorage.setItem("smbhub.theme", d ? "dark" : "light"); } catch {} }, dark);
+      await page.goto(path, { waitUntil: "networkidle" });
+      const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+      expect(r.violations.filter((v) => ["serious", "critical"].includes(v.impact ?? "")).map((v) => `${v.id}: ${v.nodes[0]?.target?.join(" ")}`)).toEqual([]);
+    });
+  }
+}

@@ -6,6 +6,7 @@ import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { Scene } from "@/components/zip/scene";
 import { ShareBtn, ZipFollow, ZipStars } from "@/components/zip/biz-client";
+import { ReportBizButton } from "@/components/zip/biz-reports";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import { AUTHOR_FIELDS, fetchPosts, getViewer, type Author } from "@/lib/hub";
@@ -197,6 +198,7 @@ export default async function BusinessPage({ params, searchParams }: { params: P
               {published && acts.slice(1).map((a, i) => actEl(a, i + 1))}
               {published && <ShareBtn title={company.name} />}
               {canEdit && <Link href={`/businesses/mine/${slug}`} className="btn ghost sm"><Ic n="edit" s={14} />Manage</Link>}
+              {published && userId && !onTeam && !isStaff && <ReportBizButton companyId={company.id} label="Report this page" className="btn ghost sm" />}
             </div>
             <nav className="bztabs" aria-label="Business page sections">
               {TABS.map((t) => (

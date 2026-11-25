@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { timeAgo } from "@/lib/hub";
+import { BizReportRow, type BizReport } from "@/components/zip/biz-reports";
 import { TeamHead, TeamWrap, teamViewer } from "@/components/zip/team";
 import { SettingsForm } from "@/components/zip/settings-ui";
 import { BizCategoriesBody, BizSettingsBody } from "@/components/zip/settings-pages";
@@ -29,19 +30,37 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
   const sp = await searchParams;
   const tab = ["queues", "all", "cats", "settings"].includes(first(sp.tab)) ? first(sp.tab) : "queues";
   const settings = await getBusinessSettings();
-  const [pendRes, claimRes, revRes, allRes] = await Promise.all([
+  const [pendRes, claimRes, revRes, allRes, repRes] = await Promise.all([
     supabase.from("companies").select("id, slug, name, category, city, province, updated_at, owner:profiles!companies_owner_id_fkey(full_name)").eq("status", "pending").order("updated_at"),
     supabase.from("business_claims").select("id, evidence, created_at, company:companies!business_claims_company_id_fkey(name), claimant:profiles!business_claims_user_id_fkey(full_name)").eq("status", "pending").order("created_at"),
     supabase.from("company_reviews").select("company_id, author_id, rating, body, company:companies!company_reviews_company_id_fkey(name), author:profiles!company_reviews_author_id_fkey(full_name)").eq("status", "pending").order("created_at"),
     supabase.from("companies").select("id, slug, name, category, city, province, updated_at, status, owner:profiles!companies_owner_id_fkey(full_name)").neq("status", "deleted").order("name").limit(500),
+    supabase.from("business_reports").select("id, company_id, review_author_id, reason, company:companies!business_reports_company_id_fkey(name, slug)").eq("status", "open").order("created_at").limit(500),
   ]);
+  // one row per reported page or review, with every reason
+  const repMap = new Map<string, BizReport & { company_id: string; author_id: string | null }>();
+  for (const x of (repRes.data ?? []) as unknown as { id: string; company_id: string; review_author_id: string | null; reason: string; company: { name: string; slug: string } | null }[]) {
+    const k = `${x.company_id}:${x.review_author_id ?? ""}`;
+    const cur = repMap.get(k);
+    if (cur) { cur.count++; if (!cur.reasons.includes(x.reason)) cur.reasons.push(x.reason); }
+    else repMap.set(k, { id: x.id, company_id: x.company_id, author_id: x.review_author_id, company: x.company ?? { name: "Business", slug: "" }, review: null, reasons: [x.reason], count: 1 });
+  }
+  const repAuthors = [...repMap.values()].filter((r) => r.author_id);
+  if (repAuthors.length) {
+    const { data: rv } = await supabase.from("company_reviews").select("company_id, author_id, body, author:profiles!company_reviews_author_id_fkey(full_name)").in("author_id", repAuthors.map((r) => r.author_id!)).limit(500);
+    for (const r of repAuthors) {
+      const hit = ((rv ?? []) as unknown as { company_id: string; author_id: string; body: string; author: { full_name: string | null } | null }[]).find((x) => x.company_id === r.company_id && x.author_id === r.author_id);
+      r.review = { author: hit?.author?.full_name ?? "a member", body: hit?.body ?? "" };
+    }
+  }
+  const bizReports = [...repMap.values()];
   const pend = (pendRes.data ?? []) as unknown as P[];
   const claims = (claimRes.data ?? []) as unknown as C[];
   const revs = (revRes.data ?? []) as unknown as R[];
   const all = (allRes.data ?? []) as unknown as P[];
   const counts: Record<string, number> = {};
   for (const b of all) if (b.status === "published") counts[b.category] = (counts[b.category] ?? 0) + 1;
-  const open = pend.length + claims.length + revs.length;
+  const open = pend.length + claims.length + revs.length + bizReports.length;
   const tabs: [string, string][] = [["queues", `Queues (${open})`], ["all", "All businesses"], ["cats", "Categories"], ["settings", "Settings"]];
   const initial = { create: settings.create_mode, limit: String(settings.member_limit), pubApproval: settings.pub_approval, revApproval: settings.review_approval, criteria: settings.criteria, cats: settings.categories, tabs: settings.tabs };
 
@@ -82,7 +101,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                 <form action={decideReview.bind(null, r.company_id, r.author_id, true)}><button className="btn sm">Publish</button></form>
                 <form action={decideReview.bind(null, r.company_id, r.author_id, false)}><button className="btn sm ghost">Reject</button></form>
               </div></div>))}</Queue>
-          <Queue title="Reports" n={0}>{null}</Queue>
+          <Queue title="Reports" n={bizReports.length}>{bizReports.map((r) => <BizReportRow key={r.id} r={r} />)}</Queue>
         </div>
       )}
 

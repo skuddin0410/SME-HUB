@@ -37,7 +37,7 @@ const HUB_MENU: NavItem[] = [
 ];
 
 const TEAM_MENU: [string, NavItem[]][] = [
-  ["Community", [{ label: "Moderation", href: "/moderation" }, { label: "Automations", href: "/automations" }, { label: "Profile follow-up", href: "/profilefollow" }, { label: "Member of the Day", href: "/team/member-of-the-day" }]],
+  ["Community", [{ label: "Moderation", href: "/moderation" }, { label: "Automations", href: "/automations" }, { label: "Profile follow-up", href: "/profilefollow" }, { label: "Member of the Day", href: "/team/member-of-the-day" }, { label: "Advisor profiles", href: "/team/advisors" }, { label: "Contact messages", href: "/team/contact" }]],
   [
     "Settings",
     [

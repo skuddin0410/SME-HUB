@@ -1,5 +1,7 @@
 "use client";
 
+
+import { ReportBizButton } from "@/components/zip/biz-reports";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
@@ -217,6 +219,7 @@ export function Reviews({
             {(r.author.id === me?.id || isStaff) && (
               <button type="button" aria-label="Delete review" className="linkbtn small" onClick={() => remove(r.author.id)}>Delete</button>
             )}
+            {me && r.author.id !== me.id && r.status === "published" && <ReportBizButton companyId={companyId} reviewAuthorId={r.author.id} />}
           </div>
           {canReply && !r.reply && (
             replying === r.author.id ? (

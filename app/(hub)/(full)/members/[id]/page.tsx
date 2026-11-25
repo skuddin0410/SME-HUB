@@ -27,6 +27,7 @@ import { ReadyCard, SpotlightBanner } from "@/components/ready/card";
 import { AiProfileButton } from "@/components/ready/ai-button";
 import { Suspense } from "react";
 import { ProfileStoriesSection } from "@/components/stories/sections";
+import { AdvisorSections } from "@/components/advisors/sections";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -144,6 +145,8 @@ export default async function MemberPage({
   const mutual = typeof mutualRow?.data === "number" ? mutualRow.data : 0;
   const site = member.website && (member.website.startsWith("http") ? member.website : `https://${member.website}`);
   const first = member.full_name.split(" ")[0] || "this member";
+  // SMB Advisors get "Book a free call" in the header (handoff: profile header)
+  const isAdvisor = !isMe && !!(await supabase.from("advisor_profiles").select("user_id").eq("user_id", id).eq("active", true).maybeSingle()).data;
   const active = activeLabel((activeRow.data as string | null) ?? null);
   const type = TYPES[member.profile_type] ?? TYPES.owner;
   const planLabel = member.member_type === "owner" ? null : MEMBER_TYPES[member.member_type];
@@ -258,6 +261,7 @@ export default async function MemberPage({
                       </>
                     ) : (
                       <>
+                        {isAdvisor && <a href={`/members/${id}#advbook`} className="btn"><Ic n="cal" s={14} />Book a free call</a>}
                         {profileActions(ps).map((a, i) =>
                           a === "connect" ? <ConnectBtn key={a} otherId={id} initial={link} signedIn={!!userId} primary={i === 0} />
                           : a === "message" ? link === "connected" && <Link key={a} href={`/messages?with=${id}`} className="btn ghost"><Ic n="msg" s={14} />Message</Link>
@@ -380,6 +384,7 @@ export default async function MemberPage({
                 )}
 
                 {cells && <ProfileDetails fields={ps.fields as Field[]} cells={cells} me={isMe} path={`/members/${id}`} nets={ps.nets as Record<string, boolean>} />}
+                <Suspense fallback={null}><AdvisorSections memberId={member.id} name={member.full_name || "Member"} /></Suspense>
 
                 {listings.length > 0 && (
                   <div className="card psec">
