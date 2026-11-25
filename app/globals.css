@@ -300,3 +300,10 @@
 .pgcrumbs .crnote::before { content: ""; width: 3px; height: 3px; border-radius: 50%; background: currentColor; margin-right: 6px; }
 .dark .pgcrumbs li, .dark .pgcrumbs a, .dark .pgcrumbs li + li::before, .dark .pgcrumbs .crnote { color: #C9CDD6; }
 .dark .pgcrumbs [aria-current="page"] { color: #F4F4F5; }
+
+/* The page area always fills the window below the navbar (Nov 26). While a page or any part of it is loading, the
+   loading shape fills the screen and the footer stays out of sight below it, instead of jumping up under a short
+   skeleton and back down when the data arrives. On short pages the footer rests at the bottom of the window. */
+#main-content { min-height: calc(100dvh - 64px); }
+/* a loading shape inside a page that already has the content width keeps the same edges as the real page */
+.hubw .skroot .wrap { max-width: none; padding-left: 0; padding-right: 0; }
