@@ -1,7 +1,12 @@
 // Community Stories for the browser tests: the hand-off's sample stories (data/05_stories.json), served like Supabase
 // with the same audience rules, kept in memory so viewing, liking, reporting, deleting and highlights can be tested.
 // The files are the hand-off's own images ("sample/..." paths), which the app streams from content/story-media.
+import fs from "node:fs";
+
 const ME = "00000000-0000-4000-8000-000000000001";
+// the Made in Canada Pavilion's 13 sample exhibitors (data/09_made_in_canada_pavilion.json)
+const PAV = JSON.parse(fs.readFileSync(new URL("./pavilion-fixture.json", import.meta.url), "utf8"));
+const PAV_NEW = [];
 const PRIYA = { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", avatar_url: null };
 const ISA = { id: "00000000-0000-4000-8000-000000000012", full_name: "Isabelle Tremblay", avatar_url: null };
 const LUC = { id: "00000000-0000-4000-8000-000000000013", full_name: "Luc Bouchard", avatar_url: null };
@@ -38,6 +43,12 @@ export function handleStories(req, res, url, { member, staff, sub }) {
   const send = (x) => { res.end(JSON.stringify(x)); return true; };
   const one = (row) => send(String(req.headers.accept).includes("vnd.pgrst.object") ? row : row ? [row] : []);
   if (p === "/__reset_stories") { resetStories(); res.end("{}"); return true; }
+  if (p === "/rest/v1/pavilion_listings") {
+    if (req.method === "POST") { body(req).then((b) => { PAV_NEW.push({ ...b, id: `00000000-0000-4000-8000-0000006b${String(PAV_NEW.length).padStart(4, "0")}`, status: "pending", featured: false, owner: { full_name: "Test Member", avatar_url: null, headline: "" } }); res.statusCode = 201; res.end("[]"); }); return true; }
+    if (req.method === "PATCH") return send([]);
+    return send([...PAV_NEW.filter((x) => x.owner_id === me), ...PAV]);
+  }
+  if (p === "/rest/v1/pavilion_reports") { if (req.method === "POST") { res.statusCode = 201; return send([]); } return send([]); }
   if (p === "/rest/v1/stories" && req.method === "GET") {
     let rows = S.stories.filter((s) => canSee(s, me, staff));
     const a = q.get("author_id"); if (a) rows = rows.filter((s) => s.author_id === a.replace("eq.", ""));

@@ -104,7 +104,7 @@ function RightRail({ posts, groups }: { posts: Post[]; groups: Group[] }) {
           <span className="claim">New</span>
         </div>
         <p className="muted small">Canadian manufacturers, owner-run services and AI tools built here.</p>
-        <Link className="btn sm" href="/businesses" style={{ alignSelf: "flex-start" }}>
+        <Link className="btn sm" href="/pavilion" style={{ alignSelf: "flex-start" }}>
           Visit the pavilion
         </Link>
       </div>

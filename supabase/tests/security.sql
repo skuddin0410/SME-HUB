@@ -1668,3 +1668,28 @@ set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000001';
 select story_delete((select id from stories where caption = 'Members story'));
 select t.expect('stories: a deleted story leaves the highlight too', (select count(*) = 0 from story_highlight_items));
 reset role; delete from hub_settings where key = 'stories';
+
+-- ===== Made in Canada Pavilion (0060) =====
+reset role; set role authenticated; set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000001';
+select t.expect_denied('pavilion: a member cannot publish their own listing', $$insert into pavilion_listings (owner_id, name, section, what, claims, status) values (auth.uid(), 'Sneaky Co', 'make', 'Trying to skip the review step.', array['own'], 'published')$$);
+insert into pavilion_listings (owner_id, name, section, what, city, province, claims)
+  values (auth.uid(), 'Maple Tables', 'make', 'Solid-wood tables built to order in Montreal.', 'Montréal', 'QC', array['poc', 'own']);
+update pavilion_listings set featured = true where name = 'Maple Tables';
+select t.expect('pavilion: a new listing waits for review and is not featured', (select status = 'pending' and not featured from pavilion_listings where name = 'Maple Tables'));
+select t.expect_denied('pavilion: a claim must be one of the six labels', $$insert into pavilion_listings (owner_id, name, section, what, claims) values (auth.uid(), 'Fake Co', 'make', 'We make things in many places.', array['certified'])$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect('pavilion: other members cannot see a pending listing', (select count(*) = 0 from pavilion_listings));
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000004';
+update pavilion_listings set status = 'published' where name = 'Maple Tables';
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect('pavilion: once approved, members see it', (select count(*) = 1 from pavilion_listings));
+update pavilion_listings set featured = true;
+select t.expect('pavilion: members cannot feature someone else''s listing', (select not featured from pavilion_listings));
+insert into pavilion_reports (listing_id, reporter_id, claim) select id, auth.uid(), 'poc' from pavilion_listings;
+select t.expect_denied('pavilion: only the team reads label reports', $$select 1/count(*) from pavilion_reports$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000001';
+update pavilion_listings set what = 'Solid-wood tables and desks built to order in Montreal.' where name = 'Maple Tables';
+select t.expect('pavilion: an edit sends the listing back to review', (select status = 'pending' from pavilion_listings where name = 'Maple Tables'));
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('pavilion: visitors see no pending listings', (select count(*) = 0 from pavilion_listings));
+reset role;

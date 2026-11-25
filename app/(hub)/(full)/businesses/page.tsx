@@ -296,7 +296,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
                 <button type="submit" className="btn sm">Apply</button>
               </noscript>
             </LiveForm>
-            <Link className="card bdpav" href="/businesses" style={{ textDecoration: "none", color: "inherit" }}>
+            <Link className="card bdpav" href="/pavilion" style={{ textDecoration: "none", color: "inherit" }}>
               <span className="claim">New</span>
               <strong>Made in Canada Pavilion</strong>
               <span className="muted small">Canadian manufacturers, services and AI tools in one place.</span>

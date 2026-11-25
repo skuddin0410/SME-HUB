@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Ic } from "@/components/zip/ic";
 
-// [address, label, description, icon]. AI matchmaking, the Made in Canada Pavilion and Ask the Hub AI have no page
-// on the site yet, so for now they open the nearest page that does the same job.
+// [address, label, description, icon].
 type F = [string, string, string, string];
 const GROUPS: [string, string, string, F[]][] = [
   ["Meet and talk to owners", "users", "#2563EB", [
@@ -14,7 +13,7 @@ const GROUPS: [string, string, string, F[]][] = [
   ["Get found and grow", "store", "#16A34A", [
     ["/businesses", "Business Directory", "A free page for your business, searchable across Canada.", "store"],
     ["/categories", "All categories", "32 industries and 335 specialities, so customers find the right business.", "grid"],
-    ["/businesses", "Made in Canada Pavilion", "A showcase for products made by Canadian businesses.", "flag"],
+    ["/pavilion", "Made in Canada Pavilion", "A showcase for products made by Canadian businesses.", "flag"],
     ["/for-sale", "Business for sale", "Buy or sell a small business, with the seller’s name hidden if they like.", "tag"],
     ["/member-blogs", "Member blogs", "Write about what you know and reach other owners.", "edit"]]],
   ["Funding, tools and advice", "coin", "#C37D16", [

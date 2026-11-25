@@ -113,3 +113,36 @@ for (const dark of [false, true]) {
     expect(r.violations.filter((v) => ["serious", "critical"].includes(v.impact ?? ""))).toEqual([]);
   });
 }
+
+// ===== Made in Canada Pavilion =====
+test("the pavilion lists exhibitors with their Canadian claims and filters them", async ({ page }) => {
+  await page.goto("/pavilion", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Buy from, build with and back Canadian businesses", level: 1 })).toBeVisible();
+  await expect(page.getByText("13 exhibitors").first()).toBeVisible();
+  await page.getByRole("button", { name: "Software and AI tools (3)" }).click();
+  await expect(page.getByText("3 exhibitors")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Harbour Forecast" })).toBeVisible();
+  await page.getByRole("button", { name: "All exhibitors (13)" }).click();
+  await page.getByRole("group", { name: "Claim" }).getByRole("button", { name: "Product of Canada" }).click();
+  await expect(page.getByText("1 exhibitor", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Atelier Bouchard" }).click();
+  const dlg = page.getByRole("dialog", { name: "Atelier Bouchard" });
+  await expect(dlg.getByText("Canadian claims, declared by the seller")).toBeVisible();
+  await expect(dlg.getByRole("link", { name: "Ask for an introduction" })).toHaveAttribute("href", "/auth/sign-up");
+});
+
+test("a member asks for an introduction and exhibits a product for review", async ({ page, context, baseURL }) => {
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto("/pavilion", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: "Ask for an introduction" }).first()).toHaveAttribute("href", /\/messages\?with=.+&text=Hi%20/);
+  await page.getByRole("button", { name: "Exhibit your product free" }).first().click();
+  const dlg = page.getByRole("dialog", { name: "Exhibit in the Made in Canada Pavilion" });
+  await dlg.getByLabel("Product or business name").fill("Test Bakery");
+  await dlg.getByLabel("What you make or do, in one sentence").fill("Sourdough and pastries for cafes in Toronto.");
+  await dlg.getByRole("button", { name: "Send for review" }).click();
+  await expect(page.locator(".toast")).toHaveText("Please tick the box to confirm your claim");
+  await dlg.getByRole("checkbox").check();
+  await dlg.getByRole("button", { name: "Send for review" }).click();
+  await expect(page.locator(".toast")).toHaveText("Sent to the Hub team for review");
+  await expect(page.getByText("Your listing · waiting for the Hub team")).toBeVisible();
+});
