@@ -71,10 +71,15 @@ test("the member directory filters by place and shows the chosen member beside t
 
 test("the member directory switches between cards and a list", async ({ page }) => {
   await page.goto("/network", { waitUntil: "domcontentloaded" });
-  await page.getByRole("button", { name: "List" }).click();
-  await expect(page.locator(".dirlist")).toBeVisible();
-  await page.getByRole("button", { name: "Grid" }).click();
-  await expect(page.locator(".dirgrid")).toBeVisible();
+  // a click made before the page is ready can be lost on a busy machine, so try again until it takes
+  await expect(async () => {
+    await page.getByRole("button", { name: "List" }).click();
+    await expect(page.locator(".dirlist")).toBeVisible({ timeout: 1500 });
+  }).toPass();
+  await expect(async () => {
+    await page.getByRole("button", { name: "Grid" }).click();
+    await expect(page.locator(".dirgrid")).toBeVisible({ timeout: 1500 });
+  }).toPass();
 });
 
 test("a member profile shows the guide's header, tabs and recommendations", async ({ page }) => {

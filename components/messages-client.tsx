@@ -1,4 +1,5 @@
 "use client";
+import { useListMotion } from "@/components/zip/animated-list";
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -41,6 +42,8 @@ export function MessagingApp({
   startWith: string | null;
   prefill: string;
 }) {
+  const threadsRef = useListMotion<HTMLDivElement>();
+  const historyRef = useListMotion<HTMLDivElement>();
   const [messages, setMessages] = useState<Msg[]>(initialMessages);
   const [active, setActive] = useState<string | null>(startWith);
   const [filter, setFilter] = useState<Filter>("all");
@@ -133,6 +136,7 @@ export function MessagingApp({
       });
   };
 
+  // Motion phase 2: a moved conversation and a new message slide into place
   const pill = (key: Filter, label: string) => (
     <button type="button" className="chip" onClick={() => setFilter(key)} aria-pressed={filter === key}>
       {label}
@@ -141,7 +145,7 @@ export function MessagingApp({
 
   return (
     <div className="msgs">
-      <div className={cx("card threads", active && "hide-sm")} style={{ gap: 4 }}>
+      <div ref={threadsRef} className={cx("card threads", active && "hide-sm")} style={{ gap: 4 }}>
         <label className="sr" htmlFor="msq">Search messages</label>
         <input id="msq" className="field" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search messages" style={{ marginBottom: 6 }} />
         <div className="chips" role="group" aria-label="Show" style={{ marginBottom: 6 }}>
@@ -200,7 +204,7 @@ export function MessagingApp({
                 <span className="muted small">{other.headline || "SME Hub member"}</span>
               </div>
             </div>
-            <div className="stack" style={{ gap: 8, padding: "12px 0", borderTop: "1px solid var(--line)", maxHeight: 460, overflowY: "auto" }}>
+            <div ref={historyRef} className="stack" style={{ gap: 8, padding: "12px 0", borderTop: "1px solid var(--line)", maxHeight: 460, overflowY: "auto" }}>
               {history.map((m, i) => {
                 const prev = history[i - 1];
                 const newDay = !prev || new Date(prev.created_at).toDateString() !== new Date(m.created_at).toDateString();

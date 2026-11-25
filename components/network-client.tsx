@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedList, useListMotion } from "@/components/zip/animated-list";
 import { useInstant } from "@/lib/optimistic";
 
 import Link from "next/link";
@@ -160,9 +161,10 @@ export function Invitations({ people }: { people: Person[] }) {
   const [answered, setAnswered] = useState<Record<string, "connected" | "none">>({});
   const open = people.filter((p) => !answered[p.id]);
   const accepted = people.filter((p) => answered[p.id] === "connected");
+  const listRef = useListMotion<HTMLElement>();
 
   return (
-    <section className="panel">
+    <section ref={listRef} className="panel">
       <div className="flex items-center justify-between px-4 py-3">
         <h2 className="text-base font-semibold">{open.length ? `Invitations (${open.length})` : "No pending invitations"}</h2>
       </div>
@@ -209,11 +211,11 @@ export function Suggestions({ title, people, signedIn, visible = 8 }: { title: s
           </button>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+      <AnimatedList className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         {shown.map((p) => (
           <PersonCard key={p.id} person={p} link="none" signedIn={signedIn} onDismiss={() => setHidden((h) => new Set(h).add(p.id))} />
         ))}
-      </div>
+      </AnimatedList>
     </section>
   );
 }

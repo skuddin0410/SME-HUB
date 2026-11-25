@@ -67,6 +67,15 @@ http
       return;
     }
     if (url.pathname === "/__posts") return res.end(JSON.stringify(NEW_POSTS));
+    // Motion phase 2: two notifications for the member, so the list's movement can be tested
+    if (url.pathname === "/rest/v1/notifications" && req.method === "GET" && (url.searchParams.get("select") || "").includes("actor") && (url.searchParams.get("limit") || "") === "60") {
+      const actor = { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", avatar_url: null, member_type: "owner" };
+      const at = new Date(Date.now() - 3600_000).toISOString();
+      return res.end(JSON.stringify([
+        { id: "00000000-0000-4000-8000-0000000000f1", type: "like", post_id: null, href: "/feed", note: null, read_at: null, created_at: at, actor, post: null },
+        { id: "00000000-0000-4000-8000-0000000000f2", type: "connection_accepted", post_id: null, href: null, note: null, read_at: at, created_at: at, actor, post: null },
+      ]));
+    }
     // Update 15: Grant Finder programs (public)
     if (url.pathname === "/rest/v1/grant_programs" && (url.searchParams.get("select") || "").includes("by_org")) {
       const G = [

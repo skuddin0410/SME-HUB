@@ -1,4 +1,5 @@
 "use client";
+import { useListMotion } from "@/components/zip/animated-list";
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
@@ -47,6 +48,7 @@ export function CommentThread({
   const [editing, setEditing] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [busy, start] = useTransition();
+  const listRef = useListMotion<HTMLDivElement>();
 
   const { tops, replies } = useMemo(() => {
     const tops = (list ?? []).filter((c) => flat || !c.parent_id);
@@ -141,7 +143,7 @@ export function CommentThread({
 
   return (
     <div className="cthread space-y-3">
-      <div className="space-y-2">
+      <div ref={listRef} className="space-y-2">
         {list === null && (
           <>
             <div className="skeleton h-14 w-full !rounded-xl" />

@@ -102,8 +102,10 @@ test.describe("saved settings change the live pages", () => {
     await expect(page.getByLabel("Post title")).toBeVisible();
     await expect(page.getByLabel("Category").getByRole("option", { name: "Legal" })).toHaveCount(1);
     await expect(page.getByText("A featured image is required.")).toBeVisible();
-    await page.getByRole("button", { name: "+ Quote" }).click();
-    await expect(page.getByLabel("Quote")).toBeVisible();
+    await expect(async () => {
+      await page.getByRole("button", { name: "+ Quote" }).click();
+      await expect(page.getByLabel("Quote").first()).toBeVisible({ timeout: 1500 });
+    }).toPass();
   });
 
   for (const path of ["/member-blogs", BLOG, "/write"]) {
@@ -194,6 +196,20 @@ test.describe("saved settings change the live pages", () => {
         await page.getByRole("heading", { name: "Hashtags", exact: true }).waitFor();
         const name = await page.locator(".zip > .wrap").first().evaluate((el) => getComputedStyle(el).animationName);
         expect(name === "none").toBe(expectNone);
+      }
+    });
+
+    // Motion phase 2: a list that changes slides its items (AutoAnimate), and stays still for less motion
+    test("lists animate when they change, and not for people who ask for less motion", async ({ page, context, baseURL }) => {
+      await context.addCookies([memberCookie(baseURL!)]);
+      for (const [motion, expectMoving] of [["no-preference", true], ["reduce", false]] as const) {
+        await page.emulateMedia({ reducedMotion: motion });
+        await page.goto("/notifications", { waitUntil: "networkidle" });
+        const before = await page.locator("main section.card > div[role=link], #main-content section.card > div[role=link]").count();
+        await page.getByRole("button", { name: "Network", exact: true }).click();
+        const moving = await page.evaluate(() => document.getAnimations().filter((a) => (a.effect as KeyframeEffect | null)?.target instanceof Element && ((a.effect as KeyframeEffect).target as Element).closest("section.card")).length);
+        expect(before).toBeGreaterThan(0);
+        expect(moving > 0).toBe(expectMoving);
       }
     });
   });

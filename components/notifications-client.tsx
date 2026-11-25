@@ -1,4 +1,5 @@
 "use client";
+import { useListMotion } from "@/components/zip/animated-list";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -47,6 +48,7 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
   const router = useRouter();
   const [notes, setNotes] = useState(initial);
   const [tab, setTab] = useState<Tab>("all");
+  const listRef = useListMotion<HTMLElement>();
 
   const shown = notes.filter((n) => tab === "all" || (tab === "posts" ? n.type === "like" || n.type === "comment" : n.type.startsWith("connection")));
   const unread = notes.filter((n) => !n.read_at).length;
@@ -81,7 +83,7 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
         )}
       </div>
 
-      <section className="card" style={{ padding: 0, gap: 0 }}>
+      <section ref={listRef} className="card" style={{ padding: 0, gap: 0 }}>
         {shown.length === 0 && (
           <div style={{ padding: "40px 24px", textAlign: "center" }}>
             <p style={{ fontWeight: 600 }}>{tab === "all" ? "No notifications yet" : "Nothing here yet"}</p>

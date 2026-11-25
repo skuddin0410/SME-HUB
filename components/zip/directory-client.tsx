@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedList } from "@/components/zip/animated-list";
 
 import { displayName } from "@/lib/zip/profile-rules";
 import Link from "next/link";
@@ -65,7 +66,7 @@ export function DirectoryBody({ members: all, signedIn, links, following, form, 
             <Link href="/network" className="btn sm ghost" style={{ alignSelf: "flex-start" }}>Reset</Link>
           </div>
         ) : (
-          <div className={view === "list" ? "dirlist" : "dirgrid"}>
+          <AnimatedList className={view === "list" ? "dirlist" : "dirgrid"}>
             {members.map((m) => {
               const pressed = sel?.id === m.id;
               const meta = (
@@ -100,7 +101,7 @@ export function DirectoryBody({ members: all, signedIn, links, following, form, 
                 </button>
               );
             })}
-          </div>
+          </AnimatedList>
         )}
       </section>
 

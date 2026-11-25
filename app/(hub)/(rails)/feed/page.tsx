@@ -1,3 +1,4 @@
+import { AnimatedList } from "@/components/zip/animated-list";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FeedRefresh } from "@/components/feed-refresh";
@@ -203,11 +204,11 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           )}
         </Empty>
       )}
-      <div className="flex flex-col gap-4">
+      <AnimatedList className="flex flex-col gap-4">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} viewer={viewer} />
         ))}
-      </div>
+      </AnimatedList>
       {older && (
         <div className="flex justify-center">
           <Link href={href({ ...keep, before: older })} rel="next" className="btn ghost">
