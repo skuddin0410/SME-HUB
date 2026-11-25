@@ -3,6 +3,8 @@ import AxeBuilder from "@axe-core/playwright";
 import { memberCookie } from "./personas";
 
 const MOCK = "http://127.0.0.1:54398";
+// these tests share in-memory test data (stories, answers, bookings), so they run one after another
+test.describe.configure({ mode: "default" });
 test.beforeEach(async ({ request }) => { await request.get(`${MOCK}/__reset_stories`); });
 
 test("the feed shows the stories row: your story first, then members with stories you may see", async ({ page, context, baseURL }) => {
@@ -167,4 +169,50 @@ test("Ask the Hub answers from member posts and members who can help, and counts
 test("visitors are asked to join before asking", async ({ page }) => {
   await page.goto("/ask", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Join free to ask the Hub’s AI assistant. Free members get 10 questions a month.")).toBeVisible();
+});
+
+// ===== AI matchmaking =====
+test("AI matchmaking: five questions, then matches with reasons and a call to book", async ({ page, context, baseURL, request }) => {
+  await request.get(`${MOCK}/__reset_matches`);
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto("/matches", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: /Meet the right owner/, level: 1 })).toBeVisible();
+  await expect(page.getByText("Question 1 of 5 · Your goal")).toBeVisible();
+  await page.getByRole("button", { name: /Expert advice/ }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Lease advice" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByRole("heading", { name: "Ready to find your matches?" })).toBeVisible();
+  await expect(page.getByText("Lease advice", { exact: true }).last()).toBeVisible();
+  await page.getByRole("button", { name: "Find my matches" }).click();
+  await expect(page.getByText("Your best match")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Kwame Asante" })).toBeVisible();
+  await expect(page.getByText("Can help you with lease advice").first()).toBeVisible();
+  await expect(page.getByRole("img", { name: "Match score 88 percent" }).last()).toBeVisible();
+  await page.locator(".mtop .mslot").first().click();
+  await expect(page.getByText("Introduction booked.")).toBeVisible();
+  await expect(page.locator(".toast")).toHaveText("Booked with Kwame Asante");
+});
+
+test("visitors see the matchmaking page and are asked to join", async ({ page }) => {
+  await page.goto("/matches", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: "Join free to get matched" })).toBeVisible();
+});
+
+test("Home shows the Good morning card with people worth meeting once the member has answered", async ({ page, context, baseURL, request }) => {
+  await request.get(`${MOCK}/__reset_matches`);
+  await context.addCookies([memberCookie(baseURL!)]);
+  await page.goto("/feed", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: "Say who you want to meet" })).toBeVisible();
+  await page.goto("/matches", { waitUntil: "domcontentloaded" });
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Bookkeeping" }).click();
+  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Find my matches" }).click();
+  await expect(page.getByText("Your best match")).toBeVisible();
+  await page.goto("/feed", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText(/people are worth meeting today/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Draft a message" }).first()).toHaveAttribute("href", /\/messages\?with=/);
 });

@@ -12,7 +12,7 @@ import { ConnectButton } from "@/components/network-client";
 
 export type Note = {
   id: string;
-  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission" | "sale_enquiry" | "deadline";
+  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission" | "sale_enquiry" | "deadline" | "match_booked";
   note?: string | null;
   href?: string | null;
   post_id: string | null;
@@ -32,6 +32,7 @@ const TEXT: Record<Note["type"], string> = {
   course_submission: "submitted an assignment for you to grade",
   sale_enquiry: "contacted you about your business for sale",
   deadline: "",
+  match_booked: "booked a 20-minute introduction with you through AI matchmaking",
 };
 const ago = (iso: string) => {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -117,7 +118,7 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
             )}
             <div className="grow stack" style={{ gap: 2 }}>
               <p>
-                {n.type === "deadline" ? <><strong>Reminder:</strong> {n.note || "a deadline is coming up"}.</> : <><strong>{n.actor.full_name || "A member"}</strong> {TEXT[n.type]}.</>}
+                {n.type === "deadline" ? <><strong>Reminder:</strong> {n.note || "a deadline is coming up"}.</> : <><strong>{n.actor.full_name || "A member"}</strong> {TEXT[n.type]}{n.type === "match_booked" && n.note ? ` for ${n.note}` : ""}.</>}
                 {!n.read_at && <span className="sr"> Unread</span>}
               </p>
               {n.excerpt && <p className="muted small" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{n.excerpt}</p>}

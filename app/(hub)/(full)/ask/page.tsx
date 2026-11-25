@@ -3,6 +3,8 @@ import { getViewer } from "@/lib/hub";
 import { pageMeta } from "@/lib/seo";
 import { Ic } from "@/components/zip/ic";
 import { AskHub } from "@/components/ask/ask";
+import { Suspense } from "react";
+import { GoodMorning } from "@/components/matches/good-morning";
 import type { Ask } from "@/lib/ask";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
@@ -42,6 +44,7 @@ export default async function AskPage() {
             <AskHub initial={asks} left={{ used: l?.used ?? 0, limit: l ? (l.limit ?? null) : 10 }} aiOn={!!process.env.ANTHROPIC_API_KEY} />
           </section>
           <aside className="rail" style={{ flexBasis: 300 }}>
+            <Suspense fallback={null}><GoodMorning /></Suspense>
             <div className="card">
               <div className="row"><h2 className="grow">Funding matches</h2><span className="tag ai">AI</span></div>
               <p className="muted small">From the CanadianSME AI Grant Finder. Find grants, loans and programs that fit your business.</p>

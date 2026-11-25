@@ -1708,3 +1708,25 @@ select t.expect('ask: nobody else sees a member''s questions', (select count(*) 
 set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000004';
 select t.expect('ask: the team has no limit', (select hub_ai_left() ->> 'limit' is null) and hub_ai_take());
 reset role;
+
+-- ===== AI matchmaking (0062) =====
+reset role;
+update profiles set full_name = 'Story Author', location = 'Toronto, ON' where id = '5707e000-0000-0000-0000-000000000001';
+update profiles set full_name = 'Story Member', location = 'Ottawa, ON', plan = 'advisor' where id = '5707e000-0000-0000-0000-000000000002';
+insert into profile_details (user_id, helps_with) values ('5707e000-0000-0000-0000-000000000002', array['Bookkeeping', 'Tax returns'])
+  on conflict (user_id) do update set helps_with = excluded.helps_with;
+set role authenticated; set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000001';
+select t.expect('matches: no answers yet, no matches', (select count(*) = 0 from match_candidates()));
+insert into match_prefs (user_id, goal, needs, where_pref, avail) values (auth.uid(), 'advice', array['Bookkeeping'], 'near', array['Weekday afternoons']);
+select t.expect('matches: a member who helps with what I need is matched, with reasons',
+  (select score >= 80 and 'Can help you with bookkeeping' = any (why) and 'Is an SMB Advisor' = any (why) and 'Also based in Ontario' = any (why) from match_candidates() where full_name = 'Story Member'));
+select t.expect('matches: connections are not suggested', not exists (select 1 from match_candidates() where member_id = '5707e000-0000-0000-0000-000000000003'));
+select match_book('5707e000-0000-0000-0000-000000000002', 'Tue, Dec 1 · 2:00 pm ET');
+select match_feedback('5707e000-0000-0000-0000-000000000002', 'up');
+select t.expect('matches: a booking is recorded with feedback', (select feedback = 'up' from match_actions where other_id = '5707e000-0000-0000-0000-000000000002'));
+select match_skip('5707e000-0000-0000-0000-000000000002');
+select t.expect_denied('matches: members cannot write actions directly', $$insert into match_actions (user_id, other_id, action) values (auth.uid(), '5707e000-0000-0000-0000-000000000004', 'book')$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect('matches: the other member is told about the booking', exists (select 1 from notifications where type = 'match_booked' and user_id = auth.uid()));
+select t.expect('matches: and cannot read my answers', (select count(*) = 0 from match_prefs));
+reset role;

@@ -13,9 +13,10 @@ import { JoinGroupButton } from "@/components/feed-client";
 import { RsvpBtn } from "@/components/zip/rsvp-btn";
 import { MemberOfTheDay } from "@/components/zip/motd";
 import { DeadlineCard } from "@/components/tools/deadline-card";
+import { GoodMorning } from "@/components/matches/good-morning";
 
 /** Pages that are built in a later phase: not prefetched, so the browser is not left waiting on them. */
-const LATER = ["/matches"];
+const LATER: string[] = [];
 const ART_SCENES = ["laptop", "nodes", "solar", "bars", "law", "ship"];
 
 /** Left rail: the member's shortcuts, Member of the Day (Update 11), then the newest articles. */
@@ -135,6 +136,7 @@ export async function ZipRightRail() {
         <p className="muted small">Get an answer from members, advisors and CanadianSME articles.</p>
         <Link className="btn" href="/ask" prefetch={false} style={{ alignSelf: "flex-start" }}><Ic n="spark" s={14} />Ask a question</Link>
       </div>
+      <Suspense fallback={null}><GoodMorning /></Suspense>
 
       <div className="card" style={{ borderColor: "#FECACA" }}>
         <div className="row"><h2 className="grow">Made in Canada Pavilion</h2><span className="claim">New</span></div>

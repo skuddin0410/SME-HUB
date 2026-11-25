@@ -8,7 +8,7 @@ const GROUPS: [string, string, string, F[]][] = [
     ["/feed", "Home feed", "Questions, wins, hiring posts and introductions from owners across Canada.", "home"],
     ["/network", "Members", "Find owners by industry, city or what they can help with, and connect.", "users"],
     ["/groups", "Groups", "Smaller rooms for one topic: funding, retail, importing, AI and more.", "msg"],
-    ["/network/connections", "AI matchmaking", "3 people worth meeting every day, picked from your profile.", "spark"],
+    ["/matches", "AI matchmaking", "3 people worth meeting every day, picked from your profile.", "spark"],
     ["/events", "Events", "Online and in-person events for small business owners.", "cal"]]],
   ["Get found and grow", "store", "#16A34A", [
     ["/businesses", "Business Directory", "A free page for your business, searchable across Canada.", "store"],

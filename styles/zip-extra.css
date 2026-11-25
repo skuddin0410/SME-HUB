@@ -179,3 +179,7 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 }
 /* profile Details: the hand-off's accent links are too dark on the dark card */
 .dark .zip .fd .linkbtn { color: var(--link) !important; }
+
+/* AI matchmaking: the hint on a chosen tile sits on a tinted background; one shade darker keeps it readable (WCAG AA) */
+.zip .mtile[aria-pressed="true"] .muted{color:#52525B}
+.dark .zip .mtile[aria-pressed="true"] .muted{color:#C4C4CC}

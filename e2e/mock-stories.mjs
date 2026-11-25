@@ -114,3 +114,29 @@ export function handleAsk(req, res, url, { member }) {
   if (p === "/rest/v1/rpc/search_profiles") return send([{ id: LUC.id, full_name: "Luc Bouchard", avatar_url: null, headline: "Pricing and wholesale for makers" }]);
   return false;
 }
+
+// AI matchmaking: the member's answers, ranked matches (the handoff's sample reasons) and bookings
+let MM_PREFS = null;
+let MM_BOOK = [];
+export function handleMatches(req, res, url, { member }) {
+  const p = url.pathname;
+  const send = (x) => { res.end(JSON.stringify(x)); return true; };
+  const one = (row) => send(String(req.headers.accept).includes("vnd.pgrst.object") ? row : row ? [row] : []);
+  if (p === "/__reset_matches") { MM_PREFS = null; MM_BOOK = []; res.end("{}"); return true; }
+  if (!member) return false;
+  if (p === "/rest/v1/match_prefs") {
+    if (req.method === "POST") { body(req).then((b) => { MM_PREFS = Array.isArray(b) ? b[0] : b; res.statusCode = 201; res.end("[]"); }); return true; }
+    return one(MM_PREFS);
+  }
+  if (p === "/rest/v1/match_actions") return send(MM_BOOK);
+  if (p === "/rest/v1/rpc/match_candidates") {
+    if (!MM_PREFS) return send([]);
+    return send([
+      { member_id: "00000000-0000-4000-8000-000000000021", full_name: "Kwame Asante", avatar_url: null, headline: "Owner, Asante Legal", location: "Toronto, ON", plan: "advisor", score: 88, why: ["Can help you with lease advice", "Is an SMB Advisor", "Also based in Ontario"], both_free: ["Weekday mornings"] },
+      { member_id: "00000000-0000-4000-8000-000000000022", full_name: "Sara Haddad", avatar_url: null, headline: "Founder, Clearwater Bookkeeping", location: "Ottawa, ON", plan: "free", score: 74, why: ["Can help you with bookkeeping", "Free on weekday mornings, like you"], both_free: ["Weekday mornings"] },
+    ]);
+  }
+  if (p === "/rest/v1/rpc/match_book") { body(req).then((b) => { MM_BOOK.push({ other_id: b.p_other, action: "book", slot: b.p_slot, feedback: null }); res.end("null"); }); return true; }
+  if (p === "/rest/v1/rpc/match_skip" || p === "/rest/v1/rpc/match_feedback") return send(null);
+  return false;
+}
