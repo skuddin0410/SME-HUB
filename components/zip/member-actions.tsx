@@ -1,7 +1,8 @@
 "use client";
+import { useInstant } from "@/lib/optimistic";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { removeConnection, requestConnection, acceptConnection } from "@/app/(hub)/actions";
 import { toggleFollow } from "@/app/(hub)/network-actions";
 import type { LinkState } from "@/lib/hub";
@@ -11,32 +12,26 @@ import { useReady } from "@/components/ready/provider";
 /** Connect, Pending and Connected in the guide's buttons. Changes at once and steps back if the save fails. */
 export function ConnectBtn({ otherId, initial, signedIn, small, primary }: { otherId: string; initial: LinkState; signedIn: boolean; small?: boolean; primary?: boolean }) {
   const router = useRouter();
-  const [state, setState] = useState<LinkState>(initial);
-  const [, start] = useTransition();
+  const { value: state, set, tap } = useInstant<LinkState>(initial, "Your connection request didn’t save. Try again.");
   const ready = useReady();
   const sm = small ? " sm" : "";
   const go = (next: LinkState, save: () => Promise<unknown>) => {
     if (!signedIn) return router.push("/auth/sign-up");
-    const before = state;
-    setState(next);
-    start(async () => { try { await save(); } catch { setState(before); } });
+    set(next, save);
   };
-  if (state === "connected") return <span className={`btn${sm} ghost`} aria-pressed="true"><Ic n="check" s={14} />Connected</span>;
-  if (state === "sent") return <button type="button" className={`btn${sm} ghost`} aria-pressed="true" onClick={() => go("none", () => removeConnection(otherId))}><Ic n="clock" s={14} />Pending</button>;
+  if (state === "connected") return <span className={`btn${sm} ghost ${tap}`} aria-pressed="true"><Ic n="check" s={14} />Connected</span>;
+  if (state === "sent") return <button type="button" className={`btn${sm} ghost ${tap}`} aria-pressed="true" onClick={() => go("none", () => removeConnection(otherId))}><Ic n="clock" s={14} />Pending</button>;
   if (state === "received") return <button type="button" className={`btn${sm}`} onClick={() => go("connected", () => acceptConnection(otherId))}><Ic n="check" s={14} />Accept</button>;
   return <button type="button" className={`btn${sm}${primary ? "" : " ghost"}`} aria-pressed="false" onClick={() => { const run = () => go("sent", () => requestConnection(otherId)); if (ready) ready.gate("connect", run); else run(); }}><Ic n="users" s={14} />Connect</button>;
 }
 
 export function FollowBtn({ otherId, initial, signedIn, small }: { otherId: string; initial: boolean; signedIn: boolean; small?: boolean }) {
   const router = useRouter();
-  const [on, setOn] = useState(initial);
-  const [, start] = useTransition();
+  const { value: on, set, tap } = useInstant(initial, "Following didn’t save. Try again.");
   return (
-    <button type="button" className={`btn${small ? " sm" : ""} ghost`} aria-pressed={on} onClick={() => {
+    <button type="button" className={`btn${small ? " sm" : ""} ghost ${tap}`} aria-pressed={on} onClick={() => {
       if (!signedIn) return router.push("/auth/sign-up");
-      const before = on;
-      setOn(!before);
-      start(async () => { try { await toggleFollow(otherId, before); } catch { setOn(before); } });
+      set(!on, () => toggleFollow(otherId, on));
     }}>
       <Ic n="flag" s={14} />{on ? "Following" : "Follow"}
     </button>

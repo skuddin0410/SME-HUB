@@ -55,18 +55,24 @@ export function CommentThread({
     return { tops, replies };
   }, [list, flat]);
 
+  // Motion phase 1: the comment appears the moment it is sent; if saving fails it is taken back out and the text returns
   const send = (body: string, parentId: string | null, done: () => void) => {
-    if (!body.trim()) return;
-    start(async () => {
-      try {
-        const created = await addComment(postId, body, parentId);
-        setList((l) => [...(l ?? []), created]);
-        onCount(1);
-        done();
-      } catch (e) {
+    if (!body.trim() || !me) return;
+    const tmp: CommentRow = {
+      id: `tmp-${Date.now()}`, body: body.trim().slice(0, 2000), created_at: new Date().toISOString(), edited_at: null, parent_id: parentId,
+      author: { id: me.id, full_name: me.full_name, avatar_url: me.avatar_url, headline: me.headline ?? "", member_type: "owner" } as CommentRow["author"],
+    };
+    setList((l) => [...(l ?? []), tmp]);
+    onCount(1);
+    done();
+    addComment(postId, body, parentId)
+      .then((created) => setList((l) => (l ?? []).map((c) => (c.id === tmp.id ? created : c))))
+      .catch((e) => {
+        setList((l) => (l ?? []).filter((c) => c.id !== tmp.id));
+        onCount(-1);
+        setDraft(body);
         onNote(e instanceof Error && e.message.includes("closed") ? "Comments are closed on this post." : "Could not post your reply. Try again.");
-      }
-    });
+      });
   };
 
   const save = (c: CommentRow) => {
@@ -90,9 +96,10 @@ export function CommentThread({
   };
 
   const one = (c: CommentRow, isReply: boolean) => {
-    const own = c.author.id === me?.id;
+    const sending = c.id.startsWith("tmp-");
+    const own = c.author.id === me?.id && !sending;
     return (
-      <div key={c.id} className={`cin group p-2.5 rounded-xl bg-[#F5F5F6]/75 border border-[#E5E5E8]/70 ${isReply ? "ml-6" : ""}`}>
+      <div key={c.id} aria-busy={sending || undefined} style={sending ? { opacity: 0.7 } : undefined} className={`cin group p-2.5 rounded-xl bg-[#F5F5F6]/75 border border-[#E5E5E8]/70 ${isReply ? "ml-6" : ""}`}>
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
             <Link href={`/members/${c.author.id}`} className="truncate text-xs font-bold text-zinc-900 hover:underline">
@@ -107,7 +114,7 @@ export function CommentThread({
                 <Pencil className="h-3.5 w-3.5" />
               </button>
             )}
-            {(own || isStaff) && (
+            {(own || (isStaff && !sending)) && (
               <button type="button" aria-label="Delete comment" onClick={() => remove(c)} className="text-zinc-400 hover:text-rose-600">
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -123,7 +130,7 @@ export function CommentThread({
         ) : (
           <p className="text-xs text-zinc-800 mt-1 leading-relaxed whitespace-pre-wrap break-words"><LinkedText text={c.body} /></p>
         )}
-        {!flat && !isReply && me && !closed && (
+        {!flat && !isReply && me && !closed && !sending && (
           <button type="button" onClick={() => { setReplyTo(replyTo === c.id ? null : c.id); setDraft(""); }} className="mt-1.5 inline-flex items-center gap-1 text-[0.75rem] font-medium text-zinc-500 hover:text-zinc-900">
             <Reply className="h-3 w-3" /> Reply
           </button>

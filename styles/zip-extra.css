@@ -120,7 +120,11 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .zip .hlink{color:var(--link)}
 
 /* ---------- motion: short, calm, and off for people who ask for less ---------- */
-:root { --ease: cubic-bezier(.22, .8, .24, 1); }
+:root {
+  /* Motion tokens (Motion plan, phase 0): presses and hovers, menus and toasts, windows and layout moves */
+  --dur-1: 120ms; --dur-2: 180ms; --dur-3: 240ms;
+  --ease: cubic-bezier(.2, .8, .2, 1); --ease-in: cubic-bezier(.2, .8, .2, 1); --ease-out: cubic-bezier(.4, 0, 1, 1);
+}
 
 /* skeletons: soft shapes that shimmer once a second while the page loads */
 .zip .zsk { display: block; border-radius: 8px; background: var(--line); opacity: .55; }
@@ -144,20 +148,18 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
   @keyframes ztoast { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translateX(-50%); } }
 
   /* a new page eases in once its data has arrived (the skeleton itself does not animate) */
-  .zip > .wrap:not(.sk) { animation: zrise .34s var(--ease) both; }
-  .pgmid > :not(.sk) { animation: zrise .34s var(--ease) both; }
-  .pgmid > :nth-child(2) { animation-delay: .04s; }
-  .pgmid > :nth-child(3) { animation-delay: .08s; }
-  .pgmid > :nth-child(4) { animation-delay: .12s; }
-  .pgmid > :nth-child(5) { animation-delay: .16s; }
-  .pgmid > :nth-child(n+6) { animation-delay: .2s; }
+  .zip > .wrap:not(.sk) { animation: zrise var(--dur-2) var(--ease-in) both; }
+  .pgmid > :not(.sk) { animation: zrise var(--dur-2) var(--ease-in) both; }
+  .pgmid > :nth-child(2) { animation-delay: .02s; }
+  .pgmid > :nth-child(3) { animation-delay: .04s; }
+  .pgmid > :nth-child(n+4) { animation-delay: .06s; }
 
   /* things that open: dialogs, menus, panels, toasts, comments, tab panels */
   .zip .overlay { animation: zfade .18s ease both; }
-  .zip .modal { animation: zsheet .24s var(--ease) both; }
-  .zip .menu { transform-origin: top right; animation: zpop .16s var(--ease) both; }
+  .zip .modal { animation: zsheet var(--dur-3) var(--ease-in) both; }
+  .zip .menu { transform-origin: top right; animation: zpop var(--dur-2) var(--ease-in) both; }
   .zip .pmenu .menu { transform-origin: top left; }
-  .zip .toast { animation: ztoast .22s var(--ease) both; }
+  .zip .toast { animation: ztoast var(--dur-2) var(--ease-in) both; }
   .zip .dock > * { animation: zsheet .26s var(--ease) both; }
   .zip .cthread { animation: zfade .2s ease both; }
   .zip .cin { animation: zrise .24s var(--ease) both; }
@@ -166,8 +168,13 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
   /* a little life on hover and press, nothing more */
   .zip .htcard, .zip .acard { transition: border-color .2s, box-shadow .2s, transform .2s var(--ease); }
   .zip .htcard:hover { border-color: var(--accent); box-shadow: 0 6px 18px rgba(16, 24, 40, .07); transform: translateY(-1px); }
-  .zip .btn, .zip .chip, .zip .act { transition: background .15s, color .15s, transform .1s; }
-  .zip .btn:active, .zip .chip:active, .zip .act:active { transform: scale(.98); }
+  .zip .btn, .zip .chip, .zip .act, .zip .iconbtn { transition: background var(--dur-1), color var(--dur-1), border-color var(--dur-1), transform var(--dur-1) var(--ease-in); }
+  .zip .btn:active, .zip .chip:active, .zip .act:active, .zip .iconbtn:active { transform: scale(.97); }
+  /* Motion phase 1: a toggle that was just pressed (Like, Connect, Follow, Join, Save) gives a small pop */
+  @keyframes ztap { 0% { transform: scale(1); } 45% { transform: scale(1.06); } 100% { transform: scale(1); } }
+  @keyframes ztap2 { 0% { transform: scale(1); } 45% { transform: scale(1.06); } 100% { transform: scale(1); } }
+  .zip .ztap { animation: ztap var(--dur-1) var(--ease-in); }
+  .zip .ztap2 { animation: ztap2 var(--dur-1) var(--ease-in); }
 }
 /* profile Details: the hand-off's accent links are too dark on the dark card */
 .dark .zip .fd .linkbtn { color: var(--link) !important; }

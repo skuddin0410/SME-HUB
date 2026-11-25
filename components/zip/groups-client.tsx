@@ -1,8 +1,9 @@
 "use client";
+import { useInstant } from "@/lib/optimistic";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { joinGroup, leaveGroup } from "@/app/(hub)/actions";
 import { createGroupV2, type GroupState } from "@/app/(hub)/group-actions";
 import { GROUP_COVERS, type GroupSettings } from "@/lib/groups";
@@ -14,18 +15,15 @@ export function JoinBtn({ groupId, slug, mode, priv, joined, host, requested, si
   groupId: string; slug: string; mode: string; priv: boolean; joined: boolean; host: boolean; requested: boolean; signedIn: boolean;
 }) {
   const router = useRouter();
-  const [on, setOn] = useState(joined);
-  const [, start] = useTransition();
+  const { value: on, set, tap } = useInstant(joined, "Joining the group didn’t save. Try again.");
   if (host) return <span className="pill on">You host this group</span>;
   if (priv && !on) {
     return <Link href={signedIn ? `/groups/${slug}` : "/auth/sign-up"} className="btn sm ghost">{requested ? <><Ic n="clock" s={14} />Requested</> : mode === "invite" ? "Invite only" : "Request to join"}</Link>;
   }
   return (
-    <button type="button" className={`btn sm ${on ? "on" : "ghost"}`} aria-pressed={on} onClick={() => {
+    <button type="button" className={`btn sm ${on ? "on" : "ghost"} ${tap}`} aria-pressed={on} onClick={() => {
       if (!signedIn) return router.push("/auth/sign-up");
-      const before = on;
-      setOn(!before);
-      start(async () => { try { await (before ? leaveGroup(groupId) : joinGroup(groupId)); } catch { setOn(before); } });
+      set(!on, () => (on ? leaveGroup(groupId) : joinGroup(groupId)));
     }}>{on ? "Joined" : "Join"}</button>
   );
 }

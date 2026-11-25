@@ -1,7 +1,7 @@
 "use client";
+import { useInstant } from "@/lib/optimistic";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
 import { Bookmark } from "lucide-react";
 import { joinGroup, leaveGroup, toggleSave } from "@/app/(hub)/actions";
 import { COMPOSE_EVENT } from "@/components/site-nav";
@@ -29,27 +29,16 @@ export function ComposeLink({ className, kind = "update", children }: { classNam
 /** Join / Joined ✓ in the right rail. Shows the new state at once and steps back if saving fails. */
 export function JoinGroupButton({ groupId, initial, signedIn }: { groupId: string; initial: boolean; signedIn: boolean }) {
   const router = useRouter();
-  const [joined, setJoined] = useState(initial);
-  const [busy, setBusy] = useState(false);
+  const { value: joined, set, tap } = useInstant(initial, "Joining the group didn’t save. Try again.");
   return (
     <button
       type="button"
-      disabled={busy}
-      onClick={async () => {
+      onClick={() => {
         if (!signedIn) return router.push("/auth/login");
-        const was = joined;
-        setJoined(!was);
-        setBusy(true);
-        try {
-          await (was ? leaveGroup(groupId) : joinGroup(groupId));
-        } catch {
-          setJoined(was);
-        } finally {
-          setBusy(false);
-        }
+        set(!joined, () => (joined ? leaveGroup(groupId) : joinGroup(groupId)));
       }}
       className={
-        "shrink-0 px-2.5 py-1 rounded-lg text-[0.75rem] font-semibold transition-all " +
+        `${tap} ` + "shrink-0 px-2.5 py-1 rounded-lg text-[0.75rem] font-semibold transition-all " +
         (joined ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-[#F5F5F6] hover:bg-zinc-900 text-zinc-800 hover:text-white")
       }
     >
@@ -61,7 +50,7 @@ export function JoinGroupButton({ groupId, initial, signedIn }: { groupId: strin
 /** Bookmark toggle on a post. */
 export function SaveButton({ postId, initial, signedIn }: { postId: string; initial: boolean; signedIn: boolean }) {
   const router = useRouter();
-  const [saved, setSaved] = useState(initial);
+  const { value: saved, set, tap } = useInstant(initial, "Your bookmark didn’t save. Try again.");
   return (
     <button
       type="button"
@@ -70,11 +59,9 @@ export function SaveButton({ postId, initial, signedIn }: { postId: string; init
       aria-pressed={saved}
       onClick={() => {
         if (!signedIn) return router.push("/auth/login");
-        const was = saved;
-        setSaved(!was);
-        toggleSave(postId, was).catch(() => setSaved(was));
+        set(!saved, () => toggleSave(postId, saved));
       }}
-      className="p-1.5 rounded-lg hover:bg-[#F5F5F6] text-zinc-400 hover:text-zinc-900 transition-colors"
+      className={`${tap} p-1.5 rounded-lg hover:bg-[#F5F5F6] text-zinc-400 hover:text-zinc-900 transition-colors`}
     >
       <Bookmark className={"w-4 h-4" + (saved ? " fill-zinc-900 text-zinc-900" : "")} />
     </button>

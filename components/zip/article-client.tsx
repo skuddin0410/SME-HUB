@@ -1,4 +1,5 @@
 "use client";
+import { useInstant } from "@/lib/optimistic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toggleArticleMark } from "@/app/(hub)/actions";
@@ -8,20 +9,18 @@ type Kind = "saved" | "helpful" | "insightful";
 
 function useMark(item: string, kind: Kind, initial: boolean, signedIn: boolean) {
   const router = useRouter();
-  const [on, setOn] = useState(initial);
+  const { value: on, set, tap } = useInstant(initial);
   const flip = () => {
     if (!signedIn) return router.push("/auth/sign-up");
-    const next = !on;
-    setOn(next);
-    toggleArticleMark(item, kind, next).catch(() => setOn(!next));
+    set(!on, () => toggleArticleMark(item, kind, !on));
   };
-  return [on, flip] as const;
+  return [on, flip, tap] as const;
 }
 
 export function SaveBtn({ item, saved, signedIn }: { item: string; saved: boolean; signedIn: boolean }) {
-  const [on, flip] = useMark(item, "saved", saved, signedIn);
+  const [on, flip, tap] = useMark(item, "saved", saved, signedIn);
   return (
-    <button type="button" className="act" aria-pressed={on} aria-label={on ? "Saved" : "Save for later"} onClick={flip}>
+    <button type="button" className={`act ${tap}`} aria-pressed={on} aria-label={on ? "Saved" : "Save for later"} onClick={flip}>
       <Ic n="bookmark" s={15} fill={on ? "currentColor" : "none"} />
       {on ? "Saved" : "Save"}
     </button>
@@ -29,10 +28,10 @@ export function SaveBtn({ item, saved, signedIn }: { item: string; saved: boolea
 }
 
 export function ReactBtn({ item, kind, mine, count, signedIn }: { item: string; kind: "helpful" | "insightful"; mine: boolean; count: number; signedIn: boolean }) {
-  const [on, flip] = useMark(item, kind, mine, signedIn);
+  const [on, flip, tap] = useMark(item, kind, mine, signedIn);
   const n = count - (mine ? 1 : 0) + (on ? 1 : 0);
   return (
-    <button type="button" className="act" aria-pressed={on} onClick={flip}>
+    <button type="button" className={`act ${tap}`} aria-pressed={on} onClick={flip}>
       <span aria-hidden="true">{kind === "helpful" ? "👍" : "💡"}</span>
       {kind === "helpful" ? "Helpful" : "Insightful"} {n}
     </button>

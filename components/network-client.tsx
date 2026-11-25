@@ -1,4 +1,5 @@
 "use client";
+import { useInstant } from "@/lib/optimistic";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,17 +32,13 @@ export function ConnectButton({
 }) {
   const router = useRouter();
   const ready = useReady();
-  const [state, setState] = useState<LinkState>(initial);
+  const { value: state, set } = useInstant<LinkState>(initial, "Your connection request didn’t save. Try again.");
 
   const go = (next: LinkState, save: () => Promise<unknown>) => {
     if (!signedIn) return router.push("/auth/login");
     const before = state;
-    setState(next);
     onChange?.(next);
-    save().catch(() => {
-      setState(before);
-      onChange?.(before);
-    });
+    set(next, () => save().catch((e) => { onChange?.(before); throw e; }));
   };
 
   const base = cx(

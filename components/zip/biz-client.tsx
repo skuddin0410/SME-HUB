@@ -1,4 +1,5 @@
 "use client";
+import { useInstant } from "@/lib/optimistic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toggleFollow } from "@/app/(hub)/business-actions";
@@ -6,15 +7,13 @@ import { toggleFollow } from "@/app/(hub)/business-actions";
 /** Follow button in the guide's style, with the same saving as the old one. */
 export function ZipFollow({ companyId, following, signedIn }: { companyId: string; following: boolean; signedIn: boolean }) {
   const router = useRouter();
-  const [on, setOn] = useState(following);
+  const { value: on, set, tap } = useInstant(following, "Following didn’t save. Try again.");
   const flip = () => {
     if (!signedIn) return router.push("/auth/login");
-    const next = !on;
-    setOn(next);
-    toggleFollow(companyId, next).catch(() => setOn(!next));
+    set(!on, () => toggleFollow(companyId, !on));
   };
   return (
-    <button type="button" className="btn ghost" aria-pressed={on} onClick={flip}>
+    <button type="button" className={`btn ghost ${tap}`} aria-pressed={on} onClick={flip}>
       {on ? "✓ Following" : "+ Follow"}
     </button>
   );

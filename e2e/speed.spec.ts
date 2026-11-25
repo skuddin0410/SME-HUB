@@ -29,3 +29,22 @@ test("a link to another website, or one opened in a new tab, does not show a loa
   await expect(page.locator("[aria-busy=true]")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "CanExport SMEs", level: 1 })).toBeVisible();
 });
+
+// Motion plan, phase 1: actions change on the tap, and undo themselves with a message if the save fails
+test("Follow changes at once, then steps back with a message when the save fails", async ({ page, context, baseURL, request }) => {
+  await context.addCookies([memberCookie(baseURL!, false, undefined, { ready: 5 })]);
+  await page.goto("/members/00000000-0000-4000-8000-000000000011", { waitUntil: "networkidle" });
+  const follow = page.locator(".phero").getByRole("button", { name: /^(Follow|Following)$/ });
+  await expect(follow).toHaveText("Follow");
+  await request.get(`${MOCK}/__delay?ms=1500&path=/rest/v1/follows`);
+  await request.get(`${MOCK}/__fail?path=/rest/v1/follows`);
+  try {
+    await follow.click();
+    await expect(follow).toHaveText("Following", { timeout: 500 }); // before the server has answered
+    await expect(page.locator("[data-hub-toast]")).toHaveText("Following didn’t save. Try again.", { timeout: 10000 });
+    await expect(follow).toHaveText("Follow");
+  } finally {
+    await request.get(`${MOCK}/__fail?path=`);
+    await request.get(`${MOCK}/__delay?ms=0`);
+  }
+});

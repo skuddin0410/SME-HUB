@@ -4,6 +4,7 @@ import { CONTACT, EVENTS } from "@/lib/site";
 import type { NavNote } from "@/components/site-nav";
 import { ZipHeader } from "@/components/zip/header";
 import { NavPending } from "@/components/nav-pending";
+import { ToastHost } from "@/components/toast";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import "@/styles/profile-completion.css";
@@ -154,6 +155,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
       >
         {children}
       </NavPending>
+      <ToastHost />
 
       <HideOn paths={["/feed"]}>
         <div className="zip" style={{ display: "contents" }}>

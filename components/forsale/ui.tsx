@@ -97,22 +97,25 @@ export function SaveBtn({ l, big }: { l: { id: string; saved: boolean }; big?: b
   const router = useRouter();
   const [on, setOn] = useState(l.saved);
   useEffect(() => setOn(l.saved), [l.saved]);
+  // Motion phase 1: the star changes on the tap; it steps back with a message if the save fails
   const go = async () => {
     if (!x.member) return router.push("/auth/sign-up");
-    const r = await x.run(() => toggleSaleSave(l.id));
-    if (!r || r.error) return x.toast(r?.error ?? "Something went wrong. Try again.");
-    setOn(!!r.saved);
-    x.toast(r.saved ? "Saved. We’ll email you if the price changes." : "Removed from saved");
+    const before = on;
+    setOn(!before);
+    x.toast(!before ? "Saved. We’ll email you if the price changes." : "Removed from saved");
+    const r = await toggleSaleSave(l.id).catch(() => null);
+    if (!r || r.error) { setOn(before); return x.toast(r?.error ?? "That didn’t save. Try again."); }
+    if (!!r.saved !== !before) setOn(!!r.saved);
     router.refresh();
   };
   if (big)
     return (
-      <button type="button" className="btn ghost" aria-pressed={on} onClick={go} disabled={x.busy}>
+      <button type="button" className="btn ghost" aria-pressed={on} onClick={go}>
         <Ic n="mark" s={15} fill={on ? "currentColor" : "none"} />{on ? "Saved" : "Save listing"}
       </button>
     );
   return (
-    <button type="button" className="iconbtn" aria-label={on ? "Remove from saved" : "Save listing"} aria-pressed={on} onClick={go} disabled={x.busy}>
+    <button type="button" className="iconbtn" aria-label={on ? "Remove from saved" : "Save listing"} aria-pressed={on} onClick={go}>
       <Ic n="mark" s={17} fill={on ? "currentColor" : "none"} />
     </button>
   );
