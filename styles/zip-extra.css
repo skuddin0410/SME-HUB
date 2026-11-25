@@ -149,8 +149,9 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
   @keyframes ztoast { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translateX(-50%); } }
 
   /* a new page eases in once its data has arrived (the skeleton itself does not animate) */
-  .zip > .wrap:not(.sk) { animation: zrise var(--dur-2) var(--ease-in) both; }
-  .pgmid > :not(.sk) { animation: zrise var(--dur-2) var(--ease-in) both; }
+  /* "backwards", not "both": once the page has eased in it keeps no transform, so pop-ups inside it stay fixed to the window */
+  .zip > .wrap:not(.sk) { animation: zrise var(--dur-2) var(--ease-in) backwards; }
+  .pgmid > :not(.sk) { animation: zrise var(--dur-2) var(--ease-in) backwards; }
   .pgmid > :nth-child(2) { animation-delay: .02s; }
   .pgmid > :nth-child(3) { animation-delay: .04s; }
   .pgmid > :nth-child(n+4) { animation-delay: .06s; }
@@ -163,7 +164,7 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
   .zip .toast { animation: ztoast var(--dur-2) var(--ease-in) both; }
   .zip .dock > * { animation: zsheet .26s var(--ease) both; }
   .zip .cthread { animation: zfade .2s ease both; }
-  .zip .cin { animation: zrise .24s var(--ease) both; }
+  .zip .cin { animation: zrise .24s var(--ease) backwards; }
   .zip [role="tabpanel"], .zip details[open] > :not(summary) { animation: zfade .22s ease both; }
 
   /* a little life on hover and press, nothing more */
@@ -223,3 +224,16 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .zip .wrap :is(.pagehead, .pgihead, .stack) > .pgcrumbs + h1 + p.muted { color: var(--soft) !important; opacity: 1 !important; }
 .zip .grphead .pgcrumbs li, .zip .grphead .pgcrumbs a, .zip .grphead .pgcrumbs li + li::before, .zip .grphead .pgcrumbs .crnote { color: rgba(255, 255, 255, .78); }
 .zip .grphead .pgcrumbs [aria-current="page"] { color: #fff; }
+
+/* Profile pop-ups (Nov 26): Contact info opens to the right of its link, above everything, so the card never cuts it off;
+   the three-dots menu keeps each icon on the same line as its words */
+.zip .menu.cimenu { left: 0; right: auto; top: calc(100% + 8px); z-index: 40; gap: 12px; white-space: normal; color: var(--ink); }
+.zip .menu.cimenu .small { display: block; line-height: 1.5; }
+.zip .pmenu { position: relative; }
+.zip .pmenu .menu { z-index: 40; }
+.zip .pmenu .menu button { display: flex; align-items: center; gap: 8px; width: 100%; white-space: nowrap; }
+.zip .pmenu .menu button svg { flex: none; }
+/* Pop-ups (Nov 26): every dialog opens in the middle of the window, over a grey backdrop that covers the whole window.
+   margin:auto centres it; a dialog taller than the window starts at the top and scrolls inside the backdrop. */
+.zip .overlay { position: fixed !important; inset: 0 !important; width: 100vw; height: 100dvh; align-items: flex-start !important; padding: 24px 16px !important; z-index: 1000 !important; }
+.zip .overlay > * { margin: auto !important; }

@@ -232,7 +232,7 @@ export default async function MemberPage({
                     {member.location}{member.location && " · "}
                     <details className="menuwrap" style={{ display: "inline-block" }}>
                       <summary style={{ cursor: "pointer", listStyle: "none", display: "inline", color: "var(--link)", fontWeight: 600 }}>Contact info</summary>
-                      <div className="menu" style={{ padding: 14, minWidth: 260 }}>
+                      <div className="menu cimenu" style={{ padding: 14, minWidth: 260 }}>
                         <span className="small"><strong>Profile</strong><br /><Link href={`/members/${id}`} style={{ color: "var(--link)" }}>/members/{id.slice(0, 8)}</Link></span>
                         {site && <span className="small"><strong>Website</strong><br /><a href={site} target="_blank" rel="noreferrer nofollow" style={{ color: "var(--link)" }}>{member.website.replace(/^https?:\/\//, "")}</a></span>}
                         <span className="small"><strong>Joined</strong><br />{when(member.created_at, { year: "numeric", month: "long" })}</span>
