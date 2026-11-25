@@ -1,4 +1,5 @@
 "use client";
+import { Crumbs } from "@/components/zip/crumbs";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -109,7 +110,7 @@ export function Matches({ me, prefs: p0, hasPrefs, list, booked: b0, round, visi
     <>
       <section className="mmhero">
         <div className="mmh-l">
-          <p className="eyebrow">AI matchmaking · {round.name} round</p>
+          <Crumbs items={[["AI matchmaking"]]} note={<>{round.name} round</>} />
           <h1>Meet the <span className="hl">right owner</span>, not just more owners</h1>
           <p className="lead">Answer five quick questions. The Hub finds members who can help, picks a time you are both free and tells them about the introduction.</p>
           <div className="row" style={{ flexWrap: "wrap", gap: 10 }}>

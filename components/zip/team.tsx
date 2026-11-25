@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/hub";
@@ -36,7 +37,7 @@ export const TeamWrap = ({ children }: { children: React.ReactNode }) => (
 export function TeamHead({ title, text }: { title: string; text: string }) {
   return (
     <div className="pagehead">
-      <p className="eyebrow">For the Hub team · members never see this page</p>
+      <Crumbs items={[["Hub team"]]} note="Members never see this page" />
       <h1>{title}</h1>
       <p className="muted">{text}</p>
     </div>

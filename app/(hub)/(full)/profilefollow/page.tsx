@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import { TeamWrap, teamViewer } from "@/components/zip/team";
 import { ZipAv } from "@/components/zip/bits";
 import { Ic } from "@/components/zip/ic";
@@ -35,7 +36,7 @@ export default async function ProfileFollowPage({ searchParams }: { searchParams
 
   const head = (
     <div className="pagehead">
-      <p className="eyebrow">Hub team</p>
+      <Crumbs items={[["Hub team"], ["Profile follow-up"]]} />
       <h1>Profile follow-up</h1>
       <p className="muted" style={{ fontSize: 15, maxWidth: 760 }}>New members whose profiles aren’t ready yet. Call or message them, starting with Founding Members. A ready profile has a photo, headline, city, “Can help with” and a business page.</p>
     </div>

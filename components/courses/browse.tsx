@@ -1,4 +1,5 @@
 "use client";
+import { Crumbs } from "@/components/zip/crumbs";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -65,7 +66,7 @@ export function Browse({ courses, tabs }: { courses: Course[]; tabs: Tabs }) {
       <CrTabs a="courses" {...tabs} savedN={[...x.saved].filter((id) => all.some((c) => c.id === id)).length} />
       <section className="bdhero crhero">
         <div className="bdh-in">
-          <p className="eyebrow">Courses</p>
+          <Crumbs items={[["Courses"]]} />
           <h1>Learn what your business needs <span className="hl">next</span></h1>
           <p className="lead">Short courses from Canadian owners and advisors. Most take under an hour, and you can stop and pick up on any device.</p>
           <div className="bdsearch" role="search">

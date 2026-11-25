@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import { ReadyBanner } from "@/components/ready/card";
 import { getHubSettings } from "@/lib/zip/settings-load";
 import Link from "next/link";
@@ -136,7 +137,7 @@ export async function Directory({ searchParams, base }: { searchParams: Record<s
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         {userId && <ReadyBanner kind="people" />}
         <div className="dirhead">
-          <p className="eyebrow">Community connections</p>
+          <Crumbs items={[["Network", "/network"], ["Member directory"]]} />
           <h1>Member directory</h1>
           <p className="muted" style={{ fontSize: 15 }}>Find the right owner by name, skill or place, then connect in one click.</p>
         </div>

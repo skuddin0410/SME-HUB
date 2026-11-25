@@ -1,4 +1,5 @@
 "use client";
+import { Crumbs } from "@/components/zip/crumbs";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -56,7 +57,7 @@ export function Browse({ all, tabs }: { all: SaleCard[]; tabs: { mine: number; u
       <FsTabs a="forsale" {...tabs} />
       <section className="bdhero fshero">
         <div className="bdh-in">
-          <p className="eyebrow">Businesses for sale</p>
+          <Crumbs items={[["Businesses for sale"]]} />
           <h1>Buy a Canadian small business <span className="hl">that’s already running</span></h1>
           <p className="lead">Every listing comes from a paid SME Hub member. Members see the numbers and contact sellers directly, with no broker in the middle.</p>
           <div className="bdsearch" role="search">

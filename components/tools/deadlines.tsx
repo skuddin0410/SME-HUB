@@ -1,4 +1,5 @@
 "use client";
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -131,7 +132,7 @@ export function DeadlinesPage({ today, setup, done: done0, rem: rem0, custom, pr
   const head = (
     <div className="dlhead">
       <div className="stack" style={{ gap: 4 }}>
-        <p className="eyebrow"><Ic n="lock" s={12} /> Only you can see this page</p>
+        <Crumbs items={[["My deadlines"]]} note="Only you can see this page" lock />
         <h1 style={{ font: "800 30px var(--display)", margin: 0 }}>My deadlines</h1>
         <p className="muted" style={{ margin: 0 }}>Your tax and filing dates for the next 12 months, with reminders by email and in the bell.</p>
       </div>

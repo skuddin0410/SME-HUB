@@ -188,25 +188,14 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
    One page-header style for every page title (eyebrow, title, line under it), one content width,
    a footer that simply continues the page (as on LinkedIn), and small layout fixes. */
 
-/* page headers: a quiet label chip, a firm title, a readable line under it, and room before the content */
-.zip .pagehead, .zip .pgihead { gap: 0 !important; margin-bottom: 24px !important; }
-.zip :is(.pagehead, .pgihead, .stack) > p.eyebrow:has(+ h1):not(:is(.tlhero, .bdh-in, .mmhero, .bizhead, .dirhead, .gfhero, .bdhero, .axin) *) {
-  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; width: auto;
-  margin: 0 0 12px; padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
-  font: 700 10.5px/1.4 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--soft) !important; opacity: 1 !important;
-}
-.zip :is(.pagehead, .pgihead, .stack) > p.eyebrow:has(+ h1) svg { flex: none; }
-.zip :is(.pagehead, .pgihead, .stack) > :is(p.eyebrow + h1, h1:first-child):not(:is(.tlhero, .bdh-in, .mmhero, .bizhead, .dirhead, .gfhero, .bdhero, .axin) *) {
-  font: 800 34px/1.12 var(--display) !important; letter-spacing: -.022em; margin: 0; color: var(--ink);
-}
-.zip :is(.pagehead, .pgihead, .stack) > h1 + p:not(:is(.tlhero, .bdh-in, .mmhero, .bizhead, .dirhead, .gfhero, .bdhero, .axin) *) {
-  margin: 10px 0 0; max-width: 68ch; font-size: 15px; line-height: 1.6; color: var(--soft) !important; opacity: 1 !important;
-}
-@media (max-width: 700px) {
-  .zip :is(.pagehead, .pgihead, .stack) > :is(p.eyebrow + h1, h1:first-child):not(:is(.tlhero, .bdh-in, .mmhero, .bizhead, .dirhead, .gfhero, .bdhero, .axin) *) { font-size: 26px !important; }
-}
-/* a header with a button beside it (My Businesses): title on the left, button on the right */
-.zip .pagehead.row { flex-direction: row !important; align-items: flex-end !important; justify-content: space-between; gap: 16px !important; }
+/* page headers (option A): a breadcrumb, a firm title, a readable line under it, and a hairline before the content */
+.zip :is(.pagehead, .pgihead, .stack):has(> .pgcrumbs) { gap: 0 !important; }
+.zip :is(.pagehead, .pgihead, .stack) > .pgcrumbs + h1 { font: 800 32px/1.12 var(--display) !important; letter-spacing: -.02em; margin: 0; color: var(--ink); }
+.zip :is(.pagehead, .pgihead, .stack) > .pgcrumbs + h1 + p { margin: 8px 0 0 !important; max-width: 68ch; font-size: 15px !important; line-height: 1.6; color: var(--soft) !important; opacity: 1 !important; }
+.zip :is(.pagehead, .pgihead, .crph):has(> .pgcrumbs), .zip :is(.pagehead.row, .dlhead, .arthead):has(> * > .pgcrumbs) { padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 24px !important; }
+@media (max-width: 700px) { .zip :is(.pagehead, .pgihead, .stack) > .pgcrumbs + h1 { font-size: 26px !important; } }
+/* a header with a button or search beside it: title on the left, the control level with it on the right */
+.zip .pagehead.row { flex-direction: row !important; align-items: center !important; justify-content: space-between; gap: 16px !important; }
 .zip .pagehead.row > .stack { align-items: flex-start; }
 
 /* tab rows that scroll sideways never show a scrollbar or arrows */
@@ -222,8 +211,15 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .zip footer, .zip footer.big { background: transparent !important; border-top: 0 !important; }
 .zip footer.big .wrap { padding-top: 8px !important; padding-bottom: 16px !important; gap: 24px !important; }
 .zip footer.big h3 { font: 600 12.5px var(--display) !important; color: var(--ink); margin-bottom: 6px !important; }
-.zip footer.big a, .zip footer.big span { font-size: 12.5px !important; padding: 3px 0 !important; color: var(--muted) !important; }
+.zip footer.big a, .zip footer.big span { font-size: 12.5px !important; padding: 3px 0 !important; color: var(--soft) !important; }
 .zip footer.big a:hover { color: var(--link) !important; text-decoration: underline; }
 .zip footer.big img.lgfull { height: 40px !important; margin-bottom: 8px !important; }
-.zip .copy { background: transparent !important; border-top: 0 !important; text-align: left !important; max-width: 1360px; margin: 0 auto; padding: 0 32px 72px !important; font-size: 12px; }
+.zip .copy { color: var(--soft) !important; background: transparent !important; border-top: 0 !important; text-align: left !important; max-width: 1360px; margin: 0 auto; padding: 0 32px 72px !important; font-size: 12px; }
 @media (max-width: 700px) { .zip .copy { padding: 0 12px 24px !important; } }
+/* option A: breadcrumb links stay quiet (not the blue body-link style), subtitles stay the same grey everywhere,
+   and the breadcrumb reads on the dark Groups banner */
+.zip .pgcrumbs a { color: var(--soft); text-decoration: none; }
+.zip .pgcrumbs a:hover { color: var(--link); text-decoration: underline; }
+.zip .wrap :is(.pagehead, .pgihead, .stack) > .pgcrumbs + h1 + p.muted { color: var(--soft) !important; opacity: 1 !important; }
+.zip .grphead .pgcrumbs li, .zip .grphead .pgcrumbs a, .zip .grphead .pgcrumbs li + li::before, .zip .grphead .pgcrumbs .crnote { color: rgba(255, 255, 255, .78); }
+.zip .grphead .pgcrumbs [aria-current="page"] { color: #fff; }

@@ -1,4 +1,5 @@
 "use client";
+import { Crumbs } from "@/components/zip/crumbs";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,7 @@ export function TeamListings({ rows, tabs }: { rows: TeamRow[]; tabs: { mine: nu
     <>
       <FsTabs a="saleadmin" {...tabs} />
       <div className="pagehead">
-        <p className="eyebrow">Hub team</p>
+        <Crumbs items={[["Hub team"], ["Businesses for sale"]]} />
         <h1>Businesses for sale</h1>
         <p className="muted">New listings go live straight away. Check each one within 2 working days: the seller is a real paid member, the numbers look sensible and nothing breaks the community guidelines. Then mark it as checked.</p>
       </div>

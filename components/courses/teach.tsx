@@ -1,4 +1,5 @@
 "use client";
+import { Crumbs } from "@/components/zip/crumbs";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -91,7 +92,7 @@ export function Teaching({ courses, work, stats, tabs, focus }: { courses: Cours
   return (
     <>
       {head}
-      <div className="pagehead crph"><p className="eyebrow">Teaching</p><h1>Your courses and grading</h1><p className="muted">Grade assignments, check how learners are doing and edit your course content. Learners see your feedback as soon as you save it.</p></div>
+      <div className="pagehead crph"><Crumbs items={[["Courses", "/courses"], ["Teaching"]]} /><h1>Your courses and grading</h1><p className="muted">Grade assignments, check how learners are doing and edit your course content. Learners see your feedback as soon as you save it.</p></div>
       <section className="card">
         <div className="row" style={{ flexWrap: "wrap" }}><h2 className="grow">To grade <span className="muted">{tg.length}</span></h2><span className="small muted">Oldest first</span></div>
         {tg.length ? tg.map((w) => <GradeRow key={w.s.id} w={w} c={byId.get(w.c)!} open={open === w.s.id} setOpen={setOpen} />) : <p className="muted small">You’re all caught up. New submissions show here and in your notifications.</p>}
@@ -154,7 +155,7 @@ export function ManageCourses({ courses, stats, tabs }: { courses: Course[]; sta
     <>
       {head}
       <div className="pagehead crph row" style={{ flexWrap: "wrap", alignItems: "flex-end" }}>
-        <div className="stack grow" style={{ gap: 4 }}><p className="eyebrow">Hub team</p><h1>Manage courses</h1><p className="muted">Create courses, choose instructors and publish when they’re ready. Instructors can edit their own courses; only the Hub team can publish.</p></div>
+        <div className="stack grow" style={{ gap: 4 }}><Crumbs items={[["Hub team"], ["Manage courses"]]} /><h1>Manage courses</h1><p className="muted">Create courses, choose instructors and publish when they’re ready. Instructors can edit their own courses; only the Hub team can publish.</p></div>
         <button type="button" className="btn" disabled={x.busy} onClick={() => void x.run(async () => {
           const r = await newCourse();
           if (r?.error) return x.toast(r.error);

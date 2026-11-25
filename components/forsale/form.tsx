@@ -1,4 +1,5 @@
 "use client";
+import { Crumbs } from "@/components/zip/crumbs";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -95,7 +96,7 @@ export function SellForm({ initial, tabs }: { initial: Draft; tabs: { mine: numb
     <>
       <FsTabs a="mysales" {...tabs} />
       <div className="pagehead">
-        <p className="eyebrow">{editing ? "Edit listing" : "Sell your business"}</p>
+        <Crumbs items={[["Businesses for sale", "/for-sale"], [editing ? "Edit listing" : "Sell your business"]]} />
         <h1>{editing ? "Edit your listing" : "List your business for sale"}</h1>
         <p className="muted" style={{ maxWidth: 720 }}>Takes about 10 minutes. Your listing goes live straight away, and the Hub team checks every new listing within 2 working days.</p>
       </div>

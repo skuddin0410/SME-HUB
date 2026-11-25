@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ftsQuery, getViewer } from "@/lib/hub";
@@ -169,7 +170,7 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <section className="bdhero">
           <div className="bdh-in">
-            <p className="eyebrow">Business Directory</p>
+            <Crumbs items={[["Business Directory"]]} />
             <h1>
               Find a Canadian small business <span className="hl">you can trust</span>
             </h1>

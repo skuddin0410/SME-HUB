@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { getViewer } from "@/lib/hub";
 import { getMyReady } from "@/lib/ready";
@@ -16,7 +17,7 @@ export default async function SpotlightPage() {
   const { supabase, userId } = await getViewer();
   const head = (
     <div className="pagehead">
-      <p className="eyebrow">Member Spotlight</p>
+      <Crumbs items={[["Member Spotlight"]]} />
       <h1>Get featured in CanadianSME</h1>
       <p className="muted" style={{ fontSize: 15, maxWidth: 720 }}>Every month, CanadianSME Small Business Magazine and its newsletter feature SME Hub members and their businesses. Apply once. The editorial team picks members each month.</p>
     </div>

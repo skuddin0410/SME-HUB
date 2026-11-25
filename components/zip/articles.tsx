@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SECTIONS, type SectionKey } from "@/lib/content";
@@ -46,7 +47,7 @@ export async function ZipStoryIndex({ section, q = "", cat = "" }: { section: Se
         <Tabs k={section} />
         <div className="arthead">
           <div className="stack grow" style={{ flexBasis: 380, gap: 6 }}>
-            <p className="eyebrow">From CanadianSME Small Business Magazine</p>
+            <Crumbs items={section === "blog" ? [["Articles"]] : [["Articles", "/blog"], [s.name]]} />
             <h1>{section === "blog" ? "Articles" : s.name}</h1>
             <p className="muted" style={{ fontSize: 15 }}>{s.intro}</p>
           </div>

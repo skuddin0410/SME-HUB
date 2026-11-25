@@ -1,4 +1,5 @@
 "use client";
+import { Crumbs } from "@/components/zip/crumbs";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
@@ -49,7 +50,7 @@ export function Pavilion({ listings, member, staff, meBiz }: { listings: PavList
     <>
       <section className="bizhead pavhead" aria-label="Made in Canada Pavilion">
         <div className="txt">
-          <p className="eyebrow">Made in Canada Pavilion</p>
+          <Crumbs items={[["Made in Canada Pavilion"]]} />
           <h1>Buy from, build with and back Canadian businesses</h1>
           <p>Canadian manufacturers, owner-run services and AI tools built here, all run by Hub members. Find one, then ask for an introduction.</p>
           <div className="srow">

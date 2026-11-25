@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ZipAv } from "@/components/zip/bits";
@@ -58,7 +59,7 @@ export async function MemberBlogsIndex({ q = "", cat = "" }: { q?: string; cat?:
         <Tabs k="memberblogs" />
         <div className="arthead">
           <div className="stack grow" style={{ flexBasis: 380, gap: 6 }}>
-            <p className="eyebrow">Written by members</p>
+            <Crumbs items={[["Member blogs"]]} />
             <h1>Member blogs</h1>
             <p className="muted" style={{ fontSize: 15 }}>Lessons, how-tos and stories from owners in the Hub. Anyone can read. Members can write.</p>
           </div>

@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { getViewer } from "@/lib/hub";
 import { pageMeta } from "@/lib/seo";
@@ -44,7 +45,7 @@ export default async function SmbAdvisorPage({ searchParams }: { searchParams: P
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="pagehead">
-          <p className="eyebrow">Explore the Hub</p>
+          <Crumbs items={[["SME Advisors"]]} />
           <h1>SME Advisors</h1>
           <p className="muted">Accountants, lawyers, consultants and coaches who work with Canadian small businesses. Open a profile to see their services, reviews and free call times.</p>
         </div>

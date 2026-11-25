@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { requireUser } from "@/lib/hub";
 import { pageMeta } from "@/lib/seo";
@@ -25,7 +26,7 @@ export default async function SettingsPage() {
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="pagehead">
-          <p className="eyebrow">Only you can see this page</p>
+          <Crumbs items={[["Privacy and account"]]} note="Only you can see this page" lock />
           <h1>Privacy and account</h1>
           <p className="muted">Choose who sees each part of your profile, download your data, or close your account.</p>
         </div>

@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import { requireUser } from "@/lib/hub";
 import { ZipAv } from "@/components/zip/bits";
 import { Unblock } from "@/components/zip/account-client";
@@ -14,7 +15,7 @@ export default async function BlockedPage() {
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40, maxWidth: 720 }}>
         <div className="pagehead">
-          <p className="eyebrow">Your account</p>
+          <Crumbs items={[["Privacy and account", "/settings"], ["Blocked members"]]} />
           <h1>Blocked members</h1>
           <p className="muted">You will not see posts, profiles or messages from anyone on this list, and they will not see yours. They are not told.</p>
         </div>

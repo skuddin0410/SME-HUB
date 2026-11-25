@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { requireUser } from "@/lib/hub";
 import { ZipSubmit } from "@/components/zip/submit";
@@ -33,7 +34,7 @@ export default async function MyBusinessesPage() {
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="pagehead row" style={{ flexWrap: "wrap", alignItems: "flex-end" }}>
           <div className="stack grow" style={{ gap: 4 }}>
-            <p className="eyebrow">Your account</p>
+            <Crumbs items={[["My Businesses"]]} />
             <h1>My Businesses</h1>
             <p className="muted">Pages you own or help manage.</p>
           </div>

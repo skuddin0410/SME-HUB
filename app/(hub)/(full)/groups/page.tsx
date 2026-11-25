@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { getViewer } from "@/lib/hub";
 import { getGroupSettings } from "@/lib/groups-server";
@@ -69,7 +70,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <section className="bizhead grphead" aria-label="Groups">
           <div className="txt">
-            <p className="eyebrow">Groups</p>
+            <Crumbs items={[["Groups"]]} />
             <h1>Find the owners who face what you face</h1>
             <p>Small, focused groups by topic, industry and community. Join a few, ask your question, and get answers from people who have been there.</p>
             <LiveForm className="srow" role="search">

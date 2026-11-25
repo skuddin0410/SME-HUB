@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { requireUser } from "@/lib/hub";
 import { BusinessForm } from "@/components/business-form";
@@ -19,7 +20,7 @@ export default async function AddBusinessPage() {
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="pagehead">
-          <p className="eyebrow">Business Directory</p>
+          <Crumbs items={[["Business Directory", "/businesses"], ["Add a business"]]} />
           <h1>Add a business</h1>
           <p className="muted">Five quick details to start. You can save a draft, preview the page and add the rest later.</p>
         </div>

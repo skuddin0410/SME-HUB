@@ -1,3 +1,4 @@
+import { Crumbs } from "@/components/zip/crumbs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PostCard } from "@/components/hub";
@@ -62,7 +63,7 @@ export async function HashtagsDirectory({ q = "" }: { q?: string }) {
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         <div className="pagehead">
-          <p className="eyebrow">Find conversations by subject</p>
+          <Crumbs items={[["Hashtags"]]} />
           <h1>Hashtags</h1>
           <p className="muted">Tap a hashtag to see every post that uses it.{r.follow ? " Follow the ones you care about and they get their own filter on your Home feed." : ""}</p>
         </div>

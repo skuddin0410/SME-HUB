@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ChevronRight, Headphones } from "lucide-react";
+import { Crumbs } from "@/components/zip/crumbs";
 import { SECTIONS, type SectionKey } from "@/lib/content";
 import { Thumb } from "@/components/hub-client";
 
@@ -21,26 +22,15 @@ export function Hero({
   eyebrow?: string;
   children?: React.ReactNode;
 }) {
+  // Same header as every other page (option A): breadcrumb, title, line under it, a hairline before the content.
+  // The old eyebrow label is no longer shown; the breadcrumb tells people where they are.
+  void eyebrow;
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-[#E5E5E8] bg-white p-6 sm:p-8 shadow-card">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/sme-hub-icon.png" alt="" aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 w-48 opacity-[0.06] select-none" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-600 via-red-500 to-blue-600" />
-      {back && (
-        <Link href={back.href} className="mb-4 inline-flex items-center gap-1 text-xs font-semibold text-zinc-500 hover:text-zinc-900">
-          <ArrowLeft className="h-3.5 w-3.5" />
-          {back.label}
-        </Link>
-      )}
-      {eyebrow && (
-        <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#E5E5E8] bg-[#F7F7F8] px-3 py-1 text-[0.7812rem] font-semibold text-zinc-800">
-          <span className="h-1.5 w-1.5 rounded-full bg-rose-600" />
-          {eyebrow}
-        </p>
-      )}
-      <h1 className="relative max-w-3xl font-jakarta text-[1.875rem] font-extrabold leading-[1.12] tracking-tight text-zinc-950 sm:text-[2.2812rem]">{title}</h1>
-      <p className="relative mt-3 max-w-2xl text-[0.9688rem] leading-relaxed text-zinc-600">{text}</p>
-      {children && <div className="relative mt-5">{children}</div>}
+    <section className="border-b border-[#E5E5E8] pb-5 mb-2">
+      <Crumbs items={back ? [[back.label, back.href], [title]] : [[title]]} />
+      <h1 className="max-w-3xl font-jakarta text-[1.625rem] font-extrabold leading-[1.12] tracking-[-0.02em] text-zinc-950 sm:text-[2rem]">{title}</h1>
+      <p className="mt-2 max-w-[68ch] text-[0.9375rem] leading-relaxed text-zinc-600">{text}</p>
+      {children && <div className="mt-5">{children}</div>}
     </section>
   );
 }
