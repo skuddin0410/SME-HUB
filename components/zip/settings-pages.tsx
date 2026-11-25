@@ -286,14 +286,14 @@ export function HashtagsBody({ tags, mine }: { tags: TagStat[]; mine: number }) 
 }
 
 /* ---------- Stories ---------- */
-export function StoriesBody() {
+export function StoriesBody({ stats = { live: 0, pending: 0, kept: 0 } }: { stats?: { live: number; pending: number; kept: number } }) {
   const { get, set } = useSettings();
   return (
     <>
       <div className="pvstats" style={{ marginBottom: 20 }}>
-        <div><span className="n">0</span><span className="muted small">stories in the feed now</span></div>
-        <div><span className="n">0</span><span className="muted small">waiting for approval</span></div>
-        <div><span className="n">0</span><span className="muted small">expired items kept in highlights</span></div>
+        <div><span className="n">{stats.live}</span><span className="muted small">stories in the feed now</span></div>
+        <div><span className="n">{stats.pending}</span><span className="muted small">waiting for approval</span></div>
+        <div><span className="n">{stats.kept}</span><span className="muted small">expired items kept in highlights</span></div>
       </div>
       <div className="setgrid">
         <div className="card"><h2>Who can post</h2><Radio path="publish" label="Who can post" opts={[["all", "Every member"], ["paid", "Plus and Advisors"], ["team", "Hub team only"]]} />

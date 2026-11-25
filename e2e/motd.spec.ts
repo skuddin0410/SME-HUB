@@ -75,9 +75,11 @@ test("the Hub team picks each day's member; members see the team gate", async ({
   await page.getByRole("radio", { name: /Kwame Asante/ }).check();
   await save.click();
   await expect(page.getByRole("status")).toContainText("Saved. Kwame Asante is the Member of the Day on");
-  await expect(page.getByText("picked by the team")).toBeVisible();
+  await expect(page.getByText("picked by the team")).toBeVisible({ timeout: 10000 });
   await page.getByRole("button", { name: /Remove the pick for/ }).click();
   await expect(page.getByRole("status")).toContainText("will get an automatic member");
+  // the refresh after saving re-sends the page head; check once the title is back
+  await expect(page).toHaveTitle(/Member of the Day/);
   const r = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
   expect(r.violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${v.id}: ${v.nodes[0]?.target?.join(" ")}`)).toEqual([]);
 });

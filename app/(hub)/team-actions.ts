@@ -52,7 +52,7 @@ export async function moderate(form: FormData) {
   revalidatePath("/moderation");
 }
 
-const TYPES = ["post", "comment", "photo", "group", "blog", "blogc", "creview"];
+const TYPES = ["post", "comment", "photo", "group", "blog", "blogc", "creview", "story"];
 const num = (v: string, min: number, max: number, d: number) => {
   const n = parseInt(v, 10);
   return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : d;

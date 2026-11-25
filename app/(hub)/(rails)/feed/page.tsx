@@ -19,6 +19,8 @@ import { pageMeta } from "@/lib/seo";
 import { getMyReady, getSignals } from "@/lib/ready";
 import { missLine } from "@/lib/ready-shared";
 import { ReadyCard } from "@/components/ready/card";
+import { Suspense } from "react";
+import { FeedStories } from "@/components/stories/sections";
 
 export const metadata = pageMeta({ title: "Feed", description: "What Canadian small business owners are posting: questions, wins, offers and hiring.", path: "/feed" });
 
@@ -152,6 +154,8 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
 
   return (
     <>
+      {/* the handoff's order: stories, then the getting-started card, then the post box */}
+      {!saved && !kind && page === 1 && !before && <Suspense fallback={null}><FeedStories /></Suspense>}
       {notReady && miss && !saved && !kind && page === 1 && <ReadyCard where="home" miss={miss} />}
       {week && !saved && !kind && page === 1 && <FirstWeek steps={week.steps} connections={week.count} />}
       {fs.refresh && <FeedRefresh />}

@@ -25,6 +25,8 @@ import { missLine } from "@/lib/ready-shared";
 import { ReadyAv, } from "@/components/ready/provider";
 import { ReadyCard, SpotlightBanner } from "@/components/ready/card";
 import { AiProfileButton } from "@/components/ready/ai-button";
+import { Suspense } from "react";
+import { ProfileStoriesSection } from "@/components/stories/sections";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -286,6 +288,7 @@ export default async function MemberPage({
                 {pvOn && <Link href={`/members/${id}?tab=views`} aria-current={tab === "views" ? "page" : undefined}>Profile views</Link>}
               </nav>
             </div>
+            <Suspense fallback={null}><ProfileStoriesSection memberId={member.id} name={member.full_name || "Member"} avatar={photo(member)} /></Suspense>
 
             {tab === "views" && (
               <>

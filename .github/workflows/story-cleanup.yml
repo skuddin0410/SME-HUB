@@ -1,0 +1,19 @@
+# Community Stories: every hour, deletes the files of stories that left the feed, when the team has turned on
+# "Permanently delete its photos and videos" in Stories settings (otherwise the job finds nothing to do).
+# Uses the repository secrets SITE_URL and CRON_SECRET. Until both are set, the job skips quietly.
+name: Story clean-up
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete expired story files
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then echo "Not set up yet"; exit 0; fi
+          curl -fsS -H "Authorization: Bearer $CRON_SECRET" "$SITE_URL/api/cron/stories"

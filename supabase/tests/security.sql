@@ -1597,3 +1597,74 @@ insert into contact_messages (name, email, message) select 'Pat', 'flood@example
 select t.expect_denied('one address can send at most 5 messages an hour', $$insert into contact_messages (name, email, message) values ('Pat', 'flood@example.ca', 'Hi')$$);
 select t.expect_denied('visitors cannot read contact messages', $$select * from contact_messages$$);
 reset role;
+
+-- ===== Community Stories (0059) =====
+reset role; set request.jwt.claim.sub = '';
+-- as on Supabase: members reach storage through its policies
+grant usage on schema storage to anon, authenticated; grant select, insert, delete on storage.objects to authenticated; grant select on storage.objects to anon;
+insert into auth.users (id, email) values ('5707e000-0000-0000-0000-000000000001','st-author@x.ca'), ('5707e000-0000-0000-0000-000000000002','st-member@x.ca'),
+  ('5707e000-0000-0000-0000-000000000003','st-conn@x.ca'), ('5707e000-0000-0000-0000-000000000004','st-mod@x.ca');
+update profiles set role = 'admin' where id = '5707e000-0000-0000-0000-000000000004';
+insert into connections (requester_id, addressee_id, status) values ('5707e000-0000-0000-0000-000000000001', '5707e000-0000-0000-0000-000000000003', 'accepted');
+\set sa '''5707e000-0000-0000-0000-000000000001/11111111-1111-1111-1111-111111111111.jpg'''
+\set sb '''5707e000-0000-0000-0000-000000000001/22222222-2222-2222-2222-222222222222.mp4'''
+\set sc '''5707e000-0000-0000-0000-000000000001/33333333-3333-3333-3333-333333333333.jpg'''
+\set sg '''5707e000-0000-0000-0000-000000000001/44444444-4444-4444-4444-444444444444.gif'''
+set role authenticated; set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000001';
+insert into storage.objects (bucket_id, name) values ('stories', :sa), ('stories', :sb), ('stories', :sc), ('stories', :sg);
+select t.expect_denied('stories: cannot upload into someone else''s folder', $$insert into storage.objects (bucket_id, name) values ('stories', '5707e000-0000-0000-0000-000000000002/x.jpg')$$);
+select t.expect_denied('stories: no direct inserts, only through story_create', $$insert into stories (author_id, caption) values (auth.uid(), 'x')$$);
+select t.expect_denied('stories: GIF is off by default', format($$select story_create('', 'members', null, '[{"path":"%s","kind":"image"}]')$$, :sg));
+select t.expect_denied('stories: public audience is off by default', format($$select story_create('', 'public', null, '[{"path":"%s","kind":"image"}]')$$, :sa));
+select t.expect_denied('stories: a file must be uploaded first', $$select story_create('', 'members', null, '[{"path":"5707e000-0000-0000-0000-000000000001/55555555-5555-5555-5555-555555555555.jpg","kind":"image"}]')$$);
+select t.expect_denied('stories: a video longer than the limit is refused', format($$select story_create('', 'members', null, '[{"path":"%s","kind":"video","seconds":95}]')$$, :sb));
+select story_create('Members story', 'members', null, format('[{"path":"%s","kind":"image"},{"path":"%s","kind":"video","seconds":12}]', :sa, :sb)::jsonb) is not null;
+select story_create('Connections story', 'conn', null, format('[{"path":"%s","kind":"image"}]', :sc)::jsonb) is not null;
+select t.expect_denied('stories: one file cannot be in two stories', format($$select story_create('', 'members', null, '[{"path":"%s","kind":"image"}]')$$, :sa));
+select t.expect('stories: the author sees both', (select count(*) = 2 from stories));
+select t.expect_denied('stories: the author cannot like their own story', $$insert into story_likes (story_id, member_id) select id, auth.uid() from stories limit 1$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect('stories: a member who is not a connection sees only the members story', (select string_agg(caption, ',') = 'Members story' from stories));
+select t.expect('stories: and only its two items', (select count(*) = 2 from story_items));
+insert into story_likes (story_id, member_id) select id, auth.uid() from stories;
+select story_mark_seen(array(select id from story_items));
+select t.expect('stories: members cannot see other people''s counts', (select count(*) = 0 from story_counts(array(select id from stories))));
+select t.expect('stories: or the viewer list', (select count(*) = 0 from story_viewers((select id from stories limit 1))));
+select t.expect('stories: can read a visible file', story_object_ok(:sa));
+select t.expect('stories: cannot read a connections-only file', not story_object_ok(:sc));
+insert into reports (reporter_id, story_id, reason) select auth.uid(), id, 'Spam or selling' from stories;
+select t.expect_denied('stories: members cannot moderate', $$select story_moderate((select id from stories limit 1), 'remove')$$);
+select t.expect_denied('stories: members cannot run the clean-up', $$select * from story_purge_expired()$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000003';
+select t.expect('stories: a connection sees both stories', (select count(*) = 2 from stories));
+select id as conn_story from stories where caption = 'Connections story' \gset
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect_denied('stories: cannot report a story it cannot see', format($$insert into reports (reporter_id, story_id, reason) values (auth.uid(), %L, 'Spam')$$, :'conn_story'));
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000001';
+select t.expect('stories: the author sees 1 view and 1 like', (select views = 1 and likes = 1 from story_counts(array(select id from stories where caption = 'Members story'))));
+select t.expect('stories: and who viewed', (select count(*) = 1 from story_viewers((select id from stories where caption = 'Members story'))));
+select story_highlight_save(null, 'Our Products', array(select id from story_items order by position limit 1), null) is not null;
+select t.expect('stories: a highlight is saved with a cover', (select cover_item is not null from story_highlights where name = 'Our Products'));
+select t.expect_denied('stories: a highlight needs a name', $$select story_highlight_save(null, '  ', array(select id from story_items limit 1), null)$$);
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect_denied('stories: cannot put someone else''s story in my highlight', $$select story_highlight_save(null, 'Mine', array(select id from story_items limit 1), null)$$);
+set role anon; set request.jwt.claim.sub = '';
+select t.expect('stories: visitors see no members stories', (select count(*) = 0 from stories));
+select t.expect('stories: visitors see highlight names', (select count(*) = 1 from story_highlights));
+reset role;
+-- approval on: a new story waits, nobody else sees it, a moderator approves it
+insert into hub_settings (key, value) values ('stories', '{"approval": true}') on conflict (key) do update set value = excluded.value;
+set role authenticated; set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000003';
+insert into storage.objects (bucket_id, name) values ('stories', '5707e000-0000-0000-0000-000000000003/66666666-6666-6666-6666-666666666666.jpg');
+select story_create('Waiting', 'members', null, '[{"path":"5707e000-0000-0000-0000-000000000003/66666666-6666-6666-6666-666666666666.jpg","kind":"image"}]') as waiting \gset
+select t.expect('stories: with approval on, a new story is pending', (select status = 'pending' from stories where id = :'waiting'));
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect('stories: others cannot see a pending story', not exists (select 1 from stories where caption = 'Waiting'));
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000004';
+select story_moderate((select id from stories where caption = 'Waiting'), 'approve');
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000002';
+select t.expect('stories: once approved, members see it', exists (select 1 from stories where caption = 'Waiting'));
+set request.jwt.claim.sub = '5707e000-0000-0000-0000-000000000001';
+select story_delete((select id from stories where caption = 'Members story'));
+select t.expect('stories: a deleted story leaves the highlight too', (select count(*) = 0 from story_highlight_items));
+reset role; delete from hub_settings where key = 'stories';

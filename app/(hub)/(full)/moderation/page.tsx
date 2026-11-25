@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ModStoriesSection } from "@/components/stories/sections";
 import { timeAgo } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
@@ -7,7 +8,7 @@ import { deleteReportCategory, moderate, saveModerationSettings, saveReportCateg
 
 export const metadata = { title: "Moderation", robots: { index: false } };
 
-const MTYPES: [string, string][] = [["post", "Feed posts"], ["comment", "Comments"], ["photo", "Photos"], ["group", "Groups"], ["blog", "Member blog posts"], ["blogc", "Blog comments"], ["creview", "Course reviews"]];
+const MTYPES: [string, string][] = [["post", "Feed posts"], ["comment", "Comments"], ["photo", "Photos"], ["group", "Groups"], ["blog", "Member blog posts"], ["blogc", "Blog comments"], ["creview", "Course reviews"], ["story", "Stories"]];
 type Rep = { id: string; reason: string; note?: string; created_at: string; post_id: string | null; profile_id: string | null; course_review_id?: string | null; reporter: { full_name: string } | null };
 type Person = { id: string; full_name: string; headline: string | null; avatar_url: string | null; status: string };
 type TypeSet = Record<string, { on: boolean; auto: boolean; hide: number }>;
@@ -86,7 +87,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
         {tabs.map(([k, l]) => <Link key={k} className="chip" href={`/moderation?tab=${k}`} aria-current={tab === k ? "true" : undefined}>{l}</Link>)}
       </nav>
 
-      {tab === "stories" && <div className="card"><p className="muted">No stories are waiting for review. Stories that are reported or need approval will show here once Stories are switched on.</p></div>}
+      {tab === "stories" && <ModStoriesSection />}
 
       {tab === "content" && (
         <form action={moderate} className="stack" style={{ gap: 16 }}>
@@ -209,7 +210,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
           <form action={saveModerationSettings} className="stack" style={{ display: "contents" }}>
             <div className="card">
               <h2>What members can report</h2>
-              <p className="muted small">A switch for every kind of content, and how many reports hide it on its own. Feed posts and course reviews are reportable so far.</p>
+              <p className="muted small">A switch for every kind of content, and how many reports hide it on its own. Feed posts, course reviews and stories are reportable so far.</p>
               {MTYPES.map(([k, l]) => (
                 <div className="setrow" key={k}>
                   <label className="row" style={{ gap: 8 }}><input type="checkbox" name={`on_${k}`} defaultChecked={s.types[k]?.on} />{l}</label>
