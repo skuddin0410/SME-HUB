@@ -705,13 +705,13 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
 // ---------- post actions (design: docs/design/feed.html) ----------
 // One reaction per member, LinkedIn style. Stored kinds keep their database names:
 // like = Helpful, love = Insightful, celebrate = Celebrate.
-const REACTIONS: { kind: ReactionKind; emoji: string; label: string; on: string }[] = [
-  { kind: "like", emoji: "👍", label: REACTION_LABEL.like, on: "bg-blue-50 text-blue-700 border-blue-200" },
-  { kind: "celebrate", emoji: "🎉", label: REACTION_LABEL.celebrate, on: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  { kind: "support", emoji: "🤝", label: REACTION_LABEL.support, on: "bg-violet-50 text-violet-700 border-violet-200" },
-  { kind: "love", emoji: "❤️", label: REACTION_LABEL.love, on: "bg-rose-50 text-rose-700 border-rose-200" },
-  { kind: "insight", emoji: "💡", label: REACTION_LABEL.insight, on: "bg-amber-50 text-amber-800 border-amber-200" },
-  { kind: "funny", emoji: "😄", label: REACTION_LABEL.funny, on: "bg-orange-50 text-orange-700 border-orange-200" },
+const REACTIONS: { kind: ReactionKind; emoji: string; label: string; on: string; color: string }[] = [
+  { kind: "like", emoji: "👍", label: REACTION_LABEL.like, on: "bg-blue-50 text-blue-700 border-blue-200", color: "#2563EB" },
+  { kind: "celebrate", emoji: "🎉", label: REACTION_LABEL.celebrate, on: "bg-emerald-50 text-emerald-700 border-emerald-200", color: "#059669" },
+  { kind: "support", emoji: "🤝", label: REACTION_LABEL.support, on: "bg-violet-50 text-violet-700 border-violet-200", color: "#7C3AED" },
+  { kind: "love", emoji: "❤️", label: REACTION_LABEL.love, on: "bg-rose-50 text-rose-700 border-rose-200", color: "#E11D48" },
+  { kind: "insight", emoji: "💡", label: REACTION_LABEL.insight, on: "bg-amber-50 text-amber-800 border-amber-200", color: "#B45309" },
+  { kind: "funny", emoji: "😄", label: REACTION_LABEL.funny, on: "bg-orange-50 text-orange-700 border-orange-200", color: "#C2410C" },
 ];
 const BURST_EMOJI: Partial<Record<ReactionKind, string>> = { like: "👍", support: "🤝", love: "❤️", funny: "😄" };
 const ICON_CLASS: Record<ReactionKind, string> = { like: "react-like", celebrate: "react-celebrate", support: "react-like", love: "react-like", insight: "react-love", funny: "react-like" };
@@ -752,13 +752,16 @@ function ReactionButton({
   active,
   count,
   onToggle,
+  pick = false,
 }: {
   reaction: (typeof REACTIONS)[number];
   active: boolean;
   count: number;
   onToggle: () => void;
+  /** in the reaction picker: the emoji alone, no count */
+  pick?: boolean;
 }) {
-  const { kind, emoji, label, on } = reaction;
+  const { kind, emoji, label, color } = reaction;
   const [play, setPlay] = useState<{ n: number; on: boolean } | null>(null);
   const [particles, setParticles] = useState<Particle[]>([]);
   const seed = useRef(0);
@@ -783,9 +786,10 @@ function ReactionButton({
       type="button"
       onClick={click}
       aria-pressed={active}
-      aria-label={`${label}, ${count}`}
-      className="act rx"
-      data-on={on ? "1" : undefined}
+      aria-label={pick ? label : `${label}, ${count}`}
+      title={label}
+      className={pick ? "rx3 rxpick" : "rx3"}
+      style={{ "--rxc": color } as React.CSSProperties}
     >
       <span className="relative inline-flex">
         {kind === "insight" && play?.on && <span key={`g${play.n}`} aria-hidden="true" className="react-glow pointer-events-none absolute -inset-2 rounded-full" />}
@@ -818,14 +822,50 @@ function ReactionButton({
           ))}
         </span>
       </span>
-      <span className="hidden sm:inline">{label}</span>
-      <span key={`c${count}`} className={cx("font-semibold tabular-nums inline-block", play && "react-count")}>
-        {count}
-      </span>
+      {!pick && (
+        <span key={`c${count}`} className={cx("rxn tabular-nums inline-block", play && "react-count")}>
+          {count}
+        </span>
+      )}
     </button>
   );
 }
 
+
+/**
+ * The add-reaction button and its picker: all six reactions in a floating row. Opens on hover (with a short delay so it
+ * does not flash while the pointer passes over) and on tap or click; closes on pick, on leaving, on Escape or on a click
+ * elsewhere. The picked reaction plays its animation in the picker before it closes.
+ */
+function ReactionPicker({ mine, onPick }: { mine: ReactionKind | null; onPick: (k: ReactionKind) => void }) {
+  const [open, setOpen] = useState(false);
+  const wrap = useRef<HTMLDivElement>(null);
+  const timer = useRef<number | undefined>(undefined);
+  const later = (fn: () => void, ms: number) => { window.clearTimeout(timer.current); timer.current = window.setTimeout(fn, ms); };
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: MouseEvent) => { if (!wrap.current?.contains(e.target as Node)) setOpen(false); };
+    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", away);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", away); document.removeEventListener("keydown", esc); };
+  }, [open]);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+  return (
+    <div ref={wrap} className="rxadd" onMouseEnter={() => later(() => setOpen(true), 280)} onMouseLeave={() => later(() => setOpen(false), 320)}>
+      <button type="button" className="rxaddbtn" aria-label="Add a reaction" title="React" aria-expanded={open} onClick={() => { window.clearTimeout(timer.current); setOpen((o) => !o); }}>
+        <Ic n="smileplus" s={19} />
+      </button>
+      {open && (
+        <div className="rxtray" role="group" aria-label="Choose a reaction">
+          {REACTIONS.map((r) => (
+            <ReactionButton key={r.kind} reaction={r} pick active={mine === r.kind} count={0} onToggle={() => { onPick(r.kind); later(() => setOpen(false), 650); }} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function PostActions({
   postId,
@@ -839,8 +879,11 @@ export function PostActions({
   startOpen = false,
   commentsClosed = false,
   rules,
+  canQuote = false,
 }: {
   postId: string;
+  /** shows the Quote icon; it opens the quote form under the post (QuoteButton in post-extras) */
+  canQuote?: boolean;
   commentsClosed?: boolean;
   rules?: import("@/lib/zip/settings-load").PostRules;
   likes?: number;
@@ -911,10 +954,12 @@ export function PostActions({
 
   return (
     <>
-      <div className="acts">
-        {REACTIONS.map((r) => (
+      <div className="acts rxrow">
+        {/* the reactions people have used, each with its count; yours is a little larger and in its colour */}
+        {REACTIONS.filter((r) => (tally[r.kind] ?? 0) > 0 || mine === r.kind).map((r) => (
           <ReactionButton key={r.kind} reaction={r} active={mine === r.kind} count={tally[r.kind] ?? 0} onToggle={() => react(r.kind)} />
         ))}
+        <ReactionPicker mine={mine} onPick={(k) => react(k)} />
         <span className="spacer" style={{ flex: 1 }} />
         {note && (
           <span role="status" className="small" style={{ background: "var(--ink)", color: "var(--bg)", borderRadius: 999, padding: "4px 10px" }}>
@@ -936,6 +981,12 @@ export function PostActions({
           <Ic n="repost" s={15} />
           {repostCount}
         </button>}
+        {canQuote && rules?.share !== false && (
+          <button type="button" aria-label="Quote this post" title="Quote" className="act plain"
+            onClick={() => { if (needAccount()) return; window.dispatchEvent(new CustomEvent("zip:quote", { detail: postId })); }}>
+            <Ic n="quote" s={15} />
+          </button>
+        )}
         {rules?.share !== false && <button
           type="button"
           aria-label="Send in a message"

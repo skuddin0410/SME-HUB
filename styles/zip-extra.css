@@ -237,3 +237,25 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
    margin:auto centres it; a dialog taller than the window starts at the top and scrolls inside the backdrop. */
 .zip .overlay { position: fixed !important; inset: 0 !important; width: 100vw; height: 100dvh; align-items: flex-start !important; padding: 24px 16px !important; z-index: 1000 !important; }
 .zip .overlay > * { margin: auto !important; }
+
+/* Post reactions, option B3 (Nov 26): one row, no boxes. Left: the reactions people used, emoji and count (yours a little
+   larger, its count in the reaction's colour), then the add-reaction button that opens a picker of all six.
+   Right: comment, repost, quote, send as icons. */
+.zip .acts.rxrow { display: flex; flex-wrap: nowrap; align-items: center; gap: 14px; padding-top: 12px; }
+.zip .rx3 { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 2px; border: 0; background: none; border-radius: 8px; cursor: pointer; font: 600 14px var(--body); color: var(--soft); }
+.zip .rx3 > span:first-child { font-size: 20px; line-height: 1; transition: transform .15s var(--ease, ease); }
+.zip .rx3:hover > span:first-child { transform: scale(1.12); }
+.zip .rx3[aria-pressed="true"] { color: var(--rxc); }
+.zip .rx3[aria-pressed="true"] > span:first-child { font-size: 22px; }
+.zip .rx3:focus-visible, .zip .rxaddbtn:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.zip .rxadd { position: relative; display: inline-flex; }
+.zip .rxaddbtn { display: inline-grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 50%; background: none; color: var(--soft); cursor: pointer; }
+.zip .rxaddbtn:hover, .zip .rxaddbtn[aria-expanded="true"] { color: var(--ink); background: var(--surface-2, #F4F4F5); }
+.zip .rxtray { position: absolute; left: -8px; bottom: calc(100% + 8px); z-index: 30; display: flex; gap: 2px; padding: 6px 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; box-shadow: 0 10px 28px rgba(15, 23, 42, .14); animation: zpop .16s var(--ease, ease) both; transform-origin: bottom left; }
+.zip .rxtray .rxpick { width: 40px; height: 40px; justify-content: center; padding: 0; border-radius: 50%; }
+.zip .rxtray .rxpick > span:first-child { font-size: 26px; transition: transform .14s var(--ease, ease); }
+.zip .rxtray .rxpick:hover > span:first-child, .zip .rxtray .rxpick:focus-visible > span:first-child { transform: translateY(-4px) scale(1.25); }
+.zip .rxtray .rxpick[aria-pressed="true"] { background: color-mix(in srgb, var(--rxc) 12%, transparent); }
+.zip .acts.rxrow .act.plain { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 8px; border: 0; border-radius: 10px; background: none; color: var(--soft); font: 600 13.5px var(--body); }
+.zip .acts.rxrow .act.plain:hover { background: var(--surface-2, #F4F4F5); color: var(--ink); }
+@media (max-width: 520px) { .zip .acts.rxrow { gap: 8px; } .zip .acts.rxrow .act.plain { padding: 0 6px; } }

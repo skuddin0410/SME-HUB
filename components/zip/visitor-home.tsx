@@ -225,16 +225,17 @@ function VisitorPost({ p }: { p: Post }) {
           No answers yet. Can you help?
         </p>
       )}
-      <div className="acts">
-        <Join className="act rxbtn">
-          <span aria-hidden="true">👍</span>React
-        </Join>
+      <div className="acts rxrow">
         {total > 0 && (
-          <span className="rxsum">
-            <b>{total}</b>
+          <span className="rx3" aria-label={`${total} reactions`}>
+            <span aria-hidden="true">👍</span>
+            <span className="rxn">{total}</span>
           </span>
         )}
-        <span className="spacer" />
+        <Join className="rxaddbtn" label="Join to react">
+          <Ic n="smileplus" s={19} />
+        </Join>
+        <span className="spacer" style={{ flex: 1 }} />
         <Link className="act plain" href={`/posts/${p.id}`} aria-label={`Comments, ${p.comments}`}>
           <Ic n="msg" s={15} />
           {p.comments}

@@ -136,6 +136,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
         startOpen={startOpen}
         commentsClosed={post.comments_closed}
         rules={rules}
+        canQuote={!!(rules.share && post.id)}
       />
       {rules.share && viewer.userId && post.id && <QuoteButton postId={post.id} signedIn />}
       {own && <PostManage post={post} />}

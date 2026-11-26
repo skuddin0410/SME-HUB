@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { Check, Pencil, Pin, PinOff, Quote, MessageSquareOff, MessageSquare } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { Check, Pencil, Pin, PinOff, MessageSquareOff, MessageSquare } from "lucide-react";
 import { editPost, quotePost, setCommentsClosed, setProfilePin, votePoll } from "@/app/(hub)/actions";
 import { canEdit, pollShares } from "@/lib/feed-rules";
 import type { PollData, QuotedPost } from "@/lib/hub";
@@ -82,12 +82,13 @@ export function QuoteButton({ postId, signedIn }: { postId: string; signedIn: bo
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, start] = useTransition();
-  if (!open)
-    return (
-      <button type="button" onClick={() => (signedIn ? setOpen(true) : router.push("/auth/login"))} className={BTN} aria-label="Quote this post">
-        <Quote className="h-3.5 w-3.5" /> Quote
-      </button>
-    );
+  // the Quote icon in the post's action row (PostActions) opens this form
+  useEffect(() => {
+    const onQuote = (e: Event) => { if ((e as CustomEvent<string>).detail !== postId) return; if (signedIn) setOpen(true); else router.push("/auth/login"); };
+    window.addEventListener("zip:quote", onQuote);
+    return () => window.removeEventListener("zip:quote", onQuote);
+  }, [postId, signedIn, router]);
+  if (!open) return null;
   return (
     <form
       className="mt-2 w-full space-y-2"
