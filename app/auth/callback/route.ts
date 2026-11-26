@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/auth/safe-next";
 import { siteOrigin } from "@/lib/auth/site";
 import { sendWelcomeOnce } from "@/lib/auth/welcome";
+import { fillFromProvider, needsFinish } from "@/lib/auth/oauth-profile";
 
 /** For sign-in providers that return a one-time code (PKCE): trade it for a session, then move on. */
 export async function GET(request: NextRequest) {
@@ -12,9 +13,16 @@ export async function GET(request: NextRequest) {
   if (code) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    // first sign-in with Google or Microsoft: welcome them too (no-op for everyone else)
-    if (!error && data.user) await sendWelcomeOnce(supabase, data.user, origin);
-    if (!error) return NextResponse.redirect(`${origin}${safeNext(url.searchParams.get("next"))}`);
+    if (!error && data.user) {
+      // Google or LinkedIn: their real name and profile picture (no-op for everyone else)
+      await fillFromProvider(supabase, data.user);
+      // first sign-in with Google or LinkedIn: welcome them too (no-op for everyone else)
+      await sendWelcomeOnce(supabase, data.user, origin);
+    }
+    const next = safeNext(url.searchParams.get("next"));
+    // Google and LinkedIn skip the sign-up form, so they give its details once before going on
+    if (!error && data.user && needsFinish(data.user)) return NextResponse.redirect(`${origin}/auth/finish?next=${encodeURIComponent(next)}`);
+    if (!error) return NextResponse.redirect(`${origin}${next}`);
   }
   // already used, expired, or opened in another browser: sign in normally
   return NextResponse.redirect(`${origin}/auth/login?notice=link-expired`);

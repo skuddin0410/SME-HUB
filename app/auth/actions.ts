@@ -8,6 +8,7 @@ import { MAX_PASSWORD, isBreached, passwordOk } from "@/lib/auth/password";
 import { siteOrigin } from "@/lib/auth/site";
 import { PROVINCES } from "@/lib/auth/provinces";
 import { sendWelcomeOnce } from "@/lib/auth/welcome";
+import { serviceClient } from "@/lib/supabase/service";
 import { checkChallenge, DEVICE_COOKIE, gateReady, isTrusted, spaced, startChallenge, TRUST_DAYS, trustDevice } from "@/lib/auth/device-gate";
 import { sendEmail } from "@/lib/email/send";
 import { commonVars, renderEmail } from "@/lib/email/render";
@@ -401,4 +402,60 @@ export async function setEmailCode(on: boolean): Promise<{ ok: boolean }> {
   if (!user) return { ok: false };
   const { error } = await supabase.from("user_security").upsert({ user_id: user.id, email_code: Boolean(on), updated_at: new Date().toISOString() });
   return { ok: !error };
+}
+
+// ---------- Finish your profile (Google and LinkedIn members) ----------
+export type FinishInput = { first: string; last: string; business: string; website: string; province: string; terms: boolean; newsletter: boolean };
+
+/**
+ * Google and LinkedIn members skip the sign-up form, so they give its details once, on their first visit:
+ * the same fields and checks as the form, minus email and password. Stored where sign-up stores them.
+ */
+export async function finishProfile(input: FinishInput): Promise<{ ok: true } | { ok: false; fields?: Fields; form?: string }> {
+  const first = String(input.first ?? "").trim().slice(0, 40);
+  const last = String(input.last ?? "").trim().slice(0, 40);
+  const business = String(input.business ?? "").trim().slice(0, 120);
+  let website = String(input.website ?? "").trim().slice(0, 200);
+  const province = String(input.province ?? "");
+  const fields: Fields = {};
+  if (!first) fields.fn = "Enter your first name.";
+  if (!last) fields.ln = "Enter your last name.";
+  if (!business) fields.bn = "Enter your business name.";
+  if (!PROVINCES.includes(province)) fields.pr = "Choose your province or territory.";
+  if (!input.terms) fields.tm = "Please agree to the terms to continue.";
+  if (website && !/^(https?:\/\/)?[^\s/$.?#][^\s]*\.[^\s]{2,}$/i.test(website)) fields.ws = "Check the website address. It should look like yourbusiness.ca.";
+  if (Object.keys(fields).length) return { ok: false, fields };
+  if (website && !/^https?:\/\//i.test(website)) website = `https://${website}`;
+
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  const user = auth.user;
+  if (!user) return { ok: false, form: "Your session has ended. Log in again." };
+
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      first_name: first,
+      last_name: last,
+      full_name: `${first} ${last}`,
+      business_name: business,
+      website,
+      province,
+      terms_at: new Date().toISOString(),
+      ...(input.newsletter ? { newsletter: "true", newsletter_wording: NEWSLETTER_WORDING } : {}),
+    },
+  });
+  if (error) return { ok: false, form: "We couldn’t save that. Try again in a moment." };
+  await supabase.from("profiles").update({ full_name: `${first} ${last}`.slice(0, 80), ...(website ? { website } : {}) }).eq("id", user.id);
+  // the province fills the profile's location only when the member hasn't set one
+  await supabase.from("profiles").update({ location: province }).eq("id", user.id).is("location", null);
+
+  // the newsletter list is written only by the server, as at sign-up
+  if (input.newsletter) {
+    const admin = serviceClient();
+    if (admin) {
+      const { data: had } = await admin.from("newsletter_consents").select("user_id").eq("user_id", user.id).maybeSingle();
+      if (!had) await admin.from("newsletter_consents").insert({ user_id: user.id, wording: NEWSLETTER_WORDING });
+    }
+  }
+  return { ok: true };
 }
