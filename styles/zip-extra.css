@@ -291,3 +291,6 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .dark .zip .tbadge.own, .zip.dark .tbadge.own { background: rgba(96,165,250,.12); color: #BFD3FE; border-color: rgba(96,165,250,.45); }
 /* the profile's badge row now sits under the location line */
 .zip .ptags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 2px; }
+/* the small badge used beside posts: same look, lighter weight */
+.zip .tbadge.sm { height: 19px; gap: 4px; padding: 0 8px 0 2px; font-size: 11px; font-weight: 650; }
+.zip .tbadge.sm .tcoin { width: 15px; height: 15px; }

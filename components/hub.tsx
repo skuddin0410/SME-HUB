@@ -8,7 +8,6 @@ import { TypeBadge } from "@/components/zip/type-badge";
 import { PollView, PostManage, QuoteButton, QuoteEmbed } from "@/components/post-extras";
 import { ConnectButton } from "@/components/network-client";
 import { SaveButton } from "@/components/feed-client";
-import { KINDS } from "@/lib/demo";
 import { ZipAv } from "@/components/zip/bits";
 import { PostMedia } from "@/components/zip/post-media";
 
@@ -83,19 +82,19 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
               post.author.headline || "SME Hub member"
             )}
           </span>
-          <span className="row" style={{ gap: 6, flexWrap: "wrap", marginTop: 2 }}>
-            <Link href={`/posts/${post.id}`} className="small" style={{ color: "#A1A1AA" }}>
+          {/* badges first, then when it was posted (and where); the post kind is not shown as a chip */}
+          <span className="row phmeta" style={{ gap: 6, flexWrap: "wrap", marginTop: 3, alignItems: "center" }}>
+            {post.author.member_type === "advisor" && !post.business && <TypeBadge type="advisor" size="sm" />}
+            {post.author.member_type !== "advisor" && post.author.member_type !== "owner" && !post.business && <TierBadge type={post.author.member_type} always />}
+            <Link href={`/posts/${post.id}`} className="small" style={{ color: "#71717A" }}>
               {timeAgo(post.created_at)}
               {post.edited_at ? " · Edited" : ""}
             </Link>
             {post.group && (
-              <Link href={`/groups/${post.group.slug}`} className="small" style={{ color: "#A1A1AA" }}>
+              <Link href={`/groups/${post.group.slug}`} className="small" style={{ color: "#71717A" }}>
                 · {post.group.name}
               </Link>
             )}
-            {post.author.member_type === "advisor" && !post.business && <TypeBadge type="advisor" />}
-            {post.author.member_type !== "advisor" && post.author.member_type !== "owner" && !post.business && <TierBadge type={post.author.member_type} always />}
-            <span className={`tag ${post.kind}`}>{KINDS[post.kind].label}</span>
             {post.profile_pinned && <span className="tag">Pinned on profile</span>}
             {VISIBILITY_LABEL[post.visibility] && <span className="tag">{VISIBILITY_LABEL[post.visibility]}</span>}
           </span>
