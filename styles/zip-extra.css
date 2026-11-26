@@ -294,3 +294,6 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 /* the small badge used beside posts: same look, lighter weight */
 .zip .tbadge.sm { height: 19px; gap: 4px; padding: 0 8px 0 2px; font-size: 11px; font-weight: 650; }
 .zip .tbadge.sm .tcoin { width: 15px; height: 15px; }
+/* link from the member directory to "Your network, live" */
+.zip .dirhead .nllink { align-self: flex-start; margin-top: 12px; gap: 9px; }
+.zip .dirhead .nllink .nldot { width: 8px; height: 8px; border-radius: 50%; background: #16A34A; box-shadow: 0 0 0 3px rgba(22,163,74,.18); }

@@ -7,6 +7,17 @@ import fs from "node:fs";
 import { handleCourses } from "./mock-courses.mjs";
 import { handleForsale } from "./mock-forsale.mjs";
 import { handleAsk, handleMatches, handleStories, handleTeam } from "./mock-stories.mjs";
+const LIVE_PEOPLE = [
+  ["11", "Priya Raman", "Founder, Maple Bakery", "Toronto, ON", "p-priya"], ["12", "Kwame Asante", "Managing Partner, Asante Legal", "Toronto, ON", "p-kwame"],
+  ["21", "Daniel Okafor", "Owner, Northside Logistics", "Mississauga, ON", "p-daniel"], ["22", "Sara Haddad", "Founder, Clearwater Bookkeeping", "Ottawa, ON", "p-sara"],
+  ["23", "Isabelle Gagnon", "President, Studio Gagnon Design", "Montréal, QC", "p-isabelle"], ["24", "Hana Kim", "Founder, Kim & Co. Accounting", "Vancouver, BC", "p-hana"],
+  ["25", "Ravi Patel", "Co-founder, Loop Software", "Waterloo, ON", "p-ravi"], ["26", "Amara Diallo", "Founder, Diallo Imports", "Montréal, QC", "p-amara"],
+  ["27", "Arjun Mehta", "CEO, Brightline Solar", "Calgary, AB", "p-arjun"], ["28", "Nadia Rahman", "Owner, Prairie Roots Catering", "Winnipeg, MB", "p-nadia"],
+  ["29", "Owen Clarke", "Owner, Clarke Hardware", "Halifax, NS", "p-owen"], ["30", "Mei Chen", "Director, Lotus Travel", "Edmonton, AB", "p-mei"],
+  ["31", "Marcus Bell", "Founder, Bell Construction", "Regina, SK", "p-marcus"], ["32", "Chloé Martin", "Founder, Martin Media", "Québec City, QC", "p-chloe"],
+  ["33", "Luc Bergeron", "Owner, Bergeron Bikes", "Moncton, NB", "p-luc"], ["34", "Tyler Grant", "Owner, Grant Fitness", "Victoria, BC", "p-tyler"],
+].map(([n, name, headline, location, img]) => ({ id: `00000000-0000-4000-8000-0000000000${n}`, full_name: name, headline, location, avatar_url: `/zip/img/${img}.jpg`, profile_type: "owner" }));
+
 
 const MEMBER = {
   id: "00000000-0000-4000-8000-000000000001",
@@ -156,6 +167,21 @@ http
       if (url.pathname === "/rest/v1/profiles" && (url.searchParams.get("id") || "").startsWith("in.")) return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000b1", full_name: "Marcus Webb", headline: "Consultant", avatar_url: null, status: "active" }]));
       if (url.pathname === "/rest/v1/mod_settings") return res.end(JSON.stringify(String(req.headers.accept).includes("vnd.pgrst.object") ? MODSET : [MODSET]));
       if (url.pathname === "/rest/v1/report_categories") return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-0000000000c1", name: "Scam or fraud", description: "Fake offers.", show: "both" }]));
+    }
+    // "Your network, live": the member's connections, where they are, and what they did
+    if (member && url.pathname === "/rest/v1/connections" && (url.searchParams.get("or") || "").includes(MEMBER.id) && url.searchParams.get("status") === "eq.accepted") {
+      return res.end(JSON.stringify(LIVE_PEOPLE.map((p, i) => ({ requester_id: i % 2 ? p.id : MEMBER.id, addressee_id: i % 2 ? MEMBER.id : p.id, created_at: "2026-0" + (1 + (i % 9)) + "-12T12:00:00Z" }))));
+    }
+    if (member && url.pathname === "/rest/v1/profiles" && (url.searchParams.get("select") || "").replace(/\s/g, "").includes("profile_type,status") && (url.searchParams.get("id") || "").startsWith("in.")) {
+      return res.end(JSON.stringify(LIVE_PEOPLE.map((p) => ({ ...p, status: "active" }))));
+    }
+    if (member && url.pathname === "/rest/v1/notifications" && (url.searchParams.get("actor_id") || "").startsWith("in.")) {
+      const ago = (m) => new Date(Date.now() - m * 60000).toISOString();
+      return res.end(JSON.stringify([
+        { id: "00000000-0000-4000-8000-00000000e101", type: "like", actor_id: LIVE_PEOPLE[0].id, post_id: "00000000-0000-4000-8000-0000000000a1", created_at: ago(3) },
+        { id: "00000000-0000-4000-8000-00000000e102", type: "comment", actor_id: LIVE_PEOPLE[3].id, post_id: "00000000-0000-4000-8000-0000000000a1", created_at: ago(9) },
+        { id: "00000000-0000-4000-8000-00000000e103", type: "connection_accepted", actor_id: LIVE_PEOPLE[6].id, post_id: null, created_at: ago(40) },
+      ]));
     }
     if (member && url.pathname === "/auth/v1/user") {
       return res.end(JSON.stringify({ id: MEMBER.id, aud: "authenticated", role: "authenticated", email: "member@example.test", app_metadata: {}, user_metadata: {}, created_at: MEMBER.created_at }));

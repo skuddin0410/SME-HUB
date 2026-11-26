@@ -18,6 +18,7 @@ type Me = { id: string; full_name: string; avatar_url: string | null; headline?:
 const HUB_MENU: NavItem[] = [
   { label: "Groups", href: "/groups" },
   { label: "Members", href: "/members" },
+  { label: "Your network, live", href: "/network/live" },
   { label: "Hashtags", href: "/hashtags" },
   { label: "Business Directory", href: "/businesses" },
   { label: "Grant Finder", href: "/grants" },

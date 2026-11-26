@@ -1,0 +1,70 @@
+/* "Your network, live" (/network/live): a tilted, dotted map of Canada at night with your connections as profile pins,
+   and a live timeline beside it. Built from the approved mockup. */
+.zip .nlmain { display: grid; grid-template-columns: minmax(0, 1fr) 370px; gap: 18px; align-items: stretch; }
+.zip .nlmap { position: relative; border-radius: 24px; overflow: hidden; background: radial-gradient(120% 90% at 50% 0%, #13285C 0%, #0E1C42 45%, #0A1430 100%); height: min(720px, calc(100vh - 200px)); min-height: 560px; box-shadow: 0 24px 60px rgba(10, 20, 48, .25); }
+.zip .nlmap canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+.zip .nlmap canvas.drag { cursor: grabbing; }
+.zip .nlstats { position: absolute; left: 18px; top: 18px; right: 360px; display: flex; gap: 8px; flex-wrap: wrap; }
+.zip .nlstats > div { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(8px); border-radius: 14px; padding: 9px 13px; color: #fff; min-width: 104px; }
+.zip .nlstats b { display: block; font: 800 21px/1.1 var(--display); }
+.zip .nlstats span { font-size: 12px; color: rgba(255,255,255,.72); }
+.zip .nlseg { position: absolute; right: 18px; top: 18px; display: flex; gap: 2px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 4px; backdrop-filter: blur(8px); }
+.zip .nlseg button { border: 0; background: none; color: rgba(255,255,255,.8); padding: 7px 11px; border-radius: 9px; font: 600 13px var(--body); cursor: pointer; }
+.zip .nlseg button.on { background: #fff; color: #0A1430; }
+.zip .nlctl { position: absolute; right: 18px; bottom: 18px; display: flex; gap: 8px; }
+.zip .nlctl button { height: 38px; min-width: 38px; padding: 0 12px; border-radius: 11px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.08); color: #fff; font: 600 14px var(--body); backdrop-filter: blur(8px); cursor: pointer; }
+.zip .nlctl button:hover { background: rgba(255,255,255,.16); }
+.zip .nlctl button.on { background: #fff; color: #0A1430; }
+.zip .nllegend { position: absolute; left: 18px; bottom: 18px; display: flex; gap: 14px; flex-wrap: wrap; color: rgba(255,255,255,.78); font-size: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 8px 12px; max-width: calc(100% - 360px); }
+.zip .nllegend span { display: flex; align-items: center; gap: 7px; }
+.zip .nllegend i { width: 10px; height: 10px; border-radius: 50%; }
+.zip .nllegend i.you { background: #D42A2A; box-shadow: 0 0 0 3px rgba(212,42,42,.35); }
+.zip .nllegend i.on { background: #fff; box-shadow: inset 0 0 0 2px #16A34A; }
+.zip .nllegend i.beam { background: linear-gradient(90deg, #60A5FA, #fff); }
+.zip .nlbub { position: absolute; pointer-events: none; transform: translate(-50%, calc(-100% - 26px)); display: flex; align-items: center; gap: 7px; background: #fff; color: #18181B; border-radius: 14px; padding: 8px 12px; box-shadow: 0 14px 34px rgba(0,0,0,.32); white-space: nowrap; font-size: 12.5px; z-index: 3; animation: nlpop .45s cubic-bezier(.2,1.4,.4,1) both; }
+.zip .nlbub::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 12px; height: 12px; background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 2px; }
+.zip .nlbub b { font-weight: 700; }
+.zip .nlbub span { color: #52525B; }
+@keyframes nlpop { from { opacity: 0; transform: translate(-50%, calc(-100% - 10px)) scale(.7); } to { opacity: 1; transform: translate(-50%, calc(-100% - 26px)) scale(1); } }
+.zip .nlic { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; vertical-align: -4px; flex: none; }
+.zip .nlav { position: relative; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #E0E7FF; color: #1E3A8A; font: 700 12px var(--display); flex: none; border: 0; padding: 0; cursor: pointer; }
+.zip .nlav img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.zip .nlav i { position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; background: #16A34A; box-shadow: 0 0 0 2px #fff; }
+.zip .nlcard { position: absolute; width: 290px; background: #fff; color: #18181B; border-radius: 18px; box-shadow: 0 24px 50px rgba(0,0,0,.35); padding: 16px; z-index: 4; animation: nlin .25s ease both; }
+@keyframes nlin { from { opacity: 0; transform: translateY(6px) scale(.97); } to { opacity: 1; transform: none; } }
+.zip .nlcard .t { display: flex; gap: 12px; align-items: center; padding-right: 26px; }
+.zip .nlcard .nlav { width: 52px; height: 52px; font-size: 17px; cursor: default; }
+.zip .nlcard h3 { margin: 0; font: 800 17px/1.2 var(--display); }
+.zip .nlcard .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0; }
+.zip .nlcard .meta div { background: #F7F7F8; border-radius: 10px; padding: 8px 10px; font-size: 12px; color: #52525B; }
+.zip .nlcard .meta b { display: block; color: #18181B; font: 700 14px var(--display); }
+.zip .nlcard .last { font-size: 12.5px; color: #52525B; border-top: 1px solid #E5E5E8; padding-top: 10px; margin-bottom: 12px; }
+.zip .nlcard .acts { display: flex; gap: 8px; }
+.zip .nlcard .acts .btn { flex: 1; justify-content: center; }
+.zip .nlcard .acts .btn.p { background: var(--link); border-color: var(--link); color: #fff; }
+.zip .nlcard .x { position: absolute; right: 10px; top: 10px; width: 30px; height: 30px; border-radius: 50%; border: 0; background: #F4F4F5; font-size: 16px; cursor: pointer; }
+.zip .nlside { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; display: flex; flex-direction: column; overflow: hidden; height: min(720px, calc(100vh - 200px)); min-height: 560px; }
+.zip .nlside .sh { padding: 18px 18px 12px; border-bottom: 1px solid var(--line); }
+.zip .nlside h2 { margin: 0; font: 800 18px var(--display); display: flex; align-items: center; gap: 8px; }
+.zip .nlside .sh p { margin: 4px 0 12px; }
+.zip .nldot { width: 8px; height: 8px; border-radius: 50%; background: #16A34A; animation: nllp 1.6s infinite; }
+@keyframes nllp { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.55); } 70% { box-shadow: 0 0 0 8px rgba(22,163,74,0); } 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); } }
+.zip .nlside .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.zip .nlside .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 11px; font: 600 12.5px var(--body); color: var(--soft); cursor: pointer; }
+.zip .nlside .chip.on { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.zip .nllist { overflow: auto; flex: 1; padding: 6px 10px 12px; }
+.zip .nllist .it { display: flex; gap: 11px; padding: 11px 8px; border-radius: 14px; align-items: flex-start; }
+.zip .nllist .it:hover { background: var(--surface-2, #F7F8FB); }
+.zip .nllist .tx { flex: 1; font-size: 13px; line-height: 1.45; }
+.zip .nllist .tx b { font-weight: 600; }
+.zip .nllist .q { color: var(--soft); }
+.zip .nllist time { display: block; font-size: 11.5px; color: var(--soft); margin-top: 2px; }
+.zip .nllist .go { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 600; white-space: nowrap; align-self: center; color: var(--ink); }
+.zip .nlnone { padding: 30px 16px; text-align: center; color: var(--soft); font-size: 13.5px; }
+.zip .nlempty { padding: 40px 28px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.zip .nlempty h2 { margin: 0; font: 800 22px var(--display); }
+.zip .nlempty p { max-width: 52ch; margin: 0 0 6px; }
+@media (max-width: 1080px) { .zip .nlmain { grid-template-columns: 1fr; } .zip .nlside { height: 520px; } .zip .nlstats { right: 18px; top: 66px; } .zip .nlseg { left: 18px; right: auto; } .zip .nllegend { display: none; } }
+@media (max-width: 640px) { .zip .nlmap { height: 560px; } .zip .nlstats > div { min-width: 0; padding: 7px 10px; } .zip .nlstats b { font-size: 17px; } .zip .nlcard { width: calc(100% - 24px); } .zip .nlseg button { padding: 6px 8px; font-size: 12px; } }
+@media (prefers-reduced-motion: reduce) { .zip .nlbub, .zip .nlcard, .zip .nldot { animation: none; } }
+.zip .nllegend .nladd { color: #BFDBFE; text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }

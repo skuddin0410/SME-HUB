@@ -20,6 +20,7 @@ import "@/styles/province-extra.css";
 import "@/styles/u16-25.css";
 import { HideOn } from "@/components/hide-on";
 import { StayWarm } from "@/components/stay-warm";
+import { Presence } from "@/components/presence";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 import { ReadyProvider } from "@/components/ready/provider";
 import { getMyReady } from "@/lib/ready";
@@ -161,6 +162,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
       </NavPending>
       <ToastHost />
       <StayWarm />
+      <Presence userId={userId} />
 
       <HideOn paths={["/feed"]}>
         <div className="zip" style={{ display: "contents" }}>

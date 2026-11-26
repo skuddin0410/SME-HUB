@@ -140,6 +140,7 @@ export async function Directory({ searchParams, base }: { searchParams: Record<s
           <Crumbs items={[["Network", "/network"], ["Member directory"]]} />
           <h1>Member directory</h1>
           <p className="muted" style={{ fontSize: 15 }}>Find the right owner by name, skill or place, then connect in one click.</p>
+          {userId && <Link className="btn nllink" href="/network/live"><span className="nldot" aria-hidden="true" />Your network, live</Link>}
         </div>
         <DirectoryBody members={members} signedIn={!!userId} links={Object.fromEntries(links)} following={follows} form={form} invite={!!userId} rules={{ dview: String(ps.dview), dswitch: !!ps.dswitch, dcard: ps.dcard as Record<string, boolean>, dname: String(ps.dname), invites: !!ps.invites }} />
       </div>
