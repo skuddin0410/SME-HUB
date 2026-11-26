@@ -8,7 +8,6 @@ import { passwordOk } from "@/lib/auth/password";
 import { PROVINCES } from "@/lib/auth/provinces";
 import { Err, PasswordField, Spin } from "./fields";
 import { Sso } from "./sso";
-import { BotCheck, type BotCheckHandle } from "./bot-check";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -28,7 +27,6 @@ export function SignUpForm({ proof }: { proof: Proof }) {
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const form = useRef<HTMLFormElement>(null);
-  const bot = useRef<BotCheckHandle>(null);
   const set = <K extends keyof typeof v>(k: K, val: (typeof v)[K]) => {
     setV((p) => ({ ...p, [k]: val }));
     if (errs[k]) setErrs((e) => ({ ...e, [k]: "" }));
@@ -53,9 +51,7 @@ export function SignUpForm({ proof }: { proof: Proof }) {
     if (first) return void form.current?.querySelector<HTMLElement>(`#${first}`)?.focus();
 
     setBusy(true);
-    const captcha = (await bot.current?.token()) ?? "";
-    const res = await signUp({ first: v.fn, last: v.ln, business: v.bn, email: em, website: v.ws, password: v.pw, province: v.pr, terms: v.tm, newsletter: v.nl, captcha });
-    bot.current?.reset();
+    const res = await signUp({ first: v.fn, last: v.ln, business: v.bn, email: em, website: v.ws, password: v.pw, province: v.pr, terms: v.tm, newsletter: v.nl });
     if (res.ok) {
       try {
         sessionStorage.setItem("hub.email", em);
@@ -194,7 +190,6 @@ export function SignUpForm({ proof }: { proof: Proof }) {
               <input type="checkbox" id="nl" checked={v.nl} onChange={(e) => set("nl", e.target.checked)} />
               <span>Send me the free weekly CanadianSME newsletter with small-business news and events. You can unsubscribe anytime.</span>
             </label>
-            <BotCheck ref={bot} action="signup" />
             <button className="btn p" type="submit" id="go" disabled={busy}>
               {busy ? (<><Spin />Creating your account</>) : "Create my free account"}
             </button>

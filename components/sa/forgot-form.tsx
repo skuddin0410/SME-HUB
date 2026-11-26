@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { forgotPassword } from "@/app/auth/actions";
 import { Err, LockIcon, MailIcon, Spin, useCountdown } from "./fields";
-import { BotCheck, type BotCheckHandle } from "./bot-check";
 
 export function ForgotForm() {
   const [email, setEmail] = useState("");
@@ -13,12 +12,9 @@ export function ForgotForm() {
   const [sent, setSent] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const cd = useCountdown();
-  const bot = useRef<BotCheckHandle>(null);
 
   const send = async (to: string) => {
-    const captcha = (await bot.current?.token()) ?? "";
-    const res = await forgotPassword(to, captcha);
-    bot.current?.reset();
+    const res = await forgotPassword(to);
     if (!res.ok) {
       setErr(res.error);
       setNote(res.error);
@@ -60,7 +56,6 @@ export function ForgotForm() {
             </span>
           </div>
           {note && <div className="alert w" role="status" style={{ textAlign: "left" }}><span>{note}</span></div>}
-          <BotCheck ref={bot} action="forgot" />
           <button
             type="button"
             className="btn g"
@@ -94,7 +89,6 @@ export function ForgotForm() {
             <input className="t" id="em" type="email" autoComplete="email" placeholder="you@yourbusiness.ca" value={email} onChange={(e) => { setEmail(e.target.value); setErr(""); }} aria-invalid={err ? "true" : "false"} aria-describedby="em-err" />
             <Err id="em">{err}</Err>
           </div>
-          <BotCheck ref={bot} action="forgot" />
           <button className="btn p" type="submit" id="go" disabled={busy}>
             {busy ? (<><Spin />Sending</>) : "Send reset link"}
           </button>

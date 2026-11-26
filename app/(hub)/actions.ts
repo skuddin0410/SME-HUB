@@ -1,7 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
-
 import { AUTHOR_FIELDS, requireStaff, requireUser, slugify, type CommentRow, type Profile } from "@/lib/hub";
 import { REACTION_KINDS, type ReactionKind } from "@/lib/reactions";
 import { cleanPollOptions, FEED } from "@/lib/feed-rules";
@@ -624,12 +622,8 @@ export async function sendContactMessage(_prev: FormState, form: FormData): Prom
   if (!name) return { error: "Add your name." };
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { error: "Add an email address we can reply to." };
   const supabase = await createClient();
-  // 5 messages an hour from each visitor's address; the database also caps the total (0067)
-  const ip = ((await headers()).get("x-forwarded-for") ?? "").split(",")[0]?.trim() || "unknown";
-  const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `contact:${ip}`, p_max: 5, p_window: "1 hour" });
-  if (allowed === false) return { error: "You have sent several messages already. Please wait an hour, or email support@smehub.ca." };
   const { data } = await supabase.auth.getUser();
   const { error } = await supabase.from("contact_messages").insert({ name, email, message, user_id: data.user?.id ?? null });
-  if (error) return { error: /receiving a lot/i.test(error.message) ? error.message : "Your message could not be sent. Please email support@smehub.ca." };
+  if (error) return { error: "Your message could not be sent. Please email support@smehub.ca." };
   return { ok: Date.now() };
 }
