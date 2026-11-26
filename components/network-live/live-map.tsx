@@ -19,7 +19,7 @@ const GO: Record<LiveKind, string> = { react: "View", comment: "Reply", message:
 
 /** Where a profile's typed location sits on the map: the city if we know it, else the province's centre, else nowhere. */
 function place(geo: Geo, loc: string): [number, number] | null {
-  const parts = loc.toLowerCase().split(",").map((s) => s.trim()).filter(Boolean);
+  const parts = loc.toLowerCase().replace(/[’‘`]/g, "'").replace(/\bste\b/g, "ste.").split(",").map((s) => s.trim()).filter(Boolean);
   if (!parts.length) return null;
   const city = parts[0].replace(/^(city of|ville de)\s+/, "");
   const provRaw = parts[1] ?? "";
