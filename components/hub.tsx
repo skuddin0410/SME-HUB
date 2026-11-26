@@ -105,7 +105,8 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
           <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} />
         </div>
       </div>
-      {post.cover_url && (
+      {/* the cover shows only when the post has no photo or video of its own, so a picture never appears twice */}
+      {post.cover_url && !(post.images.length > 0 || post.video_url || post.image_url) && (
         <div className="overflow-hidden rounded-xl border border-[#E5E5E8] bg-zinc-100">
           <img src={post.cover_url} alt="" loading="lazy" className="h-44 w-full object-cover" />
         </div>
@@ -118,7 +119,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
         <PostMedia images={post.images} video={post.video_url} poster={post.video_poster} />
       ) : post.image_url && (
         <div className="rounded-xl overflow-hidden border border-[#E5E5E8] bg-zinc-100">
-          <img src={post.image_url} alt="" loading="lazy" className="w-full max-h-[22.5rem] object-cover" />
+          <img src={post.image_url} alt="" loading="lazy" className="mx-auto block max-h-[21.25rem] w-auto max-w-full object-contain" />
         </div>
       )}
       {post.kind === "question" && post.comments === 0 && (
