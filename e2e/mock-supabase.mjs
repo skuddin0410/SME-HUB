@@ -116,6 +116,20 @@ http
       return res.end(JSON.stringify([{ id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery" }, { id: "00000000-0000-4000-8000-000000000012", full_name: "Kwame Asante", headline: "Owner, Asante Legal" }]));
     }
     // Update 10: photo uploads land in storage, and videos use resumable (tus) uploads
+    // Update 26/27: post PDFs: uploads, signing and the signed file itself (the hand-off's sample)
+    if (req.method === "POST" && url.pathname.startsWith("/storage/v1/object/post-pdfs/")) {
+      req.resume(); req.on("end", () => res.end(JSON.stringify({ Key: url.pathname.replace("/storage/v1/object/", ""), Id: "x" })));
+      return;
+    }
+    if (req.method === "POST" && url.pathname.startsWith("/storage/v1/object/sign/post-pdfs/")) {
+      req.resume(); req.on("end", () => res.end(JSON.stringify({ signedURL: "/object/sign/post-pdfs/sample.pdf?token=e2e" })));
+      return;
+    }
+    if (req.method === "GET" && url.pathname === "/storage/v1/object/sign/post-pdfs/sample.pdf") {
+      res.setHeader("content-type", "application/pdf");
+      res.setHeader("access-control-allow-origin", "*");
+      return res.end(fs.readFileSync(new URL("./sample-post.pdf", import.meta.url)));
+    }
     if (req.method === "POST" && url.pathname.startsWith("/storage/v1/object/media/")) {
       req.resume(); req.on("end", () => res.end(JSON.stringify({ Key: url.pathname.replace("/storage/v1/object/", ""), Id: "x" })));
       return;
@@ -277,6 +291,9 @@ http
     const AUTHOR = { id: "00000000-0000-4000-8000-000000000011", full_name: "Priya Raman", headline: "Founder, Maple Bakery", avatar_url: null, member_type: "owner" };
     const POST_ID = "00000000-0000-4000-8000-0000000000a1";
     const postRow = (over) => ({ id: POST_ID, body: "Which wholesale box size sells best for you?", title: "Wholesale boxes", cover_url: null, image_url: null, visibility: "public", kind: "question", created_at: new Date(Date.now() - 3600_000).toISOString(), pinned_at: null, group_id: null, edited_at: null, comments_closed: false, profile_pinned: false, status: "published", scheduled_at: null, quoted_post_id: null, author: AUTHOR, group: null, reactions: [{ count: 0 }], comments: [{ count: 0 }], ...over });
+    if (url.pathname === "/rest/v1/posts" && (url.searchParams.get("select") || "").replace(/\s/g, "") === "pdf_path,pdf_name") {
+      return res.end(JSON.stringify(url.searchParams.get("id") === "eq.00000000-0000-4000-8000-0000000000a7" ? { pdf_path: `${MEMBER.id}/pdf-00000000-0000-4000-8000-0000000000f1.pdf`, pdf_name: "Grant-application-checklist.pdf" } : null));
+    }
     if (url.pathname === "/rest/v1/posts" && (url.searchParams.get("select") || "").includes("quoted_post_id")) {
       const scheduled = url.searchParams.get("status") === "eq.scheduled";
       const row = scheduled ? postRow({ id: "00000000-0000-4000-8000-0000000000a2", status: "scheduled", scheduled_at: new Date(Date.now() + 86400_000).toISOString(), title: "Launch day", body: "Our spring box is live." , author: { ...AUTHOR, id: MEMBER.id } }) : postRow({});
@@ -286,6 +303,9 @@ http
       if (url.searchParams.get("id") === "eq.00000000-0000-4000-8000-0000000000a5") {
         const imgs = ["account-page", "account-privacy", "acct-change-password", "acct-email-example", "acct-forgot"].map((f) => `/help-media/${f}.webp`);
         return res.end(JSON.stringify([postRow({ id: "00000000-0000-4000-8000-0000000000a5", kind: "update", title: "", body: "Founded in 2001, we now stock video conferencing kits. See https://www.yealink.com/en/product-list/video-conferencing?utm_source=smehub for the range.", image_url: imgs[0], images: imgs, video_url: "/zip/img/story-show.mp4", video_poster: null })]));
+      }
+      if (url.searchParams.get("id") === "eq.00000000-0000-4000-8000-0000000000a7") {
+        return res.end(JSON.stringify([postRow({ id: "00000000-0000-4000-8000-0000000000a7", kind: "update", title: "", body: "Our grant checklist, free to use.", author: { ...AUTHOR, id: MEMBER.id, full_name: MEMBER.full_name }, pdf_path: `${MEMBER.id}/pdf-00000000-0000-4000-8000-0000000000f1.pdf`, pdf_name: "Grant-application-checklist.pdf", pdf_size: 2249, pdf_pages: 4 })]));
       }
       if (url.searchParams.get("id") === "eq.00000000-0000-4000-8000-0000000000a6") {
         return res.end(JSON.stringify([postRow({ id: "00000000-0000-4000-8000-0000000000a6", kind: "update", title: "", body: "Our new shop front.", image_url: "/help-media/account-page.webp", images: ["/help-media/account-page.webp", "/help-media/account-privacy.webp"] })]));

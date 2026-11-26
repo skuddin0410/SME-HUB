@@ -7,7 +7,8 @@ import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { createPost, type FormState } from "@/app/(hub)/actions";
 import { aiHashtags, improvePost } from "@/app/(hub)/post-actions";
-import { POST_MEDIA, readVideo, uploadImage, uploadVideo } from "@/lib/upload";
+import { POST_MEDIA, POST_PDF_MB, readVideo, uploadImage, uploadPdf, uploadVideo } from "@/lib/upload";
+import { PdfCard, pdfShort } from "@/components/zip/post-pdf";
 import { shortLink, suggestTags, URL_RX } from "@/lib/zip/post-text";
 import { tagOk, type TagRules } from "@/lib/zip/hashtags";
 import { FEED } from "@/lib/feed-rules";
@@ -30,6 +31,7 @@ const VIS: [string, string][] = [["public", "Everyone"], ["members", "Members on
 type Me = { id: string; full_name: string | null; avatar_url: string | null };
 type Photo = { key: string; preview: string; url: string; busy: boolean };
 type Video = { preview: string; name: string; url: string; poster: string; busy: boolean; pct: number };
+type Pdf = { name: string; size: number; path: string; busy: boolean };
 
 function PostBtn({ disabled, sched, pending }: { disabled: boolean; sched: boolean; pending: boolean }) {
   return <button type="submit" className="btn" disabled={pending || disabled}>{pending ? "Posting…" : sched ? "Schedule" : "Post"}</button>;
@@ -93,13 +95,15 @@ export function PostBox({
   const [improving, startImprove] = useTransition();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [video, setVideo] = useState<Video | null>(null);
+  const [pdf, setPdf] = useState<Pdf | null>(null);
+  const pdfRef = useRef<HTMLInputElement>(null);
   const photoRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLInputElement>(null);
   const textRef = useRef<HTMLTextAreaElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   const pollMax = Math.min(FEED.pollMax, Math.max(FEED.pollMin, rules?.pollMax ?? FEED.pollMax));
   const toGroup = to.startsWith("g:") ? to.slice(2) : "";
-  const busy = photos.some((p) => p.busy) || !!video?.busy;
+  const busy = photos.some((p) => p.busy) || !!video?.busy || !!pdf?.busy;
   const firstPhoto = photos.find((p) => p.url)?.url ?? "";
 
   const focusText = () => setTimeout(() => {
@@ -141,7 +145,7 @@ export function PostBox({
   useEffect(() => {
     if (!state.ok) return;
     setBody(""); setTitle(""); setKind("update"); setPoll(null); setSched(false); setCover(false); setCloseC(false); setNote("");
-    setPhotos([]); setVideo(null); setAiTags(null);
+    setPhotos([]); setVideo(null); setPdf(null); setAiTags(null);
     setOpen(false);
     router.refresh();
   }, [state.ok, router]);
@@ -195,6 +199,21 @@ export function PostBox({
     }
   };
 
+  // Update 26: one PDF per post, up to 25 MB; a wrong file or a big one gets a clear message and nothing is attached
+  const addPdf = async (file: File | undefined) => {
+    if (!file) return;
+    setNote("");
+    const before = pdf;
+    setPdf({ name: file.name, size: file.size, path: "", busy: true });
+    try {
+      const up = await uploadPdf(file);
+      setPdf({ ...up, busy: false });
+    } catch (e) {
+      setPdf(before);
+      setNote(e instanceof Error ? e.message : "The PDF did not upload. Try again.");
+    }
+  };
+
   const suggest = (el: HTMLTextAreaElement) => {
     const m = tagHints ? /#([A-Za-z0-9_À-ſ]*)$/.exec(el.value.slice(0, el.selectionStart ?? el.value.length)) : null;
     if (!m || !tagHints) { setSug(null); return; }
@@ -232,8 +251,8 @@ export function PostBox({
   const urls = body.match(URL_RX) ?? [];
   const askHint = kind === "update" && /\?\s*$/.test(body.trim());
 
-  const has = body.trim() || photos.length || video;
-  const draftLine = body.trim() ? body.trim().slice(0, 60) + (body.trim().length > 60 ? "…" : "") : video ? "Video" : "Photos";
+  const has = body.trim() || photos.length || video || pdf;
+  const draftLine = body.trim() ? body.trim().slice(0, 60) + (body.trim().length > 60 ? "…" : "") : video ? "Video" : photos.length ? "Photos" : pdf ? pdfShort(pdf.name) : "";
   const shortcuts: [string, string, string, () => void][] = [
     ["img", "Photo", "#378FE9", () => show(undefined, "photo")],
     ["video", "Video", "#16A34A", () => show(undefined, "video")],
@@ -285,6 +304,8 @@ export function PostBox({
             {photos.filter((p) => p.url).map((p) => <input key={p.key} type="hidden" name="images" value={p.url} />)}
             {video?.url && <input type="hidden" name="video_url" value={video.url} />}
             {video?.poster && <input type="hidden" name="video_poster" value={video.poster} />}
+            {pdf?.path && <input type="hidden" name="pdf_path" value={pdf.path} />}
+            {pdf?.path && <input type="hidden" name="pdf_name" value={pdf.name} />}
             {cover && firstPhoto && <input type="hidden" name="cover_url" value={firstPhoto} />}
             {groupId && <input type="hidden" name="group_id" value={groupId} />}
             {!groupId && toGroup && <input type="hidden" name="group_id" value={toGroup} />}
@@ -404,6 +425,19 @@ export function PostBox({
               </div>
             )}
 
+            {pdf && (
+              <div className="cpmedia">
+                <PdfCard pdf={pdf}>
+                  {pdf.busy ? <span className="small muted">Uploading…</span> : (
+                    <>
+                      <label htmlFor="cppdf" className="btn sm ghost" tabIndex={0} onKeyDown={keyClick(pdfRef)}>Replace</label>
+                      <button type="button" className="cpx" aria-label="Remove PDF" onClick={() => setPdf(null)}><Ic n="x" s={16} /></button>
+                    </>
+                  )}
+                </PdfCard>
+              </div>
+            )}
+
             <div className="cpextra">
               {firstPhoto && rules?.cover !== false && (
                 <button type="button" className="sw" role="switch" aria-checked={cover} onClick={() => setCover(!cover)}>
@@ -459,6 +493,11 @@ export function PostBox({
                   <Ic n="video" s={18} /><span>Video</span>
                 </label>
               )}
+              <input ref={pdfRef} className="sr" type="file" id="cppdf" accept="application/pdf,.pdf" tabIndex={-1} aria-hidden="true"
+                onChange={(e) => { void addPdf(e.target.files?.[0]); e.target.value = ""; }} />
+              <label htmlFor="cppdf" className="cpi" title={`Add a PDF (up to ${POST_PDF_MB} MB)`} aria-label={`Add a PDF document, up to ${POST_PDF_MB} MB`} tabIndex={0} onKeyDown={keyClick(pdfRef)}>
+                <Ic n="pdf" s={18} /><span>PDF</span>
+              </label>
               {rules?.polls !== false && !poll && <button type="button" className="cpi" title="Add a poll" aria-label="Add a poll" onClick={() => setPoll(["", ""])}><Ic n="poll" s={18} /><span>Poll</span></button>}
               <button type="button" className="cpi" title="Improve with AI" aria-label="Improve with AI" disabled={improving} onClick={improve}><Ic n="spark" s={18} /><span>Improve with AI</span></button>
               {staff && rules?.schedule !== false && !sched && <button type="button" className="cpi" title="Schedule" aria-label="Schedule" onClick={() => setSched(true)}><Ic n="clock" s={18} /><span>Schedule</span></button>}

@@ -30,10 +30,14 @@ export async function getComposerRules(): Promise<ComposerRules> {
 }
 
 /** How a post's actions and comments behave, small enough to pass to the browser. */
-export type PostRules = { share: boolean; comments: boolean; flat: boolean; cshow: number; cload: number };
+export type PostRules = { share: boolean; comments: boolean; flat: boolean; cshow: number; cload: number; editMins: number; title: "optional" | "required" | "off" };
 export async function getPostRules(): Promise<PostRules> {
   const f = await getHubSettings("feed");
-  return { share: !!f.share, comments: !!f.comments, flat: String(f.thread) === "1", cshow: Math.max(1, Number(f.cshow) || 2), cload: Math.max(1, Number(f.cload) || 10) };
+  return { share: !!f.share, comments: !!f.comments, flat: String(f.thread) === "1", cshow: Math.max(1, Number(f.cshow) || 2), cload: Math.max(1, Number(f.cload) || 10),
+    // Update 26: how long authors may edit ("forever" by default); Infinity has no limit
+    editMins: f.edit === "forever" ? Infinity : Number.isFinite(Number(f.edit)) ? Number(f.edit) : 10,
+    title: String(f.title) === "required" || String(f.title) === "off" ? (String(f.title) as "required" | "off") : "optional",
+  };
 }
 
 /** Whether this member may start a post, from "Who can post" on the feed settings. The team can always post. */

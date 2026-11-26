@@ -150,3 +150,30 @@ export async function uploadVideo(file: File, onProgress?: (pct: number) => void
   });
   return `${base}/storage/v1/object/public/post-videos/${name}`;
 }
+
+/** Update 26: one PDF per post, up to 25 MB, kept in the private post-pdfs bucket. */
+export const POST_PDF_MB = 25;
+
+export function pdfSize(bytes: number): string {
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1).replace(/\.0$/, "")} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+/** Checks a file is a real PDF (by its first bytes, not its name) and uploads it to the member's own folder. */
+export async function uploadPdf(file: File): Promise<{ path: string; name: string; size: number }> {
+  const head = new Uint8Array(await file.slice(0, 5).arrayBuffer());
+  const isPdf = String.fromCharCode(...head) === "%PDF-";
+  if (!isPdf) throw new Error("That file isn’t a PDF. Choose a .pdf file.");
+  if (file.size > POST_PDF_MB * 1024 * 1024) throw new Error(`PDFs can be up to ${POST_PDF_MB} MB. This one is ${pdfSize(file.size)}.`);
+  const supabase = createClient();
+  const { data } = await supabase.auth.getSession();
+  const userId = data.session?.user.id;
+  if (!userId) throw new Error("Sign in again to upload a PDF.");
+  const path = `${userId}/pdf-${crypto.randomUUID()}.pdf`;
+  const { error } = await supabase.storage.from("post-pdfs").upload(path, file, { contentType: "application/pdf", cacheControl: "3600" });
+  if (error) throw new Error(/bucket not found/i.test(error.message) ? "PDFs can’t be added yet. Try again later." : `Upload failed: ${error.message}`);
+  let name = file.name.trim().replace(/[\u0000-\u001f\\/]/g, "") || "document.pdf";
+  if (!/\.pdf$/i.test(name)) name += ".pdf";
+  if (name.length > 200) name = name.slice(0, 196) + ".pdf";
+  return { path, name, size: file.size };
+}

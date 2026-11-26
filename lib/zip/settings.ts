@@ -55,7 +55,7 @@ export const DEFAULTS = {
   },
   feed: {
     relevant: false, filters: { mine: true, reacted: true, groups: true, conn: true, follow: true, mention: true } as Record<string, boolean>, topics: true, refresh: true, share: true, shareOut: true,
-    schedule: true, pin: true, polls: true, pollMax: "10", cover: true, title: "optional", edit: "10", closeC: true,
+    schedule: true, pin: true, polls: true, pollMax: "10", cover: true, title: "optional", edit: "forever", closeC: true,
     comments: true, cedit: "10", thread: "2", cshow: "2", cload: "10",
     access: "all", accessTypes: { owner: true, advisor: true, maker: true, provider: false, team: true } as Record<string, boolean>,
     auto: { register: true, joinGroup: true, connect: false, blog: true } as Record<string, boolean>,

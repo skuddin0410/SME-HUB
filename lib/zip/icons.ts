@@ -81,4 +81,7 @@ export const ICON: Record<string, string> = {
  "cal2": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18M8 3v4M16 3v4\"/>",
  "gfsave": "<path d=\"M6 3h12v18l-6-4-6 4z\"/>",
  "gfsaved": "<path d=\"M6 3h12v18l-6-4-6 4z\" fill=\"currentColor\"/>",
+ "pdf": "<path d=\"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\"/><path d=\"M14 2v6h6\"/>",
+ "cl": "<path d=\"m15 18-6-6 6-6\"/>",
+ "cr": "<path d=\"m9 18 6-6-6-6\"/>",
 };

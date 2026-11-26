@@ -18,6 +18,7 @@ import "@/styles/tools.css";
 import "@/styles/grants.css";
 import "@/styles/province-extra.css";
 import "@/styles/u16-25.css";
+import "@/styles/u26-29.css";
 import { HideOn } from "@/components/hide-on";
 import { StayWarm } from "@/components/stay-warm";
 import { Presence } from "@/components/presence";

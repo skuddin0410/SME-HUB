@@ -614,7 +614,7 @@ function PublishButton({ disabled }: { disabled: boolean }) {
 }
 
 // ---------- post menu: copy link, report, delete ----------
-export function PostMenu({ postId, canDelete, canReport }: { postId: string; canDelete: boolean; canReport: boolean }) {
+export function PostMenu({ postId, canDelete, canReport, canEdit = false }: { postId: string; canDelete: boolean; canReport: boolean; canEdit?: boolean }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"menu" | "report" | "done" | "copied">("menu");
@@ -654,6 +654,18 @@ export function PostMenu({ postId, canDelete, canReport }: { postId: string; can
               <button type="button" className={row} onClick={() => router.push(`/messages?text=${encodeURIComponent(`${window.location.origin}/posts/${postId}`)}`)}>
                 Send in a message
               </button>
+              {canEdit && (
+                <button
+                  type="button"
+                  className={row}
+                  onClick={() => {
+                    setOpen(false);
+                    window.dispatchEvent(new CustomEvent("zip:edit-post", { detail: postId }));
+                  }}
+                >
+                  Edit post
+                </button>
+              )}
               {canReport && (
                 <button type="button" className={row} onClick={() => setStep("report")}>
                   Report post

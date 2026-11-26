@@ -219,11 +219,27 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
             )}
           </div>
         </section>
-        <Link className="card fsstrip" href="/for-sale">
-          <span className="sq"><Ic n="key" s={18} /></span>
-          <span className="grow"><b>Businesses for sale</b> <span className="small muted">{forSale} Canadian businesses looking for a new owner. Buy one that’s already running, or list your own.</span></span>
-          <span className="btn sm ghost">See businesses for sale</span>
-        </Link>
+        {/* Update 29: a deep green banner people notice, with the live count, three points and two actions */}
+        <section className="bfsale" aria-labelledby="bfsale-h">
+          <span className="bfsk"><Ic n="key" s={26} /></span>
+          <div className="bfst">
+            <p className="bfskick">Businesses for sale</p>
+            <h2 id="bfsale-h">Buy a business that’s already running</h2>
+            <p>
+              {forSale > 0 && <><b>{forSale} Canadian business{forSale === 1 ? "" : "es"}</b> {forSale === 1 ? "is" : "are"} looking for a new owner right now. </>}
+              Or sell yours to a buyer who will look after it.
+            </p>
+            <ul>
+              <li><Ic n="check" s={14} />Seller names can stay private</li>
+              <li><Ic n="check" s={14} />Ask the seller questions on the Hub</li>
+              <li><Ic n="check" s={14} />Free to list</li>
+            </ul>
+          </div>
+          <div className="bfsa">
+            <Link className="bfsb" href="/for-sale">See businesses for sale <Ic n="right" s={15} /></Link>
+            <Link className="bfsl" href="/for-sale/new">List your business</Link>
+          </div>
+        </section>
         {userId && <ReadyBanner kind="biz" />}
 
         <nav className="bdcats" aria-label="Browse by category">
@@ -244,64 +260,80 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
 
         <div className="bdcols">
           <aside className="bdside">
+            {/* Update 28: navy header with the count and Clear, labelled fields with icons, 2×2 tiles, an Open now box */}
             <LiveForm className="card bzfilters open">
-              <h2 style={{ fontSize: 15 }}>Filters</h2>
-              {q && <input type="hidden" name="q" value={q} />}
-              {sort !== "rating" && <input type="hidden" name="sort" value={sort} />}
-              {view !== "grid" && <input type="hidden" name="view" value={view} />}
-              <label className="small">
-                Category
-                <select className="field" name="category" defaultValue={category}>
-                  <option value="">All categories</option>
-                  {settings.categories.map((c) => (
-                    <option key={c}>{c}</option>
+              <div className="bfhd">
+                <span className="bfhi"><Ic n="filter" s={16} /></span>
+                <h2>Filters</h2>
+                {active.length > 0 ? (
+                  <>
+                    <span className="bfcnt">{active.length} on</span>
+                    <Link className="bfclr" href={href({ category: "", province: "", city: "", kind: "", open: "" })}>Clear</Link>
+                  </>
+                ) : (
+                  <span className="bfsub">Narrow the list</span>
+                )}
+              </div>
+              <div className="bfbody">
+                {q && <input type="hidden" name="q" value={q} />}
+                {sort !== "rating" && <input type="hidden" name="sort" value={sort} />}
+                {view !== "grid" && <input type="hidden" name="view" value={view} />}
+                <label className="small bff">
+                  <span className="bfl"><i style={{ "--c": "#2563EB" } as React.CSSProperties}><Ic n="grid" s={14} /></i>Category</span>
+                  <select className="field" name="category" defaultValue={category}>
+                    <option value="">All categories</option>
+                    {settings.categories.map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="small bff">
+                  <span className="bfl"><i style={{ "--c": "#16A34A" } as React.CSSProperties}><Ic n="pin" s={14} /></i>Province or territory</span>
+                  <select className="field" name="province" defaultValue={province}>
+                    <option value="">All of Canada</option>
+                    {PROVINCES.map((p) => (
+                      <option key={p}>{p}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="small bff">
+                  <span className="bfl"><i style={{ "--c": "#C37D16" } as React.CSSProperties}><Ic n="city" s={14} /></i>City</span>
+                  <select className="field" name="city" defaultValue={city}>
+                    <option value="">Any city</option>
+                    {cityOptions.map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
+                  </select>
+                </label>
+                <fieldset className="bdkind">
+                  <legend className="small"><span className="bfl"><i style={{ "--c": "#7C3AED" } as React.CSSProperties}><Ic n="hand" s={14} /></i>How they serve you</span></legend>
+                  {[["", "Any", "grid"], ["storefront", "Visit in person", "store"], ["service", "Comes to you", "pin"], ["online", "Online", "spark"]].map(([k, l, i]) => (
+                    <Link key={k} className="chip bfk" aria-current={kind === k ? "true" : undefined} href={href({ kind: k })} style={{ textDecoration: "none" }}>
+                      <Ic n={i} s={18} />
+                      <span>{l}</span>
+                    </Link>
                   ))}
-                </select>
-              </label>
-              <label className="small">
-                Province or territory
-                <select className="field" name="province" defaultValue={province}>
-                  <option value="">All of Canada</option>
-                  {PROVINCES.map((p) => (
-                    <option key={p}>{p}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="small">
-                City
-                <select className="field" name="city" defaultValue={city}>
-                  <option value="">Any city</option>
-                  {cityOptions.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
-              </label>
-              <fieldset className="bdkind">
-                <legend className="small">How they serve you</legend>
-                {[["", "Any"], ["storefront", "Visit in person"], ["service", "Comes to you"], ["online", "Online"]].map(([k, l]) => (
-                  <Link key={k} className="chip" aria-current={kind === k ? "true" : undefined} href={href({ kind: k })} style={{ textDecoration: "none" }}>
-                    {l}
+                </fieldset>
+                <div className="bfopen">
+                  <span className="bfoi"><Ic n="clock" s={16} /></span>
+                  <span className="bfot"><b>Open now</b><small>Only places open right now</small></span>
+                  <Link className="sw bfsw" role="switch" aria-checked={open} aria-label="Open now" href={href({ open: open ? "" : "1" })}>
+                    <i />
                   </Link>
-                ))}
-              </fieldset>
-              <Link className="sw" role="switch" aria-checked={open} href={href({ open: open ? "" : "1" })}>
-                <i />
-                <span>Open now</span>
-              </Link>
-              {active.length > 0 && (
-                <Link className="small" href={href({ category: "", province: "", city: "", kind: "", open: "" })} style={{ alignSelf: "flex-start", color: "var(--accent)", fontWeight: 600, textDecoration: "none" }}>
-                  Clear all filters
-                </Link>
-              )}
-              <noscript>
-                <button type="submit" className="btn sm">Apply</button>
-              </noscript>
+                </div>
+                <noscript>
+                  <button type="submit" className="btn sm">Apply</button>
+                </noscript>
+              </div>
             </LiveForm>
-            <Link className="card bdpav" href="/pavilion" style={{ textDecoration: "none", color: "inherit" }}>
-              <span className="claim">New</span>
+            <Link className="card bdpav bfpav" href="/pavilion">
+              <span className="bfpvtop">
+                <span className="bfpvi"><Ic n="flag" s={18} /></span>
+                <span className="bfnew">New</span>
+              </span>
               <strong>Made in Canada Pavilion</strong>
-              <span className="muted small">Canadian manufacturers, services and AI tools in one place.</span>
-              <span className="small" style={{ color: "var(--link)", fontWeight: 600 }}>Visit the pavilion →</span>
+              <span className="bfpvd">Canadian manufacturers, services and AI tools in one place.</span>
+              <span className="bfpvb">Visit the pavilion <Ic n="right" s={14} /></span>
             </Link>
           </aside>
 

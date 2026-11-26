@@ -10,6 +10,8 @@ import { ConnectButton } from "@/components/network-client";
 import { SaveButton } from "@/components/feed-client";
 import { ZipAv } from "@/components/zip/bits";
 import { PostMedia } from "@/components/zip/post-media";
+import { PdfViewer } from "@/components/zip/post-pdf";
+import { EditPostWindow } from "@/components/zip/edit-post";
 
 export type Viewer = { userId: string | null; profile: Profile | null; isStaff: boolean };
 
@@ -52,6 +54,8 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
   const rules = await getPostRules();
   const tr = await getTagRules();
   const own = post.author.id === viewer.userId;
+  // Update 26: the author may edit while the window lasts (Forever by default)
+  const canEditNow = own && Date.now() - new Date(post.created_at).getTime() <= rules.editMins * 60_000;
   return (
     <article id={`post-${post.id}`} className={`card post${post.pinned_at ? " pinnedp" : ""}`}>
       {post.pinned_at && <p className="eyebrow">📌 Pinned by the Hub team</p>}
@@ -102,7 +106,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
         <div className="row" style={{ gap: 6, flex: "none" }}>
           {!own && !post.business && <ConnectButton otherId={post.author.id} initial={post.link} signedIn={!!viewer.userId} variant="text" />}
           <SaveButton postId={post.id} initial={post.saved} signedIn={!!viewer.userId} />
-          <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} />
+          <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} canEdit={canEditNow} />
         </div>
       </div>
       {/* the cover shows only when the post has no photo or video of its own, so a picture never appears twice */}
@@ -122,6 +126,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
           <img src={post.image_url} alt="" loading="lazy" className="mx-auto block max-h-[21.25rem] w-auto max-w-full object-contain" />
         </div>
       )}
+      {post.pdf && <PdfViewer pdf={post.pdf} sharedBy={post.business ? post.business.name : post.author.full_name || "a member"} />}
       {post.kind === "question" && post.comments === 0 && (
         <p className="small" style={{ fontWeight: 600, color: "var(--brand-ink)" }}>No answers yet. Can you help?</p>
       )}
@@ -141,6 +146,14 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
       />
       {rules.share && viewer.userId && post.id && <QuoteButton postId={post.id} signedIn />}
       {own && <PostManage post={post} />}
+      {canEditNow && viewer.profile && (
+        <EditPostWindow
+          post={{ id: post.id, kind: post.kind, title: post.title, body: post.body, images: post.images, image_url: post.image_url, video_url: post.video_url, pdf: post.pdf }}
+          me={{ full_name: viewer.profile.full_name, avatar_url: viewer.profile.avatar_url }}
+          free={!viewer.isStaff && !["plus", "advisor"].includes(String((viewer.profile as { plan?: string }).plan))}
+          titleRule={rules.title}
+        />
+      )}
     </article>
   );
 }

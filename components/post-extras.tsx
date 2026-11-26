@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Check, Pencil, Pin, PinOff, MessageSquareOff, MessageSquare } from "lucide-react";
-import { editPost, quotePost, setCommentsClosed, setProfilePin, votePoll } from "@/app/(hub)/actions";
-import { canEdit, pollShares } from "@/lib/feed-rules";
+import { Check, Pin, PinOff, MessageSquareOff, MessageSquare } from "lucide-react";
+import { quotePost, setCommentsClosed, setProfilePin, votePoll } from "@/app/(hub)/actions";
+import { pollShares } from "@/lib/feed-rules";
 import type { PollData, QuotedPost } from "@/lib/hub";
 import { AvatarImg } from "@/components/hub-client";
 
@@ -117,11 +117,8 @@ export function QuoteButton({ postId, signedIn }: { postId: string; signedIn: bo
 }
 
 /** For the author: edit inside the window, pin to profile, close or open comments. */
-export function PostManage({ post }: { post: { id: string; title: string; body: string; created_at: string; profile_pinned: boolean; comments_closed: boolean } }) {
+export function PostManage({ post }: { post: { id: string; profile_pinned: boolean; comments_closed: boolean } }) {
   const router = useRouter();
-  const [editing, setEditing] = useState(false);
-  const [title, setTitle] = useState(post.title);
-  const [body, setBody] = useState(post.body);
   const [error, setError] = useState<string | null>(null);
   const [busy, start] = useTransition();
 
@@ -131,19 +128,15 @@ export function PostManage({ post }: { post: { id: string; title: string; body: 
         await fn();
         setError(null);
         router.refresh();
-      } catch (err) {
-        setError(err instanceof Error && err.message.includes("window") ? "The 10-minute edit window has closed." : fallback);
+      } catch {
+        setError(fallback);
       }
     });
 
+  // Update 26: editing moved to the post's "…" menu and its own window (components/zip/edit-post.tsx)
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-1 border-t border-[#F5F5F6] pt-2">
-        {canEdit(post.created_at) && (
-          <button type="button" onClick={() => setEditing((v) => !v)} className={BTN}>
-            <Pencil className="h-3.5 w-3.5" /> Edit
-          </button>
-        )}
         <button type="button" disabled={busy} onClick={() => run(() => setProfilePin(post.id, !post.profile_pinned), "Could not change the pin.")} className={BTN}>
           {post.profile_pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
           {post.profile_pinned ? "Unpin from profile" : "Pin to profile"}
@@ -153,25 +146,6 @@ export function PostManage({ post }: { post: { id: string; title: string; body: 
           {post.comments_closed ? "Open comments" : "Close comments"}
         </button>
       </div>
-      {editing && (
-        <form
-          className="space-y-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            run(async () => {
-              await editPost(post.id, { title, body });
-              setEditing(false);
-            }, "Could not save your edit.");
-          }}
-        >
-          <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} aria-label="Post title" placeholder="Title (optional)" className="w-full rounded-xl border border-[#E5E5E8] p-2 text-xs font-semibold" />
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={4} maxLength={5000} required aria-label="Post text" className="w-full rounded-xl border border-[#E5E5E8] p-2.5 text-xs" />
-          <div className="flex gap-2">
-            <button type="submit" disabled={busy || !body.trim()} className="rounded-xl bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white disabled:opacity-60">Save</button>
-            <button type="button" onClick={() => setEditing(false)} className="text-xs text-zinc-500">Cancel</button>
-          </div>
-        </form>
-      )}
       {error && <p role="alert" className="text-xs text-rose-700">{error}</p>}
     </div>
   );

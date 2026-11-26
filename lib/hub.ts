@@ -57,7 +57,11 @@ export type Post = {
   images: string[];
   video_url: string | null;
   video_poster: string | null;
+  /** Update 26: one PDF per post, served through /api/post-pdf/<id> */
+  pdf: PostPdf | null;
 };
+
+export type PostPdf = { name: string; size: number; pages: number | null; url: string };
 
 export type QuotedPost = { id: string; body: string; title: string; created_at: string; author: Pick<Author, "id" | "full_name" | "avatar_url"> };
 export type PollData = { closesAt: string; options: { id: string; label: string; votes: number }[]; myVote: string | null };
@@ -121,10 +125,18 @@ export async function requireStaff() {
   return { ...viewer, userId: viewer.userId, profile: viewer.profile as Profile };
 }
 
-const POST_SELECT = `id, body, image_url, images, video_url, video_poster, visibility, kind, created_at, pinned_at, group_id, title, cover_url, edited_at, comments_closed, profile_pinned, status, scheduled_at, quoted_post_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), business:companies!posts_business_id_fkey(id, name, slug, logo_url), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
+const POST_BASE = `id, body, image_url, images, video_url, video_poster, visibility, kind, created_at, pinned_at, group_id, title, cover_url, edited_at, comments_closed, profile_pinned, status, scheduled_at, quoted_post_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), business:companies!posts_business_id_fkey(id, name, slug, logo_url), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
+// Update 26: the PDF columns come from migration 0066; until it is applied the feed asks without them
+const POST_SELECT = `${POST_BASE}, pdf_path, pdf_name, pdf_size, pdf_pages`;
+// remembered for five minutes, so the columns are picked up soon after the migration lands
+let pdfMissingAt = 0;
 
-type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link" | "counts" | "saved" | "quoted" | "poll"> & {
+type Row = Omit<Post, "likes" | "comments" | "kinds" | "myReaction" | "reposts" | "reposted" | "link" | "counts" | "saved" | "quoted" | "poll" | "pdf"> & {
   quoted_post_id: string | null;
+  pdf_path?: string | null;
+  pdf_name?: string | null;
+  pdf_size?: number | null;
+  pdf_pages?: number | null;
   reactions: { count: number }[];
   comments: { count: number }[];
 };
@@ -140,7 +152,8 @@ export async function fetchPosts(
 
   // bookmarks: only posts this member saved (the table's rules show each member their own)
   // the feed only shows published posts; an author's own scheduled posts are listed on their own page
-  let query = supabase.from("posts").select(opts.savedBy ? `${POST_SELECT}, saved_posts!inner(user_id)` : POST_SELECT);
+  const build = async (select: string) => {
+  let query = supabase.from("posts").select(opts.savedBy ? `${select}, saved_posts!inner(user_id)` : select);
   if (opts.savedBy) query = query.eq("saved_posts.user_id", opts.savedBy);
   // pinned posts lead the main feed only
   if (!opts.authorId && !opts.postId && !opts.search && !opts.kind && !opts.savedBy && !opts.tags) {
@@ -190,8 +203,15 @@ export async function fetchPosts(
   if (opts.kind) query = query.eq("kind", opts.kind);
   const fts = opts.search ? ftsQuery(opts.search) : "";
   if (fts) query = query.textSearch("fts", fts, { config: "english" });
+  return query;
+  };
 
-  const { data, error } = await query;
+  const withPdf = Date.now() - pdfMissingAt > 300_000;
+  let { data, error } = await build(withPdf ? POST_SELECT : POST_BASE);
+  if (error && withPdf && /pdf_(path|name|size|pages)/.test(error.message)) {
+    pdfMissingAt = Date.now();
+    ({ data, error } = await build(POST_BASE));
+  }
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as unknown as Row[];
   if (rows.length === 0) return [];
@@ -220,7 +240,7 @@ export async function fetchPosts(
       pollMap.set(p.post_id, { closesAt: p.closes_at, options: [...p.poll_options].sort((a, b) => a.position - b.position).map(({ id, label, votes }) => ({ id, label, votes })), myVote: myVotes.get(p.post_id) ?? null });
     }
   }
-  return rows.map((r) => {
+  return rows.map(({ pdf_path, pdf_name, pdf_size, pdf_pages, ...r }) => {
     const e = extras.get(r.id);
     const likes = r.reactions[0]?.count ?? 0;
     return {
@@ -228,6 +248,7 @@ export async function fetchPosts(
       images: r.images ?? [],
       video_url: r.video_url ?? null,
       video_poster: r.video_poster ?? null,
+      pdf: pdf_path && pdf_name ? { name: pdf_name, size: pdf_size ?? 0, pages: pdf_pages ?? null, url: `/api/post-pdf/${r.id}` } : null,
       link: links.get(r.author.id) ?? "none",
       likes,
       comments: r.comments[0]?.count ?? 0,

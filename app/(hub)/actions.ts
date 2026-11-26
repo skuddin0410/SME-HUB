@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { canStartPost, getHubSettings } from "@/lib/zip/settings-load";
 import { extractTags, canon } from "@/lib/zip/hashtags";
 import { getTagIndex, getTagRules } from "@/lib/zip/hashtags-server";
+import { checkPdf } from "@/lib/post-pdf";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -76,9 +77,17 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const rules = await getHubSettings("feed");
   if (!(await canStartPost(supabase, userId))) return { error: "Posting is limited to certain members right now. You can still react, reply and vote." };
   const body = text(form, "body");
-  if (!body) return { error: "Write something before posting." };
-  const tagErr = await checkNewTags(supabase, userId, body);
+  // Update 26: a post can be just photos, a video or a PDF, with no text
+  const hasMedia = form.getAll("images").some((x) => String(x).trim()) || !!text(form, "video_url") || !!text(form, "pdf_path");
+  if (!body && !hasMedia) return { error: "Write something before posting." };
+  const tagErr = body ? await checkNewTags(supabase, userId, body) : null;
   if (tagErr) return { error: tagErr };
+  let pdf = {};
+  if (text(form, "pdf_path")) {
+    const r = await checkPdf(supabase, userId, text(form, "pdf_path"), text(form, "pdf_name"));
+    if ("error" in r) return { error: r.error };
+    pdf = r;
+  }
   const rawVisibility = text(form, "visibility");
   const visibility = ["public", "members", "connections", "private"].includes(rawVisibility) ? rawVisibility : "public";
   const groupId = text(form, "group_id") ? uuid(text(form, "group_id")) : null;
@@ -122,7 +131,7 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const business_id = text(form, "business_id") ? uuid(text(form, "business_id")) : null;
   const { data, error } = await supabase
     .from("posts")
-    .insert({ author_id: userId, body, visibility: business_id ? "public" : visibility, kind, group_id: business_id ? null : groupId, business_id, image_url, cover_url, title, comments_closed, scheduled_at, quoted_post_id, ...(images.length ? { images } : {}), ...(video_url ? { video_url, video_poster } : {}) })
+    .insert({ author_id: userId, body, visibility: business_id ? "public" : visibility, kind, group_id: business_id ? null : groupId, business_id, image_url, cover_url, title, comments_closed, scheduled_at, quoted_post_id, ...(images.length ? { images } : {}), ...(video_url ? { video_url, video_poster } : {}), ...pdf })
     .select("id")
     .single();
   if (error) return { error: error.message };
@@ -139,17 +148,81 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
 }
 
 /** Changes the words of your own post inside the edit window (the database enforces the window). */
-export async function editPost(postId: string, input: { title: string; body: string }) {
+export type PostEdit = {
+  kind: string;
+  title: string;
+  body: string;
+  /** every photo the post should have after saving, in order (kept ones and newly uploaded ones) */
+  images: string[];
+  /** the PDF: unchanged, removed (null) or a newly uploaded one */
+  pdf: "keep" | null | { path: string; name: string };
+};
+
+/**
+ * Update 26: the edit window. The author can change the type, title, text, photos (up to 10) and the PDF;
+ * the video stays. The database keeps the previous version for moderation and shows "Edited".
+ */
+export async function editPost(postId: string, input: PostEdit): Promise<{ error?: string }> {
   uuid(postId);
-  const { supabase } = await requireUser();
-  const body = input.body.trim();
-  if (!body) throw new Error("A post cannot be empty.");
+  const { supabase, userId } = await requireUser();
   const rules = await getHubSettings("feed");
-  const { data: row } = await supabase.from("posts").select("created_at").eq("id", postId).maybeSingle();
+  const { data } = await supabase.from("posts").select("created_at, author_id, kind, image_url, images, video_url").eq("id", postId).maybeSingle();
+  const row = data as { created_at: string; author_id: string; kind: string; image_url: string | null; images: string[] | null; video_url: string | null } | null;
+  if (!row || row.author_id !== userId) return { error: "Only the author can edit this post." };
   const mins = editMinutes(rules.edit);
-  if (row && Date.now() - new Date((row as { created_at: string }).created_at).getTime() > mins * 60_000) throw new Error("The edit window for this post has closed.");
-  fail((await supabase.from("posts").update({ body, title: input.title.trim().slice(0, FEED.titleMax) }).eq("id", postId)).error);
+  if (Date.now() - new Date(row.created_at).getTime() > mins * 60_000) return { error: "The edit window for this post has closed." };
+
+  const body = String(input.body ?? "").trim();
+  if (body.length > 5000) return { error: "A post can be up to 5,000 characters." };
+  const kinds = ["update", "question", "win", "hiring", "intro", "offer"];
+  const kind = kinds.includes(input.kind) ? input.kind : row.kind;
+  if (kind === "offer" && row.kind !== "offer") {
+    const { data: me } = await supabase.from("profiles").select("plan, role").eq("id", userId).maybeSingle();
+    const m = me as { plan?: string; role?: string } | null;
+    if (!(m?.role && m.role !== "member") && !["plus", "advisor"].includes(String(m?.plan))) return { error: "Offers are for Plus members and Advisors." };
+  }
+  const titleRule = String(rules.title);
+  const title = titleRule === "off" ? undefined : String(input.title ?? "").trim().slice(0, FEED.titleMax);
+  if (titleRule === "required" && !title) return { error: "Add a title to your post." };
+
+  // photos: ones the post already had may stay; new ones must be this member's own uploads
+  const had = new Set([...(row.images ?? []), ...(row.image_url ? [row.image_url] : [])]);
+  const list = (Array.isArray(input.images) ? input.images : []).map(String).filter(Boolean);
+  if (list.length > 10) return { error: "A post can have up to 10 photos." };
+  let images: string[];
+  try {
+    images = list.map((u) => (had.has(u) ? u : ownPicture(u, userId)!));
+  } catch {
+    return { error: "That picture cannot be used." };
+  }
+
+  let pdf: Record<string, unknown> = {};
+  let hasPdf: boolean | null = null;
+  if (input.pdf === null) {
+    pdf = { pdf_path: null, pdf_name: null, pdf_size: null, pdf_pages: null };
+    hasPdf = false;
+  } else if (input.pdf && input.pdf !== "keep") {
+    const r = await checkPdf(supabase, userId, String(input.pdf.path), String(input.pdf.name));
+    if ("error" in r) return { error: r.error };
+    pdf = r;
+    hasPdf = true;
+  }
+  if (hasPdf === null) {
+    const { data: cur } = await supabase.from("posts").select("pdf_path").eq("id", postId).maybeSingle();
+    hasPdf = !!(cur as { pdf_path?: string | null } | null)?.pdf_path;
+  }
+  if (!body && !images.length && !row.video_url && !hasPdf) return { error: "A post cannot be empty." };
+
+  // photos are only written when they changed, so an untouched post never trips the media rules
+  const before = row.images?.length ? row.images : row.image_url ? [row.image_url] : [];
+  const same = before.length === images.length && before.every((u, i) => u === images[i]);
+  const { error } = await supabase
+    .from("posts")
+    .update({ kind, body, ...(title !== undefined ? { title } : {}), ...(same ? {} : { images, image_url: images[0] ?? null }), ...pdf })
+    .eq("id", postId);
+  if (error) return { error: /edit window/i.test(error.message) ? "The edit window for this post has closed." : "Could not save your changes. Try again." };
   revalidatePath("/", "layout");
+  return {};
 }
 
 /** Pins one of your posts to your profile, or unpins it. Pinning another one moves the pin. */
