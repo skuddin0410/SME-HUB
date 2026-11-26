@@ -259,3 +259,11 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .zip .acts.rxrow .act.plain { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 8px; border: 0; border-radius: 10px; background: none; color: var(--soft); font: 600 13.5px var(--body); }
 .zip .acts.rxrow .act.plain:hover { background: var(--surface-2, #F4F4F5); color: var(--ink); }
 @media (max-width: 520px) { .zip .acts.rxrow { gap: 8px; } .zip .acts.rxrow .act.plain { padding: 0 6px; } }
+/* reactions use the hub's own icons (components/zip/rx-icon.tsx) */
+.zip .rx3 { gap: 7px; }
+.zip .rx3 > span:first-child { display: inline-flex; }
+.zip .rxtray { gap: 4px; padding: 7px 10px; }
+.zip .rxtray .rxpick { width: 44px; height: 44px; }
+.zip .rxtray .rxpick[aria-pressed="true"] { background: none; }
+.zip .rxtray .rxpick[aria-pressed="true"] .rxi { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--rxc) !important; }
+.zip .rxtray .rxpick:hover > span:first-child { transform: translateY(-5px) scale(1.18); }

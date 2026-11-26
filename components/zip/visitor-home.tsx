@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Ic } from "@/components/zip/ic";
 import { ZipAv, ago, Join } from "@/components/zip/bits";
+import { RxIcon } from "@/components/zip/rx-icon";
 import { MemberOfTheDay } from "@/components/zip/motd";
 import { BLOG } from "@/lib/content";
 import type { Post } from "@/lib/hub";
@@ -228,7 +229,7 @@ function VisitorPost({ p }: { p: Post }) {
       <div className="acts rxrow">
         {total > 0 && (
           <span className="rx3" aria-label={`${total} reactions`}>
-            <span aria-hidden="true">👍</span>
+            <RxIcon kind="like" size={21} />
             <span className="rxn">{total}</span>
           </span>
         )}

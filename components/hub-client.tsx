@@ -25,6 +25,7 @@ import { REACTION_LABEL, type ReactionKind } from "@/lib/reactions";
 import { splitTags, type TagRules } from "@/lib/zip/hashtags";
 import { splitLinks } from "@/lib/zip/post-text";
 import { ShortLink } from "@/components/zip/short-link";
+import { RxIcon } from "@/components/zip/rx-icon";
 import { CommentThread } from "@/components/comment-thread";
 import { ComposerOptions } from "@/components/composer-options";
 import { DEMO_IMAGES, demoAvatar, demoCover, KINDS, type Kind } from "@/lib/demo";
@@ -713,7 +714,6 @@ const REACTIONS: { kind: ReactionKind; emoji: string; label: string; on: string;
   { kind: "insight", emoji: "💡", label: REACTION_LABEL.insight, on: "bg-amber-50 text-amber-800 border-amber-200", color: "#B45309" },
   { kind: "funny", emoji: "😄", label: REACTION_LABEL.funny, on: "bg-orange-50 text-orange-700 border-orange-200", color: "#C2410C" },
 ];
-const BURST_EMOJI: Partial<Record<ReactionKind, string>> = { like: "👍", support: "🤝", love: "❤️", funny: "😄" };
 const ICON_CLASS: Record<ReactionKind, string> = { like: "react-like", celebrate: "react-celebrate", support: "react-like", love: "react-like", insight: "react-love", funny: "react-like" };
 
 /**
@@ -744,7 +744,7 @@ function burstFor(kind: ReactionKind, seed: number): Particle[] {
     });
   }
   // little thumbs float up in a loose column
-  return Array.from({ length: 6 }, (_, i) => ({ id: seed * 100 + i, dx: (i - 2.5) * 9 + rand(-5, 5), dy: rand(-60, -36), r: rand(-30, 30), delay: i * 60, content: BURST_EMOJI[kind] ?? "👍", size: rand(10, 14) }));
+  return Array.from({ length: 6 }, (_, i) => ({ id: seed * 100 + i, dx: (i - 2.5) * 9 + rand(-5, 5), dy: rand(-60, -36), r: rand(-30, 30), delay: i * 60, content: "@icon", size: rand(12, 16) }));
 }
 
 function ReactionButton({
@@ -761,7 +761,7 @@ function ReactionButton({
   /** in the reaction picker: the emoji alone, no count */
   pick?: boolean;
 }) {
-  const { kind, emoji, label, color } = reaction;
+  const { kind, label, color } = reaction;
   const [play, setPlay] = useState<{ n: number; on: boolean } | null>(null);
   const [particles, setParticles] = useState<Particle[]>([]);
   const seed = useRef(0);
@@ -794,8 +794,8 @@ function ReactionButton({
       <span className="relative inline-flex">
         {kind === "insight" && play?.on && <span key={`g${play.n}`} aria-hidden="true" className="react-glow pointer-events-none absolute -inset-2 rounded-full" />}
         {kind === "celebrate" && play?.on && <span key={`r${play.n}`} aria-hidden="true" className="react-ring pointer-events-none absolute -inset-1.5 rounded-full border-2 border-emerald-400" />}
-        <span key={play ? `i${play.n}` : "i"} aria-hidden="true" className={cx("relative inline-block", iconAnim)}>
-          {emoji}
+        <span key={play ? `i${play.n}` : "i"} aria-hidden="true" className={cx("relative inline-flex", iconAnim)}>
+          <RxIcon kind={kind} size={pick ? 36 : active ? 24 : 21} />
         </span>
         <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 z-20">
           {particles.map((p) => (
@@ -813,11 +813,11 @@ function ReactionButton({
                   height: p.content ? undefined : p.size * 0.6,
                   background: p.content ? undefined : p.color,
                   color: p.content ? p.color : undefined,
-                  fontSize: p.content ? p.size : undefined,
+                  fontSize: p.content && p.content !== "@icon" ? p.size : undefined,
                 } as React.CSSProperties
               }
             >
-              {p.content}
+              {p.content === "@icon" ? <RxIcon kind={kind} size={Math.round(p.size)} ring={false} /> : p.content}
             </span>
           ))}
         </span>
