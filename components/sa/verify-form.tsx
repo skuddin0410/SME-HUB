@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { resendCode, verifyCode } from "@/app/auth/actions";
 import { CheckIcon, CodeBoxes, MailIcon, Spin, useCountdown } from "./fields";
+import { BotCheck, type BotCheckHandle } from "./bot-check";
 
 export function VerifyForm({ email: emailFromUrl }: { email: string }) {
   const [email, setEmail] = useState(emailFromUrl);
@@ -15,6 +16,7 @@ export function VerifyForm({ email: emailFromUrl }: { email: string }) {
   const [done, setDone] = useState(false);
   const cd = useCountdown();
   const h1 = useRef<HTMLHeadingElement>(null);
+  const bot = useRef<BotCheckHandle>(null);
 
   useEffect(() => {
     try {
@@ -32,7 +34,9 @@ export function VerifyForm({ email: emailFromUrl }: { email: string }) {
     if (code.length < 6) return setErr("Enter all 6 digits.");
     setErr("");
     setBusy(true);
-    const res = await verifyCode(email, code);
+    const captcha = (await bot.current?.token()) ?? "";
+    const res = await verifyCode(email, code, captcha);
+    bot.current?.reset();
     setBusy(false);
     if (!res.ok) return setErr(res.error);
     if (res.first) setFirst(res.first);
@@ -42,7 +46,9 @@ export function VerifyForm({ email: emailFromUrl }: { email: string }) {
   const again = async () => {
     cd.start(30);
     setErr("");
-    const r = await resendCode(email);
+    const captcha = (await bot.current?.token()) ?? "";
+    const r = await resendCode(email, captcha);
+    bot.current?.reset();
     setSent(r.ok);
     if (!r.ok) setErr("We could not send a new code right now. Try again in a few minutes.");
   };
@@ -75,6 +81,7 @@ export function VerifyForm({ email: emailFromUrl }: { email: string }) {
         <form onSubmit={submit} noValidate>
           <CodeBoxes value={code} onChange={setCode} invalid={Boolean(err)} autoFocus />
           <div className="er" id="c-err" style={{ justifyContent: "center", margin: "-6px 0 12px" }}>{err}</div>
+          <BotCheck ref={bot} action="verify" />
           <button className="btn p" id="go" type="submit" disabled={busy}>
             {busy ? (<><Spin />Checking</>) : "Confirm my email"}
           </button>

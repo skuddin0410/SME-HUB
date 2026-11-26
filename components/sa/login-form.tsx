@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { confirmDevice, signIn, type Fields } from "@/app/auth/actions";
 import { CodeBoxes, Err, LockIcon, PasswordField, Spin } from "./fields";
 import { Sso } from "./sso";
+import { BotCheck, type BotCheckHandle } from "./bot-check";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -34,6 +35,8 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
   const [code, setCode] = useState("");
   const [trust, setTrust] = useState(true);
   const [codeErr, setCodeErr] = useState("");
+  const bot = useRef<BotCheckHandle>(null);
+  const botCode = useRef<BotCheckHandle>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +53,9 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
       return void document.getElementById("pw")?.focus();
     }
     setBusy(true);
-    const res = await signIn({ email: em, password: pw, keep });
+    const captcha = (await bot.current?.token()) ?? "";
+    const res = await signIn({ email: em, password: pw, keep, captcha });
+    bot.current?.reset();
     setBusy(false);
     switch (res.status) {
       case "ok":
@@ -87,6 +92,8 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
         });
       case "busy":
         return setMsg({ kind: "e", body: <span>Too many attempts. Wait a minute, then try again.</span> });
+      case "bot":
+        return setMsg({ kind: "e", body: <span>We couldn’t confirm you’re a person. Wait a moment and try again.</span> });
       case "invalid":
         return setErrs(res.fields);
     }
@@ -98,7 +105,9 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
     if (code.length < 6) return setCodeErr("Enter all 6 digits.");
     setCodeErr("");
     setBusy(true);
-    const res = await confirmDevice({ email: email.trim(), password: pw, code, trust, keep });
+    const captcha = (await botCode.current?.token()) ?? "";
+    const res = await confirmDevice({ email: email.trim(), password: pw, code, trust, keep, captcha });
+    botCode.current?.reset();
     setBusy(false);
     if (!res.ok) return setCodeErr(res.error);
     setDone(true);
@@ -136,6 +145,7 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
               <input type="checkbox" checked={trust} onChange={(e) => setTrust(e.target.checked)} />
               <span>Trust this device for 30 days</span>
             </label>
+            <BotCheck ref={botCode} action="login-code" />
             <button className="btn p" type="submit" disabled={busy}>
               {busy ? (<><Spin />Checking</>) : "Continue"}
             </button>
@@ -183,6 +193,7 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
             <input type="checkbox" id="kp" checked={keep} onChange={(e) => setKeep(e.target.checked)} />
             <span>Keep me logged in on this device</span>
           </label>
+          <BotCheck ref={bot} action="login" />
           <button className="btn p" type="submit" id="go" disabled={busy}>
             {busy ? (<><Spin />Logging in</>) : "Log in"}
           </button>

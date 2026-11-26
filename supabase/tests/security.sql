@@ -1781,3 +1781,32 @@ select t.expect('reports: removing takes the page down, closes the report and is
 select mod_restore((select id from mod_log where kind = 'business' and action = 'remove' limit 1));
 select t.expect('reports: the page can be restored from the log', (select status = 'published' from companies where slug = 'report-me'));
 reset role;
+
+-- ===== Bot and spam guards (0067) =====
+reset role; set request.jwt.claim.sub = '';
+insert into auth.users (id, email, created_at, email_confirmed_at, encrypted_password) values
+ ('00000000-0000-0000-0000-000000000b01', 'new@x.ca', now(), now(), crypt('Right-Pass-123', gen_salt('bf'))),
+ ('00000000-0000-0000-0000-000000000b02', 'unconfirmed@x.ca', now() - interval '30 days', null, null),
+ ('00000000-0000-0000-0000-000000000b03', 'old@x.ca', now() - interval '30 days', now(), null);
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000b02';
+select t.expect('bots: an unconfirmed email is not an active member', not is_active());
+select t.expect_denied('bots: an unconfirmed email cannot post', $$insert into posts (author_id, body) values (auth.uid(), 'hello')$$);
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000b01';
+insert into posts (author_id, body) values (auth.uid(), 'new one'), (auth.uid(), 'new two'), (auth.uid(), 'new three');
+select t.expect_denied('bots: a day-old account gets 3 posts an hour', $$insert into posts (author_id, body) values (auth.uid(), 'new four')$$);
+select t.expect('bots: the right current password checks out', verify_my_password('Right-Pass-123'));
+select t.expect('bots: a wrong current password does not', not verify_my_password('Wrong-Pass-123'));
+set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000b03';
+insert into posts (author_id, body) values (auth.uid(), 'This is a long post about our new bakery opening in Halifax this week');
+select t.expect_denied('bots: the same long post again is refused', $$insert into posts (author_id, body) values (auth.uid(), '  this is a long post about our new bakery   opening in Halifax this week ')$$);
+insert into posts (author_id, body) values (auth.uid(), 'ok'), (auth.uid(), 'ok');
+select t.expect('bots: short posts can repeat', (select count(*) = 2 from posts where author_id = auth.uid() and body = 'ok'));
+reset role; set request.jwt.claim.sub = '';
+insert into posts (author_id, body, scheduled_at) select '00000000-0000-0000-0000-000000000b03', 'later ' || g, now() + interval '2 days' from generate_series(1, 10) g;
+update posts set created_at = now() - interval '3 hours' where author_id = '00000000-0000-0000-0000-000000000b03';
+select t.expect('bots: ten posts are waiting', (select count(*) = 10 from posts where author_id = '00000000-0000-0000-0000-000000000b03' and status = 'scheduled'));
+set role authenticated; set request.jwt.claim.sub = '00000000-0000-0000-0000-000000000b03';
+select t.expect_denied('bots: no more than 10 scheduled posts waiting', $$insert into posts (author_id, body, scheduled_at) values (auth.uid(), 'later 11', now() + interval '3 days')$$);
+insert into posts (author_id, body) values (auth.uid(), 'still fine to post now');
+select t.expect('bots: posting now still works with a full queue', exists (select 1 from posts where author_id = auth.uid() and body = 'still fine to post now'));
+reset role;

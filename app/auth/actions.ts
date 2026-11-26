@@ -23,6 +23,10 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const BREACHED = "That password has appeared in a data breach. Choose another one.";
 const STRONGER = "Choose a stronger password. Follow the tips below.";
 const BUSY = "Too many attempts. Wait a minute, then try again.";
+// the "are you a person?" check (components/sa/bot-check.tsx); Supabase checks the token once it is switched on there
+const BOT = "We couldn’t confirm you’re a person. Wait a moment and try again.";
+const isBot = (m: string) => /captcha/i.test(m);
+const cap = (t: unknown) => (typeof t === "string" && t ? { captchaToken: t.slice(0, 4096) } : {});
 
 async function context() {
   const h = await headers();
@@ -58,6 +62,7 @@ export type SignUpInput = {
   province: string;
   terms: boolean;
   newsletter: boolean;
+  captcha?: string;
 };
 export type SignUpResult = { ok: true } | { ok: false; fields?: Fields; form?: string; exists?: boolean };
 
@@ -104,9 +109,11 @@ export async function signUp(input: SignUpInput): Promise<SignUpResult> {
         ...(input.newsletter ? { newsletter: "true", newsletter_wording: NEWSLETTER_WORDING } : {}),
       },
       emailRedirectTo: `${site}/auth/callback?next=/feed`,
+      ...cap(input.captcha),
     },
   });
   if (error) {
+    if (isBot(error.message)) return { ok: false, form: BOT };
     if (/rate|seconds/i.test(error.message)) return { ok: false, form: BUSY };
     if (/weak|pwned|leaked/i.test(error.message)) return { ok: false, fields: { pw: BREACHED } };
     if (/already|registered/i.test(error.message)) return { ok: false, exists: true, fields: { em: "exists" } };
@@ -121,7 +128,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpResult> {
 
 export type CodeResult = { ok: true; first?: string } | { ok: false; error: string };
 
-export async function verifyCode(emailIn: string, codeIn: string): Promise<CodeResult> {
+export async function verifyCode(emailIn: string, codeIn: string, captcha?: string): Promise<CodeResult> {
   const email = String(emailIn ?? "").trim().toLowerCase();
   const code = String(codeIn ?? "").replace(/\D/g, "");
   if (!EMAIL.test(email) || code.length !== 6) return { ok: false, error: "Enter all 6 digits." };
@@ -130,8 +137,9 @@ export async function verifyCode(emailIn: string, codeIn: string): Promise<CodeR
   const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `code:${email}`, p_max: 10, p_window: "15 minutes" });
   if (allowed === false) return { ok: false, error: "Too many tries. Wait a few minutes, or send a new code." };
 
-  let res = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
-  if (res.error) res = await supabase.auth.verifyOtp({ email, token: code, type: "signup" });
+  let res = await supabase.auth.verifyOtp({ email, token: code, type: "email", options: cap(captcha) });
+  if (res.error && !isBot(res.error.message)) res = await supabase.auth.verifyOtp({ email, token: code, type: "signup", options: cap(captcha) });
+  if (res.error && isBot(res.error.message)) return { ok: false, error: BOT };
   if (res.error || !res.data.user) {
     return { ok: false, error: "That code isn’t right. Check the latest email from SME Hub, or send a new code." };
   }
@@ -145,14 +153,14 @@ export async function verifyCode(emailIn: string, codeIn: string): Promise<CodeR
   return { ok: true, first: firstNameOf(res.data.user.user_metadata) };
 }
 
-export async function resendCode(emailIn: string): Promise<{ ok: boolean }> {
+export async function resendCode(emailIn: string, captcha?: string): Promise<{ ok: boolean }> {
   const email = String(emailIn ?? "").trim().toLowerCase();
   if (!EMAIL.test(email)) return { ok: false };
   const { site } = await context();
   const supabase = await createClient();
   const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `resend:${email}`, p_max: 5, p_window: "1 hour" });
   if (allowed === false) return { ok: false };
-  const { error } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: `${site}/auth/callback?next=/feed` } });
+  const { error } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: `${site}/auth/callback?next=/feed`, ...cap(captcha) } });
   return { ok: !error };
 }
 
@@ -165,9 +173,10 @@ export type SignInResult =
   | { status: "unconfirmed" }
   | { status: "code" }
   | { status: "invalid"; fields: Fields }
-  | { status: "busy" };
+  | { status: "busy" }
+  | { status: "bot" };
 
-export async function signIn(input: { email: string; password: string; keep: boolean }): Promise<SignInResult> {
+export async function signIn(input: { email: string; password: string; keep: boolean; captcha?: string }): Promise<SignInResult> {
   const email = String(input.email ?? "").trim().toLowerCase();
   const password = String(input.password ?? "");
   const keep = input.keep !== false;
@@ -179,8 +188,9 @@ export async function signIn(input: { email: string; password: string; keep: boo
   const until = (state as { locked_until: string | null }[] | null)?.[0]?.locked_until;
   if (until && new Date(until).getTime() > Date.now()) return { status: "locked" };
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({ email, password, options: cap(input.captcha) });
   if (error) {
+    if (isBot(error.message)) return { status: "bot" };
     if (/not confirmed/i.test(error.message)) return { status: "unconfirmed" };
     if (/rate|seconds/i.test(error.message)) return { status: "busy" };
     const { data } = await supabase.rpc("login_failed", { p_email: email });
@@ -230,7 +240,7 @@ async function finishSignIn(supabase: Awaited<ReturnType<typeof createClient>>, 
 }
 
 /** Second step of a log-in from a new device: the password again, plus the emailed code. */
-export async function confirmDevice(input: { email: string; password: string; code: string; trust: boolean; keep: boolean }): Promise<{ ok: true } | { ok: false; error: string }> {
+export async function confirmDevice(input: { email: string; password: string; code: string; trust: boolean; keep: boolean; captcha?: string }): Promise<{ ok: true } | { ok: false; error: string }> {
   const email = String(input.email ?? "").trim().toLowerCase();
   const code = String(input.code ?? "").replace(/\D/g, "");
   const keep = input.keep !== false;
@@ -240,8 +250,8 @@ export async function confirmDevice(input: { email: string; password: string; co
   const until = (state as { locked_until: string | null }[] | null)?.[0]?.locked_until;
   if (until && new Date(until).getTime() > Date.now()) return { ok: false, error: "Logging in is paused for 15 minutes. You can reset your password now instead." };
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password: String(input.password ?? "") });
-  if (error) return { ok: false, error: "That didn’t work. Go back and log in again." };
+  const { error } = await supabase.auth.signInWithPassword({ email, password: String(input.password ?? ""), options: cap(input.captcha) });
+  if (error) return { ok: false, error: isBot(error.message) ? BOT : "That didn’t work. Go back and log in again." };
   const { data: u } = await supabase.auth.getUser();
   const result = u.user ? await checkChallenge(u.user.id, code) : "expired";
   if (result !== "ok" || !u.user) {
@@ -261,7 +271,7 @@ export async function confirmDevice(input: { email: string; password: string; co
 
 // ---------------------------------------------------------------- forgot password
 
-export async function forgotPassword(emailIn: string): Promise<{ ok: true } | { ok: false; error: string }> {
+export async function forgotPassword(emailIn: string, captcha?: string): Promise<{ ok: true } | { ok: false; error: string }> {
   const email = String(emailIn ?? "").trim().toLowerCase();
   if (!EMAIL.test(email)) return { ok: false, error: email ? "Check your email address." : "Enter your email address." };
   const { site, ip } = await context();
@@ -273,7 +283,9 @@ export async function forgotPassword(emailIn: string): Promise<{ ok: true } | { 
   ]);
   if (a.data === false || b.data === false) return { ok: false, error: "Too many requests. Try again in an hour." };
   // same answer whether or not the account exists, so the form cannot be used to find members
-  await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${site}/auth/confirm?next=/auth/update-password` });
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${site}/auth/confirm?next=/auth/update-password`, ...cap(captcha) });
+  // only the bot check is reported; every other answer stays the same, so the form cannot be used to find members
+  if (error && isBot(error.message)) return { ok: false, error: BOT };
   return { ok: true };
 }
 
@@ -346,12 +358,19 @@ export async function changePassword(input: { current: string; password: string;
   const { data: state } = await supabase.rpc("login_state", { p_email: user.email });
   const until = (state as { locked_until: string | null }[] | null)?.[0]?.locked_until;
   if (until && new Date(until).getTime() > Date.now()) return { ok: false, fields: { cur: "Too many wrong passwords. Try again in 15 minutes, or reset your password." } };
-  const test = await probe.auth.signInWithPassword({ email: user.email, password: current });
-  if (test.error || !test.data.session) {
+  // the database checks it (0067), so no second sign-in is needed (that would need a bot check once it is on)
+  const db = await supabase.rpc("verify_my_password", { p_password: current });
+  let right = db.data === true;
+  if (db.error) {
+    // until migration 0067 is applied: the old check, a sign-in on a throwaway client
+    const test = await probe.auth.signInWithPassword({ email: user.email, password: current });
+    right = !test.error && !!test.data.session;
+    if (right) await probe.auth.signOut({ scope: "local" }); // removes the session the check created
+  }
+  if (!right) {
     await supabase.rpc("login_failed", { p_email: user.email });
     return { ok: false, fields: { cur: "That’s not your current password." } };
   }
-  await probe.auth.signOut({ scope: "local" }); // removes the session the check created
 
   const done = await savePassword(supabase, user, input.password, input.confirm, current);
   if (!done.ok) return done;

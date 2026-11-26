@@ -2,7 +2,9 @@
 create role anon nologin; create role authenticated nologin;
 create schema auth; create schema storage;
 create table auth.users (id uuid primary key default gen_random_uuid(), email text, raw_user_meta_data jsonb default '{}',
-  raw_app_meta_data jsonb default '{}', created_at timestamptz default now(), last_sign_in_at timestamptz, email_confirmed_at timestamptz);
+  raw_app_meta_data jsonb default '{}', created_at timestamptz default now() - interval '30 days', last_sign_in_at timestamptz, email_confirmed_at timestamptz default now(), encrypted_password text);
+-- test members are a month old unless a test says otherwise (0067 limits brand-new accounts)
+create extension if not exists pgcrypto;
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
 create table storage.objects (id uuid default gen_random_uuid(), bucket_id text, name text);
