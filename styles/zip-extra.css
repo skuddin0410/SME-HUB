@@ -300,3 +300,10 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 /* A post with one photo shows the whole photo, not a crop, and a little smaller (at most 340px tall) */
 .zip .cpgal.n1 .cpgi { aspect-ratio: auto; display: grid; place-items: center; max-height: 340px; background: var(--surface-2, #F4F4F5); }
 .zip .cpgal.n1 .cpgi img { width: auto; height: auto; max-width: 100%; max-height: 340px; object-fit: contain; }
+/* Post actions, calmer (Nov 26): every icon 17px, numbers always grey; reacting does not change colours,
+   the React button just shows your reaction's symbol in ink */
+.zip .acts.rxrow .rxmain, .zip .acts.rxrow .act.plain { gap: 6px; font-weight: 500; color: var(--soft); }
+.zip .acts.rxrow .rxmain[aria-pressed="true"] { color: var(--soft); font-weight: 500; }
+.zip .acts.rxrow .rxmain[aria-pressed="true"] svg { color: var(--ink); }
+.zip .acts.rxrow .rxmain > span:first-child { font-size: inherit; }
+.zip .acts.rxrow .rxmain:hover > span:first-child { transform: none; }

@@ -227,19 +227,19 @@ function VisitorPost({ p }: { p: Post }) {
       )}
       <div className="acts rxrow">
         <Join className="rx3 rxmain" label={`Join to react, ${total} reactions`}>
-          <Ic n="thumb" s={20} />
+          <Ic n="thumb" s={17} />
           {total > 0 && <span className="rxn">{total}</span>}
         </Join>
         <Link className="act plain" href={`/posts/${p.id}`} aria-label={`Comments, ${p.comments}`}>
-          <Ic n="msg" s={19} />
+          <Ic n="msg" s={17} />
           {p.comments}
         </Link>
         <Join className="act plain" label={`Repost, ${p.reposts}`}>
-          <Ic n="repost" s={19} />
+          <Ic n="repost" s={17} />
           {p.reposts}
         </Join>
         <Join className="act plain" label="Send in a message">
-          <Ic n="send" s={19} />
+          <Ic n="send" s={17} />
         </Join>
       </div>
     </article>

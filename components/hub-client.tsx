@@ -25,7 +25,7 @@ import { REACTION_LABEL, type ReactionKind } from "@/lib/reactions";
 import { splitTags, type TagRules } from "@/lib/zip/hashtags";
 import { splitLinks } from "@/lib/zip/post-text";
 import { ShortLink } from "@/components/zip/short-link";
-import { RxIcon } from "@/components/zip/rx-icon";
+import { RxGlyph, RxIcon } from "@/components/zip/rx-icon";
 import { CommentThread } from "@/components/comment-thread";
 import { ComposerOptions } from "@/components/composer-options";
 import { DEMO_IMAGES, demoAvatar, demoCover, KINDS, type Kind } from "@/lib/demo";
@@ -798,7 +798,7 @@ function ReactionButton({
         {kind === "insight" && play?.on && <span key={`g${play.n}`} aria-hidden="true" className="react-glow pointer-events-none absolute -inset-2 rounded-full" />}
         {kind === "celebrate" && play?.on && <span key={`r${play.n}`} aria-hidden="true" className="react-ring pointer-events-none absolute -inset-1.5 rounded-full border-2 border-emerald-400" />}
         <span key={play ? `i${play.n}` : "i"} aria-hidden="true" className={cx("relative inline-flex", iconAnim)}>
-          {main && !active ? <Ic n="thumb" s={20} /> : <RxIcon kind={kind} size={pick ? 36 : main ? 21 : active ? 24 : 21} />}
+          {main ? (active ? <RxGlyph kind={kind} size={17} /> : <Ic n="thumb" s={17} />) : <RxIcon kind={kind} size={pick ? 36 : active ? 24 : 21} />}
         </span>
         <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 z-20">
           {particles.map((p) => (
@@ -970,7 +970,7 @@ export function PostActions({
         {/* LinkedIn style: React (with the total), comment, repost, quote, send; the reactions used stack on the right */}
         <ReactionPicker mine={mine} total={REACTIONS.reduce((n, r) => n + (tally[r.kind] ?? 0), 0)} onPick={(k) => react(k)} />
         {rules?.comments !== false && <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Comments, ${commentCount}`} className="act plain">
-          <Ic n="msg" s={19} />
+          <Ic n="msg" s={17} />
           {commentCount}
         </button>}
         {rules?.share !== false && <button
@@ -981,13 +981,13 @@ export function PostActions({
           title={didRepost ? "Remove repost" : "Repost"}
           className="act plain"
         >
-          <Ic n="repost" s={19} />
+          <Ic n="repost" s={17} />
           {repostCount}
         </button>}
         {canQuote && rules?.share !== false && (
           <button type="button" aria-label="Quote this post" title="Quote" className="act plain"
             onClick={() => { if (needAccount()) return; window.dispatchEvent(new CustomEvent("zip:quote", { detail: postId })); }}>
-            <Ic n="quote" s={19} />
+            <Ic n="quote" s={17} />
           </button>
         )}
         {rules?.share !== false && <button
@@ -1000,7 +1000,7 @@ export function PostActions({
           }}
           className="act plain"
         >
-          <Ic n="send" s={19} />
+          <Ic n="send" s={17} />
         </button>}
         <span className="spacer" style={{ flex: 1 }} />
         {note && (

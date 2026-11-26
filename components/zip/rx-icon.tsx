@@ -30,3 +30,9 @@ export function RxIcon({ kind, size = 20, ring = true }: { kind: ReactionKind; s
     </span>
   );
 }
+
+/** The reaction's symbol alone, in the current text colour (no badge): used on the React button once you have reacted. */
+export function RxGlyph({ kind, size = 17 }: { kind: ReactionKind; size?: number }) {
+  const r = RX[kind];
+  return <svg aria-hidden="true" viewBox="0 0 24 24" width={size} height={size} fill={r.fill ? "currentColor" : "none"} stroke="currentColor" strokeWidth={r.fill ? 1.2 : 1.9} strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: r.d }} />;
+}
