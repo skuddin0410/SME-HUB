@@ -267,3 +267,12 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .zip .rxtray .rxpick[aria-pressed="true"] { background: none; }
 .zip .rxtray .rxpick[aria-pressed="true"] .rxi { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--rxc) !important; }
 .zip .rxtray .rxpick:hover > span:first-child { transform: translateY(-5px) scale(1.18); }
+/* LinkedIn-style row (Nov 26): React with the total, comment, repost, quote, send on the left; reactions used stacked on the right */
+.zip .acts.rxrow { gap: 4px; margin: 0 -8px; padding: 8px 0 0; border-top: 1px solid var(--line); }
+.zip .acts.rxrow .rxmain, .zip .acts.rxrow .act.plain { height: 38px; padding: 0 10px; gap: 7px; border-radius: 999px; font: 500 14px var(--body); color: var(--soft); }
+.zip .acts.rxrow .rxmain:hover, .zip .acts.rxrow .act.plain:hover { background: var(--surface-2, #F4F4F5); color: var(--ink); }
+.zip .acts.rxrow .rxmain[aria-pressed="true"] { color: var(--rxc); font-weight: 600; }
+.zip .acts.rxrow .spacer { flex: 1; }
+.zip .rxstack { display: inline-flex; align-items: center; padding: 0 8px; }
+.zip .rxstack .rxi + .rxi { margin-left: -5px; }
+.zip .rxadd .rxtray { left: 0; }

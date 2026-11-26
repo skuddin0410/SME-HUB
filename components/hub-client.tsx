@@ -753,13 +753,16 @@ function ReactionButton({
   count,
   onToggle,
   pick = false,
+  main = false,
 }: {
   reaction: (typeof REACTIONS)[number];
   active: boolean;
   count: number;
   onToggle: () => void;
-  /** in the reaction picker: the emoji alone, no count */
+  /** in the reaction picker: the icon alone, no count */
   pick?: boolean;
+  /** the post's React button: an outline thumb until you react, then your reaction's badge; the count is the total */
+  main?: boolean;
 }) {
   const { kind, label, color } = reaction;
   const [play, setPlay] = useState<{ n: number; on: boolean } | null>(null);
@@ -786,16 +789,16 @@ function ReactionButton({
       type="button"
       onClick={click}
       aria-pressed={active}
-      aria-label={pick ? label : `${label}, ${count}`}
-      title={label}
-      className={pick ? "rx3 rxpick" : "rx3"}
+      aria-label={pick ? label : main ? (active ? `Remove your ${label} reaction, ${count} reactions` : `Like, ${count} reactions`) : `${label}, ${count}`}
+      title={main ? (active ? label : "Like") : label}
+      className={pick ? "rx3 rxpick" : main ? "rx3 rxmain" : "rx3"}
       style={{ "--rxc": color } as React.CSSProperties}
     >
       <span className="relative inline-flex">
         {kind === "insight" && play?.on && <span key={`g${play.n}`} aria-hidden="true" className="react-glow pointer-events-none absolute -inset-2 rounded-full" />}
         {kind === "celebrate" && play?.on && <span key={`r${play.n}`} aria-hidden="true" className="react-ring pointer-events-none absolute -inset-1.5 rounded-full border-2 border-emerald-400" />}
         <span key={play ? `i${play.n}` : "i"} aria-hidden="true" className={cx("relative inline-flex", iconAnim)}>
-          <RxIcon kind={kind} size={pick ? 36 : active ? 24 : 21} />
+          {main && !active ? <Ic n="thumb" s={20} /> : <RxIcon kind={kind} size={pick ? 36 : main ? 21 : active ? 24 : 21} />}
         </span>
         <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 z-20">
           {particles.map((p) => (
@@ -833,29 +836,38 @@ function ReactionButton({
 
 
 /**
- * The add-reaction button and its picker: all six reactions in a floating row. Opens on hover (with a short delay so it
- * does not flash while the pointer passes over) and on tap or click; closes on pick, on leaving, on Escape or on a click
- * elsewhere. The picked reaction plays its animation in the picker before it closes.
+ * The React button and its picker (LinkedIn style). A tap or click likes the post, or removes your reaction. Resting the
+ * pointer on it for a moment, or a long press on a touch screen, opens all six reactions in a floating row; the picked
+ * reaction plays its animation there before the row closes. Escape or a click elsewhere closes it.
  */
-function ReactionPicker({ mine, onPick }: { mine: ReactionKind | null; onPick: (k: ReactionKind) => void }) {
+function ReactionPicker({ mine, total, onPick }: { mine: ReactionKind | null; total: number; onPick: (k: ReactionKind) => void }) {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const timer = useRef<number | undefined>(undefined);
+  const pressed = useRef(false);
   const later = (fn: () => void, ms: number) => { window.clearTimeout(timer.current); timer.current = window.setTimeout(fn, ms); };
   useEffect(() => {
     if (!open) return;
-    const away = (e: MouseEvent) => { if (!wrap.current?.contains(e.target as Node)) setOpen(false); };
+    const away = (e: PointerEvent) => { if (!wrap.current?.contains(e.target as Node)) setOpen(false); };
     const esc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
-    document.addEventListener("mousedown", away);
+    document.addEventListener("pointerdown", away);
     document.addEventListener("keydown", esc);
-    return () => { document.removeEventListener("mousedown", away); document.removeEventListener("keydown", esc); };
+    return () => { document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc); };
   }, [open]);
   useEffect(() => () => window.clearTimeout(timer.current), []);
+  const current = REACTIONS.find((r) => r.kind === (mine ?? "like"))!;
   return (
-    <div ref={wrap} className="rxadd" onMouseEnter={() => later(() => setOpen(true), 280)} onMouseLeave={() => later(() => setOpen(false), 320)}>
-      <button type="button" className="rxaddbtn" aria-label="Add a reaction" title="React" aria-expanded={open} onClick={() => { window.clearTimeout(timer.current); setOpen((o) => !o); }}>
-        <Ic n="smileplus" s={19} />
-      </button>
+    <div
+      ref={wrap}
+      className="rxadd"
+      onMouseEnter={() => later(() => setOpen(true), 450)}
+      onMouseLeave={() => later(() => setOpen(false), 320)}
+      onPointerDown={(e) => { if (e.pointerType !== "mouse") { pressed.current = false; later(() => { pressed.current = true; setOpen(true); }, 450); } }}
+      onPointerUp={(e) => { if (e.pointerType !== "mouse" && !pressed.current) window.clearTimeout(timer.current); }}
+      onClickCapture={(e) => { if (pressed.current) { pressed.current = false; if (!(e.target as Element).closest(".rxtray")) { e.preventDefault(); e.stopPropagation(); } } }}
+      onContextMenu={(e) => { if (open) e.preventDefault(); }}
+    >
+      <ReactionButton reaction={current} main active={!!mine} count={total} onToggle={() => { window.clearTimeout(timer.current); setOpen(false); onPick(mine ?? "like"); }} />
       {open && (
         <div className="rxtray" role="group" aria-label="Choose a reaction">
           {REACTIONS.map((r) => (
@@ -955,19 +967,10 @@ export function PostActions({
   return (
     <>
       <div className="acts rxrow">
-        {/* the reactions people have used, each with its count; yours is a little larger and in its colour */}
-        {REACTIONS.filter((r) => (tally[r.kind] ?? 0) > 0 || mine === r.kind).map((r) => (
-          <ReactionButton key={r.kind} reaction={r} active={mine === r.kind} count={tally[r.kind] ?? 0} onToggle={() => react(r.kind)} />
-        ))}
-        <ReactionPicker mine={mine} onPick={(k) => react(k)} />
-        <span className="spacer" style={{ flex: 1 }} />
-        {note && (
-          <span role="status" className="small" style={{ background: "var(--ink)", color: "var(--bg)", borderRadius: 999, padding: "4px 10px" }}>
-            {note}
-          </span>
-        )}
+        {/* LinkedIn style: React (with the total), comment, repost, quote, send; the reactions used stack on the right */}
+        <ReactionPicker mine={mine} total={REACTIONS.reduce((n, r) => n + (tally[r.kind] ?? 0), 0)} onPick={(k) => react(k)} />
         {rules?.comments !== false && <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={`Comments, ${commentCount}`} className="act plain">
-          <Ic n="msg" s={15} />
+          <Ic n="msg" s={19} />
           {commentCount}
         </button>}
         {rules?.share !== false && <button
@@ -978,13 +981,13 @@ export function PostActions({
           title={didRepost ? "Remove repost" : "Repost"}
           className="act plain"
         >
-          <Ic n="repost" s={15} />
+          <Ic n="repost" s={19} />
           {repostCount}
         </button>}
         {canQuote && rules?.share !== false && (
           <button type="button" aria-label="Quote this post" title="Quote" className="act plain"
             onClick={() => { if (needAccount()) return; window.dispatchEvent(new CustomEvent("zip:quote", { detail: postId })); }}>
-            <Ic n="quote" s={15} />
+            <Ic n="quote" s={19} />
           </button>
         )}
         {rules?.share !== false && <button
@@ -997,8 +1000,24 @@ export function PostActions({
           }}
           className="act plain"
         >
-          <Ic n="send" s={15} />
+          <Ic n="send" s={19} />
         </button>}
+        <span className="spacer" style={{ flex: 1 }} />
+        {note && (
+          <span role="status" className="small" style={{ background: "var(--ink)", color: "var(--bg)", borderRadius: 999, padding: "4px 10px" }}>
+            {note}
+          </span>
+        )}
+        {(() => {
+          const used = REACTIONS.filter((r) => (tally[r.kind] ?? 0) > 0).sort((x, y) => (tally[y.kind] ?? 0) - (tally[x.kind] ?? 0));
+          if (!used.length) return null;
+          const said = used.map((r) => `${r.label} ${tally[r.kind]}`).join(", ");
+          return (
+            <span className="rxstack" role="img" aria-label={`Reactions: ${said}`} title={said}>
+              {used.slice(0, 3).map((r) => <RxIcon key={r.kind} kind={r.kind} size={20} />)}
+            </span>
+          );
+        })()}
       </div>
 
       {open && rules?.comments !== false && (

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Ic } from "@/components/zip/ic";
 import { ZipAv, ago, Join } from "@/components/zip/bits";
-import { RxIcon } from "@/components/zip/rx-icon";
 import { MemberOfTheDay } from "@/components/zip/motd";
 import { BLOG } from "@/lib/content";
 import type { Post } from "@/lib/hub";
@@ -227,26 +226,20 @@ function VisitorPost({ p }: { p: Post }) {
         </p>
       )}
       <div className="acts rxrow">
-        {total > 0 && (
-          <span className="rx3" aria-label={`${total} reactions`}>
-            <RxIcon kind="like" size={21} />
-            <span className="rxn">{total}</span>
-          </span>
-        )}
-        <Join className="rxaddbtn" label="Join to react">
-          <Ic n="smileplus" s={19} />
+        <Join className="rx3 rxmain" label={`Join to react, ${total} reactions`}>
+          <Ic n="thumb" s={20} />
+          {total > 0 && <span className="rxn">{total}</span>}
         </Join>
-        <span className="spacer" style={{ flex: 1 }} />
         <Link className="act plain" href={`/posts/${p.id}`} aria-label={`Comments, ${p.comments}`}>
-          <Ic n="msg" s={15} />
+          <Ic n="msg" s={19} />
           {p.comments}
         </Link>
         <Join className="act plain" label={`Repost, ${p.reposts}`}>
-          <Ic n="repost" s={15} />
+          <Ic n="repost" s={19} />
           {p.reposts}
         </Join>
         <Join className="act plain" label="Send in a message">
-          <Ic n="send" s={15} />
+          <Ic n="send" s={19} />
         </Join>
       </div>
     </article>
