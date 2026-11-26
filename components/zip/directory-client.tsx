@@ -11,7 +11,7 @@ import type { LinkState } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
 import { useReady } from "@/components/ready/provider";
 import { ZipAv } from "@/components/zip/bits";
-import { TYPES } from "@/lib/zip/types";
+import { TypeBadge } from "@/components/zip/type-badge";
 import { MemberMap } from "@/components/zip/member-map";
 
 export type DirMember = {
@@ -28,10 +28,7 @@ export type DirMember = {
   needs: string[];
 };
 
-function TypeTag({ type }: { type: string }) {
-  const t = TYPES[type] ?? TYPES.owner;
-  return <span className="tag ptype" style={{ background: t[1], color: t[2] }}>{t[0]}</span>;
-}
+const TypeTag = ({ type }: { type: string }) => <TypeBadge type={type} />;
 
 /** Selecting a card or a pin shows that member in the panel under the map, like the guide. */
 export function DirectoryBody({ members: all, signedIn, links, following, form, invite, rules }: {
@@ -80,10 +77,10 @@ export function DirectoryBody({ members: all, signedIn, links, following, form, 
                 <button key={m.id} type="button" className="dircard dirrow" aria-pressed={pressed} onClick={() => setSelId(m.id)}>
                   {av}
                   <span className="stack grow" style={{ gap: 2, minWidth: 0 }}>
-                    <span className="row" style={{ gap: 8, flexWrap: "wrap" }}><span className="nm">{m.name}</span>{card.type && <TypeTag type={m.type} />}</span>
+                    <span className="nm">{m.name}</span>
+                    <span className="row" style={{ gap: 8, flexWrap: "wrap" }}><span className="muted small">{m.city}{card.last && m.active ? ` · ${m.active}` : ""}</span>{card.type && <TypeTag type={m.type} />}</span>
                     <span>{m.headline}</span>
                     {m.recs > 0 && <span className="recby"><Ic n="spark" s={13} />Recommended by {m.recs}</span>}
-                    <span className="muted small">{m.city}{card.last && m.active ? ` · ${m.active}` : ""}</span>
                   </span>
                 </button>
               ) : (
@@ -92,8 +89,8 @@ export function DirectoryBody({ members: all, signedIn, links, following, form, 
                     {av}
                     <span className="stack grow" style={{ minWidth: 0, gap: 3 }}>
                       <span className="nm">{m.name}</span>
-                      {card.type && <span><TypeTag type={m.type} /></span>}
                       <span className="muted small">{m.city}</span>
+                      {card.type && <span><TypeTag type={m.type} /></span>}
                     </span>
                   </span>
                   <span>{m.headline}</span>

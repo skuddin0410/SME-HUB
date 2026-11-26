@@ -276,3 +276,18 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .zip .rxstack { display: inline-flex; align-items: center; padding: 0 8px; }
 .zip .rxstack .rxi + .rxi { margin-left: -5px; }
 .zip .rxadd .rxtray { left: 0; }
+
+/* Member type badges (Nov 26, option B): SME Advisor (gold) and Business owner (blue) as medallion badges */
+.zip .tbadge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px 0 3px; border-radius: 999px; font: 700 12px/1 var(--display); white-space: nowrap; vertical-align: middle; }
+.zip .tbadge.adv { background: #FFF8E6; color: #7A4D00; border: 1px solid #F1CF73; }
+.zip .tbadge.own { background: #EEF4FF; color: #1E3A8A; border: 1px solid #BFD3FE; }
+.zip .tcoin { position: relative; overflow: hidden; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; color: #fff; flex: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(0,0,0,.18); }
+.zip .tbadge.adv .tcoin { background: linear-gradient(135deg, #F7D774, #D19A1F 60%, #B57A0E); }
+.zip .tbadge.own .tcoin { background: linear-gradient(135deg, #60A5FA, #2563EB 60%, #1E40AF); }
+.zip .tcoin::after { content: ""; position: absolute; top: 0; bottom: 0; width: 45%; left: -70%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.85), transparent); transform: skewX(-20deg); animation: tshine 3.4s ease-in-out infinite; }
+@keyframes tshine { 0%, 60% { left: -70%; } 90%, 100% { left: 140%; } }
+@media (prefers-reduced-motion: reduce) { .zip .tcoin::after { animation: none; display: none; } }
+.dark .zip .tbadge.adv, .zip.dark .tbadge.adv { background: rgba(241,207,115,.12); color: #F5D98A; border-color: rgba(241,207,115,.45); }
+.dark .zip .tbadge.own, .zip.dark .tbadge.own { background: rgba(96,165,250,.12); color: #BFD3FE; border-color: rgba(96,165,250,.45); }
+/* the profile's badge row now sits under the location line */
+.zip .ptags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 2px; }

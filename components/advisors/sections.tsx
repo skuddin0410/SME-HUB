@@ -12,8 +12,15 @@ type AP = { field: string; years: number; helped: number; rating: number | null;
 /** An SMB Advisor's sections on their profile (handoff: advSections). */
 export async function AdvisorSections({ memberId, name }: { memberId: string; name: string }) {
   const { supabase, userId } = await getViewer();
-  const { data: apRow } = await supabase.from("advisor_profiles").select("field, years, helped, rating, reply, langs, creds, services, session_title, session_at, active").eq("user_id", memberId).maybeSingle();
-  const ap = apRow as AP | null;
+  // The session and "active" fields come with the advisor booking update (migration 0063). Until that update is on a
+  // database, read the original advisor fields instead of hiding the advisor's sections.
+  const full = await supabase.from("advisor_profiles").select("field, years, helped, rating, reply, langs, creds, services, session_title, session_at, active").eq("user_id", memberId).maybeSingle();
+  let apRow = full.data as AP | null;
+  if (full.error) {
+    const base = await supabase.from("advisor_profiles").select("field, years, helped, rating, reply, langs, creds, services").eq("user_id", memberId).maybeSingle();
+    apRow = base.data ? ({ ...(base.data as Omit<AP, "session_title" | "session_at" | "active">), session_title: "", session_at: null, active: true }) : null;
+  }
+  const ap = apRow;
   if (!ap || !ap.active) return null;
   const now = new Date().toISOString();
   const [slotsRes, mineRes, seatRes, revRes, pastRes] = await Promise.all([

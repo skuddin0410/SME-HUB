@@ -28,6 +28,7 @@ import { AiProfileButton } from "@/components/ready/ai-button";
 import { Suspense } from "react";
 import { ProfileStoriesSection } from "@/components/stories/sections";
 import { AdvisorSections } from "@/components/advisors/sections";
+import { TypeBadge } from "@/components/zip/type-badge";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -146,7 +147,9 @@ export default async function MemberPage({
   const site = member.website && (member.website.startsWith("http") ? member.website : `https://${member.website}`);
   const first = member.full_name.split(" ")[0] || "this member";
   // SMB Advisors get "Book a free call" in the header (handoff: profile header)
-  const isAdvisor = !isMe && !!(await supabase.from("advisor_profiles").select("user_id").eq("user_id", id).eq("active", true).maybeSingle()).data;
+  // "active" comes with the advisor booking update (migration 0063); before it, any advisor profile counts
+  const advQ = await supabase.from("advisor_profiles").select("user_id").eq("user_id", id).eq("active", true).maybeSingle();
+  const isAdvisor = !isMe && !!(advQ.error ? (await supabase.from("advisor_profiles").select("user_id").eq("user_id", id).maybeSingle()).data : advQ.data);
   const active = activeLabel((activeRow.data as string | null) ?? null);
   const type = TYPES[member.profile_type] ?? TYPES.owner;
   const planLabel = member.member_type === "owner" ? null : MEMBER_TYPES[member.member_type];
@@ -222,10 +225,6 @@ export default async function MemberPage({
                   <div className="row prow" style={{ flexWrap: "wrap", gap: 8 }}>
                     <h1>{displayName(member.full_name, String(ps.dname))}</h1>
                     {degree && <span className="deg">· {DEGREE_LABEL[degree]}</span>}
-                    {ps.head.type && <span className="tag ptype" style={{ background: type[1], color: type[2] }}>{type[0]}</span>}
-                    {planLabel && planLabel !== type[0] ? <span className="tag">{planLabel}</span> : plan !== type[0] && <span className="tag">{plan}</span>}
-                    {member.founding_number != null && <span className="tag badge">Founding Member</span>}
-                    {member.status === "suspended" && <span className="tag" style={{ background: "#B91C1C", color: "#fff" }}>Suspended</span>}
                   </div>
                   {member.headline && <span style={{ fontSize: 15 }}>{member.headline}</span>}
                   <span className="muted">
@@ -239,6 +238,12 @@ export default async function MemberPage({
                       </div>
                     </details>
                   </span>
+                  <div className="ptags">
+                    {ps.head.type && <TypeBadge type={member.profile_type} />}
+                    {planLabel && planLabel !== type[0] ? <span className="tag">{planLabel}</span> : plan !== type[0] && <span className="tag">{plan}</span>}
+                    {member.founding_number != null && <span className="tag badge">Founding Member</span>}
+                    {member.status === "suspended" && <span className="tag" style={{ background: "#B91C1C", color: "#fff" }}>Suspended</span>}
+                  </div>
                   {shown.length > 0 && <span className="recby"><Ic n="spark" s={13} />Recommended by {shown.length}</span>}
                   <span className="muted small">
                     {[ps.head.joined ? `Joined ${when(member.created_at, { year: "numeric", month: "short" })}` : null, ps.head.followers && followers !== null && followers > 0 ? `${followers} follower${followers === 1 ? "" : "s"}` : null, ps.head.last ? active?.label : null].filter(Boolean).join(" · ")}
@@ -419,12 +424,11 @@ export default async function MemberPage({
                 ) : (
                   <div className="list">
                     {connList.map((m) => {
-                      const t = TYPES[m.profile_type] ?? TYPES.owner;
                       return (
                         <div key={m.id} className="row" style={{ flexWrap: "wrap" }}>
                           <ZipAv name={m.full_name || "M"} src={m.avatar_url} />
                           <span className="stack grow" style={{ gap: 2, minWidth: 0, flexBasis: 200 }}>
-                            <span><Link href={`/members/${m.id}`} className="namebtn">{m.full_name}</Link> <span className="tag ptype" style={{ background: t[1], color: t[2] }}>{t[0]}</span></span>
+                            <span><Link href={`/members/${m.id}`} className="namebtn">{m.full_name}</Link> <TypeBadge type={m.profile_type} /></span>
                             <span className="muted small">{[m.headline, m.location].filter(Boolean).join(" · ")}</span>
                           </span>
                           <ConnectBtn otherId={m.id} initial={connLinks.get(m.id) ?? "none"} signedIn={!!userId} small />

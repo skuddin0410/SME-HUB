@@ -4,6 +4,7 @@ import { DEGREE_LABEL, MEMBER_TYPES, timeAgo, type Author, type Degree, type Pos
 import { getTagRules } from "@/lib/zip/hashtags-server";
 import { AvatarImg, GroupLogo, PostActions, PostBody, PostMenu } from "@/components/hub-client";
 import { getPostRules } from "@/lib/zip/settings-load";
+import { TypeBadge } from "@/components/zip/type-badge";
 import { PollView, PostManage, QuoteButton, QuoteEmbed } from "@/components/post-extras";
 import { ConnectButton } from "@/components/network-client";
 import { SaveButton } from "@/components/feed-client";
@@ -92,7 +93,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
                 · {post.group.name}
               </Link>
             )}
-            {post.author.member_type === "advisor" && !post.business && <span className="tag">SME Advisor</span>}
+            {post.author.member_type === "advisor" && !post.business && <TypeBadge type="advisor" />}
             {post.author.member_type !== "advisor" && post.author.member_type !== "owner" && !post.business && <TierBadge type={post.author.member_type} always />}
             <span className={`tag ${post.kind}`}>{KINDS[post.kind].label}</span>
             {post.profile_pinned && <span className="tag">Pinned on profile</span>}
