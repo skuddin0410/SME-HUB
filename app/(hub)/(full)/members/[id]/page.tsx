@@ -227,17 +227,8 @@ export default async function MemberPage({
                     {degree && <span className="deg">· {DEGREE_LABEL[degree]}</span>}
                   </div>
                   {member.headline && <span style={{ fontSize: 15 }}>{member.headline}</span>}
-                  <span className="muted">
-                    {member.location}{member.location && " · "}
-                    <details className="menuwrap" style={{ display: "inline-block" }}>
-                      <summary style={{ cursor: "pointer", listStyle: "none", display: "inline", color: "var(--link)", fontWeight: 600 }}>Contact info</summary>
-                      <div className="menu cimenu" style={{ padding: 14, minWidth: 260 }}>
-                        <span className="small"><strong>Profile</strong><br /><Link href={`/members/${id}`} style={{ color: "var(--link)" }}>/members/{id.slice(0, 8)}</Link></span>
-                        {site && <span className="small"><strong>Website</strong><br /><a href={site} target="_blank" rel="noreferrer nofollow" style={{ color: "var(--link)" }}>{member.website.replace(/^https?:\/\//, "")}</a></span>}
-                        <span className="small"><strong>Joined</strong><br />{when(member.created_at, { year: "numeric", month: "long" })}</span>
-                      </div>
-                    </details>
-                  </span>
+                  {/* Update 32: only the city. No "Contact info" link: phone and email live on the business card */}
+                  {member.location && <span className="muted">{member.location}</span>}
                   <div className="ptags">
                     {ps.head.type && <TypeBadge type={member.profile_type} />}
                     {planLabel && planLabel !== type[0] ? <span className="tag">{planLabel}</span> : plan !== type[0] && <span className="tag">{plan}</span>}
