@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { cache } from "react";
 import { getViewer } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
@@ -43,6 +44,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </div></div>
     );
   }
+  if (c.handle !== handle.toLowerCase()) redirect(`/c/${c.handle}`); // an old link from before a name change
   const own = userId === c.id;
   if (!own) await supabase.rpc("card_count", { p_handle: c.handle, p_kind: "open" }); // anonymous total only
   const t = CARD_STYLES[c.style];

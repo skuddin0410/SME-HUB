@@ -19,7 +19,8 @@ begin
   base := trim(both '-' from base);
   if char_length(base) < 2 then base := 'member-' || left(replace(p_id::text, '-', ''), 6); end if;
   h := base;
-  while exists (select 1 from profiles where handle = h and id <> p_id) loop
+  while exists (select 1 from profiles where handle = h and id <> p_id)
+     or exists (select 1 from handle_redirects where old_handle = h and member_id <> p_id and expires_at > now()) loop
     n := n + 1;
     h := base || '-' || n;
   end loop;
@@ -27,14 +28,50 @@ begin
 end $$;
 revoke execute on function make_handle(text, uuid) from public, anon, authenticated;
 
+-- the handle follows the member's name: made when the name is first set, and changed when the name changes
+-- (at most once every 30 days). The old link keeps working for 90 days. Staff can set one directly.
+alter table profiles add column if not exists handle_changed_at timestamptz;
+create table if not exists handle_redirects (
+  old_handle text primary key,
+  member_id uuid not null references profiles (id) on delete cascade,
+  expires_at timestamptz not null
+);
+alter table handle_redirects enable row level security; -- read only through card_public()
+
 create or replace function profiles_set_handle() returns trigger
 language plpgsql security definer set search_path = public as $$
+declare want text; base text;
 begin
-  if new.handle is null and coalesce(btrim(new.full_name), '') <> '' then
+  if coalesce(btrim(new.full_name), '') = '' then
+    if tg_op = 'UPDATE' and new.handle is distinct from old.handle and auth.uid() is not null and not is_staff() then new.handle := old.handle; end if;
+    return new;
+  end if;
+  if new.handle is null then
     new.handle := make_handle(new.full_name, new.id);
-  elsif tg_op = 'UPDATE' and new.handle is distinct from old.handle and old.handle is not null
-        and auth.uid() is not null and not is_staff() then
-    new.handle := old.handle; -- members can't pick a handle yet; it follows their name once
+    new.handle_changed_at := now();
+    return new;
+  end if;
+  if tg_op = 'UPDATE' and new.handle is distinct from old.handle then
+    -- only staff (or the database itself) pick a handle by hand
+    if auth.uid() is not null and not is_staff() then new.handle := old.handle; return new; end if;
+    if old.handle is not null then
+      insert into handle_redirects (old_handle, member_id, expires_at) values (old.handle, new.id, now() + interval '90 days')
+        on conflict (old_handle) do update set member_id = excluded.member_id, expires_at = excluded.expires_at;
+    end if;
+    new.handle_changed_at := now();
+    return new;
+  end if;
+  if tg_op = 'UPDATE' and new.full_name is distinct from old.full_name then
+    want := make_handle(new.full_name, new.id);
+    base := regexp_replace(want, '-[0-9]+$', '');
+    -- keep the handle if it already matches the new name; a placeholder (member-1a2b3c) is always replaced
+    if new.handle = want or new.handle ~ ('^' || base || '(-[0-9]+)?$') then return new; end if;
+    if new.handle !~ '^member-[0-9a-f]{6}$' and old.handle_changed_at is not null and old.handle_changed_at > now() - interval '30 days' then return new; end if;
+    insert into handle_redirects (old_handle, member_id, expires_at) values (old.handle, new.id, now() + interval '90 days')
+      on conflict (old_handle) do update set member_id = excluded.member_id, expires_at = excluded.expires_at;
+    delete from handle_redirects where old_handle = want;
+    new.handle := want;
+    new.handle_changed_at := now();
   end if;
   return new;
 end $$;
@@ -104,6 +141,10 @@ language plpgsql stable security definer set search_path = public as $$
 declare p profiles%rowtype; c business_cards%rowtype; core jsonb; biz record; title text; bizname text;
 begin
   select * into p from profiles where handle = lower(p_handle);
+  if not found then
+    -- an old link from before a name change still works for 90 days
+    select pr.* into p from handle_redirects r join profiles pr on pr.id = r.member_id where r.old_handle = lower(p_handle) and r.expires_at > now();
+  end if;
   if not found or p.status <> 'active' then return null; end if;
   select * into c from business_cards where member_id = p.id;
   if not found or not c.active then return null; end if;
@@ -143,6 +184,7 @@ declare mid uuid; m date := date_trunc('month', now() at time zone 'America/Toro
 begin
   if p_kind not in ('open', 'save') then return; end if;
   select id into mid from profiles where handle = lower(p_handle);
+  if mid is null then select member_id into mid from handle_redirects where old_handle = lower(p_handle) and expires_at > now(); end if;
   if mid is null or mid = auth.uid() then return; end if;
   if not exists (select 1 from business_cards where member_id = mid and active) then return; end if;
   insert into business_card_stats (member_id, month, opens, saves)
