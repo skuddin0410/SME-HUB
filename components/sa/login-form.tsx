@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { confirmDevice, signIn, type Fields } from "@/app/auth/actions";
+import { confirmDevice, signIn, type Fields, type Who } from "@/app/auth/actions";
+import { cityFor } from "./canada-map";
 import { CodeBoxes, Err, LockIcon, PasswordField, Spin } from "./fields";
 import { Sso } from "./sso";
 
@@ -31,7 +32,8 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
         : null,
   );
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState<{ who: Who | null } | null>(null);
+  const [ticked, setTicked] = useState(false);
   const [step, setStep] = useState<"form" | "code">("form");
   const [code, setCode] = useState("");
   const [trust, setTrust] = useState(true);
@@ -56,10 +58,7 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
     setBusy(false);
     switch (res.status) {
       case "ok":
-        setDone(true);
-        router.push(next);
-        router.refresh();
-        return;
+        return welcome(res.who);
       case "code":
         setCode("");
         setCodeErr("");
@@ -103,21 +102,49 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
     const res = await confirmDevice({ email: email.trim(), password: pw, code, trust, keep });
     setBusy(false);
     if (!res.ok) return setCodeErr(res.error);
-    setDone(true);
-    router.push(next);
-    router.refresh();
+    welcome(res.who);
+  };
+
+  /**
+   * After a successful log-in: the button shows a green tick, the card lifts away, rings pulse from the member's
+   * city on the map and "Welcome back" appears; then the Home page opens. The page is fetched while this plays,
+   * so it adds about a second. With reduced motion the Home page opens straight away.
+   */
+  const welcome = (who: Who | null) => {
+    router.prefetch(next);
+    const go = () => {
+      router.push(next);
+      router.refresh();
+    };
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDone({ who });
+      return go();
+    }
+    setTicked(true);
+    window.setTimeout(() => {
+      setDone({ who });
+      window.dispatchEvent(new CustomEvent("sa:welcome", { detail: { city: cityFor(who?.location) } }));
+    }, 560);
+    window.setTimeout(go, 2000);
   };
 
   if (done) {
+    const who = done.who;
+    const initials = (who?.first || "").slice(0, 1).toUpperCase();
     return (
-      <section className="card">
-        <div className="center">
-          <div className="icon ok">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
-          </div>
-          <h1>You’re logged in</h1>
-          <p className="sub">Taking you to your Home page…</p>
-        </div>
+      <section className="sawel" role="status" aria-live="polite">
+        {who?.avatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="ava" src={who.avatar} alt="" width={84} height={84} />
+        ) : (
+          <span className="ava" aria-hidden="true">
+            {initials || (
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7" /></svg>
+            )}
+          </span>
+        )}
+        <h1>{who?.first ? `Welcome back, ${who.first}` : "Welcome back"}</h1>
+        <p className="sub">Taking you to your Home page…</p>
       </section>
     );
   }
@@ -138,7 +165,7 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
               <input type="checkbox" checked={trust} onChange={(e) => setTrust(e.target.checked)} />
               <span>Trust this device for 30 days</span>
             </label>
-            <button className="btn p" type="submit" disabled={busy}>
+            <button className="btn p" type="submit" disabled={busy || ticked}>
               {busy ? (<><Spin />Checking</>) : "Continue"}
             </button>
           </form>
@@ -153,7 +180,7 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
   }
 
   return (
-    <section className="card">
+    <section className={`card${ticked ? " leaving" : ""}`}>
       <div>
         <h1 id="h">Welcome back</h1>
         <p className="sub">Log in to see your network, messages and business page.</p>
@@ -185,8 +212,13 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
             <input type="checkbox" id="kp" checked={keep} onChange={(e) => setKeep(e.target.checked)} />
             <span>Keep me logged in on this device</span>
           </label>
-          <button className="btn p" type="submit" id="go" disabled={busy}>
-            {busy ? (<><Spin />Logging in</>) : "Log in"}
+          <button className={`btn p${ticked ? " ok" : ""}`} type="submit" id="go" disabled={busy || ticked}>
+            {ticked ? (
+              <>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7" /></svg>
+                Logged in
+              </>
+            ) : busy ? (<><Spin />Logging in</>) : "Log in"}
           </button>
         </form>
         <p className="foot">New to SME Hub? <Link href="/auth/sign-up">Join free</Link></p>

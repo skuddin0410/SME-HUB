@@ -12,7 +12,7 @@ export default async function Page() {
   if ((await getViewer()).userId) redirect("/feed");
   const proof = await loadProof();
   return (
-    <AuthFrame right={<><span>Already a member?</span> <Link href="/auth/login">Log in</Link></>}>
+    <AuthFrame enter right={<><span>Already a member?</span> <Link href="/auth/login">Log in</Link></>}>
       <SignUpForm proof={proof} />
     </AuthFrame>
   );

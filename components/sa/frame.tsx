@@ -1,10 +1,15 @@
 import Link from "next/link";
+import { CanadaHorizon } from "./canada-map";
 import "@/styles/auth-pages.css";
 
-/** The page around every sign-in screen (Update 1): logo, a link to the other screen, a footer. */
-export function AuthFrame({ right, children }: { right?: React.ReactNode; children: React.ReactNode }) {
+/**
+ * The page around every sign-in screen (Update 1): logo, a link to the other screen, a footer.
+ * `map`: the Canada map along the bottom (log-in page). `enter`: the card fades and rises in when the page opens.
+ */
+export function AuthFrame({ right, children, map, enter }: { right?: React.ReactNode; children: React.ReactNode; map?: boolean; enter?: boolean }) {
   return (
-    <div className="sa">
+    <div className={`sa${map ? " withmap" : ""}${enter ? " enter" : ""}`}>
+      {map ? <CanadaHorizon /> : null}
       <header className="top">
         <Link href="/auth/login" aria-label="SME Hub home">
           {/* eslint-disable-next-line @next/next/no-img-element */}

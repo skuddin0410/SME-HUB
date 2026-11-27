@@ -13,7 +13,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ n
   // already signed in: nothing to do here
   if ((await getViewer()).userId) redirect(to);
   return (
-    <AuthFrame right={<><span>New to SME Hub?</span> <Link href="/auth/sign-up">Join free</Link></>}>
+    <AuthFrame map enter right={<><span>New to SME Hub?</span> <Link href="/auth/sign-up">Join free</Link></>}>
       <LoginForm next={to} notice={notice} />
     </AuthFrame>
   );

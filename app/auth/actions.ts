@@ -159,8 +159,11 @@ export async function resendCode(emailIn: string): Promise<{ ok: boolean }> {
 
 // ---------------------------------------------------------------- log in
 
+/** Shown on the log-in page for a moment after a successful log-in. */
+export type Who = { first: string; avatar: string | null; location: string | null };
+
 export type SignInResult =
-  | { status: "ok" }
+  | { status: "ok"; who: Who | null }
   | { status: "wrong"; remaining: number }
   | { status: "locked" }
   | { status: "unconfirmed" }
@@ -219,7 +222,21 @@ export async function signIn(input: { email: string; password: string; keep: boo
     }
   }
   await finishSignIn(supabase, keep);
-  return { status: "ok" };
+  return { status: "ok", who: await whoIs(supabase) };
+}
+
+/** The member's first name, photo and location, for the welcome moment. Never fails the log-in. */
+async function whoIs(supabase: Awaited<ReturnType<typeof createClient>>): Promise<Who | null> {
+  try {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return null;
+    const { data } = await supabase.from("profiles").select("full_name, avatar_url, location").eq("id", u.user.id).maybeSingle();
+    const p = data as { full_name?: string | null; avatar_url?: string | null; location?: string | null } | null;
+    const first = (p?.full_name ?? "").trim().split(/\s+/)[0] || firstNameOf(u.user.user_metadata) || "";
+    return { first, avatar: p?.avatar_url || null, location: p?.location || null };
+  } catch {
+    return null;
+  }
 }
 
 async function finishSignIn(supabase: Awaited<ReturnType<typeof createClient>>, keep: boolean) {
@@ -231,7 +248,7 @@ async function finishSignIn(supabase: Awaited<ReturnType<typeof createClient>>, 
 }
 
 /** Second step of a log-in from a new device: the password again, plus the emailed code. */
-export async function confirmDevice(input: { email: string; password: string; code: string; trust: boolean; keep: boolean }): Promise<{ ok: true } | { ok: false; error: string }> {
+export async function confirmDevice(input: { email: string; password: string; code: string; trust: boolean; keep: boolean }): Promise<{ ok: true; who: Who | null } | { ok: false; error: string }> {
   const email = String(input.email ?? "").trim().toLowerCase();
   const code = String(input.code ?? "").replace(/\D/g, "");
   const keep = input.keep !== false;
@@ -257,7 +274,7 @@ export async function confirmDevice(input: { email: string; password: string; co
     if (token) (await cookies()).set(DEVICE_COOKIE, token, { path: "/", maxAge: TRUST_DAYS * 86_400, sameSite: "lax", httpOnly: true, secure: process.env.NODE_ENV === "production" });
   }
   await finishSignIn(supabase, keep);
-  return { ok: true };
+  return { ok: true, who: await whoIs(supabase) };
 }
 
 // ---------------------------------------------------------------- forgot password

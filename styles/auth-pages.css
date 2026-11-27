@@ -9,3 +9,28 @@
 .sa .top{width:100%;max-width:1360px;margin:0 auto;padding:18px 32px}.sa .sitefoot{width:100%;max-width:1360px;margin:0 auto;padding:16px 32px 22px}
 @media(max-width:700px){.sa .top{padding:14px 12px}.sa .sitefoot{padding:16px 12px 22px}}
 .sa .faces .st{flex:none}
+/* Log-in page: the Canada map along the bottom, the card's entrance, and the welcome moment after logging in */
+.sa{position:relative;isolation:isolate}
+.sa .samap{position:fixed;left:0;right:0;bottom:0;height:min(58vh,600px);z-index:0;pointer-events:none;overflow:hidden}
+.sa .samap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sa .samc{position:absolute;transform:translateX(-50%);font-size:11.5px;font-weight:600;line-height:1.2;color:#6B6A66;white-space:nowrap;opacity:0;transition:opacity .6s;text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 6px var(--bg)}
+.sa .samc.r{transform:translateX(-100%)}.sa .samc.l{transform:none}
+.sa .samap.on .samc{opacity:1}
+.sa.withmap>.top,.sa.withmap>main,.sa.withmap>.sitefoot{position:relative;z-index:1}
+.sa.withmap>.sitefoot{text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 8px var(--bg)}
+.sa.withmap>main{padding-bottom:min(14vh,140px)}
+.sa.enter>main>.card,.sa.enter>main>.split{animation:saIn .7s .12s cubic-bezier(.2,.8,.2,1) both}
+.sa.enter>.top{animation:saFade .5s both}
+@keyframes saIn{from{opacity:0;transform:translateY(22px) scale(.98)}}
+@keyframes saFade{from{opacity:0}}
+.sa .card.leaving{animation:saOut .35s .2s ease forwards}
+@keyframes saOut{to{opacity:0;transform:translateY(-14px) scale(.96)}}
+.sa .btn.p.ok,.sa .btn.p.ok[disabled]{background:var(--ok);opacity:1}
+.sa .sawel{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:min(14vh,140px) 20px 0;animation:saFade .4s both}
+.sa .sawel .ava{width:84px;height:84px;border-radius:50%;object-fit:cover;background:#1E3A8A;color:#fff;font:700 30px/84px var(--display);display:grid;place-items:center;box-shadow:0 0 0 6px #fff,0 20px 50px rgba(24,24,27,.18);margin-bottom:12px;animation:saPop .6s .1s cubic-bezier(.2,1.4,.4,1) both}
+.sa .sawel h1{font-size:30px;margin:0}
+.sa .sawel .sub{margin:0}
+@keyframes saPop{from{transform:scale(.6);opacity:0}}
+@media(max-width:640px){.sa .samap{position:absolute;bottom:64px;height:250px}.sa.withmap>main{padding-bottom:230px}}
+@media(max-height:560px){.sa .samap{display:none}.sa.withmap>main{padding-bottom:40px}}
+@media(prefers-reduced-motion:reduce){.sa.enter>main>.card,.sa.enter>main>.split,.sa.enter>.top,.sa .card.leaving,.sa .sawel,.sa .sawel .ava{animation:none}.sa .samc{transition:none}}
