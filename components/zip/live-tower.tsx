@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { onOnline } from "@/lib/presence-client";
 
 /**
- * "Your network, live" (option B): a navy button with a transmission tower in a glowing badge; circular signals
- * ripple out from the tower tip across the header. The line under the label is the real number of the member's
+ * "Your network, live" (option B): a slim navy button with a transmission tower in a glowing badge; blue and red circular
+ * signals ripple out from the tower tip across the header. The line under the label is the real number of the member's
  * connections who have SME Hub open now. With nobody online it says so and the signals slow down.
  * Decorative motion stops with reduced motion (CSS), and pauses while the tab is hidden.
  */
@@ -25,13 +25,13 @@ export function LiveTowerButton({ network }: { network: string[] }) {
   }, []);
 
   const quiet = count === 0;
-  const line = count === null ? "Who’s online now" : quiet ? "Quiet right now" : `${count} ${count === 1 ? "member" : "members"} online now`;
+  const line = count === null ? "Who’s online" : quiet ? "Quiet right now" : `${count} online now`;
   return (
     <div className={`nltw${quiet ? " quiet" : ""}${hidden ? " paused" : ""}`}>
       <span className="nlrings" aria-hidden="true"><span /><span /><span /></span>
       <Link className="nlbtn" href="/network/live">
         <span className="nlbadge" aria-hidden="true">
-          <svg width="20" height="24" viewBox="0 0 22 26">
+          <svg viewBox="0 0 22 26">
             <path className="mast" d="M11 7 L5 24 M11 7 L17 24 M7.4 17.2 H14.6 M6.2 20.6 H15.8 M8.6 13.6 H13.4 M7.4 17.2 L13.4 13.6 M14.6 17.2 L8.6 13.6 M6.2 20.6 L14.6 17.2 M15.8 20.6 L7.4 17.2" />
             <circle className="tip" cx="11" cy="5.2" r="2.3" />
           </svg>
