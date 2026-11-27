@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { randomBytes } from "node:crypto";
 import { requireUser } from "@/lib/hub";
-import { cleanSetup, DEFAULT_REM, type DlRem, type DlSetup } from "@/lib/deadlines";
+import { cleanSetup, DEFAULT_REM, torontoToday, type DlRem, type DlSetup } from "@/lib/deadlines";
 
 type R = { error?: string; ok?: boolean; id?: string };
 const done = (): R => { revalidatePath("/deadlines"); revalidatePath("/feed"); return { ok: true }; };
@@ -10,7 +11,12 @@ const done = (): R => { revalidatePath("/deadlines"); revalidatePath("/feed"); r
 /** Saves the member's answers (Update 13). Only they can read them; the database checks that. */
 export async function saveDeadlineSetup(setup: Partial<DlSetup>): Promise<R> {
   const { supabase, userId } = await requireUser();
-  const { error } = await supabase.from("deadline_settings").upsert({ user_id: userId, setup: cleanSetup(setup), updated_at: new Date().toISOString() });
+  // Update 38: the day the member first created their deadlines (kept when they change their answers), so dates
+  // from before that never show as overdue. Members who set up before Update 38 have none: the page looks back 60 days.
+  const { data: had } = await supabase.from("deadline_settings").select("setup").eq("user_id", userId).maybeSingle();
+  const prev = (had as { setup?: DlSetup } | null)?.setup;
+  const at = prev ? prev.at : torontoToday();
+  const { error } = await supabase.from("deadline_settings").upsert({ user_id: userId, setup: cleanSetup({ ...setup, at }), updated_at: new Date().toISOString() });
   return error ? { error: "Could not save. Try again." } : done();
 }
 
@@ -52,4 +58,19 @@ export async function deleteOwnDeadline(id: string): Promise<R> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return { error: "That deadline was not found." };
   const { error } = await supabase.from("deadline_custom").delete().eq("id", id).eq("user_id", userId);
   return error ? { error: "Could not delete. Try again." } : done();
+}
+
+/** Update 38: the member's own calendar link that updates itself. `reset` makes a new one (the old one stops working). */
+export async function deadlineFeed(reset = false): Promise<R & { url?: string }> {
+  const { supabase, userId } = await requireUser();
+  const { data } = await supabase.from("deadline_settings").select("feed_token").eq("user_id", userId).maybeSingle();
+  if (!data) return { error: "Set up your deadlines first." };
+  let token = (data as { feed_token?: string | null }).feed_token ?? null;
+  if (!token || reset) {
+    token = randomBytes(30).toString("base64url");
+    const { error } = await supabase.from("deadline_settings").update({ feed_token: token }).eq("user_id", userId);
+    if (error) return { error: "The calendar link isn’t ready yet. Please try again later." };
+  }
+  const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://smehub.ca").replace(/\/$/, "");
+  return { ok: true, url: `${site.replace(/^https?:\/\//, "webcal://")}/deadlines/${token}.ics` };
 }

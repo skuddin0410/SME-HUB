@@ -71,6 +71,26 @@ export async function GET(req: Request) {
         emails++;
       }
     }
+    // Update 38: once, the day after a date passes without being ticked off, "Did you file this?"
+    const y = new Date(`${today}T00:00:00Z`); y.setUTCDate(y.getUTCDate() - 1);
+    const yesterday = y.toISOString().slice(0, 10);
+    if (!u.setup?.at || u.setup.at <= yesterday) {
+      const late = dlGen(u.setup ?? null, mine.get(u.user_id) ?? [], today, yesterday).filter((d) => d.iso === yesterday && !u.done?.[d.key]);
+      for (const d of late) {
+        const { data: claimed } = await db.from("deadline_sent").upsert({ user_id: u.user_id, key: d.key, lead: -1 }, { onConflict: "user_id,key,lead", ignoreDuplicates: true }).select("lead");
+        if (!claimed?.length) continue;
+        if (rem.bell) {
+          await db.from("notifications").insert({ user_id: u.user_id, actor_id: u.user_id, type: "deadline", href: "/deadlines", note: `Did you file this? ${d.t} was due yesterday`.slice(0, 200) });
+          bells++;
+        }
+        if (rem.email) {
+          await courseMail("deadline-overdue", await memberEmail(u.user_id), {
+            dl_title: d.t, dl_date: dLong(d.iso), dl_where: where(d, u.setup), dl_url: `${site}/deadlines`, dl_settings_url: `${site}/deadlines#reminders`,
+          }, `deadline-${u.user_id}-${d.key}-late`);
+          emails++;
+        }
+      }
+    }
   }
   return NextResponse.json({ members: users.size, bells, emails });
 }

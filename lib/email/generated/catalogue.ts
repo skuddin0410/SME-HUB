@@ -2468,5 +2468,27 @@ export const CATALOGUE: CatalogueEntry[] = [
   "lists": [],
   "list_fields": [],
   "size_kb": 9
+ },
+ {
+  "id": "deadline-overdue",
+  "category": "Deadlines and reminders",
+  "name": "Deadline passed: did you file it?",
+  "trigger": "Once, the day after a date in My deadlines passes and isn’t ticked off (Update 38)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "Did you file this? {{dl_title}}",
+  "preheader": "It was due {{dl_date}}. Tick it off, or pay as soon as you can.",
+  "type": "Notification (member can turn off)",
+  "preview_subject": "Did you file this? {{dl_title}}",
+  "preview_preheader": "It was due {{dl_date}}. Tick it off, or pay as soon as you can.",
+  "variables": [
+   "dl_date",
+   "dl_settings_url",
+   "dl_title",
+   "dl_url",
+   "dl_where"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
  }
 ];

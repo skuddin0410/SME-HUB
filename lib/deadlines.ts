@@ -3,7 +3,8 @@
 // next business day. Used by the page and by the daily reminder job, so both always agree.
 import { txr } from "@/lib/tools/data";
 
-export type DlSetup = { prov: string; type: "sole" | "corp"; fye: string; gst: "none" | "annual" | "quarter" | "month"; gstInst: boolean; pay: "none" | "regular" | "quarterly"; taxInst: boolean; corpInst: boolean };
+/** `at`: the day the member first created their deadlines (Update 38), so older dates never show as overdue. */
+export type DlSetup = { prov: string; type: "sole" | "corp"; fye: string; gst: "none" | "annual" | "quarter" | "month"; gstInst: boolean; pay: "none" | "regular" | "quarterly"; taxInst: boolean; corpInst: boolean; at?: string };
 export type DlCustom = { id: string; title: string; due: string; rep: "none" | "month" | "quarter" | "year"; note: string };
 export type DlRem = { email: boolean; bell: boolean; d14: boolean; d7: boolean; d1: boolean; weekly: boolean };
 export type DlItem = { key: string; iso: string; moved: boolean; t: string; dt: string; cat: "tax" | "pay" | "inc" | "own"; own?: string };
@@ -43,9 +44,13 @@ export function bizDay(d: Date) {
 }
 const fmt = (d: Date) => d.toLocaleDateString("en-CA", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 
-/** Every deadline in the 12 months from `today` (YYYY-MM-DD). */
-export function dlGen(s: DlSetup | null, custom: DlCustom[], today: string): DlItem[] {
-  const t0 = new Date(`${today}T00:00:00Z`), t1 = new Date(t0); t1.setUTCFullYear(t1.getUTCFullYear() + 1);
+/**
+ * Every deadline in the 12 months from `today` (YYYY-MM-DD). With `from` (Update 38), also the dates since then,
+ * so the page can show what is overdue.
+ */
+export function dlGen(s: DlSetup | null, custom: DlCustom[], today: string, from?: string): DlItem[] {
+  const tt = new Date(`${today}T00:00:00Z`), t1 = new Date(tt); t1.setUTCFullYear(t1.getUTCFullYear() + 1);
+  const t0 = from && from < today ? new Date(`${from}T00:00:00Z`) : tt;
   const out: DlItem[] = [];
   const add = (d: Date, t: string, dt: string, cat: DlItem["cat"]) => {
     const bd = bizDay(d);
@@ -83,7 +88,7 @@ export function dlGen(s: DlSetup | null, custom: DlCustom[], today: string): DlI
     const d = new Date(`${c.due}T00:00:00Z`);
     if (Number.isNaN(d.getTime())) continue;
     const step = ({ month: 1, quarter: 3, year: 12 } as Record<string, number>)[c.rep] ?? 0;
-    for (let i = 0; i < (step ? Math.ceil(12 / step) + 1 : 1); i++) {
+    for (let i = 0; i < (step ? Math.ceil(14 / step) + 1 : 1); i++) {
       const x = new Date(d); x.setUTCMonth(x.getUTCMonth() + i * step);
       if (x >= t0 && x <= t1) out.push({ key: `own|${c.id}|${dIso(x)}`, iso: dIso(x), moved: false, t: c.title, dt: c.note, cat: "own", own: c.id });
     }
@@ -106,5 +111,54 @@ export function cleanSetup(x: Partial<DlSetup>): DlSetup {
     fye: String(Math.min(11, Math.max(0, Number(x.fye) || 0))),
     gst: pick(x.gst, ["none", "annual", "quarter", "month"], "quarter"),
     gstInst: !!x.gstInst, pay: pick(x.pay, ["none", "regular", "quarterly"], "regular"), taxInst: !!x.taxInst, corpInst: !!x.corpInst,
+    ...(typeof x.at === "string" && /^\d{4}-\d{2}-\d{2}$/.test(x.at) ? { at: x.at } : {}),
   };
+}
+
+// ---------- Update 38 ----------
+export const DXC: Record<DlItem["cat"], [string, string]> = { tax: ["Sales tax", "#1D4ED8"], pay: ["Payroll", "#7C3AED"], inc: ["Income tax", "#B45309"], own: ["My own", "#15803D"] };
+
+/** Where the page starts: 60 days ago, or the day the member set up the page if that is later. */
+export function dxStart(today: string, at?: string) {
+  const f = new Date(`${today}T00:00:00Z`); f.setUTCDate(f.getUTCDate() - 60);
+  const sixty = dIso(f);
+  const a = at && at <= today ? at : today;
+  return a > sixty ? a : sixty;
+}
+
+/** "In 18 days", "In 9 weeks", "3 days late". */
+export function dxIn(n: number) {
+  return n === 0 ? "Today" : n === 1 ? "Tomorrow" : n < 0 ? (n === -1 ? "1 day late" : `${Math.abs(n)} days late`) : n <= 60 ? `In ${n} days` : `In ${Math.round(n / 7)} weeks`;
+}
+
+/** Three plain steps for how to do it. Québec businesses see Revenu Québec. Not tax advice (the page says so). */
+export function dxHow(o: DlItem, s: DlSetup | null): string[] {
+  const qc = s?.prov === "QC";
+  const mba = qc ? "Revenu Québec’s online services for businesses" : "CRA My Business Account";
+  if (o.cat === "tax") return [`Sign in to ${mba}.`, `File the return for this period. You can also file through GST/HST NETFILE${qc ? " or Revenu Québec" : ""}.`, "Pay in the same account, through your bank’s online banking, or at your bank. Paying on time avoids interest and a penalty."];
+  if (o.cat === "pay") return /T4/.test(o.t)
+    ? ["Give each employee their T4 slip.", `File the T4 summary and slips online in ${mba} or with your payroll software.`, "Keep a copy for six years."]
+    : ["Total the CPP, EI and income tax you took off pay, plus your share of CPP and EI.", `Pay through your bank’s online banking or in ${mba}, using your payroll account number (it ends in RP).`, "Late payroll payments get a penalty of up to 10%, so pay a day or two early."];
+  if (o.cat === "inc") return s?.type === "corp"
+    ? [`Check the amount with your accountant or in ${mba}.`, `Pay through your bank’s online banking or in ${mba}, using the corporation’s account number (it ends in RC).`, "Ask your accountant if you need to pay instalments next year."]
+    : [/File/.test(o.t) ? "File your return with tax software or your accountant." : "Check the amount you owe in CRA My Account or with your accountant.", "Pay through your bank’s online banking or in CRA My Account.", "If you can’t pay it all, pay what you can now. Interest only runs on what is left."];
+  return o.dt ? [o.dt] : [];
+}
+
+const icsEsc = (t: string) => String(t || "").replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+/** A calendar file: each date an all-day event, with an alarm for each reminder the member chose (14, 7 or 1 day). */
+export function deadlinesIcs(list: DlItem[], rem: DlRem, site = "https://smehub.ca", name = "My deadlines (SME Hub)") {
+  const host = site.replace(/^https?:\/\//, "");
+  const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//SME Hub//My deadlines//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", `X-WR-CALNAME:${icsEsc(name)}`, "REFRESH-INTERVAL;VALUE=DURATION:PT12H"];
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  for (const o of list) {
+    const d = o.iso.replace(/-/g, "");
+    const e = new Date(`${o.iso}T00:00:00Z`); e.setUTCDate(e.getUTCDate() + 1);
+    L.push("BEGIN:VEVENT", `UID:${o.key.replace(/[^A-Za-z0-9|.-]/g, "")}@${host}`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${dIso(e).replace(/-/g, "")}`,
+      `SUMMARY:${icsEsc(o.t)}`, `DESCRIPTION:${icsEsc(`${o.dt || ""}\n\nFrom My deadlines on SME Hub: ${site}/deadlines`)}`, "TRANSP:TRANSPARENT");
+    for (const [k, t] of [["d14", "-P14D"], ["d7", "-P7D"], ["d1", "-P1D"]] as const) if (rem[k]) L.push("BEGIN:VALARM", "ACTION:DISPLAY", `DESCRIPTION:${icsEsc(o.t)}`, `TRIGGER:${t}`, "END:VALARM");
+    L.push("END:VEVENT");
+  }
+  L.push("END:VCALENDAR");
+  return L.join("\r\n") + "\r\n";
 }

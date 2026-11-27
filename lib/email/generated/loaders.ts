@@ -107,4 +107,5 @@ export const LOADERS: Record<string, () => Promise<{ html: string; text: string 
   "zoom-disconnected": () => import("./zoom-disconnected"),
   "event-reminder-soon": () => import("./event-reminder-soon"),
   "event-link-pending": () => import("./event-link-pending"),
+  "deadline-overdue": () => import("./deadline-overdue"),
 };
