@@ -56,3 +56,101 @@
 
 .zip .hdwrap .hdrpic{display:block;width:100%;height:100%;background-size:cover;background-position:center}
 .zip .hdme .hdini{display:grid;place-items:center;width:100%;height:100%;background:var(--accent);color:#fff;font:800 26px var(--display)}
+
+/* ===== Update 31: My business card ===== */
+
+/* ===== My business card (Update 31) ===== */
+.zip .bcpage{display:flex;flex-direction:column;gap:14px;min-width:0}
+.zip .bchead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.zip .bchead h1{font:800 22px var(--display);margin:0 0 4px}
+.zip .bchead p{margin:0;max-width:560px}
+.zip .bcgrid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:start}
+.zip .bcleft{display:flex;flex-direction:column;align-items:center;gap:12px;position:sticky;top:76px}
+.zip .bcacts{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:300px}
+.zip .bcacts .btn{justify-content:center;min-height:40px;font-size:13.5px;padding:0 10px;border-radius:4px}
+.zip .bcfine{width:300px;margin:0;text-align:center}
+.zip .bcright{display:flex;flex-direction:column;gap:12px;min-width:0}
+.zip .bcsec{gap:10px;border-radius:4px}
+.zip .bcsec h2{font:800 15px var(--display);margin:0}
+.zip .bcsec p{margin:0}
+.zip .bcsts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.zip .bcst{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 6px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px var(--body);cursor:pointer;border-radius:4px}
+.zip .bcst:hover{border-color:var(--muted)}
+.zip .bcst.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.zip .bcsti{position:relative;display:block;width:44px;height:62px;border:1px solid rgba(0,0,0,.12);overflow:hidden;border-radius:2px}
+.zip .bcsti i{position:absolute;left:0;right:0;top:0;height:3px}
+.zip .bcsti b{position:absolute;left:50%;top:14px;width:14px;height:14px;margin-left:-7px;border-radius:50%;opacity:.9}
+.zip .bcsws{display:flex;flex-direction:column}
+.zip .bcsw{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:9px 2px;background:none;border:0;border-top:1px solid var(--line);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.zip .bcsw:first-child{border-top:0}
+.zip .bcsw span{display:flex;flex-direction:column;min-width:0}
+.zip .bcsw b{font-weight:600;font-size:14px}
+.zip .bcsw small{color:var(--muted);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zip .bcsw i{flex:none;position:relative;width:38px;height:22px;background:var(--line);border-radius:11px;transition:background .15s}
+.zip .bcsw i:after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.zip .bcsw[aria-checked="true"] i{background:#15803D}
+.zip .bcsw[aria-checked="true"] i:after{left:19px}
+.zip .bcsw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.zip .bcwho ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;color:var(--muted)}
+/* The card itself: 300 x 420, the same layout as the downloaded image */
+.zip .bcx{position:relative;width:300px;height:420px;box-sizing:border-box;padding:16px 16px 14px;display:flex;flex-direction:column;align-items:center;text-align:center;border-radius:6px;box-shadow:0 10px 30px rgba(15,23,42,.16),0 0 0 1px rgba(15,23,42,.06);overflow:hidden;flex:none}
+.zip .bcstripe{position:absolute;left:0;right:0;top:0;height:5px}
+.zip .bctop{display:flex;align-items:center;justify-content:space-between;width:100%;height:18px}
+.zip .bctop img{height:18px;width:auto}
+.zip .bctop b{font:800 9px var(--body);letter-spacing:1.5px}
+.zip .bcx .bcph{width:68px;height:68px;border-radius:50%;object-fit:cover;border:3px solid;margin-top:14px;flex:none}
+.zip .bcn{font:800 24px/1.2 var(--display);margin-top:9px;letter-spacing:-.2px}
+.zip .bct{font:500 13px/1.45 var(--body)}
+.zip .bcb{font:600 13px/17px var(--body);margin-top:2px;max-width:262px}
+.zip .bcd{display:flex;flex-direction:column;align-items:center;font:500 12px/17px var(--body);margin-top:3px}
+.zip .bcd span{display:inline-flex;align-items:center;gap:5px}
+.zip .bcq{margin-top:auto;width:104px;height:104px;padding:7px;box-sizing:border-box;border-radius:8px;flex:none}
+.zip .bcq svg{display:block;width:90px;height:90px}
+.zip .bcu{font:500 10.5px var(--body);margin-top:6px}
+/* QR modal */
+.zip .bcqm{align-items:center;text-align:center;gap:8px;max-width:380px}
+.zip .bcqm h2{font:800 18px var(--display);margin:0}
+.zip .bcqbig{width:260px;height:260px;padding:14px;background:#fff;box-sizing:border-box;border:1px solid var(--line)}
+.zip .bcqbig svg{display:block;width:100%;height:100%}
+.zip .bcqm p{margin:0}
+/* Public card page */
+.zip .bcpub{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:12px;width:100%}
+.zip .bcnote{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;background:var(--q-bg);color:var(--q-ink);font-size:13.5px;border-radius:4px}
+.zip .bcnote span{flex:1;min-width:180px}
+.zip .bcnote a{color:inherit;font-weight:700}
+.zip .bcphero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 20px 22px;overflow:hidden;border-radius:6px;box-shadow:0 0 0 1px rgba(15,23,42,.08)}
+.zip .bcphero .bcph{width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid}
+.zip .bcphero h1{font:800 26px var(--display);margin:12px 0 2px;color:inherit}
+.zip .bcphero p{margin:0;font-size:14.5px}
+.zip .bcphero .bpb{font-weight:600;margin-top:2px}
+.zip .bcmem{font:800 10px var(--body);letter-spacing:1.6px;margin-top:12px}
+.zip .bcpbtns{display:flex;flex-wrap:wrap;gap:8px}
+.zip .bcpbtns .btn{flex:1 1 100px}
+.zip .bcpbtns .btn{justify-content:center;border-radius:4px}
+.zip .bcpbtns .btn:first-child{flex:1 1 100%}
+.zip .bcplink{flex-direction:row!important;align-items:center;gap:12px;color:var(--ink);text-decoration:none;border-radius:4px}
+.zip .bcplink:hover{border-color:var(--muted)}
+.zip .bcplink svg{flex:none;color:var(--muted)}
+.zip .bcplink span{display:flex;flex-direction:column;min-width:0}
+.zip .bcplink small{color:var(--muted);font-size:13px}
+.zip .bcjoin{align-items:flex-start;gap:6px;border-radius:4px}
+@media (max-width:860px){.zip .bcgrid{grid-template-columns:1fr}.zip .bcleft{position:static}}
+@media (max-width:420px){.zip .bcsts{grid-template-columns:repeat(2,minmax(0,1fr))}.zip .bcacts,.zip .bcfine{width:100%}}
+.dark .zip .bcx{box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08)}
+.dark .zip .bcsw i{background:#3A4150}
+.dark .zip .bcst.on{border-color:#F1F2F5;box-shadow:inset 0 0 0 1px #F1F2F5}
+.dark .zip .bcsw[aria-checked="true"] i{background:#16A34A}
+
+/* live-site additions: editing the card-only values, the monthly numbers, and a photo-less card */
+.zip .bcx .bcini,.zip .bcphero .bcini{display:grid;place-items:center;border-radius:50%;font:800 24px var(--display);color:#fff;border:3px solid;flex:none}
+.zip .bcx .bcini{width:68px;height:68px;margin-top:14px}
+.zip .bcphero .bcini{width:96px;height:96px;font-size:32px}
+.zip .bcsw small.empty{font-style:italic}
+.zip .bcvals{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.zip .bcvals label{display:flex;flex-direction:column;gap:3px;font:600 13px var(--body)}
+.zip .bcvals label small{font-weight:400;color:var(--muted)}
+.zip .bcvals .field{border-radius:4px;min-height:38px}
+.zip .bcstats{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.zip .bcstats b{color:var(--ink)}
+.zip .bcgone{max-width:480px;margin:40px auto;text-align:center;align-items:center;gap:10px;border-radius:6px}
+.zip .bcgone h1{font:800 20px var(--display);margin:0}

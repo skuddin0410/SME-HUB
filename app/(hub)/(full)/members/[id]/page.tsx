@@ -266,8 +266,9 @@ export default async function MemberPage({
                     {isMe ? (
                       <>
                         <Link href="/profile/edit" className="btn dark">Edit profile</Link>
+                        <Link href="/mycard" className="btn line"><Ic n="qr" s={14} />Business card</Link>
                         <AiProfileButton rewrite={!!member.bio} />
-                        <Link href="/settings" className="btn ghost"><Ic n="lock" s={14} />Privacy and account</Link>
+                        <Link href="/settings" className="btn ghost"><Ic n="lock" s={14} />Settings and privacy</Link>
                         <Link href="/deadlines" className="btn ghost"><Ic n="cal2" s={14} />My deadlines</Link>
                       </>
                     ) : (

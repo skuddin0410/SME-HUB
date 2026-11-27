@@ -26,6 +26,7 @@ const HUB_MENU: NavItem[] = [
   { label: "My deadlines", href: "/deadlines" },
   { label: "My Businesses", href: "/businesses/mine" },
   { label: "My leads", href: "/leads" },
+  { label: "My business card", href: "/mycard" },
   { label: "Businesses for Sale", href: "/for-sale" },
   { label: "Events", href: "/events" },
   { label: "Member blogs", href: "/member-blogs" },
