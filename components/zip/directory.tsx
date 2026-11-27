@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getLinks, getViewer } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
 import { LiveForm } from "@/components/zip/live-form";
+import { LiveTowerButton } from "@/components/zip/live-tower";
 import { DirectoryBody, type DirMember } from "@/components/zip/directory-client";
 import { TYPES } from "@/lib/zip/types";
 import { AVAILABILITY, PROFILE_TYPES, PROVINCES } from "@/lib/profile-extra";
@@ -74,6 +75,10 @@ export async function Directory({ searchParams, base }: { searchParams: Record<s
   } else members.sort((x, y) => x.name.localeCompare(y.name));
 
   const links = await getLinks();
+  // "Your network, live": the member's connections, to count how many of them are online
+  const network = userId
+    ? (((await supabase.from("connections").select("requester_id, addressee_id").eq("status", "accepted").or(`requester_id.eq.${userId},addressee_id.eq.${userId}`).limit(1000)).data ?? []) as { requester_id: string; addressee_id: string }[]).map((c) => (c.requester_id === userId ? c.addressee_id : c.requester_id))
+    : [];
   const follows = userId && members.length ? ((await supabase.from("follows").select("followee_id").eq("follower_id", userId).in("followee_id", members.map((m) => m.id))).data ?? []).map((f) => f.followee_id as string) : [];
   const nf = (plan ? 1 : 0) + (founding ? 1 : 0) + (help ? 1 : 0) + (avail ? 1 : 0);
   const filtered = nf > 0 || q || province || type;
@@ -140,7 +145,7 @@ export async function Directory({ searchParams, base }: { searchParams: Record<s
           <Crumbs items={[["Network", "/network"], ["Member directory"]]} />
           <h1>Member directory</h1>
           <p className="muted" style={{ fontSize: 15 }}>Find the right owner by name, skill or place, then connect in one click.</p>
-          {userId && <Link className="btn nllink" href="/network/live"><span className="nldot" aria-hidden="true" />Your network, live</Link>}
+          {userId && <LiveTowerButton network={network} />}
         </div>
         <DirectoryBody members={members} signedIn={!!userId} links={Object.fromEntries(links)} following={follows} form={form} invite={!!userId} rules={{ dview: String(ps.dview), dswitch: !!ps.dswitch, dcard: ps.dcard as Record<string, boolean>, dname: String(ps.dname), invites: !!ps.invites }} />
       </div>
