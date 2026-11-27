@@ -14,6 +14,8 @@ import { RsvpBtn } from "@/components/zip/rsvp-btn";
 import { MemberOfTheDay } from "@/components/zip/motd";
 import { DeadlineCard } from "@/components/tools/deadline-card";
 import { GoodMorning } from "@/components/matches/good-morning";
+import { leadsWaiting } from "@/lib/leads";
+import "@/styles/leads.css";
 
 /** Pages that are built in a later phase: not prefetched, so the browser is not left waiting on them. */
 const LATER: string[] = [];
@@ -23,10 +25,15 @@ const ART_SCENES = ["laptop", "nodes", "solar", "bars", "law", "ship"];
 export async function ZipLeftRail() {
   const { supabase, userId } = await getViewer();
   if (!userId) return <><MemberOfTheDay /><ZipArticles /></>;
-  const [inbox, saved] = await Promise.all([
+  const [inbox, saved, waiting, owned, anyLead] = await Promise.all([
     supabase.from("messages").select("id", { count: "exact", head: true }).eq("recipient_id", userId).is("read_at", null),
     supabase.from("saved_posts").select("post_id", { count: "exact", head: true }).eq("user_id", userId),
+    leadsWaiting(supabase),
+    supabase.from("companies").select("id", { count: "exact", head: true }).eq("owner_id", userId),
+    supabase.from("leads").select("id", { count: "exact", head: true }),
   ]);
+  // Update 30: the "My leads" shortcut, for members with a business or with leads (hidden until the leads table exists)
+  const showLeads = waiting !== null && ((owned.count ?? 0) > 0 || (anyLead.count ?? 0) > 0);
   const unread = inbox.count ?? 0;
   const rows: [string, string, string, React.ReactNode][] = [
     ["/messages", "msg", "Messages", unread > 0 ? unread : <Ic n="right" s={16} />],
@@ -52,6 +59,13 @@ export async function ZipLeftRail() {
       </div>
       <MemberOfTheDay />
       <ZipArticles />
+      {showLeads && (
+        <Link className="card ldcard" href="/leads">
+          <span className="ldci"><Ic n="msg" s={18} /></span>
+          <span><b>My leads</b><small>{waiting ? `${waiting} waiting for your reply` : "All caught up"}</small></span>
+          {waiting ? <em aria-label={`${waiting} waiting`}>{waiting}</em> : null}
+        </Link>
+      )}
     </>
   );
 }
