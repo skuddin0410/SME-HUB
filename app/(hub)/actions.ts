@@ -377,7 +377,11 @@ export async function requestConnection(otherId: string) {
   const typeOf = (id: string) => (pair as { id: string; profile_type?: string }[] | null)?.find((p) => p.id === id)?.profile_type ?? "owner";
   const allowed = (ps.access as Record<string, string[] | null>)[typeOf(userId)];
   if (allowed && !allowed.includes(typeOf(otherId))) throw new Error("Your profile type cannot ask to connect with that type of member.");
-  fail((await supabase.from("connections").insert({ requester_id: userId, addressee_id: otherId })).error);
+  const ins = await supabase.from("connections").insert({ requester_id: userId, addressee_id: otherId });
+  // Update 33: the other member's choices in Settings and privacy
+  if (ins.error?.message.includes("shared_groups_only")) throw new Error("This member only takes connection requests from people in the same groups.");
+  if (ins.error?.message.includes("member_paused")) throw new Error("This member is taking a break.");
+  fail(ins.error);
   if (ps.autoFollow) await supabase.from("follows").upsert({ follower_id: userId, followee_id: otherId }, { ignoreDuplicates: true });
   revalidatePath("/", "layout");
 }
@@ -552,7 +556,7 @@ export async function sendMessage(recipientId: string, body: string) {
     .insert({ sender_id: userId, recipient_id: recipientId, body: clean })
     .select("id, created_at")
     .single();
-  if (error) throw new Error("You can only message members you are connected with.");
+  if (error) throw new Error(error.message.includes("only_connections") ? "This member only takes messages from their connections." : "You can only message members you are connected with.");
   return data as { id: string; created_at: string };
 }
 

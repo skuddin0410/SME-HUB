@@ -60,6 +60,12 @@ export async function Directory({ searchParams, base }: { searchParams: Record<s
     const tier = new Map((t.data ?? []).map((x) => [x.id as string, x.member_type as string]));
     rows = rows.map((r) => ({ ...r, member_type: tier.get(r.id) ?? "owner" }));
   }
+  // Update 33: members who turned off "Show me in the member directory", or who paused their profile
+  const hidden = await supabase.rpc("hidden_member_ids");
+  if (!hidden.error && Array.isArray(hidden.data) && hidden.data.length) {
+    const h = new Set((hidden.data as (string | { hidden_member_ids: string })[]).map((x) => (typeof x === "string" ? x : x.hidden_member_ids)));
+    rows = rows.filter((r) => !h.has(r.id));
+  }
   if (plan === "advisor") rows = rows.filter((r) => r.member_type === "advisor");
   else if (plan === "plus") rows = rows.filter((r) => r.member_type === "plus" || r.member_type === "elite");
   else if (plan === "free") rows = rows.filter((r) => r.member_type === "owner");

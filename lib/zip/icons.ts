@@ -95,4 +95,13 @@ export const ICON: Record<string, string> = {
  "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>",
  "print": "<path d=\"M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2\"/><path d=\"M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6\"/><rect x=\"6\" y=\"14\" width=\"12\" height=\"8\" rx=\"1\"/>",
  "idcard": "<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/><circle cx=\"8\" cy=\"12\" r=\"2\"/><path d=\"M5 16.5a3 3 0 0 1 6 0\"/><path d=\"M14 10h4\"/><path d=\"M14 14h4\"/>",
+ "user": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21a8 8 0 0 1 16 0\"/>",
+ "device": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"13\" rx=\"1\"/><path d=\"M8 21h8M12 17v4\"/>",
+ "mobile": "<rect x=\"6\" y=\"2\" width=\"12\" height=\"20\" rx=\"2\"/><path d=\"M11 18h2\"/>",
+ "pause": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M10 9v6M14 9v6\"/>",
+ "db": "<ellipse cx=\"12\" cy=\"5\" rx=\"8\" ry=\"3\"/><path d=\"M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3\"/>",
+ "receipt": "<path d=\"M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z\"/><path d=\"M9 8h6M9 12h6\"/>",
+ "gauge": "<path d=\"M12 14l4-4\"/><path d=\"M3.3 19a10 10 0 1 1 17.4 0\"/>",
+ "ccard": "<rect x=\"2\" y=\"5\" width=\"20\" height=\"14\" rx=\"1\"/><path d=\"M2 10h20M6 15h4\"/>",
+ "plug": "<path d=\"M12 22v-5\"/><path d=\"M9 8V2\"/><path d=\"M15 8V2\"/><path d=\"M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z\"/>",
 };

@@ -56,6 +56,14 @@ const getHeader = cache(async (id: string): Promise<MemberHeader | null> => {
   return error ? null : (data as MemberHeader | null);
 });
 
+// Update 33: the member's choices others follow (paused, Google, online dot). Defaults until migration 0071.
+const getFlags = cache(async (id: string) => {
+  const { supabase } = await getViewer();
+  const { data, error } = await supabase.rpc("member_flags", { p_ids: [id] });
+  const f = !error && Array.isArray(data) ? (data[0] as { paused?: boolean; indexable?: boolean; show_online?: boolean } | undefined) : undefined;
+  return { paused: f?.paused === true, indexable: f ? f.indexable === true : true, online: f?.show_online !== false };
+});
+
 const photo = (m: Profile) => m.avatar_url ?? (DEMO_IMAGES ? demoAvatar(m.id) : null);
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -69,7 +77,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     path: `/members/${id}`,
     image: photo(member),
     type: "profile",
-    index: member.status === "active",
+    // Update 33: search engines only when the member turned on "Let Google show my profile"; never while paused
+    index: member.status === "active" && (await getFlags(id)).indexable && !(await getFlags(id)).paused,
   });
 }
 
@@ -111,6 +120,19 @@ export default async function MemberPage({
   const member = await getMember(id);
   if (!member) notFound();
   const isMe = id === userId;
+  const flags = await getFlags(id);
+  if (flags.paused && !isMe) {
+    // Update 33: "Pause my profile"
+    return (
+      <div className="zip"><div className="wrap" style={{ paddingTop: 16, paddingBottom: 40 }}>
+        <div className="card bcgone">
+          <h1>This member is taking a break</h1>
+          <p className="muted" style={{ margin: 0 }}>{(member.full_name || "This member").split(" ")[0]} has paused their profile for now. Check back later.</p>
+          <Link className="btn ghost" href="/members">Find other members</Link>
+        </div>
+      </div></div>
+    );
+  }
   const header = await getHeader(id);
   const headerPic = headerSrc(header);
   // Update 15 (profile as in the zip): "Profile views" is a tab of the member's own profile when the feature is on
@@ -233,7 +255,7 @@ export default async function MemberPage({
                 <div className="pavrow">
                   <span className="avwrap">
                     {isMe && !member.avatar_url ? <ReadyAv me={{ name: member.full_name || "M", avatar: null }} size="hero" /> : <ZipAv name={member.full_name || "M"} src={photo(member)} size="hero" />}
-                    {ps.head.online && active?.today && <i className="ondot" title="Active today" />}
+                    {ps.head.online && flags.online && active?.today && <i className="ondot" title="Active today" />}
                   </span>
                 </div>
                 <div className="pmain">

@@ -154,3 +154,213 @@
 .zip .bcstats b{color:var(--ink)}
 .zip .bcgone{max-width:480px;margin:40px auto;text-align:center;align-items:center;gap:10px;border-radius:6px}
 .zip .bcgone h1{font:800 20px var(--display);margin:0}
+
+/* ===== Update 33: Settings and privacy ===== */
+
+/* ===== Settings and privacy (Update 33) ===== */
+.zip .sxpage{display:flex;flex-direction:column;gap:14px;max-width:1080px;width:100%;margin:0 auto;min-width:0}
+.zip .sxhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.zip .sxeye{display:flex;align-items:center;gap:6px;margin:0 0 4px;font:700 11.5px var(--body);letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.zip .sxhead h1{font:800 24px var(--display);margin:0}
+/* Privacy check strip */
+.zip .sxcheck{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.zip .sxct{position:relative;display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--surface);border:1px solid var(--line);border-radius:4px;color:var(--ink);font:inherit;text-align:left;cursor:pointer;min-width:0}
+.zip .sxct:hover{border-color:var(--muted)}
+.zip .sxct svg{flex:none;color:var(--muted)}
+.zip .sxct span{display:flex;flex-direction:column;min-width:0}
+.zip .sxct small{font-size:12px;color:var(--muted)}
+.zip .sxct b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zip .sxct.good svg{color:#15803D}
+.zip .sxct.warn{border-left:3px solid #D97706}
+.zip .sxct em{margin-left:auto;font:700 11px var(--body);font-style:normal;color:#B45309;background:#FEF3C7;padding:2px 6px;border-radius:3px;flex:none}
+/* Layout: section list on the left, one section on the right */
+.zip .sxgrid{display:grid;grid-template-columns:236px minmax(0,1fr);gap:14px;align-items:start}
+.zip .sxnav{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:6px;position:sticky;top:76px}
+.zip .sxnav button{display:flex;align-items:center;gap:10px;padding:9px 10px;background:none;border:0;border-left:3px solid transparent;color:var(--ink);font:500 14px var(--body);text-align:left;cursor:pointer;border-radius:0}
+.zip .sxnav button svg{flex:none;color:var(--muted)}
+.zip .sxnav button:hover{background:var(--bg)}
+.zip .sxnav button.on{border-left-color:var(--brand,#B3241A);background:var(--bg);font-weight:700}
+.zip .sxnav button.on svg{color:var(--ink)}
+.zip .sxnav button:focus-visible,.zip .sxct:focus-visible,.zip .sxseg button:focus-visible,.zip .sxsw:focus-visible,.zip .sxpb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.zip .sxmain{min-width:0}
+.zip .sxsec{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:18px 20px;display:flex;flex-direction:column;gap:4px}
+.zip .sxsec>header{padding-bottom:10px;margin-bottom:2px;border-bottom:1px solid var(--line)}
+.zip .sxsec h2{font:800 18px var(--display);margin:0}
+.zip .sxsec>header p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.zip .sxsub{display:flex;flex-direction:column;margin-top:14px}
+.zip .sxsub h3{font:700 12px var(--body);letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.zip .sxrow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line)}
+.zip .sxsub .sxrow:last-child{border-bottom:0}
+.zip .sxl{display:flex;flex-direction:column;min-width:0;flex:1 1 220px}
+.zip .sxl b{font-weight:600;font-size:14.5px}
+.zip .sxl small{color:var(--muted);font-size:13px;line-height:1.4}
+.zip .sxr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.zip .sxr .btn,.zip .sxbtn{border-radius:4px}
+.zip .sxbtn{align-self:flex-start;margin-top:10px}
+.zip .sxedit .field{width:240px;min-height:34px;border-radius:4px}
+/* Segmented choice */
+.zip .sxseg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--surface)}
+.zip .sxseg button{padding:6px 11px;background:none;border:0;border-left:1px solid var(--line);color:var(--ink);font:500 13px var(--body);cursor:pointer;white-space:nowrap;min-height:32px}
+.zip .sxseg button:first-child{border-left:0}
+.zip .sxseg button:hover{background:var(--bg)}
+.zip .sxseg button[aria-checked="true"]{background:var(--ink);color:var(--surface);font-weight:700}
+/* Switch rows */
+.zip .sxsw{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:11px 0;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.zip .sxsub .sxsw:last-child{border-bottom:0}
+.zip .sxsw span{display:flex;flex-direction:column;min-width:0}
+.zip .sxsw b{font-weight:600;font-size:14.5px}
+.zip .sxsw small{color:var(--muted);font-size:13px;line-height:1.4}
+.zip .sxsw i{flex:none;position:relative;width:38px;height:22px;background:var(--line);border-radius:11px;transition:background .15s}
+.zip .sxsw i:after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.zip .sxsw[aria-checked="true"] i{background:#15803D}
+.zip .sxsw[aria-checked="true"] i:after{left:19px}
+/* Quick privacy presets */
+.zip .sxpre{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.zip .sxpb{display:flex;flex-direction:column;gap:3px;padding:11px 12px;background:var(--surface);border:1.5px solid var(--line);border-radius:4px;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.zip .sxpb:hover{border-color:var(--muted)}
+.zip .sxpb.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.zip .sxpb b{font-size:14.5px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.zip .sxpb em{font:700 10.5px var(--body);font-style:normal;color:#15803D;background:#DCFCE7;padding:1px 6px;border-radius:3px}
+.zip .sxpb small{color:var(--muted);font-size:12.5px;line-height:1.4}
+.zip .sxlock{display:flex;align-items:flex-start;gap:8px;margin-top:12px;padding:9px 11px;background:var(--bg);border:1px solid var(--line);border-radius:4px;font-size:13.5px;color:var(--muted)}
+.zip .sxlock svg{flex:none;margin-top:2px}
+.zip .sxlock b{color:var(--ink)}
+.zip .sxnote{margin:10px 0 0}
+.zip .sxdev{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.zip .sxdev svg{flex:none;color:var(--muted)}
+.zip .sxdev span{display:flex;flex-direction:column}
+.zip .sxdev b{font-weight:600;font-size:14px}
+.zip .sxdev small{color:var(--muted);font-size:12.5px}
+.zip .sxlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.zip .sxlist li{display:flex;align-items:center;gap:8px}
+.zip .sxlist svg{color:#15803D;flex:none}
+.zip .sxdanger{gap:10px;padding:14px;border:1px solid #FCA5A5;border-radius:4px;margin-top:16px}
+.zip .sxdanger h3{color:#B91C1C}
+.zip .sxdanger .warnbox{border-radius:4px}
+.zip .sxdel{align-self:flex-start;background:#B91C1C;border-color:#B91C1C;color:#fff;border-radius:4px}
+.zip .sxdel.off{opacity:.45;pointer-events:none}
+@media (max-width:900px){.zip .sxcheck{grid-template-columns:repeat(2,minmax(0,1fr))}.zip .sxgrid{grid-template-columns:1fr}
+ .zip .sxnav{position:static;flex-direction:row;overflow-x:auto;padding:4px;gap:2px;scrollbar-width:none}
+ .zip .sxnav button{flex:none;border-left:0;border-bottom:3px solid transparent;padding:8px 10px}
+ .zip .sxnav button.on{border-bottom-color:var(--brand,#B3241A)}}
+@media (max-width:600px){.zip .sxpre{grid-template-columns:1fr}.zip .sxrow{flex-direction:column;align-items:flex-start;gap:8px}.zip .sxr{justify-content:flex-start}.zip .sxsec{padding:14px}.zip .sxedit .field{width:100%}.zip .sxseg{flex-wrap:wrap}}
+.dark .zip .sxsw i{background:#3A4150}
+.dark .zip .sxsw[aria-checked="true"] i{background:#16A34A}
+.dark .zip .sxct em{background:#451A03;color:#FCD34D}
+.dark .zip .sxpb em{background:#052E16;color:#86EFAC}
+.dark .zip .sxdanger{border-color:#7F1D1D}
+.dark .zip .sxdanger h3{color:#FCA5A5}
+.dark .zip .sxpb.on{border-color:#F1F2F5;box-shadow:inset 0 0 0 1px #F1F2F5}
+
+
+/* ===== Update 34: Plan and billing ===== */
+
+/* ===== Plan and billing (Update 34) ===== */
+.zip .blpv{display:inline-flex;align-items:center;gap:0;border:1px dashed var(--muted);border-radius:4px;padding:3px;font-size:12.5px;flex-wrap:wrap}
+.zip .blpv>span{padding:0 8px;color:var(--muted);font-weight:600}
+.zip .blpv button{padding:5px 10px;background:none;border:0;color:var(--ink);font:500 12.5px var(--body);cursor:pointer;border-radius:3px}
+.zip .blpv button[aria-pressed="true"]{background:var(--ink);color:var(--surface);font-weight:700}
+.zip .blmain{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start;min-width:0}
+.zip .blcol{display:flex;flex-direction:column;gap:14px;min-width:0}
+.zip .blcard{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.zip .blhd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.zip .blhd h2{display:flex;align-items:center;gap:8px;font:800 16px var(--display);margin:0}
+.zip .blhd h2 svg{color:var(--muted)}
+/* Current plan */
+.zip .blplan{border-top:4px solid var(--muted);gap:14px}
+.zip .blplan.blp-plus{border-top-color:var(--brand,#B3241A)}
+.zip .blplan.blp-advisor{border-top-color:#1D4ED8}
+.zip .blptop{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.zip .bleye{margin:0 0 2px;font:700 11.5px var(--body);letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.zip .blptop h2{font:800 26px var(--display);margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.zip .bltag{font:700 11px var(--body);padding:3px 7px;border-radius:3px;background:var(--bg);border:1px solid var(--line);color:var(--ink)}
+.zip .bltag.found{background:#FEE2E2;border-color:#FECACA;color:#991B1B}
+.zip .blprice{margin:4px 0 0;font:800 20px var(--display)}
+.zip .blprice small{font:500 13.5px var(--body);color:var(--muted);margin-left:4px}
+.zip .blpbtn{display:flex;gap:8px;flex-wrap:wrap}
+.zip .blpbtn .btn,.zip .blcard .btn,.zip .blcancel .btn{border-radius:4px}
+.zip .bladds{display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--line)}
+.zip .bladds b{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.zip .bladds ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:14px}
+.zip .bladds li{display:flex;align-items:center;gap:7px}
+.zip .bladds svg{color:#15803D;flex:none}
+.zip .blfound,.zip .blsave,.zip .blnote{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:4px;flex-wrap:wrap}
+.zip .blfound{background:var(--invert-bg,#0F172A);color:var(--invert-ink,#fff)}
+.zip .blfound svg{color:#FCD34D;flex:none}
+.zip .blfound span,.zip .blsave span,.zip .blnote span{display:flex;flex-direction:column;flex:1 1 260px;min-width:0}
+.zip .blfound small{opacity:.8;font-size:13px}
+.zip .blfound .btn{background:#fff;color:#0F172A;border-color:#fff}
+.zip .blsave{border:1px dashed #15803D;background:#F0FDF4}
+.zip .blsave svg{color:#15803D;flex:none}
+.zip .blsave small,.zip .blnote small{color:var(--muted);font-size:13px}
+.zip .blnote{background:var(--bg);border:1px solid var(--line)}
+.zip .blnote svg{color:var(--muted);flex:none}
+.zip .blnote.warn{background:#FFFBEB;border-color:#FCD34D}
+.zip .blnote.warn svg{color:#B45309}
+.zip .blsmall{align-self:flex-start;font-size:13px}
+/* Usage */
+.zip .blus{display:grid;grid-template-columns:1fr 1fr;gap:4px 22px}
+.zip .blu{display:flex;flex-direction:column;gap:6px;padding:9px 0;border-bottom:1px solid var(--line)}
+.zip .bll{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.zip .bll b{font-weight:600;font-size:14px}
+.zip .bll small{color:var(--muted);font-size:13px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.zip .blbar{display:block;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.zip .blbar i{display:block;height:100%;background:#15803D}
+.zip .blbar.full i{background:#D97706}
+.zip .blu.lock b{color:var(--muted)}
+/* Receipts */
+.zip .blempty{margin:0}
+.zip .bltable{display:flex;flex-direction:column}
+.zip .bltr{display:grid;grid-template-columns:110px minmax(0,1fr) 110px 70px 70px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.zip .bltr.th{font:700 11.5px var(--body);letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding-top:0}
+.zip .bltr span{display:flex;flex-direction:column;min-width:0;align-items:flex-start}
+.zip .bltr small{font-size:11.5px;color:var(--muted)}
+.zip .blpaid{font:700 11.5px var(--body);font-style:normal;color:#15803D;background:#DCFCE7;padding:2px 7px;border-radius:3px;align-self:flex-start}
+/* Side column */
+.zip .blvisa{display:flex;align-items:center;gap:12px}
+.zip .blcc{display:inline-flex;align-items:center;justify-content:center;width:48px;height:32px;background:#1A1F71;color:#fff;font:800 italic 12px var(--body);border-radius:3px;letter-spacing:.5px}
+.zip .blvisa span:last-child{display:flex;flex-direction:column}
+.zip .blvisa small{color:var(--muted);font-size:12.5px}
+.zip .blcard>.btn{align-self:flex-start}
+.zip .blsecure{display:flex;gap:6px;align-items:flex-start;margin:0;font-size:12px;color:var(--muted)}
+.zip .blsecure svg{flex:none;margin-top:2px}
+.zip .bldl{display:flex;flex-direction:column;margin:0;font-size:14px}
+.zip .bldl dt{color:var(--muted);font-size:12px;margin-top:8px}
+.zip .bldl dt:first-child{margin-top:0}
+.zip .bldl dd{margin:0;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.zip .blcard p{margin:0}
+.zip .blform{display:flex;flex-direction:column;gap:4px}
+.zip .blform label{font:600 12.5px var(--body);margin-top:6px}
+.zip .blform .field{min-height:34px;border-radius:4px}
+.zip .blfbtn{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.zip .blhelp{gap:4px;background:var(--bg)}
+.zip .blhelp small{font-size:13px;color:var(--muted);line-height:1.5}
+.zip .blhelp a{color:var(--accent);font-weight:600}
+/* Cancel */
+.zip .blcancel{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 2px;border-top:1px solid var(--line);flex-wrap:wrap}
+.zip .blcancel span{display:flex;flex-direction:column;flex:1 1 260px}
+.zip .blcancel small{color:var(--muted);font-size:13px}
+.zip .blconfirm{border-color:#FCA5A5}
+.zip .blconfirm h2{font:800 16px var(--display);margin:0}
+.zip .bllist{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:14px}
+.zip .blred{background:#B91C1C;border-color:#B91C1C;color:#fff}
+@media (max-width:1100px){.zip .blmain{grid-template-columns:1fr}}
+@media (max-width:640px){.zip .blus,.zip .bladds ul{grid-template-columns:1fr}.zip .bltr{grid-template-columns:1fr auto;row-gap:2px}.zip .bltr.th{display:none}.zip .bltr span:nth-child(2){grid-column:1}.zip .bltr span:nth-child(4){display:none}.zip .blpv{width:100%}}
+.dark .zip .blsave{background:#052E16}
+.dark .zip .blnote.warn{background:#2A1F05;border-color:#78350F}
+.dark .zip .bltag.found{background:#450A0A;border-color:#7F1D1D;color:#FCA5A5}
+.dark .zip .blpaid{background:#052E16;color:#86EFAC}
+.dark .zip .blconfirm{border-color:#7F1D1D}
+.dark .zip .blfound{background:#F1F2F5;color:#0F172A}
+.dark .zip .blfound small{color:#334155;opacity:1}
+.dark .zip .blfound svg{color:#B45309}
+.dark .zip .blfound .btn{background:#0F172A;color:#fff;border-color:#0F172A}
+
+/* live site: the section list also holds links (Plan and billing, the Advisor pages) */
+.zip .sxnav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-left:3px solid transparent;color:var(--ink);font:500 14px var(--body);text-decoration:none}
+.zip .sxnav a svg{flex:none;color:var(--muted)}
+.zip .sxnav a:hover{background:var(--bg);text-decoration:none}
+.zip .sxnav a.on{border-left-color:var(--brand,#B3241A);background:var(--bg);font-weight:700}
+.zip .sxnav a.on svg{color:var(--ink)}
+.zip .sxnav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){.zip .sxnav a{flex:none;border-left:0;border-bottom:3px solid transparent;padding:8px 10px}.zip .sxnav a.on{border-bottom-color:var(--brand,#B3241A)}}

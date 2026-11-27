@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { cache } from "react";
 import { getViewer } from "@/lib/hub";
 import { Ic } from "@/components/zip/ic";
@@ -16,13 +17,13 @@ const getCard = cache(async (handle: string) => {
   const { supabase } = await getViewer();
   const { data, error } = await supabase.rpc("card_public", { p_handle: handle.toLowerCase() });
   if (error || !data) return null;
-  return fromPublic(data as Record<string, unknown>);
+  return { ...fromPublic(data as Record<string, unknown>), paused: (data as { paused?: boolean }).paused === true };
 });
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
   const c = await getCard(handle);
-  if (!c) return { title: "Card not available", robots: { index: false, follow: false } };
+  if (!c || c.paused) return { title: "Card not available", robots: { index: false, follow: false } };
   const desc = [c.title, bizLine(c)].filter(Boolean).join(" · ") || "SME Hub member";
   // search engines only when the member turned it on (Settings and privacy, Business card)
   return { title: `${c.name}: business card`, description: desc, robots: c.searchable ? undefined : { index: false, follow: false }, openGraph: { title: `${c.name} on SME Hub`, description: desc } };
@@ -44,9 +45,26 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </div></div>
     );
   }
+  if (c.paused && userId !== c.id) {
+    // Update 33: "Pause my profile" also pauses the card page
+    return (
+      <div className="zip"><div className="wrap" style={{ paddingTop: 16, paddingBottom: 40 }}>
+        <div className="card bcgone">
+          <h1>This member is taking a break</h1>
+          <p className="muted" style={{ margin: 0 }}>{c.name.split(" ")[0]} has paused their profile for now. Check back later.</p>
+          {!userId && <Link className="btn dark" href="/auth/sign-up">Join free</Link>}
+        </div>
+      </div></div>
+    );
+  }
   if (c.handle !== handle.toLowerCase()) redirect(`/c/${c.handle}`); // an old link from before a name change
   const own = userId === c.id;
-  if (!own) await supabase.rpc("card_count", { p_handle: c.handle, p_kind: "open" }); // anonymous total only
+  if (!own) {
+    // anonymous totals only; one address can't push the count up (60 opens per 10 minutes)
+    const ip = ((await headers()).get("x-forwarded-for") ?? "").split(",")[0]?.trim() || "unknown";
+    const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `card:${ip}`, p_max: 60, p_window: "10 minutes" });
+    if (allowed !== false) await supabase.rpc("card_count", { p_handle: c.handle, p_kind: "open" });
+  }
   const t = CARD_STYLES[c.style];
   const line = bizLine(c);
   const msg = userId ? `/messages?with=${c.id}` : `/auth/sign-up?next=${encodeURIComponent(`/messages?with=${c.id}`)}`;
