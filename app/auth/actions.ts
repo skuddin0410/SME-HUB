@@ -463,8 +463,8 @@ export async function finishProfile(input: FinishInput): Promise<{ ok: true } | 
   });
   if (error) return { ok: false, form: "We couldn’t save that. Try again in a moment." };
   await supabase.from("profiles").update({ full_name: `${first} ${last}`.slice(0, 80), ...(website ? { website } : {}) }).eq("id", user.id);
-  // the province fills the profile's location only when the member hasn't set one
-  await supabase.from("profiles").update({ location: province }).eq("id", user.id).is("location", null);
+  // the province fills the profile's location only when the member hasn't set one (new profiles store an empty location)
+  await supabase.from("profiles").update({ location: province }).eq("id", user.id).or("location.is.null,location.eq.");
 
   // the newsletter list is written only by the server, as at sign-up
   if (input.newsletter) {
