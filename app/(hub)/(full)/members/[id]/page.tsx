@@ -29,6 +29,9 @@ import { Suspense } from "react";
 import { ProfileStoriesSection } from "@/components/stories/sections";
 import { AdvisorSections } from "@/components/advisors/sections";
 import { TypeBadge } from "@/components/zip/type-badge";
+import { EditHeaderButton } from "@/components/zip/header-editor";
+import { headerSrc, type MemberHeader } from "@/lib/header";
+import "@/styles/u31-40.css";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -44,6 +47,13 @@ const getMember = cache(async (id: string) => {
   const { supabase } = await getViewer();
   const { data } = await supabase.from("profiles").select("id, full_name, headline, bio, location, website, avatar_url, member_type, profile_type, role, status, created_at, founding_number, plan").eq("id", id).maybeSingle();
   return data as (Profile & { profile_type: keyof typeof PROFILE_TYPES; founding_number: number | null; plan?: string | null }) | null;
+});
+
+// Update 39: the member's own header (photo or colour). Read on its own so the page still works before migration 0069.
+const getHeader = cache(async (id: string): Promise<MemberHeader | null> => {
+  const { supabase } = await getViewer();
+  const { data, error } = await supabase.from("profiles").select("header_url, header_src, header_crop, header_colour").eq("id", id).maybeSingle();
+  return error ? null : (data as MemberHeader | null);
 });
 
 const photo = (m: Profile) => m.avatar_url ?? (DEMO_IMAGES ? demoAvatar(m.id) : null);
@@ -101,6 +111,8 @@ export default async function MemberPage({
   const member = await getMember(id);
   if (!member) notFound();
   const isMe = id === userId;
+  const header = await getHeader(id);
+  const headerPic = headerSrc(header);
   // Update 15 (profile as in the zip): "Profile views" is a tab of the member's own profile when the feature is on
   const pvOn = isMe && !!ps.pv.on;
   const tab: (typeof TABS)[number][0] | "views" = pvOn && sp.tab === "views" ? "views" : tab0;
@@ -213,7 +225,10 @@ export default async function MemberPage({
             {mine && miss && <ReadyCard where="profile" miss={miss} />}
             {mine && !miss && !applied && <SpotlightBanner />}
             <div className="card phero" data-head={String(ps.header)}>
-              <div className="pcover"><Cover seed={member.id} className="h-full w-full" /></div>
+              <div className="pcover hdwrap">
+                {headerPic ? <span className="hdrpic" style={{ backgroundImage: `url("${headerPic}")` }} role="img" aria-label="Profile header" /> : <Cover seed={member.id} className="h-full w-full" />}
+                {isMe && header !== null && <EditHeaderButton me={{ name: member.full_name || "Member", headline: member.headline, avatar: member.avatar_url }} current={header} />}
+              </div>
               <div className="pinfo">
                 <div className="pavrow">
                   <span className="avwrap">

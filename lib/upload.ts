@@ -13,6 +13,7 @@ const SETTINGS = {
   avatar: { side: 512, type: "image/jpeg" },
   post: { side: 2000, type: "image/jpeg" }, // Update 10: photos in posts up to 2000 px; re-drawing them drops location data (EXIF)
   cover: { side: 1600, type: "image/jpeg" },
+  header: { side: 2400, type: "image/jpeg" }, // Update 39: the original header photo, kept so the member can re-crop it
   logo: { side: 512, type: "image/png" }, // PNG keeps a logo's transparent background
 } as const;
 export type ImageKind = keyof typeof SETTINGS;
@@ -52,6 +53,18 @@ export async function uploadImage(file: File, kind: ImageKind): Promise<string> 
     throw new Error("We could not read that picture. Try a JPG or PNG.");
   }
   const path = `${userId}/${kind}-${crypto.randomUUID()}.${blob.type === "image/png" ? "png" : "jpg"}`;
+  const { error } = await supabase.storage.from("media").upload(path, blob, { contentType: blob.type, cacheControl: "31536000" });
+  if (error) throw new Error(`Upload failed: ${error.message}`);
+  return supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
+}
+
+/** Uploads a picture already drawn in the browser (for example the 1584 x 396 header crop) to the member's folder. */
+export async function uploadBlob(blob: Blob, prefix: string): Promise<string> {
+  const supabase = createClient();
+  const { data } = await supabase.auth.getSession();
+  const userId = data.session?.user.id;
+  if (!userId) throw new Error("Sign in again to upload a picture.");
+  const path = `${userId}/${prefix}-${crypto.randomUUID()}.${blob.type === "image/png" ? "png" : "jpg"}`;
   const { error } = await supabase.storage.from("media").upload(path, blob, { contentType: blob.type, cacheControl: "31536000" });
   if (error) throw new Error(`Upload failed: ${error.message}`);
   return supabase.storage.from("media").getPublicUrl(path).data.publicUrl;
