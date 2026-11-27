@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
     const next = safeNext(url.searchParams.get("next"));
     // Google and LinkedIn skip the sign-up form, so they give its details once before going on
     if (!error && data.user && needsFinish(data.user)) return NextResponse.redirect(`${origin}/auth/finish?next=${encodeURIComponent(next)}`);
-    if (!error) return NextResponse.redirect(`${origin}${next}`);
+    // a short welcome (the map, their name and photo) before the page they asked for
+    if (!error) return NextResponse.redirect(`${origin}/auth/welcome?next=${encodeURIComponent(next)}`);
   }
   // already used, expired, or opened in another browser: sign in normally
   return NextResponse.redirect(`${origin}/auth/login?notice=link-expired`);

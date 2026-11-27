@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { confirmDevice, signIn, type Fields, type Who } from "@/app/auth/actions";
-import { cityFor } from "./canada-map";
+import { WelcomeCard, pulseCity } from "./welcome";
 import { CodeBoxes, Err, LockIcon, PasswordField, Spin } from "./fields";
 import { Sso } from "./sso";
 
@@ -123,31 +123,12 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
     setTicked(true);
     window.setTimeout(() => {
       setDone({ who });
-      window.dispatchEvent(new CustomEvent("sa:welcome", { detail: { city: cityFor(who?.location) } }));
+      pulseCity(who);
     }, 560);
     window.setTimeout(go, 2000);
   };
 
-  if (done) {
-    const who = done.who;
-    const initials = (who?.first || "").slice(0, 1).toUpperCase();
-    return (
-      <section className="sawel" role="status" aria-live="polite">
-        {who?.avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className="ava" src={who.avatar} alt="" width={84} height={84} />
-        ) : (
-          <span className="ava" aria-hidden="true">
-            {initials || (
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5L20 7" /></svg>
-            )}
-          </span>
-        )}
-        <h1>{who?.first ? `Welcome back, ${who.first}` : "Welcome back"}</h1>
-        <p className="sub">Taking you to your Home page…</p>
-      </section>
-    );
-  }
+  if (done) return <WelcomeCard who={done.who} />;
 
   if (step === "code") {
     return (

@@ -9,6 +9,7 @@ import { siteOrigin } from "@/lib/auth/site";
 import { PROVINCES } from "@/lib/auth/provinces";
 import { sendWelcomeOnce } from "@/lib/auth/welcome";
 import { serviceClient } from "@/lib/supabase/service";
+import { whoIs, type Who } from "@/lib/auth/who";
 import { checkChallenge, DEVICE_COOKIE, gateReady, isTrusted, spaced, startChallenge, TRUST_DAYS, trustDevice } from "@/lib/auth/device-gate";
 import { sendEmail } from "@/lib/email/send";
 import { commonVars, renderEmail } from "@/lib/email/render";
@@ -159,8 +160,7 @@ export async function resendCode(emailIn: string): Promise<{ ok: boolean }> {
 
 // ---------------------------------------------------------------- log in
 
-/** Shown on the log-in page for a moment after a successful log-in. */
-export type Who = { first: string; avatar: string | null; location: string | null };
+export type { Who } from "@/lib/auth/who";
 
 export type SignInResult =
   | { status: "ok"; who: Who | null }
@@ -223,20 +223,6 @@ export async function signIn(input: { email: string; password: string; keep: boo
   }
   await finishSignIn(supabase, keep);
   return { status: "ok", who: await whoIs(supabase) };
-}
-
-/** The member's first name, photo and location, for the welcome moment. Never fails the log-in. */
-async function whoIs(supabase: Awaited<ReturnType<typeof createClient>>): Promise<Who | null> {
-  try {
-    const { data: u } = await supabase.auth.getUser();
-    if (!u.user) return null;
-    const { data } = await supabase.from("profiles").select("full_name, avatar_url, location").eq("id", u.user.id).maybeSingle();
-    const p = data as { full_name?: string | null; avatar_url?: string | null; location?: string | null } | null;
-    const first = (p?.full_name ?? "").trim().split(/\s+/)[0] || firstNameOf(u.user.user_metadata) || "";
-    return { first, avatar: p?.avatar_url || null, location: p?.location || null };
-  } catch {
-    return null;
-  }
 }
 
 async function finishSignIn(supabase: Awaited<ReturnType<typeof createClient>>, keep: boolean) {

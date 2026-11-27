@@ -34,3 +34,9 @@
 @media(max-width:640px){.sa .samap{position:absolute;bottom:64px;height:250px}.sa.withmap>main{padding-bottom:230px}}
 @media(max-height:560px){.sa .samap{display:none}.sa.withmap>main{padding-bottom:40px}}
 @media(prefers-reduced-motion:reduce){.sa.enter>main>.card,.sa.enter>main>.split,.sa.enter>.top,.sa .card.leaving,.sa .sawel,.sa .sawel .ava{animation:none}.sa .samc{transition:none}}
+/* Google / LinkedIn: the chosen button says it is connecting, the other steps back, the rest of the card dims */
+.sa .sso .btn{transition:opacity .2s,background .15s,box-shadow .15s,border-color .2s}
+.sa .sso.busy .btn:not(.going){opacity:.45}
+.sa .sso .btn.going{border-color:var(--acc);box-shadow:0 0 0 4px rgba(37,99,235,.12);color:var(--ink);cursor:progress;white-space:nowrap}
+.sa .sso .btn.going .spin{border-color:rgba(37,99,235,.25);border-top-color:var(--acc)}
+.sa .card:has(.sso.busy) :is(.or,form,.foot,.split-aside){opacity:.4;transition:opacity .25s;pointer-events:none}

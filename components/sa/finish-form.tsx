@@ -37,8 +37,7 @@ export function FinishForm({ next, via, email, initial }: { next: string; via: s
     setBusy(true);
     const res = await finishProfile({ first: v.fn, last: v.ln, business: v.bn, website: v.ws, province: v.pr, terms: v.tm, newsletter: v.nl });
     if (res.ok) {
-      router.replace(next);
-      router.refresh();
+      router.replace(`/auth/welcome?joined=1&next=${encodeURIComponent(next)}`);
       return;
     }
     setBusy(false);
