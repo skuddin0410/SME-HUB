@@ -386,6 +386,8 @@
 .dark .zip .pillnav{background:var(--surface-2);border-color:var(--line)}
 .dark .zip .pillnav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
 .dark .zip header.top{border-color:var(--line)}.dark .zip .vdiv{background:var(--line)}.dark .zip .hbtn.in{border-color:var(--line)}
+/* dark mode: hovers in the top bar stay dark (they showed light grey) */
+.dark .zip .tbtn:hover,.dark .zip .hbtn.in:hover,.dark .zip .pillnav a:not([aria-current="page"]):hover,.dark .zip header.top .iconbtn:hover{background:rgba(255,255,255,.08);color:var(--ink)}
 @media (max-width:1100px){.zip .spill{flex:0 1 180px;width:180px;min-width:120px}}
 @media (max-width:1050px){.zip header.top .wrap.hd{height:auto;padding:8px 12px;flex-wrap:wrap}}
 /* Fidelity pass: values measured on the live feed */

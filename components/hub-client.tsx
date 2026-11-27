@@ -6,7 +6,7 @@ import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { usePathname, useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
-import { useFormStatus } from "react-dom";
+import { createPortal, useFormStatus } from "react-dom";
 import { CircleHelp, ImagePlus, Loader2, Megaphone, Trophy, X, Banknote, Bot, Factory, Ship, ShieldCheck, Store, UsersRound, MapPin, House } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useImageUpload } from "@/lib/upload";
@@ -198,18 +198,56 @@ export function NavLink({
 
 export function SignOutButton({ className, to = "/auth/login" }: { className?: string; to?: string }) {
   const router = useRouter();
+  const [leaving, setLeaving] = useState(false);
   return (
-    <button
-      type="button"
-      className={className}
-      onClick={async () => {
-        await createClient().auth.signOut();
-        router.push(to);
-        router.refresh();
-      }}
-    >
-      Sign out
-    </button>
+    <>
+      <button
+        type="button"
+        className={className}
+        disabled={leaving}
+        onClick={async () => {
+          if (leaving) return;
+          // show it straight away: signing out talks to the server and then loads the log-in page
+          setLeaving(true);
+          try {
+            await createClient().auth.signOut();
+          } catch {
+            // the session is cleared on this device either way; carry on to the log-in page
+          }
+          const dest = to === "/auth/login" ? "/auth/login?notice=signed-out" : to;
+          router.replace(dest);
+          router.refresh();
+        }}
+      >
+        {leaving ? "Signing out…" : "Sign out"}
+      </button>
+      {leaving && <SigningOut />}
+    </>
+  );
+}
+
+/** Full-screen "Signing you out" screen; it stays until the log-in page replaces it. */
+function SigningOut() {
+  const [el, setEl] = useState<HTMLElement | null>(null);
+  useEffect(() => setEl(document.body), []);
+  if (!el) return null;
+  return createPortal(
+    <div className="hub-leaving" role="status" aria-live="polite">
+      <style>{`.hub-leaving{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:rgba(244,242,238,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:hlIn .2s ease both;font-family:Inter,system-ui,sans-serif}
+.dark .hub-leaving,:root.dark .hub-leaving{background:rgba(11,16,32,.82)}
+.hub-leaving>div{display:flex;flex-direction:column;align-items:center;gap:14px;padding:28px 36px;border-radius:18px;background:#fff;box-shadow:0 20px 60px rgba(24,24,27,.16);color:#18181B;animation:hlUp .3s .05s cubic-bezier(.2,.8,.2,1) both}
+.dark .hub-leaving>div{background:#111827;color:#F4F4F5;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.hub-leaving i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(37,99,235,.2);border-top-color:#2563EB;animation:hlSp .7s linear infinite}
+.hub-leaving b{font-size:16px;font-weight:600}.hub-leaving small{font-size:13px;opacity:.7}
+@keyframes hlIn{from{opacity:0}}@keyframes hlUp{from{opacity:0;transform:translateY(8px) scale(.98)}}@keyframes hlSp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.hub-leaving,.hub-leaving>div{animation:none}.hub-leaving i{animation-duration:1.6s}}`}</style>
+      <div>
+        <i aria-hidden="true" />
+        <b>Signing you out…</b>
+        <small>See you soon.</small>
+      </div>
+    </div>,
+    el,
   );
 }
 

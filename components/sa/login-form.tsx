@@ -9,7 +9,7 @@ import { Sso } from "./sso";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-type Msg = { kind: "e" | "w" | "i"; body: React.ReactNode } | null;
+type Msg = { kind: "e" | "w" | "i" | "s"; body: React.ReactNode } | null;
 
 const LOCKED = (
   <span>
@@ -26,7 +26,9 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
   const [msg, setMsg] = useState<Msg>(
     notice === "link-expired"
       ? { kind: "i", body: <span>That link has already been used or has expired. Log in below, or <Link href="/auth/forgot-password">reset your password</Link>.</span> }
-      : null,
+      : notice === "signed-out"
+        ? { kind: "s", body: <span>You’re signed out. See you soon.</span> }
+        : null,
   );
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
