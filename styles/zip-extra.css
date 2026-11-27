@@ -307,35 +307,30 @@ html.dark .zip .errtxt,.dark .zip .errtxt,[data-theme="dark"] .zip .errtxt{color
 .zip .acts.rxrow .rxmain[aria-pressed="true"] svg { color: var(--ink); }
 .zip .acts.rxrow .rxmain > span:first-child { font-size: inherit; }
 .zip .acts.rxrow .rxmain:hover > span:first-child { transform: none; }
-/* "Your network, live" (option B): slim navy button, tower in a glowing badge, blue and red signals rippling out */
+/* "Your network, live" (option C): small white chip with the tower and "Live", a green count badge on the corner,
+   and dark blue and dark red signals rippling out of the tower tip */
 .zip .nltw{position:relative;display:inline-block;align-self:flex-start;margin-top:12px}
-.zip .nlrings{position:absolute;left:20px;top:13px;width:0;height:0;pointer-events:none;z-index:0}
+.zip .nlrings{position:absolute;left:20px;top:11px;width:0;height:0;pointer-events:none;z-index:0}
 /* the signals pass behind the heading above and the search and results below */
 .zip .dirhead{position:relative;z-index:1}
 .zip .dirhead>*:not(.nltw){position:relative;z-index:1}
 .zip .dirhead+*{position:relative;z-index:2}
-.zip .nlrings span{position:absolute;left:-120px;top:-120px;width:240px;height:240px;border-radius:50%;border:2px solid rgba(30,58,138,.75);transform:scale(.07);opacity:0;animation:nltwRing 3.6s cubic-bezier(.2,.6,.3,1) infinite}
-.zip .nlrings span:nth-child(2){border-color:rgba(153,27,27,.7);animation-delay:1.2s}
-.zip .nlrings span:nth-child(3){animation-delay:2.4s}
-.zip .nltw.quiet .nlrings span{animation-duration:7.2s}.zip .nltw.quiet .nlrings span:nth-child(2){animation-delay:2.4s}.zip .nltw.quiet .nlrings span:nth-child(3){animation-delay:4.8s}
-.zip .nltw.paused .nlrings span,.zip .nltw.paused .tip,.zip .nltxt.paused i,.zip .nltw.paused .nltxt i{animation-play-state:paused}
-@keyframes nltwRing{0%{transform:scale(.07);opacity:0}8%{opacity:.95}100%{transform:scale(1);opacity:0}}
-.zip .nlbtn{position:relative;z-index:1;display:inline-flex;align-items:center;gap:9px;height:40px;padding:0 14px 0 5px;border-radius:999px;background:linear-gradient(135deg,#0B1630 0%,#16295A 100%);color:#fff;font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap;box-shadow:0 6px 16px rgba(11,22,48,.22),inset 0 1px 0 rgba(255,255,255,.1);transition:transform .2s,box-shadow .2s}
-.zip .nlbtn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(11,22,48,.3),inset 0 1px 0 rgba(255,255,255,.1);color:#fff;text-decoration:none}
+.zip .nlrings span{position:absolute;left:-75px;top:-75px;width:150px;height:150px;border-radius:50%;border:2px solid rgba(30,58,138,.8);transform:scale(.1);opacity:0;animation:nltwRing 3.3s cubic-bezier(.2,.6,.3,1) infinite}
+.zip .nlrings span:nth-child(2){border-color:rgba(153,27,27,.75);animation-delay:1.1s}
+.zip .nlrings span:nth-child(3){animation-delay:2.2s}
+.zip .nltw.quiet .nlrings span{animation-duration:6.6s}.zip .nltw.quiet .nlrings span:nth-child(2){animation-delay:2.2s}.zip .nltw.quiet .nlrings span:nth-child(3){animation-delay:4.4s}
+.zip .nltw.paused .nlrings span,.zip .nltw.paused .tip{animation-play-state:paused}
+@keyframes nltwRing{0%{transform:scale(.1);opacity:0}8%{opacity:1}100%{transform:scale(1);opacity:0}}
+.zip .nlbtn{position:relative;z-index:1;display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 15px 0 12px;border-radius:12px;background:#fff;border:1px solid #E2E0DA;color:var(--ink);font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap;box-shadow:0 6px 16px rgba(24,24,27,.07);transition:transform .2s,box-shadow .2s}
+.zip .nlbtn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(24,24,27,.1);color:var(--ink);text-decoration:none}
 .zip .nlbtn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.zip .nlbadge{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,#2F6BFF,#1D3FA8);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);color:#fff}
-.zip .nlbadge svg{width:15px;height:18px}
-.zip .nlbadge .mast{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.zip .nlbadge .tip{fill:#fff;animation:nltwGlow 1.2s infinite alternate}
-@keyframes nltwGlow{from{fill:#fff}to{fill:#FCA5A5}}
-.zip .nltxt{display:inline-flex;align-items:center;gap:9px}
-.zip .nltxt small{font-size:12px;font-weight:500;color:#A9B8DC;display:inline-flex;align-items:center;gap:6px;padding-left:9px;border-left:1px solid rgba(255,255,255,.18)}
-.zip .nltxt i{width:6px;height:6px;border-radius:50%;background:#22C55E;animation:nltwPing 2s infinite}
-@keyframes nltwPing{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6)}70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-.zip .nlgo{margin-left:2px;opacity:.6;transition:transform .2s}
-.zip .nlbtn:hover .nlgo{transform:translateX(3px)}
-.dark .zip .nlrings span{border-color:rgba(96,130,230,.6)}
-.dark .zip .nlrings span:nth-child(2){border-color:rgba(220,70,70,.55)}
-.dark .zip .nlbtn{background:linear-gradient(135deg,#1B2A55,#2A3F7E);box-shadow:0 6px 18px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.12)}
-@media(max-width:640px){.zip .nltw{display:block;align-self:stretch;overflow:hidden;border-radius:999px}.zip .nlbtn{display:flex;width:100%}.zip .nlgo{margin-left:auto}}
-@media(prefers-reduced-motion:reduce){.zip .nlrings span,.zip .nlbadge .tip,.zip .nltxt i{animation:none}.zip .nlbtn,.zip .nlgo{transition:none}.zip .nlrings span{opacity:.3;transform:scale(.3)}.zip .nlrings span:nth-child(2){opacity:.2;transform:scale(.55)}.zip .nlrings span:nth-child(3){opacity:.12;transform:scale(.8)}}
+.zip .nltower{display:block;overflow:visible;color:#1E3A8A}
+.zip .nltower .mast{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.zip .nltower .tip{fill:#B91C1C;animation:nltwTip 1.1s infinite alternate}
+@keyframes nltwTip{from{fill:#B91C1C}to{fill:#EF4444}}
+.zip .nlcount{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#16A34A;color:#fff;font-size:11px;font-weight:700;line-height:20px;text-align:center;box-shadow:0 0 0 2px var(--bg)}
+.dark .zip .nlrings span{border-color:rgba(110,145,240,.7)}
+.dark .zip .nlrings span:nth-child(2){border-color:rgba(230,80,80,.65)}
+.dark .zip .nlbtn{background:#1A1D24;border-color:#2C303A;color:#ECECEF;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+.dark .zip .nltower{color:#A9BEFF}
+@media(prefers-reduced-motion:reduce){.zip .nlrings span,.zip .nltower .tip{animation:none}.zip .nlbtn{transition:none}.zip .nlrings span{opacity:.3;transform:scale(.35)}.zip .nlrings span:nth-child(2){opacity:.2;transform:scale(.65)}.zip .nlrings span:nth-child(3){opacity:.12;transform:scale(.95)}}
