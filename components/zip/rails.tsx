@@ -15,6 +15,7 @@ import { MemberOfTheDay } from "@/components/zip/motd";
 import { DeadlineCard } from "@/components/tools/deadline-card";
 import { GoodMorning } from "@/components/matches/good-morning";
 import { leadsWaiting } from "@/lib/leads";
+import { evWhen } from "@/lib/events";
 import "@/styles/leads.css";
 
 /** Pages that are built in a later phase: not prefetched, so the browser is not left waiting on them. */
@@ -99,7 +100,7 @@ export async function ZipRightRail() {
   if (!userId || !profile) return <ZipJoinCard />;
   const [connections, ev, groups, mine, rsv, quest, ready] = await Promise.all([
     supabase.rpc("connection_count", { member: userId }),
-    supabase.from("hub_events").select("id, title, when_label").eq("status", "published").order("position").limit(2),
+    supabase.from("hub_events").select("*").eq("status", "published").order("position").limit(2),
     supabase.from("groups").select("id, slug, name, is_private, group_members(count)").eq("status", "active").order("created_at", { ascending: false }).limit(4),
     supabase.from("group_members").select("group_id").eq("user_id", userId),
     supabase.from("event_rsvps").select("event_id").eq("user_id", userId),
@@ -183,7 +184,7 @@ export async function ZipRightRail() {
         <div className="card">
           <p className="eyebrow">This week’s live session</p>
           <h2 style={{ fontSize: 15, lineHeight: 1.3 }}>{event.title}</h2>
-          <p className="muted small">{event.when_label}</p>
+          <p className="muted small">{event.when_label || evWhen(event as unknown as { starts_at: string | null; ends_at: string | null; tz: string })}</p>
           <RsvpBtn eventId={event.id} saved={rsvped} signedIn />
         </div>
       )}

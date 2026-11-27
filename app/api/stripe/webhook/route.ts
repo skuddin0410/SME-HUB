@@ -30,6 +30,16 @@ export async function POST(req: Request) {
   // Update 4: a paid course. Enrol only after Stripe confirms the payment (never on the browser redirect).
   if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
     const s = event.data.object as { id: string; payment_status?: string; payment_intent?: string | null; metadata?: Record<string, string> | null; amount_total?: number | null; customer_details?: { email?: string | null } | null };
+    // Updates 35 and 37: a paid event ticket. Register only after Stripe confirms the payment.
+    if (s.metadata?.kind === "event") {
+      if (s.payment_status !== "paid") return NextResponse.json({ received: true, pending: true });
+      const m = s.metadata;
+      const ok = /^[0-9a-f-]{36}$/i.test(m.event_id ?? "") && /^[0-9a-f-]{36}$/i.test(m.user_id ?? "");
+      if (!ok) return NextResponse.json({ received: true, ignored: true });
+      const pay = (typeof s.payment_intent === "string" && s.payment_intent) || s.id;
+      const { error } = await db.rpc("register_paid_event", { p_member: m.user_id, p_event: m.event_id, p_payment: pay, p_cents: s.amount_total ?? 0 });
+      return error ? NextResponse.json({ error: "Could not register" }, { status: 500 }) : NextResponse.json({ received: true, event: true });
+    }
     if (s.metadata?.kind === "course") {
       if (s.payment_status !== "paid") return NextResponse.json({ received: true, pending: true });
       const r = await enrolPaidCourse(db, stripe, s);

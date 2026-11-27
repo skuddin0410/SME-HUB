@@ -104,4 +104,5 @@ export const ICON: Record<string, string> = {
  "gauge": "<path d=\"M12 14l4-4\"/><path d=\"M3.3 19a10 10 0 1 1 17.4 0\"/>",
  "ccard": "<rect x=\"2\" y=\"5\" width=\"20\" height=\"14\" rx=\"1\"/><path d=\"M2 10h20M6 15h4\"/>",
  "plug": "<path d=\"M12 22v-5\"/><path d=\"M9 8V2\"/><path d=\"M15 8V2\"/><path d=\"M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z\"/>",
+ "ticket": "<path d=\"M3 9a3 3 0 0 0 0 6v3h18v-3a3 3 0 0 0 0-6V6H3z\"/><path d=\"M13 6v12\"/>",
 };

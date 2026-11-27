@@ -364,3 +364,167 @@
 .zip .sxnav a.on svg{color:var(--ink)}
 .zip .sxnav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (max-width:900px){.zip .sxnav a{flex:none;border-left:0;border-bottom:3px solid transparent;padding:8px 10px}.zip .sxnav a.on{border-bottom-color:var(--brand,#B3241A)}}
+
+/* ===== Updates 35 and 37: Events ===== */
+
+/* ===== Events (Update 35) ===== */
+.zip .evpage{display:flex;flex-direction:column;gap:14px;max-width:1080px;width:100%;margin:0 auto;min-width:0}
+.zip .evhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.zip .evhead h1{font:800 26px var(--display);margin:0 0 4px}
+.zip .evhead p{margin:0;max-width:600px}
+.zip .evhbtn{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.zip .evhbtn .btn,.zip .evpage .btn{border-radius:4px}
+.zip .evtabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.zip .evtabs button{padding:9px 14px;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;color:var(--muted);font:600 14.5px var(--body);cursor:pointer;display:flex;align-items:center;gap:6px}
+.zip .evtabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--brand,#B3241A)}
+.zip .evtabs em{font:700 11px var(--body);font-style:normal;background:var(--ink);color:var(--surface);padding:1px 6px;border-radius:3px}
+/* Filters */
+.zip .evfilters{display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.zip .evrow1,.zip .evrow2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.zip .evsearch{flex:1 1 260px;display:flex;align-items:center;gap:8px;padding:0 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);min-height:38px;color:var(--muted)}
+.zip .evsearch input{flex:1;border:0;background:none;font:500 14.5px var(--body);color:var(--ink);outline:none;min-width:0;padding:8px 0}
+.zip .evsearch:focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.zip .evseg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--surface)}
+.zip .evseg button{padding:7px 11px;background:none;border:0;border-left:1px solid var(--line);color:var(--ink);font:500 13px var(--body);cursor:pointer;white-space:nowrap;min-height:34px}
+.zip .evseg button:first-child{border-left:0}
+.zip .evseg button:hover{background:var(--bg)}
+.zip .evseg button[aria-checked="true"]{background:var(--ink);color:var(--surface);font-weight:700}
+.zip .evsel select{appearance:none;-webkit-appearance:none;min-height:34px;padding:6px 28px 6px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 9px center;color:var(--ink);font:500 13px var(--body);cursor:pointer;max-width:200px}
+.zip .evsel select:focus-visible,.zip .evseg button:focus-visible,.zip .evchip:focus-visible,.zip .evsave:focus-visible,.zip .evtabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.zip .evchip{min-height:34px;padding:6px 11px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:500 13px var(--body);cursor:pointer}
+.zip .evchip.on{background:#DCFCE7;border-color:#15803D;color:#14532D;font-weight:700}
+.zip .evclear{font-size:13px;margin-left:auto}
+.zip .evcount{margin:0;font-size:13px;color:var(--muted)}
+/* Featured CanadianSME event */
+.zip .evfeat{display:grid;grid-template-columns:240px 1fr;background:var(--invert-bg,#0F172A);color:var(--invert-ink,#fff);border-radius:4px;overflow:hidden}
+.zip .evfart{line-height:0;min-height:100%}
+.zip .evfart svg{width:100%;height:100%;display:block;object-fit:cover}
+.zip .evftxt{padding:16px 20px;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.zip .evfeye{font:700 11px var(--body);letter-spacing:.7px;text-transform:uppercase;color:#FCA5A5}
+.zip .evftxt h2{font:800 22px var(--display);margin:0;color:inherit}
+.zip .evftxt p{margin:0;opacity:.85;font-size:14px;max-width:560px}
+.zip .evfbtn{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.zip .evfeat .btn.dark{background:#fff;color:#0F172A;border-color:#fff}
+.zip .evfeat .btn.on{background:#15803D;border-color:#15803D;color:#fff}
+.zip .evfeat .btn.ghost{color:#fff;border-color:rgba(255,255,255,.4);background:transparent}
+/* List */
+.zip .evmonth{font:800 13px var(--body);letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:10px 0 0}
+.zip .evlist{display:flex;flex-direction:column;gap:8px}
+.zip .evcard{display:grid;grid-template-columns:58px 150px minmax(0,1fr) auto;gap:14px;align-items:start;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.zip .evcard:hover{border-color:var(--muted)}
+.zip .evdate{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:4px;padding:6px 0;background:var(--bg);line-height:1.1}
+.zip .evdate span{font:700 11px var(--body);text-transform:uppercase;color:var(--muted)}
+.zip .evdate span:first-child{color:var(--brand,#B3241A)}
+.zip .evdate b{font:800 22px var(--display)}
+.zip .evdate.tba b{font-size:15px;padding:4px 0}
+.zip .evthumb{display:block;line-height:0;border-radius:3px;overflow:hidden;height:96px}
+.zip .evthumb svg{width:100%;height:100%;display:block}
+.zip .evbody{display:flex;flex-direction:column;gap:3px;min-width:0}
+.zip .evtags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:2px}
+.zip .evtag{display:inline-flex;align-items:center;gap:4px;font:600 11.5px var(--body);padding:2px 7px;border-radius:3px;background:var(--bg);border:1px solid var(--line);color:var(--ink)}
+.zip .evtag.on{background:#EFF6FF;border-color:#BFDBFE;color:#1E40AF}
+.zip .evtag.ip{background:#FFF7ED;border-color:#FED7AA;color:#9A3412}
+.zip .evtag.free{background:#DCFCE7;border-color:#BBF7D0;color:#14532D}
+.zip .evbody h3{font:800 16.5px/1.3 var(--display);margin:0}
+.zip .evbody h3 a{color:var(--ink);text-decoration:none}
+.zip .evbody h3 a:hover{text-decoration:underline}
+.zip .evmeta{display:flex;align-items:center;gap:6px;margin:0;font-size:13.5px;color:var(--muted)}
+.zip .evmeta svg{flex:none}
+.zip .evmeta.big{align-items:flex-start;font-size:14px;color:var(--ink)}
+.zip .evmeta.big svg{margin-top:3px;color:var(--muted)}
+.zip .evhost{display:flex;align-items:center;gap:8px;margin:4px 0 0;font-size:13.5px}
+.zip .evhost>span{display:flex;flex-direction:column;min-width:0}
+.zip .evhost small{color:var(--muted);font-size:12.5px}
+.zip .evhost .namebtn{font-weight:600}
+.zip .evhlogo{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}
+.zip .evhlogo img{width:24px;height:auto;object-fit:contain;object-position:left}
+.zip .evacts{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.zip .evacts .btn{white-space:nowrap}
+.zip .evsave{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:36px;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);cursor:pointer;font:600 13.5px var(--body)}
+.zip .evsave:hover{border-color:var(--muted)}
+.zip .evsave.on{color:var(--brand,#B3241A);border-color:var(--brand,#B3241A);background:#FEF2F2}
+.zip .evsave.big{width:auto;padding:0 12px;flex:none}
+.zip .evrem{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#15803D;font-weight:600;white-space:nowrap}
+.zip .evhint{display:flex;align-items:center;gap:6px;margin:0}
+.zip .evhint a{color:var(--accent);font-weight:600}
+.zip .evempty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:36px 20px;text-align:center;background:var(--surface);border:1px dashed var(--line);border-radius:4px;color:var(--muted)}
+.zip .evempty b{color:var(--ink);font-size:15.5px}
+.zip .evempty .btn{margin-top:6px}
+.zip .evhosthead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.zip .evhosthead p{margin:0}
+.zip .evup{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid #FCD34D;background:#FFFBEB;border-radius:4px;flex-wrap:wrap}
+.zip .evup>svg{color:#B45309;flex:none}
+.zip .evup>div:nth-child(2){display:flex;flex-direction:column;gap:2px;flex:1 1 300px}
+.zip .evup span{font-size:14px;color:var(--muted)}
+.zip .evupb{display:flex;gap:8px;flex-wrap:wrap}
+/* Event page */
+.zip .evback{font-size:14px;color:var(--muted);font-weight:600;text-decoration:none;align-self:flex-start}
+.zip .evback:hover{color:var(--ink)}
+.zip .evdhero{background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.zip .evdart{line-height:0;height:170px;overflow:hidden}
+.zip .evdart svg{width:100%;height:100%;display:block}
+.zip .evdtop{display:flex;gap:16px;padding:16px 18px;align-items:flex-start}
+.zip .evdtop .evdate{width:62px;flex:none}
+.zip .evdtop h1{font:800 24px/1.25 var(--display);margin:2px 0 4px}
+.zip .evdgrid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px;align-items:start}
+.zip .evdmain,.zip .evdside{display:flex;flex-direction:column;gap:12px;min-width:0}
+.zip .evdside{position:sticky;top:76px}
+.zip .evbox{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.zip .evbox h2{display:flex;align-items:center;gap:7px;font:800 16px var(--display);margin:0}
+.zip .evbox h3{font:700 13px var(--body);text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin:6px 0 0}
+.zip .evbox p{margin:0;font-size:14.5px;line-height:1.55}
+.zip .evag{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14.5px}
+.zip .evfaces{display:flex;align-items:center;flex-wrap:wrap}
+.zip .evfaces .av{margin-right:-8px;border:2px solid var(--surface)}
+.zip .evfaces span{margin-left:16px;font-size:14px;font-weight:600}
+.zip .evhostbox{flex-direction:row;align-items:center;gap:12px;flex-wrap:wrap}
+.zip .evhostbox>div:nth-child(2){display:flex;flex-direction:column;flex:1 1 180px}
+.zip .evhostbox small{color:var(--muted)}
+.zip .evhb{display:flex;gap:8px}
+.zip .evact{gap:10px}
+.zip .evactbtns{display:flex;gap:8px;margin-top:4px}
+.zip .evactbtns .btn{flex:1;justify-content:center;min-height:38px}
+.zip .evactbtns .evsave{height:38px}
+.zip .btn.wide{width:100%;justify-content:center}
+.zip .evcal{position:relative}
+.zip .evcalm{display:flex;flex-direction:column;margin-top:6px;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.zip .evcalm a,.zip .evcalm button{display:block;padding:9px 12px;border:0;border-top:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 13.5px var(--body);text-align:left;text-decoration:none;cursor:pointer}
+.zip .evcalm>:first-child{border-top:0}
+.zip .evcalm a:hover,.zip .evcalm button:hover{background:var(--bg)}
+.zip .evtip{display:flex;gap:6px;align-items:flex-start;margin:0}
+.zip .evtip svg{flex:none;margin-top:2px}
+/* Host form */
+.zip .evfgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}
+.zip .evfbox{gap:6px}
+.zip .evfbox h2{margin-top:14px}
+.zip .evfbox h2:first-child{margin-top:0}
+.zip .evfl{font:600 13px var(--body);margin-top:6px}
+.zip .evfbox .field{border-radius:4px;min-height:36px}
+.zip .evfbox textarea.field{min-height:90px;resize:vertical}
+.zip .evf2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.zip .evf3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
+.zip .evf2>div,.zip .evf3>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.zip .evfbox .evseg{align-self:flex-start}
+.zip .evimgs{display:flex;gap:8px;flex-wrap:wrap}
+.zip .evimgs .imgopt{width:120px;height:62px;padding:0;border-radius:3px;overflow:hidden;line-height:0}
+.zip .evimgs .imgopt svg{width:100%;height:100%}
+.zip .evimgs .imgopt[aria-checked="true"]{outline:3px solid var(--ink);outline-offset:2px}
+.zip .evfbtns{display:flex;gap:8px;margin-top:16px}
+.zip .evrules ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.zip .evrules a{color:var(--accent);font-weight:600}
+@media (max-width:900px){.zip .evcard{grid-template-columns:52px minmax(0,1fr) auto}.zip .evthumb{display:none}.zip .evdgrid,.zip .evfgrid{grid-template-columns:1fr}.zip .evdside{position:static}.zip .evfeat{grid-template-columns:1fr}.zip .evfart{height:120px}}
+@media (max-width:560px){.zip .evrow1 .evseg{width:100%}.zip .evrow1 .evseg button{flex:1;padding:7px 4px;font-size:12.5px}.zip .evrow2 .evseg{width:100%}.zip .evrow2 .evseg button{flex:1}.zip .evcard{grid-template-columns:48px minmax(0,1fr);}.zip .evacts{grid-column:1/-1;flex-direction:row;justify-content:flex-start;align-items:center;flex-wrap:wrap}.zip .evrow2 .evseg,.zip .evsel,.zip .evsel select{max-width:none}.zip .evsel{flex:1 1 140px}.zip .evsel select{width:100%}.zip .evf3{grid-template-columns:1fr 1fr}.zip .evf3>div:first-child{grid-column:1/-1}.zip .evclear{margin-left:0}}
+.dark .zip .evtag.on{background:#172554;border-color:#1E3A8A;color:#BFDBFE}
+.dark .zip .evtag.ip{background:#431407;border-color:#7C2D12;color:#FED7AA}
+.dark .zip .evtag.free,.dark .zip .evchip.on{background:#052E16;border-color:#166534;color:#86EFAC}
+.dark .zip .evsave.on{background:#450A0A;color:#FCA5A5;border-color:#7F1D1D}
+.dark .zip .evup{background:#2A1F05;border-color:#78350F}
+.dark .zip .evfeat{background:#F1F2F5;color:#0F172A}
+.dark .zip .evfeat .btn.dark{background:#0F172A;color:#fff;border-color:#0F172A}
+.dark .zip .evfeat .btn.ghost{color:#0F172A;border-color:rgba(15,23,42,.35)}
+.dark .zip .evfeye{color:#B91C1C}
+.dark .zip .evsel select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")}
+
+.zip .evthumb>span,.zip .evfart>span,.zip .evdart>span,.zip .imgopt>span{height:100%}
+.zip .evrules ul{list-style:disc}.zip .evrules li{display:list-item}.zip .evrules a{text-decoration:underline}
+.zip .evag{list-style:decimal;padding-left:20px}.zip .evag li{display:list-item}

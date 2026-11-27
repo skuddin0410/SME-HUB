@@ -34,10 +34,10 @@ export const PLAN_FEATURES: Record<PlanKey, string[]> = {
     "=Everything in Plus, and:",
     "SME Advisor badge on your profile and posts",
     "A place on the Advisors page and in the feed slider",
-    "Members book free intro calls with you",
+    "Members book free consultations with you, on your own Zoom",
     "Post 4 offers a month",
     "Host 3 private groups, such as a client circle",
-    "Host events and sell courses",
+    "Host events on your own Zoom and sell courses",
     "One podcast interview and one advertorial a year",
     "AI leads: members asking about your specialty",
   ],
@@ -69,7 +69,9 @@ export const COMPARE: CompareRow[] = [
   ["AI leads for your specialty", 0, 0, 1],
   ["g", "Events and media"],
   ["Discounts on CanadianSME events", 0, 1, 1],
-  ["Host events and sell courses", 0, 0, 1],
+  ["Host events on Hub Events", 0, 0, 1],
+  ["Your own Zoom for events and free consultations", 0, 0, 1],
+  ["Sell courses", 0, 0, 1],
   ["Podcast interview and advertorial", 0, 0, "1 each a year"],
 ];
 
