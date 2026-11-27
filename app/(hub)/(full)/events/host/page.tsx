@@ -13,6 +13,7 @@ export const dynamic = "force-dynamic";
 export default async function Page() {
   const { supabase, userId } = await getViewer();
   const can = await canHostEvents(supabase, userId);
+  const apps = can ? ((await supabase.rpc("my_apps")).data as { zoom?: { email: string; type: number } | null } | null) : null;
   return (
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
@@ -27,7 +28,7 @@ export default async function Page() {
           {!userId ? (
             <div className="evempty"><b>Join to host events</b><Link className="btn sm dark" href="/auth/sign-up?next=/events/host">Join free</Link></div>
           ) : can ? (
-            <HostEventForm />
+            <HostEventForm zoomAcct={apps?.zoom ?? null} />
           ) : (
             <HostUpsell />
           )}

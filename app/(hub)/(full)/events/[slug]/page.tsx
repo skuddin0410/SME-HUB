@@ -4,7 +4,8 @@ import { cache } from "react";
 import { getViewer } from "@/lib/hub";
 import { loadEvents } from "@/lib/events-load";
 import { evCalLinks, evWhen, evWhere } from "@/lib/events";
-import { EventPage } from "@/components/zip/event-page";
+import { EventPage, type EvZoomView } from "@/components/zip/event-page";
+import { personalLink } from "@/lib/apps/event-zoom";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import "@/styles/u31-40.css";
@@ -39,6 +40,22 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   ]);
   const similar = (all?.events ?? []).filter((x) => x.id !== e.id && !x.flagship && (x.topic === e.topic || x.type === e.type)).slice(0, 3);
   const going = one.mine.going.includes(e.id);
+  // Update 36: an event on the host's own Zoom (read on its own, so the page still works before migration 0074)
+  let zoom: EvZoomView | null = null;
+  let zlink: string | null = null;
+  if (e.fmt === "online" && e.host_kind === "member") {
+    const { data: z, error: ze } = await supabase.from("hub_events").select("join_mode, zoom_wr, zoom_reg, zoom_rec").eq("id", e.id).maybeSingle();
+    const zr = z as { join_mode?: string; zoom_wr: boolean; zoom_reg: boolean; zoom_rec: boolean } | null;
+    if (!ze && zr?.join_mode === "zoom") {
+      const [pv, talk] = await Promise.all([
+        e.mine ? supabase.from("hub_event_private").select("zoom_meeting_id, zoom_status").eq("event_id", e.id).maybeSingle() : Promise.resolve({ data: null }),
+        userId && going ? supabase.from("event_talk").select("user_id").eq("event_id", e.id).eq("user_id", userId).maybeSingle() : Promise.resolve({ data: null }),
+      ]);
+      const p = pv.data as { zoom_meeting_id: string | null; zoom_status: "" | "ok" | "pending" } | null;
+      zoom = { host: e.mine ? { meetingId: p?.zoom_meeting_id ?? null, status: p?.zoom_status ?? "", wr: zr.zoom_wr, reg: zr.zoom_reg, rec: zr.zoom_rec } : null, talked: !!talk.data };
+      if (going && userId) zlink = await personalLink(e.id, userId);
+    }
+  }
   return (
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
@@ -49,9 +66,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           similar={similar}
           faces={((faces.data ?? []) as { full_name: string; avatar_url: string | null }[]).slice(0, Math.min(6, e.going)).map((f) => ({ name: f.full_name, avatar: f.avatar_url }))}
           cal={evCalLinks(e, site())}
-          link={(going || e.mine) && typeof link.data === "string" && link.data ? (link.data as string) : null}
+          link={zoom ? (going ? zlink : null) : (going || e.mine) && typeof link.data === "string" && link.data ? (link.data as string) : null}
           site={site()}
           hostCard={e.host_kind === "member" ? e.host : null}
+          zoom={zoom}
         />
       </div>
     </div>

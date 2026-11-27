@@ -1,3 +1,4 @@
+import { afterRegistered } from "@/lib/apps/event-zoom";
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { serviceClient } from "@/lib/supabase/service";
@@ -38,6 +39,8 @@ export async function POST(req: Request) {
       if (!ok) return NextResponse.json({ received: true, ignored: true });
       const pay = (typeof s.payment_intent === "string" && s.payment_intent) || s.id;
       const { error } = await db.rpc("register_paid_event", { p_member: m.user_id, p_event: m.event_id, p_payment: pay, p_cents: s.amount_total ?? 0 });
+      // Update 36: their own Zoom link, the ticket email and the host's email (each sent once, so a retried webhook is safe)
+      if (!error) await afterRegistered(m.event_id!, m.user_id!).catch((e) => console.error("event emails:", (e as Error).message));
       return error ? NextResponse.json({ error: "Could not register" }, { status: 500 }) : NextResponse.json({ received: true, event: true });
     }
     if (s.metadata?.kind === "course") {

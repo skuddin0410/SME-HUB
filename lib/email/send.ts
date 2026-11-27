@@ -9,6 +9,8 @@ export type SendInput = Rendered & {
   idempotencyKey?: string;
   /** Overrides the usual reply address for this one message. */
   replyTo?: string;
+  /** Files to attach, such as a calendar invite (.ics). */
+  attachments?: { filename: string; content: string; contentType?: string }[];
 };
 
 export type SendResult = { id: string } | { skipped: true };
@@ -46,6 +48,9 @@ export async function sendEmail(input: SendInput, fetchImpl: typeof fetch = fetc
     subject: input.subject,
     html: input.html,
     text: input.text,
+    ...(input.attachments?.length
+      ? { attachments: input.attachments.map((a) => ({ filename: a.filename, content: Buffer.from(a.content, "utf8").toString("base64"), ...(a.contentType ? { content_type: a.contentType } : {}) })) }
+      : {}),
     // a message can name its own reply address (the contact inbox replies straight to the sender)
     ...(input.replyTo ? { reply_to: input.replyTo } : replyTo() ? { reply_to: replyTo() } : {}),
   });

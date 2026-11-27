@@ -1,0 +1,10 @@
+{{count}} new registrations
+
+{{#each items}}- {{this.name}}: {{this.event}} ({{this.going}} registered)
+{{/each}}
+See your events: {{events_url}}
+
+--
+You’re getting this because someone registered for an event you host on SME Hub. Choose which emails you get ({{preferences_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

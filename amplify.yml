@@ -12,7 +12,7 @@ frontend:
         # Pass the Amplify environment variables to the Next.js server at runtime.
         # Values live only in Amplify (App settings > Environment variables), never in the repo.
         # Stripe, the service key, AI and the course settings (Update 4) are server-only and were not passed before.
-        - env | grep -E '^(NEXT_PUBLIC_|RESEND_API_KEY=|SEND_EMAIL_HOOK_SECRET=|EMAIL_DOMAIN=|STRIPE_|SUPABASE_SERVICE_ROLE_KEY=|ANTHROPIC_|HUB_TEAM_EMAIL=|GST_NO=|CRON_SECRET=)' >> .env.production || true
+        - env | grep -E '^(NEXT_PUBLIC_|RESEND_API_KEY=|SEND_EMAIL_HOOK_SECRET=|EMAIL_DOMAIN=|STRIPE_|SUPABASE_SERVICE_ROLE_KEY=|ANTHROPIC_|HUB_TEAM_EMAIL=|GST_NO=|CRON_SECRET=|ZOOM_CLIENT_ID=|ZOOM_CLIENT_SECRET=|ZOOM_WEBHOOK_SECRET=|GOOGLE_CAL_CLIENT_ID=|GOOGLE_CAL_CLIENT_SECRET=|TOKEN_ENC_KEY=)' >> .env.production || true
         - npm run build
   artifacts:
     baseDirectory: .next

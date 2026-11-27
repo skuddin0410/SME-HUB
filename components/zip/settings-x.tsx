@@ -38,7 +38,7 @@ export type SxData = {
   profilePath: string;
 };
 
-type SecId = "account" | "privacy" | "contact" | "notif" | "card" | "data" | "close";
+type SecId = "account" | "privacy" | "contact" | "notif" | "card" | "data" | "close" | "apps" | "consult";
 
 function Sw({ on, onClick, title, sub, disabled }: { on: boolean; onClick: () => void; title: string; sub?: string; disabled?: boolean }) {
   return (
@@ -57,7 +57,7 @@ function Seg<T extends string>({ opts, cur, label, onPick }: { opts: [T, string]
     </div>
   );
 }
-function Row({ title, sub, children }: { title: string; sub?: React.ReactNode; children: React.ReactNode }) {
+function Row({ title, sub, children }: { title: React.ReactNode; sub?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="sxrow">
       <span className="sxl"><b>{title}</b>{sub && <small>{sub}</small>}</span>
@@ -85,10 +85,11 @@ const ago = (d: string) => {
   return days === 1 ? "Last active yesterday" : `Last active ${days} days ago`;
 };
 
-export function SettingsX({ data, initial }: { data: SxData; initial: string }) {
+/** `extra`: a section that lives on its own page (Update 36: Connected apps, Free consultations), in the same frame. */
+export function SettingsX({ data, initial, extra }: { data: SxData; initial: string; extra?: { id: "apps" | "consult"; node: React.ReactNode } }) {
   const router = useRouter();
   const ready = data.settings !== null;
-  const [sec, setSec] = useState<SecId>((["account", "privacy", "contact", "notif", "card", "data", "close"].includes(initial) ? initial : "account") as SecId);
+  const [sec, setSec] = useState<SecId>(extra ? extra.id : ((["account", "privacy", "contact", "notif", "card", "data", "close"].includes(initial) ? initial : "account") as SecId));
   const [s, setS] = useState<MemberSettings>(data.settings ?? DEFAULT_SETTINGS);
   const [vis, setVis] = useState<Record<string, string>>(data.vis);
   const [twoStep, setTwoStep] = useState(data.twoStep);
@@ -104,15 +105,17 @@ export function SettingsX({ data, initial }: { data: SxData; initial: string }) 
 
   // keep the address bar in step, so a section can be linked to and the Back button works
   useEffect(() => {
+    if (extra) return;
     const u = new URL(window.location.href);
     if (u.searchParams.get("s") !== sec) {
       u.searchParams.set("s", sec);
       window.history.replaceState(null, "", u.toString());
     }
-  }, [sec]);
+  }, [sec, extra]);
 
   const go = (id: string) => {
     if (id === "billing") return router.push("/billing");
+    if (extra && id !== extra.id && id !== "apps" && id !== "consult") return router.push(`/settings?s=${id}`);
     if (id === "apps" || id === "consult") return router.push(`/settings/${id === "apps" ? "apps" : "consultations"}`);
     setSec(id as SecId);
     setEditEmail(false);
@@ -481,7 +484,7 @@ export function SettingsX({ data, initial }: { data: SxData; initial: string }) 
     </Sec>
   );
 
-  const body: Record<SecId, React.ReactNode> = { account, privacy, contact: contactSec, notif, card: cardSec, data: dataSec, close: closeSec };
+  const body: Record<SecId, React.ReactNode> = { account, privacy, contact: contactSec, notif, card: cardSec, data: dataSec, close: closeSec, apps: extra?.node, consult: extra?.node };
 
   return (
     <div className="sxpage">
@@ -528,3 +531,6 @@ export function SxNav({ sections, cur, onGo }: { sections: [string, string, stri
     </nav>
   );
 }
+
+/** The settings building blocks, for the sections that live on their own pages (Update 36). */
+export { Sw as SxSw, Seg as SxSeg, Row as SxRow, Sec as SxSec };

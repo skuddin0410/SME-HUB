@@ -183,7 +183,9 @@ export default async function MemberPage({
   // SMB Advisors get "Book a free call" in the header (handoff: profile header)
   // "active" comes with the advisor booking update (migration 0063); before it, any advisor profile counts
   const advQ = await supabase.from("advisor_profiles").select("user_id").eq("user_id", id).eq("active", true).maybeSingle();
-  const isAdvisor = !isMe && !!(advQ.error ? (await supabase.from("advisor_profiles").select("user_id").eq("user_id", id).maybeSingle()).data : advQ.data);
+  // Update 36: SME Advisors (the Advisor plan) are booked through the free consultation calendar
+  const isAdvisor = !isMe && (!!(advQ.error ? (await supabase.from("advisor_profiles").select("user_id").eq("user_id", id).maybeSingle()).data : advQ.data)
+    || (member as { plan?: string | null }).plan === "advisor" || (member as { profile_type?: string | null }).profile_type === "advisor");
   const active = activeLabel((activeRow.data as string | null) ?? null);
   const type = TYPES[member.profile_type] ?? TYPES.owner;
   const planLabel = member.member_type === "owner" ? null : MEMBER_TYPES[member.member_type];

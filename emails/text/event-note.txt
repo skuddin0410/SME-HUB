@@ -1,0 +1,9 @@
+{{note}}
+
+{{host_name}} sent this to everyone registered for {{event_name}}.
+Join on Zoom: {{join_url}}
+
+--
+You’re getting this because you registered for an event on SME Hub. Choose which emails you get ({{preferences_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

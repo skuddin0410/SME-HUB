@@ -106,5 +106,291 @@
   "lists": [],
   "list_fields": [],
   "size_kb": 9
+ },
+ {
+  "id": "consult-booked",
+  "category": "Groups, events and advisors",
+  "name": "Free consultation booked (member)",
+  "trigger": "When a member books a free consultation with an SME Advisor (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "Booked: free call with {{advisor_name}}, {{call_when}}",
+  "preheader": "{{call_when}} on Zoom. Your link and a calendar invite are inside.",
+  "type": "Account (always sent)",
+  "preview_subject": "Booked: free call with {{advisor_name}}, {{call_when}}",
+  "preview_preheader": "{{call_when}} on Zoom. Your link and a calendar invite are inside.",
+  "variables": [
+   "advisor_first",
+   "advisor_name",
+   "call_length",
+   "call_note",
+   "call_span",
+   "call_when",
+   "join_url",
+   "manage_url",
+   "message_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "consult-new-booking",
+  "category": "Groups, events and advisors",
+  "name": "New free consultation (Advisor)",
+  "trigger": "When a member books a free consultation (sent to the SME Advisor, Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "New booking: {{member_name}}, {{call_when}}",
+  "preheader": "{{member_name}} booked a free {{call_length}}-minute call on your Zoom.",
+  "type": "Account (always sent)",
+  "preview_subject": "New booking: {{member_name}}, {{call_when}}",
+  "preview_preheader": "{{member_name}} booked a free {{call_length}}-minute call on your Zoom.",
+  "variables": [
+   "call_length",
+   "call_note",
+   "call_span",
+   "call_when",
+   "manage_url",
+   "meeting_id",
+   "member_biz",
+   "member_first",
+   "member_name",
+   "member_role",
+   "member_web",
+   "profile_url",
+   "start_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "consult-changed",
+  "category": "Groups, events and advisors",
+  "name": "Free consultation moved or cancelled",
+  "trigger": "When either person moves or cancels a free consultation (sent to both, Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{headline}}",
+  "preheader": "{{summary}}",
+  "type": "Account (always sent)",
+  "preview_subject": "{{headline}}",
+  "preview_preheader": "{{summary}}",
+  "variables": [
+   "button_label",
+   "call_span",
+   "headline",
+   "ics_note",
+   "join_url",
+   "other_name",
+   "pick_url",
+   "summary"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "consult-reminder",
+  "category": "Groups, events and advisors",
+  "name": "Free consultation reminder",
+  "trigger": "A day and an hour before a free consultation (both people, Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{when_rel}}: free call with {{other_name}}",
+  "preheader": "{{call_when}} on Zoom.",
+  "type": "Account (always sent)",
+  "preview_subject": "{{when_rel}}: free call with {{other_name}}",
+  "preview_preheader": "{{call_when}} on Zoom.",
+  "variables": [
+   "button_label",
+   "call_note",
+   "call_span",
+   "call_when",
+   "join_url",
+   "other_name",
+   "when_rel",
+   "when_rel_lower"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "event-ticket",
+  "category": "Groups, events and advisors",
+  "name": "Event ticket with a personal Zoom link",
+  "trigger": "When a member registers for an event that runs on the host’s Zoom (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "Your ticket: {{event_name}}",
+  "preheader": "{{event_when}}. Your personal Zoom link is inside.",
+  "type": "Account (always sent)",
+  "preview_subject": "Your ticket: {{event_name}}",
+  "preview_preheader": "{{event_when}}. Your personal Zoom link is inside.",
+  "variables": [
+   "event_host",
+   "event_name",
+   "event_url",
+   "event_when",
+   "join_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "event-new-registration",
+  "category": "Groups, events and advisors",
+  "name": "New registration (host)",
+  "trigger": "Each time a member registers for an event an SME Advisor hosts, when the host chose \"Every time\" (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{member_name}} registered for {{event_name}}",
+  "preheader": "{{going}} people are registered for {{event_when}}.",
+  "type": "Account (always sent)",
+  "preview_subject": "{{member_name}} registered for {{event_name}}",
+  "preview_preheader": "{{going}} people are registered for {{event_when}}.",
+  "variables": [
+   "event_name",
+   "event_url",
+   "event_when",
+   "going",
+   "member_name",
+   "member_role",
+   "profile_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "event-host-summary",
+  "category": "Groups, events and advisors",
+  "name": "Daily registrations summary (host)",
+  "trigger": "Once a day, when the host chose \"Daily summary\" and there were new registrations (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{count}} new registrations for your events",
+  "preheader": "Who registered yesterday for the events you host.",
+  "type": "Account (always sent)",
+  "preview_subject": "{{count}} new registrations for your events",
+  "preview_preheader": "Who registered yesterday for the events you host.",
+  "variables": [
+   "count",
+   "events_url"
+  ],
+  "lists": [
+   "items"
+  ],
+  "list_fields": [
+   "name",
+   "event",
+   "going"
+  ],
+  "size_kb": 9
+ },
+ {
+  "id": "event-note",
+  "category": "Groups, events and advisors",
+  "name": "Note from the host",
+  "trigger": "When the host sends a quick note from the green room (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{host_name}}: {{note}}",
+  "preheader": "{{event_name}}",
+  "type": "Account (always sent)",
+  "preview_subject": "{{host_name}}: {{note}}",
+  "preview_preheader": "{{event_name}}",
+  "variables": [
+   "event_name",
+   "host_name",
+   "join_url",
+   "note"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "event-thanks",
+  "category": "Groups, events and advisors",
+  "name": "Thank-you note after an event",
+  "trigger": "When the host sends the thank-you from the wrap-up (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "Thank you for coming: {{event_name}}",
+  "preheader": "A note from {{host_name}}.",
+  "type": "Account (always sent)",
+  "preview_subject": "Thank you for coming: {{event_name}}",
+  "preview_preheader": "A note from {{host_name}}.",
+  "variables": [
+   "event_name",
+   "host_first",
+   "host_name",
+   "message_url",
+   "profile_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "zoom-disconnected",
+  "category": "Groups, events and advisors",
+  "name": "Zoom disconnected (Advisor)",
+  "trigger": "When an SME Advisor disconnects Zoom, or removes SME Hub in Zoom (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "Zoom is disconnected from SME Hub",
+  "preheader": "Your upcoming Zoom meetings stay in your Zoom. Here is what needs a new link.",
+  "type": "Account (always sent)",
+  "preview_subject": "Zoom is disconnected from SME Hub",
+  "preview_preheader": "Your upcoming Zoom meetings stay in your Zoom. Here is what needs a new link.",
+  "variables": [
+   "apps_url"
+  ],
+  "lists": [
+   "items"
+  ],
+  "list_fields": [
+   "title",
+   "when"
+  ],
+  "size_kb": 9
+ },
+ {
+  "id": "event-reminder-soon",
+  "category": "Groups, events and advisors",
+  "name": "Event reminder (a week or an hour before)",
+  "trigger": "A week or an hour before an event the member saved or registered for, as they chose (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{when_rel}}: {{event_name}}",
+  "preheader": "{{event_when}}.",
+  "type": "Notification (member can turn off)",
+  "preview_subject": "{{when_rel}}: {{event_name}}",
+  "preview_preheader": "{{event_when}}.",
+  "variables": [
+   "button_label",
+   "event_host",
+   "event_name",
+   "event_when",
+   "event_where",
+   "join_url",
+   "when_rel"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "event-link-pending",
+  "category": "Groups, events and advisors",
+  "name": "Zoom link pending (host)",
+  "trigger": "When Zoom could not create the meeting for an event an SME Advisor published (Update 36)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "Your event is live, but the Zoom meeting isn’t ready",
+  "preheader": "{{event_name}}: try again from the event page.",
+  "type": "Account (always sent)",
+  "preview_subject": "Your event is live, but the Zoom meeting isn’t ready",
+  "preview_preheader": "{{event_name}}: try again from the event page.",
+  "variables": [
+   "event_name",
+   "event_url"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
  }
 ]

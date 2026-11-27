@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 /** Update 30: My leads. Everyone who contacted the member through SME Hub (never an uploaded list). */
 export type LeadStatus = "new" | "quoted" | "won" | "lost";
-export type LeadSource = "message" | "page" | "quote" | "request";
+export type LeadSource = "message" | "page" | "quote" | "request" | "consult" | "event";
 export type Lead = {
   id: string;
   source: LeadSource;

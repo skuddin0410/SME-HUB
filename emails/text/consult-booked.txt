@@ -1,0 +1,17 @@
+Your free consultation is booked
+
+{{advisor_name}}, SME Advisor · {{call_length}} min on Zoom
+When: {{call_span}}
+Your note: {{call_note}}
+
+Join the Zoom meeting: {{join_url}}
+The calendar invite (.ics) is attached.
+Reschedule or cancel: {{manage_url}}
+Message {{advisor_first}}: {{message_url}}
+
+We remind you a day and an hour before.
+
+--
+You’re getting this because you booked a free consultation on SME Hub. Choose which emails you get ({{preferences_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

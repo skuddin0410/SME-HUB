@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Ic } from "@/components/zip/ic";
@@ -8,6 +8,9 @@ import { toast } from "@/components/toast";
 import { Scene } from "@/components/zip/events-x";
 import { hostEvent, type HostForm } from "@/app/(hub)/event-actions";
 import { EV_IMGS, EV_PROV, EV_TOPICS, EV_TYPES, EV_TZ } from "@/lib/events";
+import { ZoomConnect, ZoomMark } from "@/components/zip/zoom-x";
+
+const DRAFT = "smehub.hostDraft.v1";
 
 /** Update 37: Host an event, for SME Advisors only. Everyone else sees what hosting needs. */
 export function HostUpsell() {
@@ -26,10 +29,67 @@ export function HostUpsell() {
   );
 }
 
-export function HostEventForm({ zoom }: { zoom?: React.ReactNode }) {
+/** `zoomAcct`: the Advisor's connected Zoom (Update 36), or null when it isn't connected yet. */
+export function HostEventForm({ zoomAcct }: { zoomAcct: { email: string; type: number } | null }) {
   const router = useRouter();
-  const [f, setF] = useState<HostForm>({ title: "", type: "Webinar", topic: "Money and tax", desc: "", date: "", start: "12:00", end: "13:00", tz: "ET", fmt: "online", link: "", venue: "", city: "", prov: "ON", paid: false, price: "", cap: "", img: "laptop" });
+  const [f, setF] = useState<HostForm>({ title: "", type: "Webinar", topic: "Money and tax", desc: "", date: "", start: "12:00", end: "13:00", tz: "ET", fmt: "online", link: "", venue: "", city: "", prov: "ON", paid: false, price: "", cap: "", img: "laptop", join: "zoom", wr: true, reg: true, rec: false });
   const [busy, start] = useTransition();
+  const [connect, setConnect] = useState(false);
+  // connecting Zoom leaves the page for Zoom's sign-in: keep what was typed, and put it back on return
+  useEffect(() => {
+    try {
+      const d = sessionStorage.getItem(DRAFT);
+      if (d) { setF((x) => ({ ...x, ...(JSON.parse(d) as Partial<HostForm>) })); sessionStorage.removeItem(DRAFT); }
+    } catch { /* nothing saved */ }
+    const u = new URL(window.location.href);
+    const z = u.searchParams.get("zoom");
+    if (z) {
+      toast(z === "connected" ? `Zoom connected${zoomAcct ? ` as ${zoomAcct.email}` : ""}` : z === "cancelled" ? "Zoom wasn’t connected" : "Zoom didn’t connect. Please try again.");
+      u.searchParams.delete("zoom");
+      window.history.replaceState(null, "", u.toString());
+    }
+  }, [zoomAcct]);
+  const openConnect = () => {
+    try { sessionStorage.setItem(DRAFT, JSON.stringify(f)); } catch { /* fine */ }
+    setConnect(true);
+  };
+  const dur = (() => { const [a, b] = [f.start.split(":").map(Number), f.end.split(":").map(Number)]; return b[0] * 60 + b[1] - (a[0] * 60 + a[1]); })();
+  const howJoin = () => (
+    <>
+      <p className="evfl">How will people join?</p>
+      <div className="zmch" role="radiogroup" aria-label="How will people join?">
+        <button type="button" role="radio" aria-checked={f.join === "zoom"} className={`zmopt${f.join === "zoom" ? " on" : ""}`} onClick={() => setF({ ...f, join: "zoom" })}>
+          <em>Easiest</em>
+          <b><ZoomMark />My Zoom account</b>
+          <small>{zoomAcct ? `Connected as ${zoomAcct.email}. We create the meeting for you.` : "Connect once. We create the meeting for you."}</small>
+        </button>
+        <button type="button" role="radio" aria-checked={f.join === "link"} className={`zmopt${f.join === "link" ? " on" : ""}`} onClick={() => setF({ ...f, join: "link" })}>
+          <b><Ic n="link" s={16} />Paste a link</b>
+          <small>Teams, Google Meet or any meeting link. One link for everyone.</small>
+        </button>
+      </div>
+      {f.join === "zoom" ? (
+        !zoomAcct ? (
+          <div className="zmneed"><ZoomMark /><span><b>Connect your Zoom first</b><small>One time only. After that, Zoom is ready for every event and free call.</small></span><button type="button" className="btn sm zmblue" onClick={openConnect}>Connect my Zoom</button></div>
+        ) : (
+          <>
+            <div className="zmsets">
+              {([["wr", "Waiting room"], ["reg", "Registered people only"], ["rec", "Record to my Zoom cloud"]] as const).map(([k, l]) => (
+                <button key={k} type="button" className={`zmset${f[k] ? " on" : ""}`} aria-pressed={!!f[k]} onClick={() => setF({ ...f, [k]: !f[k] })}><i />{l}</button>
+              ))}
+            </div>
+            <div className="zmprev">
+              <span><small>What each attendee gets</small><b>{f.reg ? "Their own Join button 15 minutes before the start, plus reminders a day and an hour before." : "A Join button 15 minutes before the start, plus reminders a day and an hour before."}</b></span>
+              <span className="zmtick"><ZoomMark />Join on Zoom</span>
+            </div>
+            {zoomAcct.type === 1 && dur > 40 && (
+              <div className="zmwarn">⚠️<span><b>Heads-up:</b> free Zoom accounts end meetings at 40 minutes. This event is {dur} minutes, so check your Zoom plan.</span></div>
+            )}
+          </>
+        )
+      ) : input("link", "Meeting link (shown only to people who register)", "url", "https://")}
+    </>
+  );
   const set = (k: keyof HostForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
   const input = (k: keyof HostForm, label: string, type = "text", ph = "", extra: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
     <>
@@ -45,13 +105,15 @@ export function HostEventForm({ zoom }: { zoom?: React.ReactNode }) {
       </select>
     </>
   );
-  const publish = () =>
+  const publish = () => {
+    if (f.fmt === "online" && f.join === "zoom" && !zoomAcct) return toast("Connect your Zoom first, or choose Paste a link");
     start(async () => {
       const r = await hostEvent(f).catch(() => ({ ok: false as const, error: "Could not publish. Try again." }));
       if (!r.ok) return toast(r.error);
       toast("Your event is live on Hub Events");
       router.push(`/events/${r.slug}`);
     });
+  };
 
   return (
     <div className="evfgrid">
@@ -78,7 +140,7 @@ export function HostEventForm({ zoom }: { zoom?: React.ReactNode }) {
           ))}
         </div>
         {f.fmt === "online" ? (
-          zoom ?? input("link", "Meeting link (shown only to people who register)", "url", "https://")
+          howJoin()
         ) : (
           <>
             {input("venue", "Venue", "text", "Name of the place")}
@@ -121,9 +183,10 @@ export function HostEventForm({ zoom }: { zoom?: React.ReactNode }) {
           <li>Events are for small business owners: teach, share or bring people together.</li>
           <li>Sales pitches belong in offers, not events.</li>
           <li>Members can report an event. The Hub team removes events that break the <Link href="/policies/community-guidelines">community guidelines</Link>.</li>
-          <li>You can cancel at any time. Everyone registered is told.</li>
+          <li>You can cancel at any time. Everyone registered gets an email.</li>
         </ul>
       </aside>
+      {connect && <ZoomConnect next="/events/host" onClose={() => setConnect(false)} />}
     </div>
   );
 }

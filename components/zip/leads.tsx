@@ -14,6 +14,8 @@ const SRC: Record<Lead["source"], [string, string]> = {
   page: ["Business page", "store"],
   quote: ["Business page", "store"],
   request: ["Customer request", "home"],
+  consult: ["Free consultation", "cal"],
+  event: ["Event", "ticket"],
 };
 const ST: Record<LeadStatus, [string, string]> = { new: ["New", "due"], quoted: ["Quoted", "q"], won: ["Won", "paid"], lost: ["Lost", "lost"] };
 const FILTERS = ["all", "new", "quoted", "won", "lost"] as const;

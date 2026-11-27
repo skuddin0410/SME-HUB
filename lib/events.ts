@@ -94,8 +94,9 @@ export function evHostOf(e: Pick<Ev, "host_kind" | "host_id">, m?: { full_name?:
 }
 
 // ---------- calendars ----------
-const z = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-const icsText = (t: string) => String(t).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+export const icsZ = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+const z = icsZ;
+export const icsText = (t: string) => String(t).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
 export function evLocation(e: Ev) {
   return e.fmt === "online" ? "Online (link on SME Hub)" : `${e.venue ? `${e.venue}, ` : ""}${evWhere(e)}`;
 }

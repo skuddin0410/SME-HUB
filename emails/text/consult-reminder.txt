@@ -1,0 +1,12 @@
+Your free call is {{when_rel_lower}}
+
+With: {{other_name}}
+When: {{call_span}}
+Topic: {{call_note}}
+
+{{button_label}}: {{join_url}}
+
+--
+You’re getting this because you have a free consultation booked on SME Hub. Choose which emails you get ({{preferences_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada
