@@ -6,6 +6,7 @@ import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { TeamHead, TeamWrap, teamViewer } from "@/components/zip/team";
 import { deleteReportCategory, moderate, saveModerationSettings, saveReportCategory } from "@/app/(hub)/team-actions";
+import { HeldPanel, LinksPanel, RulesPanel, SAFETY_TABS, SafetyKpis, SignupsPanel, safetyOverview } from "@/components/safety/team";
 
 export const metadata = { title: "Moderation", robots: { index: false } };
 
@@ -20,11 +21,13 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
   const sp = await searchParams;
   const { supabase, gate } = await teamViewer("Moderation");
   if (gate) return gate;
-  const tab = ["content", "stories", "members", "log", "settings"].includes(first(sp.tab)) ? first(sp.tab) : "content";
+  const tab = ["content", "stories", "members", "log", "settings", "held", "signups", "links", "safety"].includes(first(sp.tab)) ? first(sp.tab) : "content";
   const lf = ["auto", "undoable"].includes(first(sp.lf)) ? first(sp.lf) : "";
   const cf = first(sp.cf);
   const mf = first(sp.mf);
 
+  // Update 41: the overview row and the safety tabs
+  const overview = await safetyOverview(supabase);
   const [repsRes, blocksRes, settingsRes, catsRes] = await Promise.all([
     supabase.from("reports").select("id, reason, note, created_at, post_id, profile_id, course_review_id, reporter:profiles!reports_reporter_id_fkey(full_name)").eq("status", "open").order("created_at", { ascending: false }).limit(1000),
     supabase.from("blocks").select("blocked_id").limit(5000),
@@ -90,9 +93,20 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
   return (
     <TeamWrap>
       <TeamHead title="Moderation" text="Members block and report. The Hub hides and suspends at the limits you set. You review everything here and can reverse any of it." />
+      <SafetyKpis o={overview} reports={totalContent} />
       <nav className="autabs" aria-label="Moderation sections">
         {tabs.map(([k, l]) => <Link key={k} className="chip" href={`/moderation?tab=${k}`} aria-current={tab === k ? "true" : undefined}>{l}</Link>)}
+        {SAFETY_TABS.map(([k, l, icon]) => (
+          <Link key={k} className="chip sfchip" href={`/moderation?tab=${k}`} aria-current={tab === k ? "true" : undefined}>
+            <Ic n={icon} s={13} />{l}{k === "held" && overview?.held ? ` (${overview.held})` : ""}
+          </Link>
+        ))}
       </nav>
+
+      {tab === "held" && <HeldPanel supabase={supabase} />}
+      {tab === "signups" && <SignupsPanel supabase={supabase} o={overview} />}
+      {tab === "links" && <LinksPanel supabase={supabase} />}
+      {tab === "safety" && <RulesPanel supabase={supabase} />}
 
       {tab === "stories" && <ModStoriesSection />}
       {tab === "log" && <ModLog filter={lf} />}

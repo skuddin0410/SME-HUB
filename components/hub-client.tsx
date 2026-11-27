@@ -1,4 +1,7 @@
 "use client";
+
+import { toast } from "@/components/toast";
+import { parseSafety, safetyPlain, showSafety } from "@/lib/safety/client";
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
@@ -379,6 +382,13 @@ export function Composer({
     return () => window.removeEventListener("smbhub:compose", on);
   }, []);
 
+  // Update 41: a welcome-week limit opens its window; a held post says it's being checked
+  useEffect(() => {
+    if (state.error) showSafety(state.error);
+  }, [state]);
+  useEffect(() => {
+    if (state.ok && state.held) toast("Thanks. Your post is being checked by the Hub team and will appear once it’s approved.");
+  }, [state.ok, state.held]);
   useEffect(() => {
     if (state.ok) {
       formRef.current?.reset();
@@ -469,7 +479,7 @@ export function Composer({
                 </button>
               ))}
             </div>
-            {state.error && <p className="small" role="alert" style={{ color: "var(--err, #B91C1C)" }}>{state.error}</p>}
+            {state.error && !parseSafety(state.error)?.text && <p className="small" role="alert" style={{ color: "var(--err, #B91C1C)" }}>{safetyPlain(state.error) ?? state.error}</p>}
             <div className="row" style={{ flexWrap: "wrap" }}>
               <button type="button" className="btn sm ghost" onClick={() => fileRef.current?.click()}>
                 {photo.busy ? "Uploading…" : photo.preview ? "Change photo" : "Add photo"}
@@ -590,7 +600,7 @@ export function Composer({
                 </div>
               )}
               <ComposerOptions key={state.ok ?? 0} onBusy={setOptionsBusy} rules={rules} />
-              {state.error && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{state.error}</p>}
+              {state.error && !parseSafety(state.error)?.text && <p className="rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700">{safetyPlain(state.error) ?? state.error}</p>}
 
               <div className="flex items-center justify-between pt-1">
                 <button type="button" onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-600 hover:bg-[#F5F5F6] transition-colors">
@@ -1138,7 +1148,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           className="field font-normal"
         />
       </label>
-      {state.error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.error}</p>}
+      {state.error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{safetyPlain(state.error) ?? state.error}</p>}
       <SubmitButton className="self-start" disabled={photo.busy}>
         Save profile
       </SubmitButton>

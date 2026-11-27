@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthFrame } from "@/components/sa/frame";
+import { humanCheckOn } from "@/lib/safety/server";
 import { LoginForm } from "@/components/sa/login-form";
 import { safeNext } from "@/lib/auth/safe-next";
 import { getViewer } from "@/lib/hub";
@@ -14,7 +15,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ n
   if ((await getViewer()).userId) redirect(to);
   return (
     <AuthFrame map enter right={<><span>New to SME Hub?</span> <Link href="/auth/sign-up">Join free</Link></>}>
-      <LoginForm next={to} notice={notice} />
+      <LoginForm next={to} notice={notice} human={await humanCheckOn()} />
     </AuthFrame>
   );
 }

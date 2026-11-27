@@ -5,9 +5,12 @@ import { useState, useTransition } from "react";
 import { Ic } from "@/components/zip/ic";
 import { sendContact } from "@/app/contact-actions";
 import { CTOPICS } from "@/lib/contact";
+import { HumanCheck } from "@/components/safety/human-check";
 
 /** Update 24: the Contact us page, as in the zip (form, who to contact, phone and office, safety note). */
-export function ContactPage({ name: myName }: { name: string }) {
+export function ContactPage({ name: myName, human = false }: { name: string; human?: boolean }) {
+  const [token, setToken] = useState("");
+  const [round, setRound] = useState(0);
   const [f, setF] = useState({ name: myName, email: "", business: "", topic: "", message: "", website: "" });
   const [err, setErr] = useState("");
   const [sent, setSent] = useState("");
@@ -19,7 +22,8 @@ export function ContactPage({ name: myName }: { name: string }) {
     if (local) return setErr(local);
     setErr("");
     start(async () => {
-      const r = await sendContact({ ...f, name, email, message });
+      const r = await sendContact({ ...f, name, email, message, human: token });
+      setRound((x) => x + 1);
       if (r.error) return setErr(r.error);
       setSent(email);
       setF((x) => ({ ...x, message: "" }));
@@ -66,6 +70,7 @@ export function ContactPage({ name: myName }: { name: string }) {
                 <label><span>Your message</span><textarea className="field" rows={6} placeholder="How can we help?" value={f.message} onChange={set("message")} /></label>
                 {/* hidden from people; only bots fill it in */}
                 <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" value={f.website} onChange={set("website")} style={{ position: "absolute", left: -9999, width: 1, height: 1, opacity: 0 }} />
+                <HumanCheck on={human} round={round} onToken={setToken} />
                 {err && <p className="xcterr" role="alert">{err}</p>}
                 <div className="xctsend"><button type="submit" className="btn" disabled={busy}><Ic n="send" s={16} />Send message</button><span className="small muted">We reply within one business day.</span></div>
               </form>

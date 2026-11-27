@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthFrame } from "@/components/sa/frame";
+import { humanCheckOn } from "@/lib/safety/server";
 import { SignUpForm } from "@/components/sa/signup-form";
 import { loadProof } from "@/lib/auth/proof";
 import { getViewer } from "@/lib/hub";
@@ -13,7 +14,7 @@ export default async function Page() {
   const proof = await loadProof();
   return (
     <AuthFrame enter right={<><span>Already a member?</span> <Link href="/auth/login">Log in</Link></>}>
-      <SignUpForm proof={proof} />
+      <SignUpForm proof={proof} human={await humanCheckOn()} />
     </AuthFrame>
   );
 }

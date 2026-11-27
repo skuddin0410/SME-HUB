@@ -12,7 +12,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
   const { with: withParam, text = "" } = await searchParams;
   const { supabase, userId, profile } = await requireUser();
 
-  const [recent, conns] = await Promise.all([
+  const [recent, conns, safety] = await Promise.all([
     supabase
       .from("messages")
       .select(
@@ -26,6 +26,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
         `requester_id, requester:profiles!connections_requester_id_fkey(${AUTHOR_FIELDS}), addressee:profiles!connections_addressee_id_fkey(${AUTHOR_FIELDS})`,
       )
       .eq("status", "accepted"),
+    supabase.from("safety_config").select("words").eq("id", 1).maybeSingle(),
   ]);
   const rows = (recent.data ?? []) as unknown as Row[];
 
@@ -56,7 +57,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
           <h1>Messages</h1>
           <p className="muted">Private conversations with members you are connected to.</p>
         </div>
-        <MessagingApp me={me} people={[...people.values()]} initialMessages={messages} startWith={startWith} prefill={text} />
+        <MessagingApp me={me} people={[...people.values()]} initialMessages={messages} startWith={startWith} prefill={text} scamWords={((safety.data as { words?: string[] } | null)?.words) ?? []} />
       </div>
     </div>
   );

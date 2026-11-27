@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { WelcomeWeekCard } from "@/components/safety/welcome-card";
 import { TrendingTags } from "@/components/zip/hashtags";
 import Link from "next/link";
 import { FundingCard } from "@/components/grants/funding-card";
@@ -115,6 +116,7 @@ export async function ZipRightRail() {
   const questions = ((quest.data ?? []) as unknown as { id: string; body: string; author: { full_name: string | null } | null }[]).slice(0, 3);
   return (
     <>
+      <Suspense fallback={null}><WelcomeWeekCard /></Suspense>
       <Suspense fallback={null}><DeadlineCard where="top" /></Suspense>
       <div className="card pcard">
         <div className="pban" />

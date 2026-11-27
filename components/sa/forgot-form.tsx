@@ -4,8 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { forgotPassword } from "@/app/auth/actions";
 import { Err, LockIcon, MailIcon, Spin, useCountdown } from "./fields";
+import { HumanCheck } from "@/components/safety/human-check";
 
-export function ForgotForm() {
+export function ForgotForm({ human = false }: { human?: boolean }) {
+  const [token, setToken] = useState("");
+  const [round, setRound] = useState(0);
   const [email, setEmail] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -14,7 +17,8 @@ export function ForgotForm() {
   const cd = useCountdown();
 
   const send = async (to: string) => {
-    const res = await forgotPassword(to);
+    const res = await forgotPassword(to, token);
+    setRound((r) => r + 1);
     if (!res.ok) {
       setErr(res.error);
       setNote(res.error);
@@ -56,6 +60,7 @@ export function ForgotForm() {
             </span>
           </div>
           {note && <div className="alert w" role="status" style={{ textAlign: "left" }}><span>{note}</span></div>}
+          <HumanCheck on={human} round={round} onToken={setToken} />
           <button
             type="button"
             className="btn g"
@@ -89,6 +94,7 @@ export function ForgotForm() {
             <input className="t" id="em" type="email" autoComplete="email" placeholder="you@yourbusiness.ca" value={email} onChange={(e) => { setEmail(e.target.value); setErr(""); }} aria-invalid={err ? "true" : "false"} aria-describedby="em-err" />
             <Err id="em">{err}</Err>
           </div>
+          <HumanCheck on={human} round={round} onToken={setToken} />
           <button className="btn p" type="submit" id="go" disabled={busy}>
             {busy ? (<><Spin />Sending</>) : "Send reset link"}
           </button>

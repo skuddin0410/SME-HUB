@@ -1,5 +1,6 @@
 "use server";
 
+import { safetyPlain } from "@/lib/safety/client";
 import { requireStaff, requireUser, slugify } from "@/lib/hub";
 import { parseHours, websiteUrl, SOCIALS, type Role } from "@/lib/business";
 import { getBusinessSettings } from "@/lib/business-server";
@@ -26,7 +27,7 @@ function ownUpload(form: FormData, field: string, userId: string): string | null
 }
 
 const refresh = () => revalidatePath("/", "layout");
-const wrap = (message: string) => (message.length < 160 ? message : "Something went wrong. Please try again.");
+const wrap = (message: string) => safetyPlain(message) ?? (message.length < 160 ? message : "Something went wrong. Please try again.");
 
 // ---------- the page itself ----------
 export async function saveBusiness(_prev: BizState, form: FormData): Promise<BizState> {

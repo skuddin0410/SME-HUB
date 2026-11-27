@@ -1,4 +1,6 @@
 "use client";
+
+import { toast } from "@/components/toast";
 import Link from "next/link";
 import { useState } from "react";
 import { acceptConnection, removeConnection, requestConnection } from "@/app/(hub)/actions";
@@ -14,7 +16,9 @@ export function MotdConnect({ id, initial, signedIn }: { id: string; initial: Li
   const go = (next: LinkState, save: () => Promise<unknown>) => {
     const before = state;
     setState(next);
-    save().catch(() => setState(before));
+    save()
+      .then((r) => { if (r && typeof r === "object" && "error" in r && (r as { error?: string }).error) { setState(before); toast(String((r as { error: string }).error)); } })
+      .catch(() => setState(before));
   };
   if (state === "received") return <button type="button" className="btn sm ghost" onClick={() => go("connected", () => acceptConnection(id))}>Accept</button>;
   if (state === "sent") return <button type="button" className="btn sm ghost" aria-pressed="true" title="Withdraw request" onClick={() => go("none", () => removeConnection(id))}>Request sent</button>;

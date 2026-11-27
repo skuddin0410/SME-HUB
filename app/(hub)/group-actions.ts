@@ -1,5 +1,6 @@
 "use server";
 
+import { safetyPlain } from "@/lib/safety/client";
 import { requireStaff, requireUser, slugify } from "@/lib/hub";
 import { GROUP_COVERS } from "@/lib/groups";
 import { revalidatePath } from "next/cache";
@@ -20,6 +21,8 @@ function uuid(value: string) {
 
 /** Friendly wording for the database rules a member can run into. */
 function explain(message: string) {
+  const safety = safetyPlain(message); // Update 41: welcome-week limits
+  if (safety) return safety;
   if (/group\.private|plan/i.test(message)) return "Private groups need a paid plan. Upgrade, or start a public group.";
   if (/violates row-level|permission/i.test(message)) return "You do not have permission to do that.";
   if (/rate|too many/i.test(message)) return "You are doing that too often. Try again later.";

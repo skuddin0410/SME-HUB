@@ -23,7 +23,15 @@ function fail(error: { message: string } | null) {
   if (error) throw new Error(error.message);
 }
 
-export type FormState = { error?: string; ok?: number };
+/** held: Update 41's automatic checks stopped it for the Hub team to review (members never see it until approved) */
+export type FormState = { error?: string; ok?: number; held?: boolean };
+
+/** No row came back from an insert: the database's safety checks held it for review (Update 41). */
+async function wasHeld(supabase: Awaited<ReturnType<typeof createClient>>, error: { code?: string } | null, data: unknown) {
+  if (data || (error && error.code !== "PGRST116")) return false;
+  const { data: held } = await supabase.rpc("safety_just_held");
+  return held === true;
+}
 
 /**
  * A picture the browser already uploaded. Only an address inside this member's own storage folder is accepted,
@@ -133,8 +141,9 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
     .from("posts")
     .insert({ author_id: userId, body, visibility: business_id ? "public" : visibility, kind, group_id: business_id ? null : groupId, business_id, image_url, cover_url, title, comments_closed, scheduled_at, quoted_post_id, ...(images.length ? { images } : {}), ...(video_url ? { video_url, video_poster } : {}), ...pdf })
     .select("id")
-    .single();
-  if (error) return { error: error.message };
+    .maybeSingle();
+  if (await wasHeld(supabase, error, data)) return { ok: Date.now(), held: true };
+  if (error || !data) return { error: error?.message ?? "Your post was not saved." };
   if (pollOptions) {
     const closes = new Date(Date.now() + pollDays * 86_400_000).toISOString();
     const res = await supabase.rpc("add_poll", { p_post: data.id, p_options: pollOptions, p_closes: closes });
@@ -263,8 +272,10 @@ export async function quotePost(postId: string, body: string) {
   const { supabase, userId } = await requireUser();
   const clean = body.trim();
   if (!clean) throw new Error("Add your own words to quote a post.");
-  fail((await supabase.from("posts").insert({ author_id: userId, body: clean, quoted_post_id: postId, visibility: "public" })).error);
+  const { error } = await supabase.from("posts").insert({ author_id: userId, body: clean, quoted_post_id: postId, visibility: "public" });
+  if (error) return { error: error.message.includes("safety: ") ? error.message : "Your post was not saved. Try again." };
   revalidatePath("/", "layout");
+  return {};
 }
 
 /** One vote per member; the database counts it and refuses after the poll closes. */
@@ -322,7 +333,7 @@ export async function loadComments(postId: string): Promise<CommentRow[]> {
   return (data ?? []) as unknown as CommentRow[];
 }
 
-export async function addComment(postId: string, body: string, parentId?: string | null): Promise<CommentRow> {
+export async function addComment(postId: string, body: string, parentId?: string | null): Promise<CommentRow | { error: string } | { held: true }> {
   uuid(postId);
   if (parentId) uuid(parentId);
   const { supabase, userId } = await requireUser();
@@ -334,7 +345,9 @@ export async function addComment(postId: string, body: string, parentId?: string
     .from("comments")
     .insert({ post_id: postId, author_id: userId, body: clean, parent_id: parentId ?? null })
     .select(COMMENT_SELECT)
-    .single();
+    .maybeSingle();
+  if (await wasHeld(supabase, error, data)) return { held: true };
+  if (error?.message.includes("safety: ")) return { error: error.message };
   fail(error);
   return data as unknown as CommentRow;
 }
@@ -381,6 +394,7 @@ export async function requestConnection(otherId: string) {
   // Update 33: the other member's choices in Settings and privacy
   if (ins.error?.message.includes("shared_groups_only")) throw new Error("This member only takes connection requests from people in the same groups.");
   if (ins.error?.message.includes("member_paused")) throw new Error("This member is taking a break.");
+  if (ins.error?.message.includes("safety: ")) return { error: ins.error.message };
   fail(ins.error);
   if (ps.autoFollow) await supabase.from("follows").upsert({ follower_id: userId, followee_id: otherId }, { ignoreDuplicates: true });
   revalidatePath("/", "layout");
@@ -555,7 +569,9 @@ export async function sendMessage(recipientId: string, body: string) {
     .from("messages")
     .insert({ sender_id: userId, recipient_id: recipientId, body: clean })
     .select("id, created_at")
-    .single();
+    .maybeSingle();
+  if (await wasHeld(supabase, error, data)) return { held: true as const };
+  if (error?.message.includes("safety: ")) return { error: error.message };
   if (error) throw new Error(error.message.includes("only_connections") ? "This member only takes messages from their connections." : "You can only message members you are connected with.");
   return data as { id: string; created_at: string };
 }

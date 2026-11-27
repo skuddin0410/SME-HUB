@@ -1,4 +1,6 @@
 "use client";
+
+import { toast } from "@/components/toast";
 import { AnimatedList } from "@/components/zip/animated-list";
 
 import { displayName } from "@/lib/zip/profile-rules";
@@ -156,7 +158,7 @@ function Pop({ m, signedIn, link, following }: { m: DirMember; signedIn: boolean
               const before = state;
               const next: LinkState = state === "sent" ? "none" : "sent";
               setState(next);
-              start(async () => { try { await (before === "sent" ? removeConnection(m.id) : requestConnection(m.id)); } catch { setState(before); } });
+              start(async () => { try { const r = await (before === "sent" ? removeConnection(m.id) : requestConnection(m.id)); if (r && "error" in r && r.error) { setState(before); toast(r.error); } } catch { setState(before); } });
             };
             if (ready && state !== "sent") ready.gate("connect", run); else run();
           })}>

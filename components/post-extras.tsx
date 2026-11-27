@@ -1,5 +1,7 @@
 "use client";
 
+import { safetyPlain, showSafety } from "@/lib/safety/client";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -96,7 +98,8 @@ export function QuoteButton({ postId, signedIn }: { postId: string; signedIn: bo
         e.preventDefault();
         start(async () => {
           try {
-            await quotePost(postId, text);
+            const r = await quotePost(postId, text);
+            if (r.error) return void (showSafety(r.error) || setError(safetyPlain(r.error) ?? r.error));
             setOpen(false);
             setText("");
             router.refresh();

@@ -39,7 +39,7 @@ export function ConnectButton({
     if (!signedIn) return router.push("/auth/login");
     const before = state;
     onChange?.(next);
-    set(next, () => save().catch((e) => { onChange?.(before); throw e; }));
+    set(next, () => save().then((r) => { if (r && typeof r === "object" && "error" in r && (r as { error?: unknown }).error) onChange?.(before); return r; }, (e) => { onChange?.(before); throw e; }));
   };
 
   const base = cx(

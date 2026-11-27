@@ -1,5 +1,8 @@
 "use client";
 
+import { toast } from "@/components/toast";
+import { safetyPlain, showSafety } from "@/lib/safety/client";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -73,7 +76,10 @@ export function PostBox({
     if (pending) return;
     setPending(true);
     try {
-      setState(await createPost({}, new FormData(e.currentTarget)));
+      const r = await createPost({}, new FormData(e.currentTarget));
+      // Update 41: a welcome-week limit opens its window and keeps the post; other safety words read plainly
+      if (r.error && showSafety(r.error)) setState({});
+      else setState(r.error ? { ...r, error: safetyPlain(r.error) ?? r.error } : r);
     } catch {
       setState({ error: "Your post was not saved. Check your connection and try again." });
     } finally {
@@ -149,8 +155,9 @@ export function PostBox({
     setBody(""); setTitle(""); setKind("update"); setPoll(null); setSched(false); setCover(false); setCloseC(false); setNote("");
     setPhotos([]); setVideo(null); setPdf(null); setAiTags(null);
     setOpen(false);
+    if (state.held) toast("Thanks. Your post is being checked by the Hub team and will appear once it’s approved.");
     router.refresh();
-  }, [state.ok, router]);
+  }, [state.ok, state.held, router]);
   // better hashtag suggestions from AI, when the server has it, after a pause in typing
   useEffect(() => {
     if (!open || !tagRules || body.replace(/#\w+/g, "").trim().length < 40) return;

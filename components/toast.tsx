@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { safetyPlain, showSafety } from "@/lib/safety/client";
 
 /**
  * Motion plan, phase 1: one toast for the whole Hub, in the zip's style (.toast). Any part of the site calls
@@ -8,7 +9,10 @@ import { useEffect, useState } from "react";
  */
 const EVENT = "hub:toast";
 export function toast(text: string) {
-  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent<string>(EVENT, { detail: text }));
+  // Update 41: a welcome-week or daily limit opens its window instead; other safety messages lose their marker
+  if (showSafety(text)) return;
+  const plain = safetyPlain(text) ?? text;
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent<string>(EVENT, { detail: plain }));
 }
 
 export function ToastHost() {

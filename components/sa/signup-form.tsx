@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { signUp, type Fields } from "@/app/auth/actions";
 import { passwordOk } from "@/lib/auth/password";
 import { PROVINCES } from "@/lib/auth/provinces";
 import { Err, PasswordField, Spin } from "./fields";
 import { Sso } from "./sso";
+import { HumanCheck } from "@/components/safety/human-check";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -19,8 +20,17 @@ const Check = () => (
 
 export type Proof = { members: number; faces: string[] };
 
-export function SignUpForm({ proof }: { proof: Proof }) {
+export function SignUpForm({ proof, human = false }: { proof: Proof; human?: boolean }) {
   const router = useRouter();
+  // Update 41: the human check, a trap field people never see, and when the form opened
+  const [token, setToken] = useState("");
+  const [round, setRound] = useState(0);
+  const [blocked, setBlocked] = useState("");
+  const trap = useRef<HTMLInputElement>(null);
+  const opened = useRef(0);
+  useEffect(() => {
+    opened.current = Date.now();
+  }, []);
   const [v, setV] = useState({ fn: "", ln: "", bn: "", em: "", ws: "", pw: "", pr: "", tm: false, nl: false });
   const [errs, setErrs] = useState<Fields>({});
   const [exists, setExists] = useState(false);
@@ -51,7 +61,10 @@ export function SignUpForm({ proof }: { proof: Proof }) {
     if (first) return void form.current?.querySelector<HTMLElement>(`#${first}`)?.focus();
 
     setBusy(true);
-    const res = await signUp({ first: v.fn, last: v.ln, business: v.bn, email: em, website: v.ws, password: v.pw, province: v.pr, terms: v.tm, newsletter: v.nl });
+    const res = await signUp({
+      first: v.fn, last: v.ln, business: v.bn, email: em, website: v.ws, password: v.pw, province: v.pr, terms: v.tm, newsletter: v.nl,
+      human: token, trap: trap.current?.value ?? "", elapsed: opened.current ? Date.now() - opened.current : 0,
+    });
     if (res.ok) {
       try {
         sessionStorage.setItem("hub.email", em);
@@ -60,6 +73,8 @@ export function SignUpForm({ proof }: { proof: Proof }) {
       return router.push(`/auth/verify?email=${encodeURIComponent(em)}`);
     }
     setBusy(false);
+    setRound((r) => r + 1);
+    if (res.blocked) return setBlocked(res.blocked);
     setExists(Boolean(res.exists));
     setErrs(res.fields ?? {});
     if (res.form) setNote(res.form);
@@ -118,6 +133,31 @@ export function SignUpForm({ proof }: { proof: Proof }) {
         </div>
       </section>
 
+      {blocked ? (
+        <section className="card" aria-labelledby="h">
+          <div>
+            <p className="sfstep">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
+              Can’t continue
+            </p>
+            <div className="sfbad">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z" /><path d="M12 10v4" /><path d="M12 17.5v.5" /></svg>
+              <div>
+                <h1 id="h">We couldn’t confirm you’re a person</h1>
+                <p>{blocked}</p>
+                <p>
+                  If you keep seeing this, email <a href="mailto:support@smehub.ca">support@smehub.ca</a> and we’ll help.
+                </p>
+              </div>
+            </div>
+            <div className="sfjf">
+              <button type="button" className="btn p" style={{ width: "auto" }} onClick={() => { opened.current = Date.now(); setBlocked(""); }}>
+                Try again
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : (
       <section className="card" aria-labelledby="h">
         <div>
           <h1 id="h">Join SME Hub free</h1>
@@ -190,6 +230,13 @@ export function SignUpForm({ proof }: { proof: Proof }) {
               <input type="checkbox" id="nl" checked={v.nl} onChange={(e) => set("nl", e.target.checked)} />
               <span>Send me the free weekly CanadianSME newsletter with small-business news and events. You can unsubscribe anytime.</span>
             </label>
+            <div className="sfhp" aria-hidden="true">
+              <label>
+                Leave this empty
+                <input id="sfj-web" ref={trap} tabIndex={-1} autoComplete="off" defaultValue="" />
+              </label>
+            </div>
+            <HumanCheck on={human} round={round} onToken={setToken} />
             <button className="btn p" type="submit" id="go" disabled={busy}>
               {busy ? (<><Spin />Creating your account</>) : "Create my free account"}
             </button>
@@ -199,6 +246,7 @@ export function SignUpForm({ proof }: { proof: Proof }) {
           </p>
         </div>
       </section>
+      )}
     </div>
   );
 }

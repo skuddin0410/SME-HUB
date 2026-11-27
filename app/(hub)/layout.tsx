@@ -5,6 +5,8 @@ import type { NavNote } from "@/components/site-nav";
 import { ZipHeader } from "@/components/zip/header";
 import { NavPending } from "@/components/nav-pending";
 import { ToastHost } from "@/components/toast";
+import { SafetyHost } from "@/components/safety/host";
+import { safetyCfg } from "@/lib/safety/server";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import "@/styles/profile-completion.css";
@@ -19,6 +21,7 @@ import "@/styles/grants.css";
 import "@/styles/province-extra.css";
 import "@/styles/u16-25.css";
 import "@/styles/u26-29.css";
+import "@/styles/u41-48.css";
 import { HideOn } from "@/components/hide-on";
 import { StayWarm } from "@/components/stay-warm";
 import { Presence } from "@/components/presence";
@@ -162,6 +165,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
         {children}
       </NavPending>
       <ToastHost />
+      <SafetyHost leave={(await safetyCfg()).leave} member={!!userId} />
       <StayWarm />
       <Presence userId={userId} />
 

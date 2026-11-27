@@ -7,6 +7,7 @@ import { confirmDevice, signIn, type Fields, type Who } from "@/app/auth/actions
 import { WelcomeCard, pulseCity } from "./welcome";
 import { CodeBoxes, Err, LockIcon, PasswordField, Spin } from "./fields";
 import { Sso } from "./sso";
+import { HumanCheck } from "@/components/safety/human-check";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -18,8 +19,10 @@ const LOCKED = (
   </span>
 );
 
-export function LoginForm({ next, notice }: { next: string; notice?: string }) {
+export function LoginForm({ next, notice, human = false }: { next: string; notice?: string; human?: boolean }) {
   const router = useRouter();
+  const [token, setToken] = useState("");
+  const [round, setRound] = useState(0);
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [keep, setKeep] = useState(true);
@@ -54,8 +57,9 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
       return void document.getElementById("pw")?.focus();
     }
     setBusy(true);
-    const res = await signIn({ email: em, password: pw, keep });
+    const res = await signIn({ email: em, password: pw, keep, human: token });
     setBusy(false);
+    if (res.status !== "ok") setRound((r) => r + 1);
     switch (res.status) {
       case "ok":
         return welcome(res.who);
@@ -90,6 +94,8 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
         return setMsg({ kind: "e", body: <span>Too many attempts. Wait a minute, then try again.</span> });
       case "invalid":
         return setErrs(res.fields);
+      case "human":
+        return setMsg({ kind: "e", body: <span><b>We couldn’t confirm you’re a person.</b>Wait for the human check below, then try again.</span> });
     }
   };
 
@@ -193,6 +199,7 @@ export function LoginForm({ next, notice }: { next: string; notice?: string }) {
             <input type="checkbox" id="kp" checked={keep} onChange={(e) => setKeep(e.target.checked)} />
             <span>Keep me logged in on this device</span>
           </label>
+          <HumanCheck on={human} round={round} onToken={setToken} />
           <button className={`btn p${ticked ? " ok" : ""}`} type="submit" id="go" disabled={busy || ticked}>
             {ticked ? (
               <>

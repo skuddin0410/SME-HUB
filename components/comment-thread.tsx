@@ -1,4 +1,6 @@
 "use client";
+
+import { safetyPlain, showSafety } from "@/lib/safety/client";
 import { useListMotion } from "@/components/zip/animated-list";
 
 import Link from "next/link";
@@ -68,7 +70,15 @@ export function CommentThread({
     onCount(1);
     done();
     addComment(postId, body, parentId)
-      .then((created) => setList((l) => (l ?? []).map((c) => (c.id === tmp.id ? created : c))))
+      .then((r) => {
+        if ("id" in r) return setList((l) => (l ?? []).map((c) => (c.id === tmp.id ? r : c)));
+        // Update 41: stopped by a welcome-week limit, or held for the Hub team to check
+        setList((l) => (l ?? []).filter((c) => c.id !== tmp.id));
+        onCount(-1);
+        if ("held" in r) return onNote("Thanks. Your comment is being checked by the Hub team and will appear once it’s approved.");
+        setDraft(body);
+        if (!showSafety(r.error)) onNote(safetyPlain(r.error) ?? "Could not post your reply. Try again.");
+      })
       .catch((e) => {
         setList((l) => (l ?? []).filter((c) => c.id !== tmp.id));
         onCount(-1);

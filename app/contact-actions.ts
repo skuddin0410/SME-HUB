@@ -3,8 +3,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { courseMail, siteUrl } from "@/lib/courses-mail";
 import { CTOPICS, topicInbox, topicLabel } from "@/lib/contact";
+import { headers } from "next/headers";
+import { humanOk } from "@/lib/safety/server";
 
-export type ContactInput = { name: string; email: string; business: string; topic: string; message: string; website?: string };
+export type ContactInput = { name: string; email: string; business: string; topic: string; message: string; website?: string; human?: string };
 
 /**
  * Update 24: a message from the Contact us page. Saved in the database (only the team can read it), sent to the inbox
@@ -22,6 +24,9 @@ export async function sendContact(input: ContactInput): Promise<{ ok?: boolean; 
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { error: "Please add an email address we can reply to." };
   if (!topic) return { error: "Please choose what your message is about." };
   if (message.length < 5) return { error: "Please write a short message." };
+  // Update 41: the invisible human check
+  const ip = ((await headers()).get("x-forwarded-for") ?? "").split(",")[0]?.trim() || "unknown";
+  if (!(await humanOk(input.human, ip))) return { error: "We couldn’t confirm you’re a person. Wait for the human check, then send it again." };
 
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();

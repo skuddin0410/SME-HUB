@@ -1,4 +1,8 @@
 "use client";
+
+import { safetyPlain, showSafety } from "@/lib/safety/client";
+import { ScamWarning } from "@/components/safety/scam-warning";
+import { LinkedText } from "@/components/zip/short-link";
 import { useListMotion } from "@/components/zip/animated-list";
 
 import Link from "next/link";
@@ -35,12 +39,15 @@ export function MessagingApp({
   initialMessages,
   startWith,
   prefill,
+  scamWords = [],
 }: {
   me: Author;
   people: Author[];
   initialMessages: Msg[];
   startWith: string | null;
   prefill: string;
+  /** Update 41: the team's scam word list, for the "Be careful with this message" warning */
+  scamWords?: string[];
 }) {
   const threadsRef = useListMotion<HTMLDivElement>();
   const historyRef = useListMotion<HTMLDivElement>();
@@ -128,7 +135,14 @@ export function MessagingApp({
     setDrafts((d) => ({ ...d, [active]: "" }));
     setError(null);
     sendMessage(active, body)
-      .then((saved) => setMessages((all) => all.map((m) => (m.id === temp.id ? { ...m, id: saved.id, created_at: saved.created_at } : m))))
+      .then((saved) => {
+        if ("id" in saved) return setMessages((all) => all.map((m) => (m.id === temp.id ? { ...m, id: saved.id, created_at: saved.created_at } : m)));
+        // Update 41: a welcome-week or daily limit, or held for the Hub team to check
+        setMessages((all) => all.filter((m) => m.id !== temp.id));
+        if ("held" in saved) return setError("Your message is being checked by the Hub team. It’s delivered once it’s approved.");
+        setDrafts((d) => ({ ...d, [active]: body }));
+        if (!showSafety(saved.error)) setError(safetyPlain(saved.error) ?? "Could not send. Try again.");
+      })
       .catch((e) => {
         setMessages((all) => all.filter((m) => m.id !== temp.id));
         setDrafts((d) => ({ ...d, [active]: body }));
@@ -211,8 +225,9 @@ export function MessagingApp({
                 return (
                   <div key={m.id} className="stack" style={{ gap: 8 }}>
                     {newDay && <span className="muted small" style={{ textAlign: "center" }}>{dayLabel(m.created_at)}</span>}
+                    {m.sender_id !== me.id && <ScamWarning body={m.body} words={scamWords} from={m.sender_id} />}
                     <div className={cx("bubble", m.sender_id === me.id && "mine")} style={m.id.startsWith("tmp-") ? { opacity: 0.6 } : undefined} title={clock(m.created_at)}>
-                      {m.body}
+                      <LinkedText text={m.body} />
                     </div>
                   </div>
                 );

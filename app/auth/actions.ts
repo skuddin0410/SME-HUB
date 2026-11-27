@@ -14,6 +14,7 @@ import { checkChallenge, DEVICE_COOKIE, gateReady, isTrusted, spaced, startChall
 import { sendEmail } from "@/lib/email/send";
 import { commonVars, renderEmail } from "@/lib/email/render";
 import { deviceFromUserAgent, maskIp, NOT_KNOWN, whenET } from "@/lib/email/context";
+import { countryOf, humanOk, isThrowaway, logSignup, protectedName, safetyCfg } from "@/lib/safety/server";
 
 /**
  * Everything the sign-in pages do on the server (Update 1). The pages check things as the person types,
@@ -60,8 +61,15 @@ export type SignUpInput = {
   province: string;
   terms: boolean;
   newsletter: boolean;
+  /** Update 41: the Turnstile token, the hidden trap field and how long the form was open (ms) */
+  human?: string;
+  trap?: string;
+  elapsed?: number;
 };
-export type SignUpResult = { ok: true } | { ok: false; fields?: Fields; form?: string; exists?: boolean };
+export type SignUpResult = { ok: true } | { ok: false; fields?: Fields; form?: string; exists?: boolean; blocked?: string };
+
+const ordinal = (n: number) => `${n}${n % 100 >= 11 && n % 100 <= 13 ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th")}`;
+const NOT_HUMAN = "The human check didn’t pass. Please try again in a few minutes.";
 
 const NEWSLETTER_WORDING = "Send me the free weekly CanadianSME newsletter with small-business news and events. You can unsubscribe anytime.";
 
@@ -86,11 +94,31 @@ export async function signUp(input: SignUpInput): Promise<SignUpResult> {
   if (website && !/^(https?:\/\/)?[^\s/$.?#][^\s]*\.[^\s]{2,}$/i.test(website)) fields.ws = "Check the website address. It should look like yourbusiness.ca.";
   if (Object.keys(fields).length) return { ok: false, fields };
   if (await isBreached(password)) return { ok: false, fields: { pw: BREACHED } };
+  // Update 41: nobody can pretend to be the SME Hub team
+  const [nameTaken, bizTaken] = await Promise.all([protectedName(`${first} ${last}`), protectedName(business)]);
+  if (nameTaken) return { ok: false, fields: { fn: `Names can’t include “${nameTaken}”, so nobody can pretend to be the SME Hub team.` } };
+  if (bizTaken) return { ok: false, fields: { bn: `Business names can’t include “${bizTaken}”, so nobody can pretend to be the SME Hub team.` } };
 
-  const { site, ip } = await context();
+  const { h, site, ip } = await context();
+  const country = countryOf(h);
+  const cfg = await safetyCfg();
+  // Update 41: bots are stopped before an account exists, and every stopped try is logged for the team
+  const stop = async (reason: string, why: string) => {
+    await logSignup(email, "blocked", reason, country);
+    return { ok: false as const, blocked: why };
+  };
+  if (input.trap) return stop("Hidden trap field filled in", "Something about this sign-up looked automatic.");
+  if (!(typeof input.elapsed === "number" && input.elapsed >= 1500)) {
+    return stop(`Form filled in ${typeof input.elapsed === "number" ? (Math.max(0, input.elapsed) / 1000).toFixed(1) : "0"} seconds`, "The form was filled in faster than a person can type.");
+  }
+  if (!(await humanOk(input.human, ip))) return stop("Failed the human check", NOT_HUMAN);
+  if (await isThrowaway(email)) {
+    await logSignup(email, "blocked", "Temporary email address", country);
+    return { ok: false, fields: { em: "Temporary email addresses can’t be used. Please use your work or personal email." } };
+  }
   const supabase = await createClient();
-  const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `signup:${ip}`, p_max: 10, p_window: "1 hour" });
-  if (allowed === false) return { ok: false, form: BUSY };
+  const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `signup:${ip}`, p_max: cfg.perIp, p_window: "1 hour" });
+  if (allowed === false) return stop(`${ordinal(cfg.perIp + 1)} sign-up from one connection this hour`, "Too many people have joined from this internet connection in the last hour. Please try again later.");
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -116,6 +144,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpResult> {
   }
   // Supabase answers an existing, confirmed address with a user that has no identities
   if (data.user && data.user.identities?.length === 0) return { ok: false, exists: true, fields: { em: "exists" } };
+  await logSignup(email, "allowed", "", country);
   return { ok: true };
 }
 
@@ -129,8 +158,8 @@ export async function verifyCode(emailIn: string, codeIn: string): Promise<CodeR
   if (!EMAIL.test(email) || code.length !== 6) return { ok: false, error: "Enter all 6 digits." };
 
   const supabase = await createClient();
-  const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `code:${email}`, p_max: 10, p_window: "15 minutes" });
-  if (allowed === false) return { ok: false, error: "Too many tries. Wait a few minutes, or send a new code." };
+  const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `code:${email}`, p_max: 5, p_window: "15 minutes" });
+  if (allowed === false) return { ok: false, error: "Too many wrong codes. For your safety, please wait 15 minutes and ask for a new one." };
 
   let res = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
   if (res.error) res = await supabase.auth.verifyOtp({ email, token: code, type: "signup" });
@@ -152,6 +181,9 @@ export async function resendCode(emailIn: string): Promise<{ ok: boolean }> {
   if (!EMAIL.test(email)) return { ok: false };
   const { site } = await context();
   const supabase = await createClient();
+  // Update 41: once every 30 seconds, at most 5 an hour
+  const { data: spaced30 } = await supabase.rpc("rate_hit", { p_key: `resend30:${email}`, p_max: 1, p_window: "30 seconds" });
+  if (spaced30 === false) return { ok: false };
   const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `resend:${email}`, p_max: 5, p_window: "1 hour" });
   if (allowed === false) return { ok: false };
   const { error } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: `${site}/auth/callback?next=/feed` } });
@@ -169,14 +201,16 @@ export type SignInResult =
   | { status: "unconfirmed" }
   | { status: "code" }
   | { status: "invalid"; fields: Fields }
-  | { status: "busy" };
+  | { status: "busy" }
+  | { status: "human" };
 
-export async function signIn(input: { email: string; password: string; keep: boolean }): Promise<SignInResult> {
+export async function signIn(input: { email: string; password: string; keep: boolean; human?: string }): Promise<SignInResult> {
   const email = String(input.email ?? "").trim().toLowerCase();
   const password = String(input.password ?? "");
   const keep = input.keep !== false;
   if (!EMAIL.test(email)) return { status: "invalid", fields: { em: email ? "Check your email address." : "Enter your email address." } };
   if (!password) return { status: "invalid", fields: { pw: "Enter your password." } };
+  if (!(await humanOk(input.human, (await context()).ip))) return { status: "human" };
 
   const supabase = await createClient({ keep });
   const { data: state } = await supabase.rpc("login_state", { p_email: email });
@@ -204,7 +238,9 @@ export async function signIn(input: { email: string; password: string; keep: boo
     const { data: u } = await supabase.auth.getUser();
     if (u.user) {
       const { data: sec } = await supabase.from("user_security").select("email_code").eq("user_id", u.user.id).maybeSingle();
-      const wanted = (sec as { email_code?: boolean } | null)?.email_code !== false;
+      // Update 41: SME Advisors and business page owners can't turn the code off (when the team's switch is on)
+      const { data: must } = await supabase.rpc("twostep_required", { p_user: u.user.id });
+      const wanted = must === true || (sec as { email_code?: boolean } | null)?.email_code !== false;
       const jar = await cookies();
       if (wanted && !(await isTrusted(u.user.id, jar.get(DEVICE_COOKIE)?.value))) {
         const { data: allowed } = await supabase.rpc("rate_hit", { p_key: `signin-code:${email}`, p_max: 5, p_window: "1 hour" });
@@ -265,10 +301,11 @@ export async function confirmDevice(input: { email: string; password: string; co
 
 // ---------------------------------------------------------------- forgot password
 
-export async function forgotPassword(emailIn: string): Promise<{ ok: true } | { ok: false; error: string }> {
+export async function forgotPassword(emailIn: string, human?: string): Promise<{ ok: true } | { ok: false; error: string }> {
   const email = String(emailIn ?? "").trim().toLowerCase();
   if (!EMAIL.test(email)) return { ok: false, error: email ? "Check your email address." : "Enter your email address." };
   const { site, ip } = await context();
+  if (!(await humanOk(human, ip))) return { ok: false, error: NOT_HUMAN };
   const supabase = await createClient();
   // 5 requests an hour for each address and each IP, so the form cannot be used to flood anyone's inbox
   const [a, b] = await Promise.all([
@@ -429,6 +466,10 @@ export async function finishProfile(input: FinishInput): Promise<{ ok: true } | 
   if (website && !/^(https?:\/\/)?[^\s/$.?#][^\s]*\.[^\s]{2,}$/i.test(website)) fields.ws = "Check the website address. It should look like yourbusiness.ca.";
   if (Object.keys(fields).length) return { ok: false, fields };
   if (website && !/^https?:\/\//i.test(website)) website = `https://${website}`;
+  // Update 41: nobody can pretend to be the SME Hub team (Google and LinkedIn sign-ups too)
+  const [nameTaken, bizTaken] = await Promise.all([protectedName(`${first} ${last}`), protectedName(business)]);
+  if (nameTaken) return { ok: false, fields: { fn: `Names can’t include “${nameTaken}”, so nobody can pretend to be the SME Hub team.` } };
+  if (bizTaken) return { ok: false, fields: { bn: `Business names can’t include “${bizTaken}”, so nobody can pretend to be the SME Hub team.` } };
 
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();

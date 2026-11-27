@@ -1,5 +1,6 @@
 "use server";
 
+import { safetyPlain } from "@/lib/safety/client";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/hub";
 import { siteUrl } from "@/lib/courses-mail";
@@ -12,7 +13,7 @@ const id = (v: unknown) => {
   return v;
 };
 type R<T = object> = Promise<{ error?: string } & Partial<T>>;
-const msg = (e: { message: string } | null | undefined) => (e ? { error: e.message.replace(/^.*?: /, "") } : {});
+const msg = (e: { message: string } | null | undefined) => (e ? { error: safetyPlain(e.message) ?? e.message.replace(/^.*?: /, "") } : {});
 const abs = (site: string, u?: string | null) => (u ? (u.startsWith("/") ? site + u : u) : "");
 const refresh = () => {
   revalidatePath("/for-sale", "layout");
