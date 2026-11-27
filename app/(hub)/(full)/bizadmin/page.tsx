@@ -80,7 +80,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
               <div className="row" style={{ flexWrap: "wrap" }}>
                 <Link className="btn sm ghost" href={`/businesses/${b.slug}`}>Preview</Link>
                 <form action={decideBusiness.bind(null, b.id, true)}><button className="btn sm">Publish</button></form>
-                <form action={decideBusiness.bind(null, b.id, false)}><button className="btn sm ghost">Reject</button></form>
+                <form action={decideBusiness.bind(null, b.id, false)} style={{ display: "flex", gap: 6, alignItems: "center" }}><input name="reason" className="field" placeholder="Reason (the member sees it)" maxLength={500} aria-label="Reason for turning it down" style={{ minWidth: 200 }} /><button className="btn sm ghost">Reject</button></form>
               </div></div>))}</Queue>
           <Queue title="Ownership claims" n={claims.length}>{claims.map((c) => (
             <div className="stack" style={{ gap: 6 }} key={c.id}>
@@ -89,7 +89,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
               <span className="small">Needs a decision: give {c.claimant?.full_name.split(" ")[0]} ownership? Followers, posts, reviews and the page address stay.</span>
               <div className="row" style={{ flexWrap: "wrap" }}>
                 <form action={decideClaim.bind(null, c.id, true)}><button className="btn sm">Approve claim</button></form>
-                <form action={decideClaim.bind(null, c.id, false)}><button className="btn sm ghost">Reject</button></form>
+                <form action={decideClaim.bind(null, c.id, false)} style={{ display: "flex", gap: 6, alignItems: "center" }}><input name="reason" className="field" placeholder="Reason (the member sees it)" maxLength={500} aria-label="Reason for turning it down" style={{ minWidth: 200 }} /><button className="btn sm ghost">Reject</button></form>
               </div></div>))}</Queue>
           <Queue title="Reviews waiting" n={revs.length}>{revs.map((r) => (
             <div className="stack" style={{ gap: 6 }} key={`${r.company_id}${r.author_id}`}>

@@ -43,13 +43,15 @@ function PostBtn({ disabled, sched, pending }: { disabled: boolean; sched: boole
  * short links, hashtag suggestions, the Update type and one line of labelled buttons at the bottom.
  */
 export function PostBox({
-  me, groupId, groups = [], businesses = [], rules, tagHints, tagRules, initialKind, initialText, free, staff,
+  me, groupId, groups = [], businesses = [], rules, tagHints, tagRules, initialKind, initialText, free, staff, initialBiz,
 }: {
   me: Me;
   groupId?: string;
   /** groups the member belongs to, for "Post to" */
   groups?: { id: string; name: string }[];
   businesses?: { id: string; name: string }[];
+  /** Update 40: "Post an update" from My businesses opens the box posting as that business. */
+  initialBiz?: string;
   rules?: ComposerRules;
   tagHints?: { tag: string; uses: number }[];
   /** the team's hashtag rules, when hashtags are on in posts; suggestions follow them */
@@ -327,7 +329,7 @@ export function PostBox({
                     {businesses.length > 0 && (
                       <>
                         <label className="sr" htmlFor="dbiz">Post as</label>
-                        <select id="dbiz" name="business_id" className="cpaud" defaultValue="">
+                        <select id="dbiz" name="business_id" className="cpaud" defaultValue={initialBiz ?? ""}>
                           <option value="">Post as: me</option>
                           {businesses.map((b) => <option key={b.id} value={b.id}>Post as: {b.name}</option>)}
                         </select>

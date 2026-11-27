@@ -9,7 +9,7 @@ import { SubmitButton } from "@/components/hub-client";
 import { BusinessForm } from "@/components/business-form";
 import { getTaxo } from "@/lib/categories-server";
 import { DetailsForm, EventForm, JobForm, PhotoForm, ProductForm, ServiceForm, TeamAdd, type DetailsValues } from "@/components/business-manage";
-import { deleteEvent, deleteJob, deletePhoto, deleteProduct, deleteService, removeTeamMember, setTeamRole, submitBusiness } from "@/app/(hub)/business-actions";
+import { deleteBusiness, deleteEvent, deleteJob, deletePhoto, deleteProduct, deleteService, removeTeamMember, setTeamRole, submitBusiness } from "@/app/(hub)/business-actions";
 import { ROLES, ROLE_CAN, STATUS_LABEL, money } from "@/lib/business";
 import { getBusinessSettings } from "@/lib/business-server";
 
@@ -236,6 +236,14 @@ export default async function ManageBusinessPage({ params, searchParams }: { par
           <p className="muted small">Your page address stays the same: <strong>/businesses/{c.slug}</strong></p>
           <div className="row"><Link href={`/businesses/${c.slug}`} className="btn sm ghost">Preview the page</Link></div>
         </div>
+      {/* Update 40: deleting a page moved here from My businesses (owners only) */}
+      {isOwner && c.owner_id === userId && (
+        <div className="card">
+          <h2>Delete this page</h2>
+          <p className="muted small">The page, its updates and its inquiries are removed from SME Hub. This can’t be undone.</p>
+          <form action={deleteBusiness.bind(null, c.id)}><ZipSubmit className="btn ghost sm">Delete this page</ZipSubmit></form>
+        </div>
+      )}
 </>
 )}
         </div>

@@ -34,7 +34,7 @@ const FILTERS: { key: string; label: string }[] = [
 ];
 
 
-type Params = { tag?: string; page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string; text?: string };
+type Params = { tag?: string; page?: string; before?: string; scope?: string; kind?: string; sort?: string; saved?: string; compose?: string; text?: string; as?: string };
 
 // the "Show:" choices, worded as in the design (Update 9)
 const SCOPES: { key: string; label: string }[] = [
@@ -163,6 +163,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
         <PostBox
           me={viewer.profile}
           initialKind={compose}
+          initialBiz={params.as && /^[0-9a-f-]{36}$/i.test(params.as) && businesses.some((b) => b.id === params.as) ? params.as : undefined}
           groups={groups}
           businesses={businesses}
           rules={rules}

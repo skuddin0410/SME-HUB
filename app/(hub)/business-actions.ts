@@ -129,6 +129,7 @@ export async function deleteBusiness(companyId: string) {
   const { error } = await supabase.from("companies").delete().eq("id", companyId);
   if (error) throw new Error(wrap(error.message));
   refresh();
+  redirect("/businesses/mine");
 }
 
 // ---------- services ----------
@@ -374,18 +375,26 @@ export async function claimBusiness(_prev: BizState, form: FormData): Promise<Bi
 }
 
 // ---------- the team's review queue ----------
-export async function decideClaim(claimId: string, approve: boolean) {
+/** Update 40: a reason when turning a claim or a page down, so the member sees it in My businesses. */
+const reasonOf = (form?: FormData) => (form instanceof FormData ? String(form.get("reason") ?? "").trim().slice(0, 500) : "");
+
+export async function decideClaim(claimId: string, approve: boolean, form?: FormData) {
   uuid(claimId);
   const { supabase } = await requireStaff();
-  const { error } = await supabase.rpc("decide_claim", { p_claim: claimId, p_approve: approve });
+  const reason = approve ? "" : reasonOf(form);
+  let { error } = await supabase.rpc("decide_claim", { p_claim: claimId, p_approve: approve, p_reason: reason });
+  // before migration 0076 there is no reason to store: decide without it
+  if (error && /decide_claim/.test(error.message)) ({ error } = await supabase.rpc("decide_claim", { p_claim: claimId, p_approve: approve }));
   if (error) throw new Error(wrap(error.message));
   refresh();
 }
 
-export async function decideBusiness(companyId: string, approve: boolean) {
+export async function decideBusiness(companyId: string, approve: boolean, form?: FormData) {
   uuid(companyId);
   const { supabase } = await requireStaff();
-  const { error } = await supabase.from("companies").update({ status: approve ? "published" : "rejected" }).eq("id", companyId);
+  const reason = approve ? null : reasonOf(form) || null;
+  let { error } = await supabase.from("companies").update({ status: approve ? "published" : "rejected", reject_reason: reason }).eq("id", companyId);
+  if (error && /reject_reason/.test(error.message)) ({ error } = await supabase.from("companies").update({ status: approve ? "published" : "rejected" }).eq("id", companyId));
   if (error) throw new Error(wrap(error.message));
   refresh();
 }

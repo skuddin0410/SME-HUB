@@ -15,6 +15,7 @@ import { getBusinessSettings } from "@/lib/business-server";
 import { Empty, PostCard } from "@/components/hub";
 import { Reviews, type Review } from "@/components/business-client";
 import { ClaimForm, InquiryForm } from "@/components/business-manage";
+import { BusinessSeen } from "@/components/business-seen";
 
 type Company = {
   id: string;
@@ -153,6 +154,7 @@ export default async function BusinessPage({ params, searchParams }: { params: P
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
         {published && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(ld)} />}
+        {published && !onTeam && <BusinessSeen id={company.id} />}
         {!published && onTeam && (
           <div className="bzbanner" role="status" style={{ maxWidth: 920, margin: "0 auto 14px" }}>
             <Ic n="eyeoff" s={16} />

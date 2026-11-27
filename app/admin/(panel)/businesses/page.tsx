@@ -33,7 +33,7 @@ export default async function AdminBusinesses() {
             </div>
             <span className="flex gap-2">
               <form action={decideBusiness.bind(null, b.id, true)}><SubmitButton>Approve</SubmitButton></form>
-              <form action={decideBusiness.bind(null, b.id, false)}><SubmitButton tone="danger">Reject</SubmitButton></form>
+              <form action={decideBusiness.bind(null, b.id, false)} style={{ display: "flex", gap: 6, alignItems: "center" }}><input name="reason" className="rounded-md border px-2 py-1 text-sm" placeholder="Reason (the member sees it)" maxLength={500} aria-label="Reason for turning it down" style={{ minWidth: 200 }} /><SubmitButton tone="danger">Reject</SubmitButton></form>
             </span>
           </div>
         ))}
@@ -51,7 +51,7 @@ export default async function AdminBusinesses() {
             </div>
             <span className="flex gap-2">
               <form action={decideClaim.bind(null, c.id, true)}><SubmitButton>Approve</SubmitButton></form>
-              <form action={decideClaim.bind(null, c.id, false)}><SubmitButton tone="danger">Reject</SubmitButton></form>
+              <form action={decideClaim.bind(null, c.id, false)} style={{ display: "flex", gap: 6, alignItems: "center" }}><input name="reason" className="rounded-md border px-2 py-1 text-sm" placeholder="Reason (the member sees it)" maxLength={500} aria-label="Reason for turning it down" style={{ minWidth: 200 }} /><SubmitButton tone="danger">Reject</SubmitButton></form>
             </span>
           </div>
         ))}
