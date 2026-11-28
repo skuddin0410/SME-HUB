@@ -4,9 +4,12 @@ export type Interval = "month" | "year";
 
 export const PLAN_INFO = {
   free: { name: "Free", forWho: "For every small-business owner. Free for as long as you like.", month: 0, year: 0 },
-  plus: { name: "Plus", forWho: "For owners who want more customers to see them.", month: 19, year: 190 },
+  plus: { name: "Plus", forWho: "For owners who want more customers to see them.", month: 25, year: 240 },
   advisor: { name: "Advisor", forWho: "For accountants, lawyers, consultants and coaches who serve small businesses.", month: null, year: 1990 },
 } as const;
+
+/** Update 43: the Founding Member price. $99 in year one, then $19 a month or $190 a year, kept on the subscription for as long as it lasts. */
+export const FOUNDING = { first: 99, month: 19, year: 190 } as const;
 
 /** A line starting with "=" is a heading inside the list. Wording is from the design guide. */
 export const PLAN_FEATURES: Record<PlanKey, string[]> = {
@@ -15,15 +18,17 @@ export const PLAN_FEATURES: Record<PlanKey, string[]> = {
     "One company listing in the directory",
     "Join any group, read every article",
     "Post questions, wins, jobs and introductions",
+    "1 job post at a time on SME Hub Jobs",
     "Write blog posts (reviewed before they go live)",
     "3 people to meet every day, and warm introductions",
     "10 AI questions a month",
   ],
   plus: [
     "=Everything in Free, and:",
-    "Featured company listing, shown first",
+    "Featured company listing, shown first, and up to 3 business pages",
     "Post 2 offers a month to all members",
     "List your business for sale, with your name hidden if you like",
+    "Unlimited job posts, with one featured job a month",
     "Host 1 private group of your own",
     "Publish blog posts straight away",
     "Shown more often in other members\u2019 daily suggestions",
@@ -50,6 +55,8 @@ export const COMPARE: CompareRow[] = [
   ["Profile, connections and messages", 1, 1, 1],
   ["Join groups and live sessions", 1, 1, 1],
   ["Post questions, wins, jobs and introductions", 1, 1, 1],
+  ["Job posts on SME Hub Jobs", "1 at a time", "Unlimited", "Unlimited"],
+  ["Featured job each month", 0, 1, 1],
   ["Post offers to members", "None", "2 a month", "4 a month"],
   ["List a business for sale", 0, 1, 1],
   ["Ask for a new public group", 1, 1, 1],
@@ -105,13 +112,18 @@ export function planForPrice(priceId: string | undefined, env: PriceEnv): { plan
   const map: [string | undefined, "plus" | "advisor", Interval][] = [
     [env.STRIPE_PRICE_PLUS_MONTHLY, "plus", "month"],
     [env.STRIPE_PRICE_PLUS_YEARLY, "plus", "year"],
+    // Update 43: Founding Members keep the $19 and $190 Prices
+    [env.STRIPE_PRICE_PLUS_FOUNDING_MONTHLY, "plus", "month"],
+    [env.STRIPE_PRICE_PLUS_FOUNDING_YEARLY, "plus", "year"],
     [env.STRIPE_PRICE_ADVISOR_YEARLY, "advisor", "year"],
   ];
   const hit = map.find(([id]) => id && id === priceId);
   return hit ? { plan: hit[1], interval: hit[2] } : null;
 }
 
-export function priceFor(plan: "plus" | "advisor", interval: Interval, env: PriceEnv): string | undefined {
+/** founding: the subscription keeps the Founding Member price ($19 or $190). */
+export function priceFor(plan: "plus" | "advisor", interval: Interval, env: PriceEnv, founding = false): string | undefined {
+  if (plan === "plus" && founding) return interval === "month" ? env.STRIPE_PRICE_PLUS_FOUNDING_MONTHLY : env.STRIPE_PRICE_PLUS_FOUNDING_YEARLY;
   if (plan === "plus") return interval === "month" ? env.STRIPE_PRICE_PLUS_MONTHLY : env.STRIPE_PRICE_PLUS_YEARLY;
   return interval === "year" ? env.STRIPE_PRICE_ADVISOR_YEARLY : undefined;
 }

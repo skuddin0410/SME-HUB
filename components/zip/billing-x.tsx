@@ -27,6 +27,8 @@ export type BlData = {
   receipts: Receipt[];
   scheduledYearly: boolean;
   yearlySave: number | null;
+  /** Update 43: this Plus subscription keeps the Founding Member price */
+  foundingPrice?: boolean;
   usage: BlUse[];
   resets: string;
   details: { business: string; address: string; email: string; tax: string };
@@ -106,7 +108,7 @@ export function BillingX({ d }: { d: BlData }) {
                   <h2 id="blh-plan">
                     {P}
                     {paid && <span className="bltag">{d.interval === "year" ? "Yearly" : "Monthly"}</span>}
-                    {paid && d.founding && <span className="bltag found">Founding Member</span>}
+                    {paid && (d.foundingPrice || d.founding) && <span className="bltag found">{d.foundingPrice ? "Founding price, locked in" : "Founding Member"}</span>}
                   </h2>
                   {paid ? (
                     <p className="blprice">{whole(d.price)} <small>{d.interval === "year" ? "a year" : "a month"} + HST</small></p>
@@ -139,7 +141,7 @@ export function BillingX({ d }: { d: BlData }) {
                   {d.foundingLeft && (
                     <div className="blfound">
                       <Ic n="spark" s={18} />
-                      <span><b>Founding Member offer: Plus for $99 in your first year</b><small>For the first 250 members who upgrade. Then $190 a year, or switch back to Free at any time.</small></span>
+                      <span><b>Founding Member offer: Plus for $99 in your first year</b><small>For the first 250 members who upgrade. Then $19 a month for as long as you stay on Plus, instead of the regular $25. Switch back to Free at any time.</small></span>
                       <form action={startCheckout.bind(null, "plus", "year", true)}>
                         <button type="submit" className="btn sm dark">Claim $99 price</button>
                       </form>
@@ -174,7 +176,7 @@ export function BillingX({ d }: { d: BlData }) {
                 ) : (
                   <div className="blsave">
                     <Ic n="spark" s={16} />
-                    <span><b>Pay yearly and save {whole(d.yearlySave)}</b><small>$190 a year instead of $228. Starts at your next payment.</small></span>
+                    <span><b>Pay yearly and save {whole(d.yearlySave)}</b><small>{d.foundingPrice ? "$190 a year instead of $228. Your founding price stays." : "$240 a year instead of $300."} Starts at your next payment.</small></span>
                     <button type="button" className="btn sm ghost" disabled={busy} onClick={() => run(switchToYearly, () => setSwitching(true), "You switch to yearly at your next payment")}>Switch to yearly</button>
                   </div>
                 ))}

@@ -7,7 +7,7 @@ import { ZipAv } from "@/components/zip/bits";
 import { TeamHead, TeamWrap, teamViewer } from "@/components/zip/team";
 import { deleteReportCategory, moderate, saveModerationSettings, saveReportCategory } from "@/app/(hub)/team-actions";
 import { HostRequests } from "@/components/threads/host-requests";
-import { HeldPanel, LinksPanel, RulesPanel, SAFETY_TABS, SafetyKpis, SignupsPanel, safetyOverview } from "@/components/safety/team";
+import { ReportedJobs, HeldPanel, LinksPanel, RulesPanel, SAFETY_TABS, SafetyKpis, SignupsPanel, safetyOverview } from "@/components/safety/team";
 
 export const metadata = { title: "Moderation", robots: { index: false } };
 
@@ -124,6 +124,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
       {tab === "stories" && <ModStoriesSection />}
       {tab === "log" && <ModLog filter={lf} />}
 
+      {tab === "content" && <ReportedJobs supabase={supabase} />}
       {tab === "content" && (
         <form action={moderate} className="stack" style={{ gap: 16 }}>
           <div className="card">

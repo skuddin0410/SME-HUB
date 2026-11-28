@@ -17,7 +17,7 @@ const FAQ = [
   ["Is the free plan really free?", "Yes. There is no trial period, no card and no limit on connections. You can stay on Free for as long as you like."],
   ["Can I change or cancel my plan?", "Yes. You can move up, move down or cancel at any time. If you cancel, you keep your profile and go back to the Free plan."],
   ["How do I pay?", "By card, online, through Stripe. We never see your card number."],
-  ["What is the Founding Member offer?", "The first 250 members who upgrade get Plus for $99 in their first year, then the regular price. The Founding Member badge stays on your profile."],
+  ["What is the Founding Member offer?", "The first 250 members who upgrade get Plus for $99 in their first year. After that they keep the founding price of $19 a month (or $190 a year) for as long as they stay on Plus, instead of the regular $25. The Founding Member badge stays on your profile."],
 ];
 
 export default async function PlansPage({ searchParams }: { searchParams: Promise<{ interval?: string; billing?: string }> }) {
@@ -53,7 +53,7 @@ export default async function PlansPage({ searchParams }: { searchParams: Promis
         <Link href="/auth/sign-up" className="press flex min-h-11 items-center justify-center rounded-xl border px-4 text-sm font-semibold hover:bg-muted">Join free</Link>
       ),
     },
-    { key: "plus", hot: true, amt: <>{yearly ? "$190" : "$19"} <small className="text-[0.9375rem] font-medium tracking-normal text-muted-foreground">{yearly ? "a year" : "a month"}</small></>, sub: yearly ? "Works out to under $16 a month" : "Or $190 a year, 2 months free", button: upgrade("plus", "Upgrade to Plus") },
+    { key: "plus", hot: true, amt: <>{yearly ? "$240" : "$25"} <small className="text-[0.9375rem] font-medium tracking-normal text-muted-foreground">{yearly ? "a year" : "a month"}</small></>, sub: yearly ? "Works out to $20 a month" : "Or $240 a year and save $60", button: upgrade("plus", "Upgrade to Plus") },
     { key: "advisor", amt: <>$1,990 <small className="text-[0.9375rem] font-medium tracking-normal text-muted-foreground">a year</small></>, sub: "Billed yearly", button: upgrade("advisor", "Apply as an Advisor", true) },
   ];
   const cell = (v: string | 0 | 1) => (v === 1 ? <span className="font-extrabold text-green-700" role="img" aria-label="Included">✓</span> : v === 0 ? <span className="text-zinc-400" role="img" aria-label="Not included">—</span> : v);
@@ -67,7 +67,7 @@ export default async function PlansPage({ searchParams }: { searchParams: Promis
         <div role="group" aria-label="Billing" className="mt-1.5 inline-flex gap-0.5 rounded-full border bg-card p-1">
           <Link href="/membership-plans" aria-current={!yearly ? "true" : undefined} className={`rounded-full px-[1.125rem] py-2 text-[0.84375rem] font-semibold ${!yearly ? "bg-zinc-900 text-white" : ""}`}>Pay monthly</Link>
           <Link href="/membership-plans?interval=year" aria-current={yearly ? "true" : undefined} className={`flex items-center gap-2 rounded-full px-[1.125rem] py-2 text-[0.84375rem] font-semibold ${yearly ? "bg-zinc-900 text-white" : ""}`}>
-            Pay yearly <span className="rounded-full bg-green-100 px-2 text-[0.6875rem] font-bold text-green-800">2 months free</span>
+            Pay yearly <span className="rounded-full bg-green-100 px-2 text-[0.6875rem] font-bold text-green-800">Save 20%</span>
           </Link>
         </div>
       </div>
@@ -107,8 +107,8 @@ export default async function PlansPage({ searchParams }: { searchParams: Promis
         <div className="mt-7 flex flex-wrap items-center gap-4 rounded-[1.125rem] bg-gradient-to-br from-amber-100 to-amber-200 px-6 py-5 text-amber-950">
           <span className="text-3xl" aria-hidden="true">⭐</span>
           <div className="flex min-w-0 flex-1 basis-[17rem] flex-col gap-0.5">
-            <strong className="font-display text-lg font-extrabold">Founding Member offer: Plus for $99 in year one</strong>
-            <span className="text-sm">For the first 250 members who upgrade. You keep the Founding Member badge for good.</span>
+            <strong className="font-display text-lg font-extrabold">Founding Member offer: Plus for $99 in year one, then $19 a month for life</strong>
+            <span className="text-sm">For the first 250 members who upgrade. After year one you keep $19 a month (or $190 a year) for as long as you stay on Plus. Everyone else pays $25.</span>
           </div>
           {mine(current, "plus") ? null : upgrade("plus", "Claim the founding price", true, true)}
         </div>

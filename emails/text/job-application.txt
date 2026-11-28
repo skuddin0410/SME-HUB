@@ -1,0 +1,17 @@
+{{applicant_name}} applied for {{job_title}}
+{{#if recommended}}Recommended by a member.{{/if}}
+
+Job: {{job_title}}
+Business: {{biz_name}}
+Email: {{applicant_email}}
+CV: {{cv_note}}
+
+“{{note}}”
+
+See applicants: {{mine_url}}
+Message them: {{message_url}}
+
+--
+You’re getting this because you posted a job on SME Hub Jobs. Choose which emails you get ({{preferences_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

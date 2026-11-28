@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { absolute, jsonLd, pageMeta } from "@/lib/seo";
 import Link from "next/link";
+import { payText } from "@/lib/jobs-shared";
 import { notFound } from "next/navigation";
 import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
@@ -107,6 +108,10 @@ export default async function BusinessPage({ params, searchParams }: { params: P
   const products = tab === "shop" ? await tabRows("business_products", "id, name, description, photo_url, price, available", "position") : [];
   const events = tab === "events" ? await tabRows("business_events", "id, title, description, starts_at, ends_at, location, url", "starts_at") : [];
   const jobs = tab === "jobs" ? await tabRows("business_jobs", "id, title, description, job_type, location, apply_url, open", "created_at", false) : [];
+  // Update 43: jobs posted on SME Hub Jobs for this business
+  const hubJobs = tab === "jobs"
+    ? (((await supabase.from("jobs").select("id, title, job_type, pay_from, pay_to, pay_per, work_where").eq("company_id", company.id).eq("status", "open").gt("closes_at", new Date().toISOString()).order("created_at", { ascending: false })).data ?? []) as { id: string; title: string; job_type: string; pay_from: number | null; pay_to: number | null; pay_per: "hour" | "year" | "project"; work_where: string }[])
+    : [];
   const posts = tab === "feed" ? await fetchPosts(supabase, userId, { businessId: company.id, limit: 20 }) : [];
   const site = company.website && (company.website.startsWith("http") ? company.website : `https://${company.website}`);
   const me: Author | null = profile ? { id: profile.id, full_name: profile.full_name, headline: profile.headline, avatar_url: profile.avatar_url, member_type: profile.member_type } : null;
@@ -345,8 +350,15 @@ export default async function BusinessPage({ params, searchParams }: { params: P
             {tab === "jobs" && (
               <div className="card">
                 <h2>Open roles</h2>
-                {jobs.filter((x) => x.open).length === 0 && <p className="muted">No open jobs right now.</p>}
+                {jobs.filter((x) => x.open).length === 0 && hubJobs.length === 0 && <p className="muted">No open jobs right now.</p>}
                 <div className="list">
+                  {hubJobs.map((x) => (
+                    <div key={x.id} className="stack" style={{ gap: 4 }}>
+                      <div className="row" style={{ flexWrap: "wrap" }}><Link href={`/jobs/${x.id}`} className="namebtn grow"><strong>{x.title}</strong></Link><span className="tag">{x.job_type}</span></div>
+                      <span className="small">{payText({ from: x.pay_from === null ? null : Number(x.pay_from), to: x.pay_to === null ? null : Number(x.pay_to), per: x.pay_per })}{x.work_where === "remote" ? " · Remote" : x.work_where === "hybrid" ? " · Hybrid" : ""}</span>
+                      <Link href={`/jobs/${x.id}`} className="btn sm ghost" style={{ alignSelf: "flex-start" }}>See the job</Link>
+                    </div>
+                  ))}
                   {jobs.filter((x) => x.open).map((x) => (
                     <div key={x.id} className="stack" style={{ gap: 4 }}>
                       <div className="row" style={{ flexWrap: "wrap" }}><strong className="grow">{x.title}</strong><span className="tag">{x.job_type}</span></div>

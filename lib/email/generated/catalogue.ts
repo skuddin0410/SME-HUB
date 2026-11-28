@@ -2490,5 +2490,123 @@ export const CATALOGUE: CatalogueEntry[] = [
   "lists": [],
   "list_fields": [],
   "size_kb": 9
+ },
+ {
+  "id": "job-application",
+  "category": "Jobs",
+  "name": "New application (job poster)",
+  "trigger": "When a member applies on SME Hub for a job you posted (Update 43)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "New application: {{job_title}}",
+  "preheader": "{{applicant_name}} applied{{#if recommended}}, recommended by a member{{/if}}.",
+  "type": "Account (always sent)",
+  "preview_subject": "New application: {{job_title}}",
+  "preview_preheader": "{{applicant_name}} applied{{#if recommended}}, recommended by a member{{/if}}.",
+  "variables": [
+   "applicant_email",
+   "applicant_name",
+   "biz_name",
+   "cv_note",
+   "job_title",
+   "message_url",
+   "mine_url",
+   "note",
+   "recommended"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "job-application-copy",
+  "category": "Jobs",
+  "name": "Your application (copy)",
+  "trigger": "A copy for the member when they apply for a job on SME Hub (Update 43)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "You applied: {{job_title}} at {{biz_name}}",
+  "preheader": "A copy of what you sent. The owner replies by email or SME Hub message.",
+  "type": "Account (always sent)",
+  "preview_subject": "You applied: {{job_title}} at {{biz_name}}",
+  "preview_preheader": "A copy of what you sent. The owner replies by email or SME Hub message.",
+  "variables": [
+   "biz_name",
+   "cv_note",
+   "job_title",
+   "job_url",
+   "note",
+   "sent_at"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "job-referral",
+  "category": "Jobs",
+  "name": "A job someone thought of you for",
+  "trigger": "When a member uses \"I know someone\" on a job (sent to the person, Update 43)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{referrer_name}} thought of you: {{job_title}}",
+  "preheader": "{{biz_name}} is hiring. {{referrer_first}} sent you this job.",
+  "type": "Account (always sent)",
+  "preview_subject": "{{referrer_name}} thought of you: {{job_title}}",
+  "preview_preheader": "{{biz_name}} is hiring. {{referrer_first}} sent you this job.",
+  "variables": [
+   "biz_name",
+   "job_pay",
+   "job_title",
+   "job_url",
+   "job_where",
+   "note",
+   "referrer_first",
+   "referrer_name"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "job-recommended",
+  "category": "Jobs",
+  "name": "A member recommended someone (job poster)",
+  "trigger": "When a member sends your job to someone with \"I know someone\" (Update 43)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{referrer_name}} recommended someone for {{job_title}}",
+  "preheader": "If they apply, they’re marked Recommended by a member.",
+  "type": "Account (always sent)",
+  "preview_subject": "{{referrer_name}} recommended someone for {{job_title}}",
+  "preview_preheader": "If they apply, they’re marked Recommended by a member.",
+  "variables": [
+   "job_title",
+   "mine_url",
+   "person_name",
+   "referrer_name"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
+ },
+ {
+  "id": "job-closing-soon",
+  "category": "Jobs",
+  "name": "Your job closes in 3 days",
+  "trigger": "3 days before a job closes automatically (Update 43)",
+  "sender": "SME Hub <hello@smehub.ca>",
+  "subject": "{{job_title}} closes on {{close_date}}",
+  "preheader": "Jobs stay open for 30 days. Post it again if you’re still hiring.",
+  "type": "Account (always sent)",
+  "preview_subject": "{{job_title}} closes on {{close_date}}",
+  "preview_preheader": "Jobs stay open for 30 days. Post it again if you’re still hiring.",
+  "variables": [
+   "apps",
+   "close_date",
+   "job_title",
+   "mine_url",
+   "post_url",
+   "views"
+  ],
+  "lists": [],
+  "list_fields": [],
+  "size_kb": 9
  }
 ];

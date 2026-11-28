@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { blockSite, decideHeld, saveSafetyList, saveSafetyRule, unblockSite, watchDecide } from "@/app/(hub)/safety-actions";
+import { teamJob } from "@/app/(hub)/job-actions";
 import { toast } from "@/components/toast";
 import { Ic } from "@/components/zip/ic";
 
@@ -167,6 +168,18 @@ export function SafetyRules({ cfg: start, words: w0, names: n0 }: { cfg: Cfg; wo
         {list("words", "Scam words", "Messages with these get a warning, and new members’ posts with them are held.")}
         {list("names", "Protected names", "Members can’t use these in their name, so nobody can pretend to be the Hub team.")}
       </section>
+    </div>
+  );
+}
+
+/** Update 43: a held or reported job: approve it, or remove it. */
+export function JobTeamActions({ id, held }: { id: string; held: boolean }) {
+  const { busy, run } = useRun();
+  return (
+    <div className="sfacts">
+      {held && <button type="button" className="btn sm ghost" disabled={busy} onClick={() => run(() => teamJob(id, "open"), "Approved. The job is live.")}>Approve</button>}
+      {!held && <button type="button" className="btn sm ghost" disabled={busy} onClick={() => run(() => teamJob(id, "open"), "Reports dismissed. The job stays up.")}>Dismiss reports</button>}
+      <button type="button" className="btn sm sfred" disabled={busy} onClick={() => run(() => teamJob(id, "removed"), "Job removed")}>Remove job</button>
     </div>
   );
 }

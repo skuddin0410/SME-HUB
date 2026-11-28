@@ -108,4 +108,9 @@ export const LOADERS: Record<string, () => Promise<{ html: string; text: string 
   "event-reminder-soon": () => import("./event-reminder-soon"),
   "event-link-pending": () => import("./event-link-pending"),
   "deadline-overdue": () => import("./deadline-overdue"),
+  "job-application": () => import("./job-application"),
+  "job-application-copy": () => import("./job-application-copy"),
+  "job-referral": () => import("./job-referral"),
+  "job-recommended": () => import("./job-recommended"),
+  "job-closing-soon": () => import("./job-closing-soon"),
 };

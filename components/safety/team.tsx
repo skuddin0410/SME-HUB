@@ -2,7 +2,7 @@ import { timeAgo } from "@/lib/hub";
 import { ZipAv } from "@/components/zip/bits";
 import { Ic } from "@/components/zip/ic";
 import { CFG_DEFAULT } from "@/lib/safety/server";
-import { BlockSiteForm, HeldActions, SafetyRules, UnblockSite, WatchActions } from "./team-client";
+import { BlockSiteForm, HeldActions, JobTeamActions, SafetyRules, UnblockSite, WatchActions } from "./team-client";
 
 /** Update 41: the team's safety tools inside Moderation (overview row and four tabs), all from the database. */
 
@@ -48,7 +48,10 @@ export async function HeldPanel({ supabase }: { supabase: DB }) {
     .order("created_at", { ascending: false })
     .limit(100);
   const H = (data ?? []) as { id: string; kind: string; body: string; where_label: string; reasons: string[]; created_at: string; author: Who }[];
-  if (!H.length) {
+  // Update 43: a new business page's first job waits here too
+  const { data: hj } = await supabase.from("jobs").select("id, title, description, created_at, company:companies!jobs_company_id_fkey(name, created_at), poster:profiles!jobs_posted_by_fkey(id, full_name, headline, avatar_url)").eq("status", "held").order("created_at").limit(50);
+  const J = (hj ?? []) as { id: string; title: string; description: string; created_at: string; company: { name: string; created_at: string } | null; poster: Who }[];
+  if (!H.length && !J.length) {
     return (
       <div className="sfpanel sfempty">
         <Ic n="check" s={20} />
@@ -61,6 +64,14 @@ export async function HeldPanel({ supabase }: { supabase: DB }) {
     <div className="sfpanel">
       <p className="sfmut">The automatic checks stopped these before members saw them. Nothing is published until you approve it.</p>
       <div className="sflist">
+        {J.map((j) => (
+          <article className="sfitem" key={j.id}>
+            <div className="sfith"><WhoLine m={j.poster} /><span className="sftag">Job</span><small>{j.company?.name ?? ""} · {timeAgo(j.created_at)}</small></div>
+            <p className="sftext"><b>{j.title}</b> · {j.description.slice(0, 400)}</p>
+            <div className="sfwhy"><span><Ic n="flag" s={12} />First job from a new business page</span></div>
+            <JobTeamActions id={j.id} held />
+          </article>
+        ))}
         {H.map((h) => (
           <article className="sfitem" key={h.id}>
             <div className="sfith">
@@ -167,4 +178,31 @@ export async function RulesPanel({ supabase }: { supabase: DB }) {
   const { data } = await supabase.from("safety_config").select("cfg, words, names").eq("id", 1).maybeSingle();
   const row = data as { cfg: Record<string, boolean | number>; words: string[]; names: string[] } | null;
   return <SafetyRules cfg={{ ...CFG_DEFAULT, ...(row?.cfg ?? {}) }} words={row?.words ?? []} names={row?.names ?? []} />;
+}
+
+/** Update 43: jobs members reported ("asks for money", fake ads). */
+export async function ReportedJobs({ supabase }: { supabase: DB }) {
+  const { data, error } = await supabase.from("job_reports").select("job_id, reason, created_at, job:jobs!job_reports_job_id_fkey(id, title, status, company:companies!jobs_company_id_fkey(name))").eq("status", "open").order("created_at", { ascending: false }).limit(200);
+  if (error) return null;
+  const by = new Map<string, { title: string; company: string; n: number; reason: string; held: boolean }>();
+  for (const r of (data ?? []) as unknown as { job_id: string; reason: string; job: { id: string; title: string; status: string; company: { name: string } | null } | null }[]) {
+    if (!r.job || r.job.status === "removed") continue;
+    const x = by.get(r.job_id) ?? { title: r.job.title, company: r.job.company?.name ?? "", n: 0, reason: r.reason, held: r.job.status === "held" };
+    x.n += 1;
+    by.set(r.job_id, x);
+  }
+  if (!by.size) return null;
+  return (
+    <div className="card">
+      <div className="row"><h2 className="grow">Reported jobs</h2><span className="pill warn">{by.size} waiting</span></div>
+      <div className="list">
+        {[...by.entries()].map(([id, x]) => (
+          <div key={id} className="row" style={{ flexWrap: "wrap" }}>
+            <span className="stack grow"><a className="namebtn" href={`/jobs/${id}`}><strong>{x.title}</strong></a><span className="muted small">{x.company} · {x.n} report{x.n === 1 ? "" : "s"} · {x.reason}</span></span>
+            <JobTeamActions id={id} held={x.held} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

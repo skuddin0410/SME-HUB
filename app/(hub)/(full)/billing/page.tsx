@@ -1,6 +1,6 @@
 import { requireUser } from "@/lib/hub";
 import { pageMeta } from "@/lib/seo";
-import { PLAN_INFO, type PlanKey } from "@/lib/billing";
+import { FOUNDING, PLAN_INFO, type PlanKey } from "@/lib/billing";
 import { billingConfigured } from "@/lib/stripe";
 import { stripeView } from "@/lib/billing-live";
 import { settingsSections } from "@/lib/settings-nav";
@@ -24,7 +24,7 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
   const { supabase, userId } = await requireUser();
   const [me, sub, limits, customer, usage, details, auth, firstBiz, left] = await Promise.all([
     supabase.from("profiles").select("plan, founding_number, location, profile_type").eq("id", userId).maybeSingle(),
-    supabase.from("subscriptions").select("plan, billing_interval, status, current_period_end, cancel_at_period_end, stripe_subscription_id").eq("user_id", userId).maybeSingle(),
+    supabase.from("subscriptions").select("plan, billing_interval, status, current_period_end, cancel_at_period_end, stripe_subscription_id, founding_offer").eq("user_id", userId).maybeSingle(),
     supabase.from("plan_limits").select("plan, key, value"),
     supabase.from("billing_customers").select("stripe_customer_id").eq("user_id", userId).maybeSingle(),
     supabase.rpc("my_plan_usage"),
@@ -52,7 +52,9 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
   const resets = new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleDateString("en-CA", { month: "short", day: "numeric" });
   const det = details.data as { business: string; address: string; receipt_email: string; tax_number: string } | null;
   const interval = live?.billing_interval ?? null;
-  const price = plan === "free" ? 0 : interval === "month" ? (PLAN_INFO[plan].month ?? 0) : PLAN_INFO[plan].year;
+  // Update 43: a Founding Member's Plus subscription keeps $19 or $190; everyone else pays $25 or $240
+  const foundingPrice = plan === "plus" && !!(live as { founding_offer?: boolean } | null)?.founding_offer;
+  const price = plan === "free" ? 0 : foundingPrice ? (interval === "year" ? FOUNDING.year : FOUNDING.month) : interval === "month" ? (PLAN_INFO[plan].month ?? 0) : PLAN_INFO[plan].year;
   const endsOn = live?.current_period_end ? new Date(live.current_period_end).toLocaleDateString("en-CA", { month: "short", day: "numeric", year: "numeric", timeZone: "America/Toronto" }) : null;
   const d: BlData = {
     plan,
@@ -65,7 +67,8 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
     card: view.card,
     receipts: view.receipts,
     scheduledYearly: view.scheduledYearly,
-    yearlySave: plan === "plus" ? 19 * 12 - 190 : null,
+    yearlySave: plan === "plus" ? (foundingPrice ? FOUNDING.month * 12 - FOUNDING.year : PLAN_INFO.plus.month * 12 - PLAN_INFO.plus.year) : null,
+    foundingPrice,
     usage: rows,
     resets,
     details: {

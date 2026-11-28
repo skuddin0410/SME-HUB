@@ -1,0 +1,14 @@
+{{referrer_name}} thought of you
+{{#if note}}“{{note}}”{{/if}}
+
+Job: {{job_title}}
+Business: {{biz_name}}
+Where: {{job_where}}
+Pay: {{job_pay}}
+
+See the job: {{job_url}}
+
+--
+You’re getting this because a member of SME Hub thought of you for a job. Choose which emails you get ({{preferences_url}}).
+Help Centre: {{help_url}}
+CanadianSME (Cmarketing Inc.) · 6345 Dixie Rd, Unit 202, Mississauga, ON L5T 2E6, Canada

@@ -194,3 +194,125 @@
 .dark .zip .ccci{background:#052E16;color:#86EFAC}.dark .zip .cchelp[aria-pressed="true"]{background:#052E16}
 .dark .zip .ccsw{background:#3A4150}
 
+
+/* ===== SME Hub Jobs (Update 43) ===== */
+.zip .jxpage,.zip .jxjob{display:flex;flex-direction:column;gap:14px;max-width:1080px;width:100%;margin:0 auto;min-width:0}
+.zip .jxpage .btn,.zip .jxjob .btn,.zip .jxmodal .btn{border-radius:4px}
+.zip .jxpage .btn.dark,.zip .jxjob .btn.dark,.zip .jxmodal .btn.dark{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.zip .jxeye{margin:0;display:flex;align-items:center;gap:5px;font:700 11.5px var(--body);letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.zip .jxhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.zip .jxhead h1{font:800 28px var(--display);margin:2px 0 4px}.zip .jxsub{margin:0;color:var(--muted)}
+.zip .jxhb{display:flex;gap:8px;flex-wrap:wrap}
+.zip .jxmut{color:var(--muted);font-size:12.5px}
+/* filters */
+.zip .jxbar{display:flex;flex-direction:column;gap:8px;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.zip .jxbar>.jxsearch,.zip .jxbar>.jxseg{align-self:stretch}
+.zip .jxsearch{display:flex;align-items:center;gap:8px;padding:0 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);min-height:40px;color:var(--muted)}
+.zip .jxsearch input{flex:1;border:0;background:none;font:500 14.5px var(--body);color:var(--ink);outline:none;min-width:0}
+.zip .jxsearch:focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.zip .jxseg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--surface);align-self:flex-start}
+.zip .jxseg button{padding:7px 11px;background:none;border:0;border-left:1px solid var(--line);color:var(--ink);font:600 13px var(--body);cursor:pointer;min-height:34px}
+.zip .jxseg button:first-child{border-left:0}.zip .jxseg button[aria-checked="true"]{background:var(--ink);color:var(--surface)}
+.zip .jxbar2{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.zip .jxbar2 .grow{flex:1}
+.zip .jxsel select{min-height:34px;padding:5px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:500 13px var(--body)}
+.zip .jxchip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);font:600 13px var(--body);cursor:pointer;min-height:34px}
+.zip .jxchip[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+/* list */
+.zip .jxgrid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;align-items:start}
+.zip .jxlist{display:flex;flex-direction:column;gap:8px;min-width:0}
+.zip .jxcount{margin:0;font:700 12.5px var(--body);color:var(--muted)}
+.zip .jxcard{position:relative;display:flex;gap:14px;align-items:flex-start;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.zip .jxcard:hover{border-color:var(--ink)}
+.zip .jxcard.jxft{border-left:4px solid #D97706}
+.zip .jxlink{position:absolute;inset:0;z-index:1}
+.zip .jxcard .av.l{width:48px;height:48px;border-radius:6px;flex:none}
+.zip .jxmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.zip .jxtop{display:flex;gap:6px}.zip .jxtop:empty{display:none}
+.zip .jxcard h3{margin:0;font:800 16px var(--display)}
+.zip .jxbiz{margin:0;font-size:13.5px;color:var(--muted)}.zip .jxbiz a{color:var(--ink);font-weight:600}
+.zip .jxmeta{margin:4px 0 0;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px;color:var(--muted)}.zip .jxmeta b{color:#15803D;font-size:13px}
+.zip .jxref{display:inline-flex;align-items:center;gap:4px;color:#1D4ED8}
+.zip .jxfeat{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:3px;background:#FEF3C7;color:#92400E;font:700 11px var(--body)}
+.zip .jxapp{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:3px;background:#DCFCE7;color:#15803D;font:700 11px var(--body)}
+.zip .jxsave{position:relative;z-index:2;flex:none;width:34px;height:34px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.zip .jxsave[aria-pressed="true"]{color:var(--brand,#B3241A);border-color:var(--brand,#B3241A)}
+.zip .jxsave[aria-pressed="true"] svg{fill:currentColor}
+.zip .jxempty{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:4px}.zip .jxempty span{color:var(--muted);font-size:13.5px}
+.zip .jxside{display:flex;flex-direction:column;gap:12px;position:sticky;top:76px}
+.zip .jxbox{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.zip .jxbox h2{margin:0;font:800 15px var(--display)}.zip .jxbox p{margin:0;font-size:13px;color:var(--muted)}
+.zip .jxbox ul{margin:0;padding-left:16px;font-size:13px}.zip .jxbox .btn{align-self:flex-start}
+.zip .jxsafe{flex-direction:row;gap:10px;align-items:flex-start;border-color:#BFDBFE;background:#EFF6FF}.zip .jxsafe>svg{flex:none;color:#1D4ED8;margin-top:2px}
+.zip .jxsafe div{display:flex;flex-direction:column;gap:2px}.zip .jxsafe b{font-size:13.5px}.zip .jxsafe span{font-size:12.5px;color:var(--ink)}
+/* job page */
+.zip .jxback{font:600 13.5px var(--body);color:var(--muted);text-decoration:none}.zip .jxback:hover{color:var(--ink)}
+.zip .jxjgrid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;align-items:start}
+.zip .jxjmain{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.zip .jxjh{display:flex;gap:14px;align-items:flex-start}.zip .jxjh .av.l{width:60px;height:60px;border-radius:6px;font-size:20px;flex:none}
+.zip .jxjh h1{margin:2px 0;font:800 26px var(--display)}
+.zip .jxfacts{display:grid;grid-template-columns:repeat(4,1fr);margin:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.zip .jxfacts>div{padding:10px 12px;border-left:1px solid var(--line)}.zip .jxfacts>div:first-child{border-left:0}
+.zip .jxfacts dt{font:700 11px var(--body);letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}.zip .jxfacts dd{margin:2px 0 0;font:700 14px var(--body)}
+.zip .jxfacts>div:first-child dd{color:#15803D}
+.zip .jxacts{display:flex;gap:8px;flex-wrap:wrap}
+.zip .jxacts .btn[aria-pressed="true"]{border-color:var(--brand,#B3241A);color:var(--brand,#B3241A)}
+.zip .jxdone{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:4px;background:#F0FDF4;border:1px solid #BBF7D0;color:#14532D;font:600 13.5px var(--body)}
+.zip .jxjmain section h2{margin:0 0 6px;font:800 16px var(--display)}.zip .jxjmain section p{margin:0;font-size:14.5px;line-height:1.55}
+.zip .jxjmain section ul{margin:0;padding-left:18px;font-size:14.5px;line-height:1.6}
+.zip .jxoff{list-style:none;padding:0!important}.zip .jxoff li{display:flex;align-items:center;gap:8px}.zip .jxoff svg{color:#15803D;flex:none}
+.zip .jxlaw{padding:12px 14px;border:1px dashed var(--line);border-radius:4px;background:var(--bg)}.zip .jxlaw ul{font-size:13.5px!important}
+.zip .jxjside{display:flex;flex-direction:column;gap:12px;position:sticky;top:76px}
+.zip .jxjside .av.s{border-radius:4px}
+/* my jobs */
+.zip .jxmine{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.zip .jxmine.closed{opacity:.6}
+.zip .jxmh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.zip .jxmh .grow{flex:1}.zip .jxmh h2{margin:0;font:800 17px var(--display)}.zip .jxmh h2 a{color:var(--ink);text-decoration:none}.zip .jxmh p{margin:2px 0 0}
+.zip .jxst{font:700 11.5px var(--body);padding:2px 8px;border-radius:3px}.zip .jxst.on{background:#DCFCE7;color:#15803D}.zip .jxst.off{background:var(--bg);color:var(--muted)}
+.zip .jxstats{display:flex;gap:18px;font-size:13px;color:var(--muted)}.zip .jxstats b{color:var(--ink);font-size:15px}
+.zip .jxapps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.zip .jxapps li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.zip .jxapps li>div{flex:1;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}.zip .jxapps b{font-size:14px}.zip .jxapps p{flex-basis:100%;margin:2px 0 0;font-size:13.5px}
+.zip .jxreftag{font:700 10.5px var(--body);font-style:normal;padding:1px 6px;border-radius:3px;background:#EFF6FF;color:#1D4ED8}
+/* post a job */
+.zip .jxgate{display:flex;align-items:center;gap:14px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:4px;flex-wrap:wrap}
+.zip .jxgate>svg{flex:none;color:var(--muted)}.zip .jxgate>div{flex:1 1 300px;display:flex;flex-direction:column;gap:2px}.zip .jxgate b{font:800 16px var(--display)}.zip .jxgate span{color:var(--muted);font-size:13.5px}
+.zip .jxfgrid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+.zip .jxform{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.zip .jxl{font:600 13.5px var(--body);margin-top:8px}
+.zip .jxin{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);font:500 14.5px var(--body)}
+.zip .jxin:focus{outline:2px solid var(--ink);outline-offset:1px}
+.zip textarea.jxin{resize:vertical;line-height:1.5}
+.zip .jxhelp{margin:0;font-size:12.5px;color:var(--muted)}
+.zip .jxpb{display:flex;align-items:center;gap:8px;margin:0;font-size:13.5px}
+.zip .jxpay{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.zip .jxpay label{position:relative;flex:0 0 130px}.zip .jxpay .jxin{padding-left:22px}
+.zip .jxdol{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600}
+.zip .jxlawf{display:flex;flex-direction:column;gap:6px;padding:10px 12px;margin-top:6px;border:1px solid #FCD34D;background:#FFFBEB;border-radius:4px}.zip .jxlawf .jxl{margin-top:2px}
+.zip .jxfeatrow{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:4px}
+.zip .jxfeatrow>span{flex:1;display:flex;flex-direction:column}.zip .jxfeatrow b{font-size:13.5px}.zip .jxfeatrow small{font-size:12px;color:var(--muted)}
+.zip .jxfeatrow.lock{background:var(--bg)}
+.zip .jxplus{font:800 11px var(--body);padding:3px 8px;border-radius:3px;background:var(--ink);color:var(--surface);text-decoration:none}
+.zip .jxsw{flex:none;width:36px;height:20px;border-radius:10px;border:0;background:#CBD5E1;position:relative;cursor:pointer;padding:0}
+.zip .jxsw i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.zip .jxsw[aria-checked="true"]{background:#D97706}.zip .jxsw[aria-checked="true"] i{left:18px}
+.zip .jxerr{margin:6px 0 0;color:#B91C1C;font-weight:600;font-size:13.5px}
+.zip .jxfoot{display:flex;gap:8px;margin-top:12px}
+.zip .jxprev{display:flex;flex-direction:column;gap:8px;position:sticky;top:76px}.zip .jxprev .jxlink{pointer-events:none}
+/* modals */
+.zip .modal.jxmodal{max-width:520px;width:calc(100% - 32px);gap:6px;border-radius:6px}
+.zip .jxmh2{display:flex;justify-content:space-between;align-items:center;gap:10px}.zip .jxmh2 h2{margin:0;font:800 19px var(--display)}
+.zip .jxwho{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;margin-top:6px}.zip .jxwho span{display:flex;flex-direction:column}.zip .jxwho small{color:var(--muted)}
+.zip .modal.jxmodal label.jxl{display:block}
+.zip .jxfile{font-size:13px}
+.zip .modal.jxmodal label.jxcb{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:13.5px;margin-top:8px;font-weight:500}
+.zip .jxsafe2{display:flex;align-items:center;gap:6px;margin:6px 0 0;font-size:12.5px;color:#1D4ED8}
+.zip .jxor{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:8px 0 0}.zip .jxor:before,.zip .jxor:after{content:"";flex:1;height:1px;background:var(--line)}
+.zip .jx2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.zip .jxfoot{justify-content:flex-end}.zip .jxform .jxfoot{justify-content:flex-start}
+@media (max-width:900px){.zip .jxgrid,.zip .jxjgrid,.zip .jxfgrid{grid-template-columns:1fr}.zip .jxside,.zip .jxjside,.zip .jxprev{position:static}.zip .jxfacts{grid-template-columns:1fr 1fr}.zip .jxfacts>div:nth-child(3){border-left:0}.zip .jxfacts>div:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:560px){.zip .jxhead h1{font-size:23px}.zip .jxjh h1{font-size:21px}.zip .jxcard{gap:10px;padding:12px}.zip .jxcard .av.l{width:40px;height:40px}.zip .jx2{grid-template-columns:1fr}.zip .jxseg button{flex:1 1 auto}.zip .jxseg{align-self:stretch}.zip .jxhb{width:100%}.zip .jxhb .btn{flex:1;justify-content:center}}
+.dark .zip .jxfeat{background:#3A2A05;color:#FCD34D}.dark .zip .jxapp,.dark .zip .jxst.on{background:#052E16;color:#86EFAC}
+.dark .zip .jxsafe{background:#172554;border-color:#1E3A8A}.dark .zip .jxsafe svg,.dark .zip .jxsafe2{color:#93C5FD}
+.dark .zip .jxlawf{background:#2A1F05;border-color:#78350F}.dark .zip .jxdone{background:#052E16;border-color:#166534;color:#BBF7D0}
+.dark .zip .jxreftag{background:#172554;color:#BFDBFE}.dark .zip .jxmeta b,.dark .zip .jxfacts>div:first-child dd{color:#4ADE80}.dark .zip .jxref{color:#93C5FD}
+.dark .zip .jxsw{background:#3A4150}
+

@@ -28,6 +28,7 @@ const HUB_MENU: NavItem[] = [
   { label: "My leads", href: "/leads" },
   { label: "My business card", href: "/mycard" },
   { label: "Businesses for Sale", href: "/for-sale" },
+  { label: "Jobs", href: "/jobs" },
   { label: "Events", href: "/events" },
   { label: "Member blogs", href: "/member-blogs" },
   { label: "SME Advisors", href: "/smb-advisor" },

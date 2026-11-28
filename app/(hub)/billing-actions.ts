@@ -17,7 +17,9 @@ async function origin() {
 export async function startCheckout(plan: "plus" | "advisor", interval: Interval, founding = false) {
   const { supabase, userId, profile } = await requireUser();
   const stripe = getStripe();
-  const price = priceFor(plan, interval, process.env);
+  // Update 43: the founding offer uses its own Prices ($190 a year, with the coupon making year one $99)
+  const price = priceFor(plan, interval, process.env, founding);
+  if (founding && !price) redirect("/membership-plans?billing=founding");
   if (!stripe || !billingConfigured() || !price) redirect("/membership-plans?billing=unavailable");
 
   const [{ data: me }, { data: sub }, { data: customer }] = await Promise.all([
@@ -73,10 +75,10 @@ const NOT_SET = "Billing is being set up. Please try again soon.";
 async function mySub() {
   const { supabase, userId } = await requireUser();
   const [{ data: sub }, { data: customer }] = await Promise.all([
-    supabase.from("subscriptions").select("plan, billing_interval, status, stripe_subscription_id").eq("user_id", userId).maybeSingle(),
+    supabase.from("subscriptions").select("plan, billing_interval, status, stripe_subscription_id, founding_offer").eq("user_id", userId).maybeSingle(),
     supabase.from("billing_customers").select("stripe_customer_id").eq("user_id", userId).maybeSingle(),
   ]);
-  return { supabase, userId, sub: sub as { plan: "plus" | "advisor"; billing_interval: Interval; status: string; stripe_subscription_id: string } | null, customer: (customer?.stripe_customer_id as string | undefined) ?? null };
+  return { supabase, userId, sub: sub as { plan: "plus" | "advisor"; billing_interval: Interval; status: string; stripe_subscription_id: string; founding_offer?: boolean } | null, customer: (customer?.stripe_customer_id as string | undefined) ?? null };
 }
 
 async function releaseSchedule(stripe: NonNullable<ReturnType<typeof getStripe>>, subId: string) {
@@ -118,7 +120,8 @@ export async function keepPlan(): Promise<Done> {
 export async function switchToYearly(): Promise<Done> {
   const stripe = getStripe();
   const { sub } = await mySub();
-  const yearly = sub ? priceFor(sub.plan, "year", process.env) : undefined;
+  // a Founding Member moves to the founding yearly price ($190), never the regular one
+  const yearly = sub ? priceFor(sub.plan, "year", process.env, !!sub.founding_offer) : undefined;
   if (!stripe || !yearly) return { ok: false, error: NOT_SET };
   if (!sub || sub.billing_interval !== "month") return { ok: false, error: "You’re already paying yearly." };
   try {

@@ -15,6 +15,7 @@ const GROUPS: [string, string, string, F[]][] = [
     ["/categories", "All categories", "32 industries and 335 specialities, so customers find the right business.", "grid"],
     ["/pavilion", "Made in Canada Pavilion", "A showcase for products made by Canadian businesses.", "flag"],
     ["/for-sale", "Business for sale", "Buy or sell a small business, with the seller’s name hidden if they like.", "tag"],
+    ["/jobs", "Jobs", "Find work at Canadian small businesses, or post a job of your own.", "brief"],
     ["/member-blogs", "Member blogs", "Write about what you know and reach other owners.", "edit"]]],
   ["Funding, tools and advice", "coin", "#C37D16", [
     ["/grants", "Grant Finder", "Grants, loans and tax credits matched to your business, with checked sources.", "coin"],
@@ -70,7 +71,7 @@ export function HubGuide({ member }: { member: boolean }) {
           <div className="xhghead"><p className="pgkick2">Membership</p><h2>Free to join. Upgrade only if it pays for itself.</h2></div>
           <div className="xhgplans">
             <div><b>Free</b><p className="xhgamt">$0</p><p>Profile, connections and messages, one directory listing, groups, posting, Grant Finder and 3 people to meet every day.</p></div>
-            <div className="hot"><b>Plus</b><p className="xhgamt">$19 <small>a month</small></p><p>Or $190 a year. A featured listing shown first, up to 3 business pages, offers to all members, your own private group and more AI help.</p></div>
+            <div className="hot"><b>Plus</b><p className="xhgamt">$25 <small>a month</small></p><p>Or $240 a year. A featured listing shown first, up to 3 business pages, offers and unlimited job posts, your own private group and more AI help.</p></div>
             <div><b>Advisor</b><p className="xhgamt">$1,990 <small>a year</small></p><p>For accountants, lawyers, consultants and coaches. An SME Advisor badge, a place on the Advisors page and free intro calls booked by members.</p></div>
           </div>
           <Link className="xhgmore" href="/membership-plans">Compare every plan <Ic n="right" s={14} /></Link>
