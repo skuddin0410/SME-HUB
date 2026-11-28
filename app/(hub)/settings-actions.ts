@@ -7,6 +7,7 @@ import { getHubSettings } from "@/lib/zip/settings-load";
 import { mayCloseAccount } from "@/lib/zip/profile-rules";
 import { VISIBILITY_FIELDS, VISIBILITY_LEVELS } from "@/lib/profile-extra";
 import { PRESETS, type PresetKey } from "@/lib/settings";
+import { serviceClient } from "@/lib/supabase/service";
 
 /** Update 33: Settings and privacy. Every choice saves the moment it is made (the new sign-in email is the only Save). */
 type Result = { ok: true } | { ok: false; error: string };
@@ -62,7 +63,7 @@ export async function setRecordViews(on: boolean): Promise<Result> {
   return { ok: true };
 }
 
-const BOOLS = ["show_online", "in_directory", "indexable", "allow_tags", "alert_messages", "alert_requests", "alert_leads", "alert_deadlines", "alert_news", "alert_events"] as const;
+const BOOLS = ["show_online", "in_directory", "indexable", "allow_tags", "alert_messages", "alert_requests", "alert_leads", "alert_deadlines", "alert_news", "alert_events", "alert_mag", "alert_partner"] as const;
 const CHOICES: Record<string, readonly string[]> = {
   language: ["en", "fr"],
   who_message: ["anyone", "conn"],
@@ -79,7 +80,15 @@ export async function setSetting(key: SettingKey, value: boolean | string): Prom
   else if (CHOICES[key]?.includes(String(value))) row[key] = String(value);
   else return { ok: false, error: "That choice isn’t available." };
   const { error } = await supabase.from("member_settings").upsert(row, { onConflict: "member_id" });
-  if (error) return { ok: false, error: /member_settings/.test(error.message) ? NOT_READY : FAIL };
+  if (error) return { ok: false, error: /member_settings|alert_mag|alert_partner/.test(error.message) ? NOT_READY : FAIL };
+  // Update 45: switching the newsletter on is consent, so it's recorded (server only), as at sign-up
+  if (key === "alert_news" && value === true) {
+    const admin = serviceClient();
+    if (admin) {
+      const { data: had } = await admin.from("newsletter_consents").select("user_id").eq("user_id", userId).maybeSingle();
+      if (!had) await admin.from("newsletter_consents").insert({ user_id: userId, wording: "SME Hub newsletter. Member stories, events and offers, about twice a month.", source: "settings" });
+    }
+  }
   revalidatePath("/settings");
   if (key === "paused" || key === "in_directory" || key === "indexable") revalidatePath(`/members/${userId}`);
   return { ok: true };

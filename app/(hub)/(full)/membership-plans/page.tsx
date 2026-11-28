@@ -13,9 +13,10 @@ const NOTES: Record<string, string> = {
   founding: "The Founding Member price is not available right now. You can still upgrade at the regular price.",
 };
 
-const FAQ = [
+const FAQ: [string, React.ReactNode][] = [
   ["Is the free plan really free?", "Yes. There is no trial period, no card and no limit on connections. You can stay on Free for as long as you like."],
-  ["Can I change or cancel my plan?", "Yes. You can move up, move down or cancel at any time. If you cancel, you keep your profile and go back to the Free plan."],
+  ["Can I change or cancel my plan?", "Yes. Cancel at any time in Settings, under Plan and billing, or email support@smehub.ca before your renewal date. You keep your paid features until the end of the period you paid for, then move to Free. Your profile stays. Plan changes start at your next billing date unless you approve an earlier change."],
+  ["Can I get a refund?", <>If you cancel after a month or year has started, that payment isn’t refunded. If we charge you twice, bill you after you cancelled on time, or can’t deliver something you paid for, we fix it. Read the <Link href="/policies/membership-terms" className="font-semibold text-primary underline-offset-2 hover:underline">Membership, cancellation and refund terms</Link>.</>],
   ["How do I pay?", "By card, online, through Stripe. We never see your card number."],
   ["What is the Founding Member offer?", "The first 250 members who upgrade get Plus for $99 in their first year. After that they keep the founding price of $19 a month (or $190 a year) for as long as they stay on Plus, instead of the regular $25. The Founding Member badge stays on your profile."],
 ];

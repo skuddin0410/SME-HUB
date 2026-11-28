@@ -37,6 +37,8 @@ export type Ev = {
   agenda: string[];
   flagship: boolean;
   cancelled_at: string | null;
+  /** Update 45: "no", "yes" (for people who registered) or "promo" (clips may promote future events). Missing before migration 0080. */
+  recording?: "no" | "yes" | "promo";
 };
 export const EV_SELECT = "id, slug, title, description, host_kind, host_id, type, topic, fmt, starts_at, ends_at, tz, city, prov, venue, price, cap, img, series, agenda, flagship, cancelled_at";
 export type EvHost = { name: string; sub: string; id: string | null; avatar: string | null; role?: string; city?: string };

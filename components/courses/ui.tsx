@@ -520,7 +520,7 @@ function ReportForm({ r, c }: { r: Review; c: Course }) {
         {x.cats.map(([n, d]) => <label className="rcat" key={n}><input type="radio" name="rcat" value={n} checked={cat === n} onChange={() => setCat(n)} /><span><b>{n}</b><span>{d}</span></span></label>)}
       </div>
       <label htmlFor="rnote">Anything the team should know? (optional)<textarea className="field" id="rnote" value={note} onChange={(e) => setNote(e.target.value)} /></label>
-      <p className="muted small">Reports are private. The member is not told who reported them.</p>
+      <p className="muted small">Reports are private. The member is not told who reported them. Copyright, privacy or a correction? See <Link href="/policies/content-complaints">how to send a complaint</Link>. If someone on the Hub team is involved, email <a href="mailto:info@canadiansme.ca">info@canadiansme.ca</a>.</p>
       <div className="row">
         <button type="button" className="btn" disabled={x.busy} onClick={() => void x.run(async () => {
           const res = await reportReview(r.id, cat, note);

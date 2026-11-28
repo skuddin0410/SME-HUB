@@ -32,7 +32,7 @@ export function HostUpsell() {
 /** `zoomAcct`: the Advisor's connected Zoom (Update 36), or null when it isn't connected yet. */
 export function HostEventForm({ zoomAcct }: { zoomAcct: { email: string; type: number } | null }) {
   const router = useRouter();
-  const [f, setF] = useState<HostForm>({ title: "", type: "Webinar", topic: "Money and tax", desc: "", date: "", start: "12:00", end: "13:00", tz: "ET", fmt: "online", link: "", venue: "", city: "", prov: "ON", paid: false, price: "", cap: "", img: "laptop", join: "zoom", wr: true, reg: true, rec: false });
+  const [f, setF] = useState<HostForm>({ title: "", type: "Webinar", topic: "Money and tax", desc: "", date: "", start: "12:00", end: "13:00", tz: "ET", fmt: "online", link: "", venue: "", city: "", prov: "ON", paid: false, price: "", cap: "", img: "laptop", join: "zoom", wr: true, reg: true, rec: false, recording: "no", agree: false });
   const [busy, start] = useTransition();
   const [connect, setConnect] = useState(false);
   // connecting Zoom leaves the page for Zoom's sign-in: keep what was typed, and put it back on return
@@ -106,6 +106,7 @@ export function HostEventForm({ zoomAcct }: { zoomAcct: { email: string; type: n
     </>
   );
   const publish = () => {
+    if (!f.agree) return toast("Please tick the box to agree to the provider terms");
     if (f.fmt === "online" && f.join === "zoom" && !zoomAcct) return toast("Connect your Zoom first, or choose Paste a link");
     start(async () => {
       const r = await hostEvent(f).catch(() => ({ ok: false as const, error: "Could not publish. Try again." }));
@@ -160,10 +161,18 @@ export function HostEventForm({ zoomAcct }: { zoomAcct: { email: string; type: n
         {f.paid && (
           <>
             {input("price", "Price per person, before HST ($)", "number", "25", { min: 1 })}
-            <p className="small muted">People pay by card when they register. The Hub team confirms payout details with you before your first paid event.</p>
+            <p className="small muted">People pay by card when they register. Before tickets go on sale, you and the Hub agree in writing on who sells them, fees, payouts, taxes and refunds.</p>
           </>
         )}
         {input("cap", "Spots available (leave empty for no limit)", "number", "50", { min: 1 })}
+        <h2>Recording</h2>
+        <p className="small muted">People need to know before they register.</p>
+        <div className="polseg" role="radiogroup" aria-label="Recording">
+          {([["no", "Not recorded"], ["yes", "Recorded for people who registered"], ["promo", "Recorded, and clips may promote future events"]] as const).map(([v, l]) => (
+            <button key={v} type="button" role="radio" aria-checked={f.recording === v} className={f.recording === v ? "on" : ""} onClick={() => setF({ ...f, recording: v, ...(f.join === "zoom" ? { rec: v !== "no" } : {}) })}>{l}</button>
+          ))}
+        </div>
+        {f.recording !== "no" && <p className="small muted">We show this on your event page. Give people a way to take part without being on camera, like the chat.</p>}
         <h2>Picture</h2>
         <div className="evimgs" role="radiogroup" aria-label="Picture">
           {EV_IMGS.map((c) => (
@@ -172,6 +181,11 @@ export function HostEventForm({ zoomAcct }: { zoomAcct: { email: string; type: n
             </button>
           ))}
         </div>
+        <label className={`polcb ev${f.agree ? " on" : ""}`}>
+          <input type="checkbox" className="sr-only" checked={!!f.agree} onChange={(e) => setF({ ...f, agree: e.target.checked })} />
+          <i aria-hidden="true"><Ic n="check" s={12} /></i>
+          <span>I agree to the <Link href="/policies/provider-terms" target="_blank">Advisor, course and event provider terms</Link> and the <Link href="/policies/community-guidelines" target="_blank">Community guidelines</Link>.</span>
+        </label>
         <div className="evfbtns">
           <button type="button" className="btn dark" onClick={publish} disabled={busy}>{busy ? "Publishing…" : "Publish event"}</button>
           <Link className="btn ghost" href="/events">Cancel</Link>
@@ -183,7 +197,10 @@ export function HostEventForm({ zoomAcct }: { zoomAcct: { email: string; type: n
           <li>Events are for small business owners: teach, share or bring people together.</li>
           <li>Sales pitches belong in offers, not events.</li>
           <li>Members can report an event. The Hub team removes events that break the <Link href="/policies/community-guidelines">community guidelines</Link>.</li>
+          <li>Say who is running it, the price, and any sponsor or sales pitch.</li>
+          <li>Use registration details only to run the event.</li>
           <li>You can cancel at any time. Everyone registered gets an email.</li>
+          <li>Read the <Link href="/policies/provider-terms">provider terms</Link>.</li>
         </ul>
       </aside>
       {connect && <ZoomConnect next="/events/host" onClose={() => setConnect(false)} />}

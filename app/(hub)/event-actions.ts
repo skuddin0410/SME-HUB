@@ -7,6 +7,7 @@ import { getStripe } from "@/lib/stripe";
 import { courseTax, provinceOf, PROVINCES as TAX_PROV } from "@/lib/courses-shared";
 import { EV_IMGS, EV_PROV, EV_TOPICS, EV_TYPES, EV_TZ, zonedToUtc } from "@/lib/events";
 import { serviceClient } from "@/lib/supabase/service";
+import { POL_UPDATED } from "@/lib/policies";
 import { afterEventCancelled, afterRegistered, afterUnregistered, loadEvZoom, personalLink, setupEventMeeting } from "@/lib/apps/event-zoom";
 import { meetingReport, recordingLink } from "@/lib/apps/zoom";
 import { mail, people } from "@/lib/apps/mail";
@@ -124,6 +125,8 @@ export type HostForm = {
   fmt: "online" | "inperson"; link: string; venue: string; city: string; prov: string; paid: boolean; price: string; cap: string; img: string;
   /** Update 36: "How will people join?" My Zoom account (Advisors with Zoom connected) or Paste a link. */
   join?: "zoom" | "link"; wr?: boolean; reg?: boolean; rec?: boolean;
+  /** Update 45: is it recorded, and the box to agree to the provider terms */
+  recording?: "no" | "yes" | "promo"; agree?: boolean;
 };
 
 /** Publish an event (SME Advisors only). It goes live straight away on Hub Events. */
@@ -133,6 +136,7 @@ export async function hostEvent(f: HostForm): Promise<Result> {
   if (can !== true) return { ok: false, error: "Hosting events is for SME Advisors." };
   const title = String(f.title ?? "").trim().slice(0, 90);
   const miss: string[] = [];
+  if (f.agree !== true) return { ok: false, error: "Please tick the box to agree to the provider terms" };
   if (!title) miss.push("a title");
   if (!/^\d{4}-\d\d-\d\d$/.test(f.date)) miss.push("a date");
   if (!/^\d\d:\d\d$/.test(f.start) || !/^\d\d:\d\d$/.test(f.end)) miss.push("start and end times");
@@ -178,8 +182,11 @@ export async function hostEvent(f: HostForm): Promise<Result> {
     status: "published",
     ...(zoom ? { join_mode: "zoom", zoom_wr: f.wr !== false, zoom_reg: f.reg !== false, zoom_rec: f.rec === true } : {}),
   };
-  const { data, error } = await supabase.from("hub_events").insert(row).select("id, slug").single();
-  if (error) return { ok: false, error: /row-level|policy/.test(error.message) ? "Hosting events is for SME Advisors." : why(error.message) };
+  const recording = f.recording === "yes" || f.recording === "promo" ? f.recording : "no";
+  let { data, error } = await supabase.from("hub_events").insert({ ...row, recording, terms_at: new Date().toISOString(), terms_version: POL_UPDATED }).select("id, slug").single();
+  // before migration 0080 the recording and terms columns don't exist yet
+  if (error && /recording|terms_at|terms_version/.test(error.message)) ({ data, error } = await supabase.from("hub_events").insert(row).select("id, slug").single());
+  if (error || !data) return { ok: false, error: error && /row-level|policy/.test(error.message) ? "Hosting events is for SME Advisors." : why(error?.message ?? "") };
   if (row.fmt === "online" && link && !zoom) await supabase.from("hub_event_private").upsert({ event_id: data.id, meeting_link: link });
   // Update 36: the meeting on the host's Zoom. If Zoom fails, the event is live anyway: "Link pending", Try again, and an email
   if (zoom) await setupEventMeeting(data.id as string);

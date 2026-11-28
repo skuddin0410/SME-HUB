@@ -316,3 +316,74 @@
 .dark .zip .jxreftag{background:#172554;color:#BFDBFE}.dark .zip .jxmeta b,.dark .zip .jxfacts>div:first-child dd{color:#4ADE80}.dark .zip .jxref{color:#93C5FD}
 .dark .zip .jxsw{background:#3A4150}
 
+/* U45 policies */
+.zip .pol{gap:14px}
+.zip .pol .crumbs a{color:var(--muted)}
+.zip .polhd{display:flex;gap:14px;align-items:center}
+.zip .polhd h1{margin:0}
+.zip .polic{flex:none;width:40px;height:40px;border-radius:4px;background:#EFF4FF;color:#1D4ED8;display:grid;place-items:center}
+.zip .polic svg{width:18px;height:18px}
+.zip .polmeta{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.zip .poleye{margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.zip .poltoc{border:1px solid var(--line);border-radius:4px;padding:12px 16px;background:var(--surface-2)}
+.zip .poltoc ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+.zip .poltoc ol.polnum{list-style:none;padding-left:0}
+.zip .poltoc li{font-size:13px;line-height:1.5;break-inside:avoid;padding:2px 0}
+.zip .poltoc button{background:none;border:0;padding:0;font:inherit;color:var(--link);cursor:pointer;text-align:left}
+.zip .poltoc button:hover{text-decoration:underline}
+.zip .polbody{display:flex;flex-direction:column;gap:12px}
+.zip .polbody h2{font-size:17px;margin-top:10px;scroll-margin-top:84px}
+.zip .polbody p{margin:0}
+.zip .pol p a,.zip .polfoot a{color:var(--link)}
+.zip mark.poltbc{background:#FEF3C7;color:#92400E;border-radius:2px;padding:1px 4px;font-style:italic}
+.zip .polbox,.zip .polnote,.zip .polrecn{display:flex;gap:10px;align-items:flex-start;border-radius:4px;padding:10px 14px;font-size:13px;line-height:1.5}
+.zip .polbox{background:#FFFBEB;border:1px dashed #F59E0B;color:#92400E}
+.zip .polbox b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.zip .polnote{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.zip .polbox svg,.zip .polnote svg,.zip .polrecn svg{flex:none;margin-top:2px}
+.zip .polrecn{background:#EFF4FF;border:1px solid #C7D7FE;color:#1E3A8A;margin-bottom:4px}
+.zip .polfoot{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px;margin-top:6px;font-size:12.5px;color:var(--muted);line-height:1.6}
+.zip .polgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.zip .polcard{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:4px;padding:12px 14px;text-decoration:none;color:var(--ink);background:var(--surface)}
+.zip .polcard:hover{border-color:#93B4FB;background:var(--surface-2)}
+.zip .polcard b{font-size:14px}.zip .polcard small{font-size:12.5px;color:var(--muted);line-height:1.45}
+.zip .polcard>svg{flex:none;color:var(--muted)}
+.zip .polhelp{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid var(--line);border-radius:4px;padding:14px 16px;background:var(--surface-2);margin-top:6px}
+.zip .polhelp b{display:block;font-size:14px}.zip .polhelp span{font-size:13px;color:var(--soft)}.zip .polhelp a{color:var(--link)}
+.zip footer.big .polfbtn{display:block;background:none;border:0;padding:4px 0;font:inherit;font-size:13px;line-height:20px;color:var(--soft);cursor:pointer;text-align:left}
+.zip footer.big .polfbtn:hover{text-decoration:underline}
+.zip .polmodal{max-width:500px;gap:12px}
+.zip .polmh{display:flex;justify-content:space-between;align-items:center}
+.zip .polmh h2{font-size:18px;margin:0}
+.zip .polmodal a{color:var(--link)}
+.zip .polck{display:flex;justify-content:space-between;align-items:center;gap:14px;border:1px solid var(--line);border-radius:4px;padding:12px 14px}
+.zip .polck b{display:block;font-size:14px}.zip .polck small{display:block;font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:2px}
+.zip .polalways{flex:none;font-size:12px;font-weight:600;color:#15803D}
+.zip .polsw{flex:none;width:40px;height:22px;border-radius:11px;border:0;background:#D4D4D8;position:relative;cursor:pointer;padding:0}
+.zip .polsw i{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.zip .polsw.on{background:#2563EB}.zip .polsw.on i{left:21px}
+.zip .polmf{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.zip .polbar{position:fixed;left:16px;bottom:16px;z-index:60;max-width:560px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-size:13px;line-height:1.5}
+.zip .polbar a{color:var(--link)}.zip .polbar .row{justify-content:flex-end;flex-wrap:wrap;gap:6px}
+.zip .polagree{display:flex;flex-direction:column;gap:8px;margin:4px 0 2px}
+.zip .polcb{display:flex;gap:10px;align-items:flex-start;background:none;border:0;padding:0;text-align:left;font:inherit;font-size:13px;line-height:1.45;color:var(--ink);cursor:pointer}
+.zip .polcb i{flex:none;width:18px;height:18px;border:1.5px solid #A1A1AA;border-radius:3px;display:grid;place-items:center;color:transparent;margin-top:1px;background:var(--surface)}
+.zip .polcb.on i{background:#2563EB;border-color:#2563EB;color:#fff}
+.zip .polcb a{color:var(--link)}.zip .polcb em{color:var(--muted);font-style:normal}
+.zip .evform .polcb,.zip .polcb.ev{margin:6px 0 4px}
+.zip .polsso{margin:6px 0 0;font-size:12px;line-height:1.45}.zip .polsso a{color:var(--link)}
+.zip .polseg{display:flex;flex-wrap:wrap;gap:6px}
+.zip .polseg button{border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:8px 12px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+.zip .polseg button.on{border-color:#2563EB;background:#EFF4FF;color:#1D4ED8;font-weight:600}
+.zip .polopt{font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+.dark .zip .polic{background:#1E2A44;color:#93B4FB}
+.dark .zip mark.poltbc{background:#3B2F0B;color:#FCD34D}
+.dark .zip .polbox,.dark .zip .polnote{background:#2A2210;border-color:#7C5E10;color:#FCD34D}
+.dark .zip .polrecn{background:#16213A;border-color:#2B3E6B;color:#BFD3FE}
+.dark .zip .polseg button.on{background:#16213A;color:#BFD3FE}
+.dark .zip .polsw{background:#3F3F46}
+@media (max-width:720px){.zip .polgrid{grid-template-columns:1fr}.zip .poltoc ol{columns:1}.zip .polhd h1{font-size:22px}.zip .polbar{left:8px;right:8px;bottom:8px;max-width:none}}
+@media print{.zip header,.zip .rail,.zip .dock,.zip .polbar,.zip .polfoot .row,.zip .poltoc,.zip footer.big,.zip .copy,.zip .demo{display:none!important}.zip .pol{box-shadow:none;border:0}}
+.zip .polinl{background:none;border:0;padding:0;font:inherit;color:var(--link);text-decoration:underline;cursor:pointer}
+
+.zip .polcb input:focus-visible+i{outline:2px solid #2563EB;outline-offset:2px}

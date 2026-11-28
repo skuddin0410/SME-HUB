@@ -77,9 +77,10 @@ export function ContactPage({ name: myName, human = false }: { name: string; hum
             )}
           </section>
           <aside className="xctside">
-            <div className="xctcard"><h3>Who to contact</h3><ul className="xcttopics">{CTOPICS.map((t) => <li key={t[0]}><Ic n={t[3]} s={16} /><span><b>{t[1]}</b><a href={`mailto:${t[2]}`}>{t[2]}</a></span></li>)}</ul></div>
+            <div className="xctcard"><h3>Who to contact</h3><ul className="xcttopics">{CTOPICS.map((t) => <li key={t[0]}><Ic n={t[3]} s={16} /><span><b>{t[1]}</b><a href={`mailto:${t[2]}`}>{t[2]}</a></span></li>)}<li><Ic n="hand" s={16} /><span><b>Accessibility help or a discrimination concern</b><a href="mailto:support@smehub.ca">support@smehub.ca</a></span></li></ul></div>
             <div className="xctcard">
               <h3>Phone</h3><p><a href="tel:+14377784446">+1 437 778 4446</a><br /><a href="tel:+14166550205">+1 416 655 0205</a></p>
+              <p className="small muted">Need help taking part, or a document in another format? Call <a href="tel:+14166550205">416-655-0205</a>. See <Link href="/policies/accessibility">Accessibility</Link>.</p>
               <h3>Office</h3><p>Cmarketing Inc.<br />6345 Dixie Rd, Unit 202<br />Mississauga, ON L5T 2E6</p>
               <a className="xctdir" href="https://www.google.com/maps/search/?api=1&query=6345+Dixie+Rd+Unit+202+Mississauga+ON+L5T+2E6" target="_blank" rel="noopener"><Ic n="pin" s={15} />Get directions</a>
             </div>

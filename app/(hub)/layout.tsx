@@ -6,6 +6,7 @@ import { ZipHeader } from "@/components/zip/header";
 import { NavPending } from "@/components/nav-pending";
 import { ToastHost } from "@/components/toast";
 import { SafetyHost } from "@/components/safety/host";
+import { CookieButton, CookieHost } from "@/components/policies/client";
 import { safetyCfg } from "@/lib/safety/server";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
@@ -40,10 +41,11 @@ const FOOTER_LINKS = [
   ["How SME Hub works", "/how-sme-hub-works"],
   ["Help", "/help"],
   ["Contact us", "/contact"],
+  ["All policies", "/policies"],
   ["Community guidelines", "/policies/community-guidelines"],
-  ["Discrimination policy", "/policies/discrimination-policy"],
   ["Terms and conditions", "/policies/terms"],
   ["Privacy policy", "/policies/privacy-policy"],
+  ["Accessibility", "/policies/accessibility"],
 ];
 
 const NOTE_TEXT = {
@@ -166,6 +168,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
       </NavPending>
       <ToastHost />
       <SafetyHost leave={(await safetyCfg()).leave} member={!!userId} />
+      <CookieHost member={!!userId} />
       <StayWarm />
       <Presence userId={userId} />
 
@@ -187,6 +190,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
                   {label}
                 </Link>
               ))}
+              <CookieButton />
             </div>
             <div>
               <h3>CanadianSME Events</h3>

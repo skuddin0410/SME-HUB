@@ -213,7 +213,7 @@ export function BillingX({ d }: { d: BlData }) {
 
             {paid && !cancelled && !confirm && (
               <div className="blcancel">
-                <span><b>Cancel {P}</b><small>You keep {P} until {d.endsOn ?? "the end of the period you paid for"}, then move to Free. No refunds for part months.</small></span>
+                <span><b>Cancel {P}</b><small>You keep {P} until {d.endsOn ?? "the end of the period you paid for"}, then move to Free. Payments for a period that has started aren’t refunded, unless we made a mistake. <Link href="/policies/membership-terms">Refund terms</Link></small></span>
                 <button type="button" className="btn sm ghost" onClick={() => setConfirm(true)}>Cancel plan</button>
               </div>
             )}
@@ -308,6 +308,7 @@ export function BillingX({ d }: { d: BlData }) {
 
             <section className="blcard blhelp">
               <b>Questions about billing?</b>
+              <small>Charged twice, or after you cancelled? Email us your receipt number and we’ll fix it. See <Link href="/policies/membership-terms">Membership, cancellation and refund terms</Link>.</small>
               <small>Email <a href="mailto:billing@smehub.ca">billing@smehub.ca</a> or see <Link href="/help">Upgrade, change or cancel</Link>. Prices are in Canadian dollars. HST is added based on your province.</small>
             </section>
             {!d.configured && <p className="small muted">Payments are being set up. Upgrading opens very soon.</p>}

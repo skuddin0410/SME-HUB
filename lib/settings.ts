@@ -28,6 +28,9 @@ export type MemberSettings = {
   alert_deadlines: boolean;
   alert_news: boolean;
   alert_events: boolean;
+  /** Update 45: marketing email is opt-in, and each list is separate */
+  alert_mag: boolean;
+  alert_partner: boolean;
   paused_at: string | null;
   close_at: string | null;
 };
@@ -44,8 +47,10 @@ export const DEFAULT_SETTINGS: MemberSettings = {
   alert_requests: true,
   alert_leads: true,
   alert_deadlines: true,
-  alert_news: true,
+  alert_news: false,
   alert_events: true,
+  alert_mag: false,
+  alert_partner: false,
   paused_at: null,
   close_at: null,
 };

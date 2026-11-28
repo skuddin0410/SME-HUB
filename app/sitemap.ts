@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
-import { GUIDES, POLICIES, RESOURCE_PAGES, SECTIONS } from "@/lib/content";
+import { GUIDES, RESOURCE_PAGES, SECTIONS } from "@/lib/content";
+import { POLICIES_V2 } from "@/lib/policies";
 import { INDEXABLE, SITE_URL } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -18,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const fixed = ["/feed", "/members", "/businesses", "/groups", "/about", "/membership-plans", "/help", "/contact", "/how-sme-hub-works", "/pavilion", "/courses", "/for-sale", "/guides", "/resources"];
   const stories = Object.values(SECTIONS).flatMap((s) => [s.path, ...s.items.map((i) => `${s.path}/${i.slug}`)]);
-  const reference = [...GUIDES.map((g) => `/guides/${g.slug}`), ...RESOURCE_PAGES.map((r) => `/resources/${r.slug}`), ...POLICIES.map((p) => `/policies/${p.slug}`)];
+  const reference = [...GUIDES.map((g) => `/guides/${g.slug}`), ...RESOURCE_PAGES.map((r) => `/resources/${r.slug}`), "/policies", ...POLICIES_V2.map((p) => `/policies/${p.slug}`)];
 
   return [
     ...[...fixed, ...stories, ...reference].map((path) => ({ url: `${SITE_URL}${path}` })),

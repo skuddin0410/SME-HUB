@@ -28,7 +28,7 @@ export function FinishForm({ next, via, email, initial }: { next: string; via: s
     if (!v.ln.trim()) bad.ln = "Enter your last name.";
     if (!v.bn.trim()) bad.bn = "Enter your business name.";
     if (!v.pr) bad.pr = "Choose your province or territory.";
-    if (!v.tm) bad.tm = "Please agree to the terms to continue.";
+    if (!v.tm) bad.tm = "Please tick the box to agree to the Terms and Community guidelines.";
     setErrs(bad);
     setNote("");
     const first = Object.keys(bad)[0];
@@ -96,14 +96,13 @@ export function FinishForm({ next, via, email, initial }: { next: string; via: s
           <label className="cb">
             <input type="checkbox" id="tm" checked={v.tm} onChange={(e) => set("tm", e.target.checked)} aria-describedby="tm-err" />
             <span>
-              I agree to the <Link href="/policies/terms" target="_blank">Terms</Link>, <Link href="/policies/privacy-policy" target="_blank">Privacy Policy</Link> and{" "}
-              <Link href="/policies/community-guidelines" target="_blank">Community Guidelines</Link>.
-            </span>
+              I agree to the <Link href="/policies/terms" target="_blank">Terms</Link> and <Link href="/policies/community-guidelines" target="_blank">Community guidelines</Link>, and I’ve reached the age of majority where I live.
+              </span>
           </label>
           <div className="er" id="tm-err" style={{ margin: "-8px 0 12px" }}>{errs.tm}</div>
           <label className="cb">
             <input type="checkbox" id="nl" checked={v.nl} onChange={(e) => set("nl", e.target.checked)} />
-            <span>Send me the free weekly CanadianSME newsletter with small-business news and events. You can unsubscribe anytime.</span>
+            <span>Email me the SME Hub newsletter. <em style={{ fontStyle: "normal", color: "var(--muted)" }}>Optional.</em> Unsubscribe any time.</span>
           </label>
           <button className="btn p" type="submit" id="go" disabled={busy}>
             {busy ? (<><Spin />Saving</>) : "Continue to SME Hub"}

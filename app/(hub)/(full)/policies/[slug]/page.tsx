@@ -1,16 +1,19 @@
-import { notFound } from "next/navigation";
-import { POLICIES } from "@/lib/content";
-import { ZipPolicy } from "@/components/zip/info";
+import { notFound, permanentRedirect } from "next/navigation";
+import { POL_OLD, POLICIES_V2, polById, polBySlug } from "@/lib/policies";
+import { PolicyView } from "@/components/policies/policy-view";
 
-export const generateStaticParams = () => POLICIES.map((p) => ({ slug: p.slug }));
-const find = (slug: string) => POLICIES.find((p) => p.slug === slug);
+/** Update 45: the 10 SME Hub policies. The old Discrimination policy address shows Accessibility and non-discrimination. */
+export const generateStaticParams = () => [...POLICIES_V2.map((p) => ({ slug: p.slug })), ...Object.keys(POL_OLD).map((slug) => ({ slug }))];
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  return { title: find((await params).slug)?.title };
+  const p = polBySlug((await params).slug);
+  return p ? { title: p.title, description: p.short, alternates: { canonical: `/policies/${p.slug}` } } : {};
 }
 
 export default async function PolicyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  if (!find(slug)) notFound();
-  return <ZipPolicy slug={slug} />;
+  if (POL_OLD[slug]) permanentRedirect(`/policies/${polById(POL_OLD[slug])!.slug}`);
+  const p = polBySlug(slug);
+  if (!p) notFound();
+  return <PolicyView p={p} />;
 }

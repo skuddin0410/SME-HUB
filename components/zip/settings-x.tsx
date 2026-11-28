@@ -341,7 +341,7 @@ export function SettingsX({ data, initial, extra }: { data: SxData; initial: str
     </Sec>
   );
 
-  const alert = (k: "alert_messages" | "alert_requests" | "alert_leads" | "alert_deadlines" | "alert_events" | "alert_news", title: string, sub = "") => (
+  const alert = (k: "alert_messages" | "alert_requests" | "alert_leads" | "alert_deadlines" | "alert_events" | "alert_news" | "alert_mag" | "alert_partner", title: string, sub = "") => (
     <Sw on={s[k]} title={title} sub={sub || undefined} onClick={() => put(k, !s[k], { [k]: !s[k] } as Partial<MemberSettings>)} />
   );
   const notif = (
@@ -356,7 +356,6 @@ export function SettingsX({ data, initial, extra }: { data: SxData; initial: str
         {alert("alert_leads", "New leads", "Enquiries in My leads waiting for your reply")}
         {alert("alert_deadlines", "Deadline reminders", "GST/HST and other dates in My deadlines")}
         {alert("alert_events", "Event reminders", "Before events you saved or registered for")}
-        {alert("alert_news", "SME Hub news and events", "The Summit, the Show and member offers, about twice a month")}
         <Sw
           on={forsale}
           title="Businesses for sale"
@@ -371,6 +370,13 @@ export function SettingsX({ data, initial, extra }: { data: SxData; initial: str
             }
           }}
         />
+      </div>
+      <div className="sxsub">
+        <h3>Marketing email <span className="polopt">Optional</span></h3>
+        {alert("alert_news", "SME Hub newsletter", "Member stories, events and offers, about twice a month")}
+        {alert("alert_mag", "CanadianSME Small Business Magazine", "Each list is separate. Joining one doesn’t sign you up for the others.")}
+        {alert("alert_partner", "Offers from partners", "We never share your details with a partner unless you say yes to that partner by name.")}
+        <p className="small muted sxnote">Unsubscribe requests are free and done within 10 business days. <Link href="/policies/email-preferences">Email and marketing preferences</Link></p>
       </div>
       <p className="small muted sxnote">Security, billing and legal emails are always sent, because they are about your account.</p>
       {notReady}
@@ -410,11 +416,15 @@ export function SettingsX({ data, initial, extra }: { data: SxData; initial: str
       ) : (
         <Row title="Download my data" sub="The Hub team sends you a copy on request."><Link className="btn sm ghost" href="/contact">Ask the Hub team</Link></Row>
       )}
+      <Row title="See, fix or delete your information" sub="Ask what we hold about you, how it’s used and who it was shared with. We reply within 30 days.">
+        <Link className="btn sm ghost" href="/policies/privacy-policy"><Ic n="lock" s={14} />How to ask</Link>
+      </Row>
       <div className="sxsub">
         <h3>What SME Hub never does</h3>
         <ul className="sxlist">
           <li><Ic n="check" s={14} />Sell your details or your contact list</li>
           <li><Ic n="check" s={14} />Send messages in your name</li>
+          <li><Ic n="check" s={14} />Give your details to a sponsor without asking you first</li>
           <li><Ic n="check" s={14} />Show your phone or email unless you switch it on</li>
         </ul>
       </div>
@@ -474,7 +484,7 @@ export function SettingsX({ data, initial, extra }: { data: SxData; initial: str
             </>
           ) : (
             <>
-              <p className="muted small">{data.closeRule === "free" ? "You are on a paid plan, so the Hub team closes the account for you. That way your billing stops properly." : "The Hub team closes accounts on request."}</p>
+              <p className="muted small">{data.closeRule === "free" ? "You are on a paid plan, so the Hub team closes the account for you. We stop your renewals when we close it and confirm the date by email." : "The Hub team closes accounts on request."}</p>
               <Link className="btn sm ghost sxbtn" href="/contact">Ask the Hub team to close it</Link>
             </>
           )}

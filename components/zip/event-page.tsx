@@ -68,6 +68,12 @@ export function EventPage({
       <div className="evdgrid">
         <div className="evdmain">
           <section className="evbox">
+            {e.recording && e.recording !== "no" && (
+              <div className="polrecn">
+                <Ic n="video" s={16} />
+                <span><b>This event will be recorded.</b> {e.recording === "promo" ? "The recording goes to people who registered, and short clips may be used to promote future events." : "The recording goes to people who registered."} You can keep your camera off and use the chat.</span>
+              </div>
+            )}
             <h2>About this event</h2>
             <p style={{ whiteSpace: "pre-line" }}>{e.description}</p>
             {e.agenda.length > 0 && (

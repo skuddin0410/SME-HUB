@@ -54,7 +54,7 @@ export function SignUpForm({ proof, human = false }: { proof: Proof; human?: boo
     if (!EMAIL.test(em)) bad.em = em ? "Check your email address. It should look like name@business.ca." : "Enter your email address.";
     if (!passwordOk(v.pw, em)) bad.pw = v.pw ? "Choose a stronger password. Follow the tips below." : "Create a password.";
     if (!v.pr) bad.pr = "Choose your province or territory.";
-    if (!v.tm) bad.tm = "Please agree to the terms to continue.";
+    if (!v.tm) bad.tm = "Please tick the box to agree to the Terms and Community guidelines.";
     setErrs(bad);
     setNote("");
     const first = Object.keys(bad)[0];
@@ -163,6 +163,9 @@ export function SignUpForm({ proof, human = false }: { proof: Proof; human?: boo
           <h1 id="h">Join SME Hub free</h1>
           <p className="sub">It takes about two minutes. No credit card.</p>
           <Sso onNote={setNote} />
+          <p className="hint" style={{ margin: "10px 0 0" }}>
+            By continuing with Google or LinkedIn, you agree to the <Link href="/policies/terms" target="_blank">Terms</Link> and <Link href="/policies/community-guidelines" target="_blank">Community guidelines</Link>, and confirm you’ve reached the age of majority where you live.
+          </p>
           <div className="or">or sign up with email</div>
           <form ref={form} onSubmit={submit} noValidate>
             {note && (
@@ -221,14 +224,13 @@ export function SignUpForm({ proof, human = false }: { proof: Proof; human?: boo
             <label className="cb">
               <input type="checkbox" id="tm" checked={v.tm} onChange={(e) => set("tm", e.target.checked)} aria-describedby="tm-err" />
               <span>
-                I agree to the <Link href="/policies/terms" target="_blank">Terms</Link>, <Link href="/policies/privacy-policy" target="_blank">Privacy Policy</Link> and{" "}
-                <Link href="/policies/community-guidelines" target="_blank">Community Guidelines</Link>.
+                I agree to the <Link href="/policies/terms" target="_blank">Terms</Link> and <Link href="/policies/community-guidelines" target="_blank">Community guidelines</Link>, and I’ve reached the age of majority where I live.
               </span>
             </label>
             <div className="er" id="tm-err" style={{ margin: "-8px 0 12px" }}>{errs.tm}</div>
             <label className="cb">
               <input type="checkbox" id="nl" checked={v.nl} onChange={(e) => set("nl", e.target.checked)} />
-              <span>Send me the free weekly CanadianSME newsletter with small-business news and events. You can unsubscribe anytime.</span>
+              <span>Email me the SME Hub newsletter. <em style={{ fontStyle: "normal", color: "var(--muted)" }}>Optional.</em> Unsubscribe any time.</span>
             </label>
             <div className="sfhp" aria-hidden="true">
               <label>

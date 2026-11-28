@@ -47,12 +47,20 @@ export const PROVINCE_MENU: NavItem[] = [
   { label: "Yukon", href: "/guides/yukon" },
 ];
 
+// Update 45: all 10 policies
 export const POLICY_MENU: NavItem[] = [
+  { label: "All policies", href: "/policies" },
   { label: "Frequently asked questions", href: "/help" },
   { label: "Community guidelines", href: "/policies/community-guidelines" },
-  { label: "Discrimination policy", href: "/policies/discrimination-policy" },
   { label: "Terms and conditions", href: "/policies/terms" },
   { label: "Privacy policy", href: "/policies/privacy-policy" },
+  { label: "Cookies", href: "/policies/cookies" },
+  { label: "Membership and refunds", href: "/policies/membership-terms" },
+  { label: "Advisor, course and event terms", href: "/policies/provider-terms" },
+  { label: "Advertising and reviews", href: "/policies/advertising-policy" },
+  { label: "Accessibility", href: "/policies/accessibility" },
+  { label: "Complaints and copyright", href: "/policies/content-complaints" },
+  { label: "Email preferences", href: "/policies/email-preferences" },
 ];
 
 export const SOCIAL = {

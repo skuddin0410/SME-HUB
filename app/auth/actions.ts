@@ -14,6 +14,7 @@ import { checkChallenge, DEVICE_COOKIE, gateReady, isTrusted, spaced, startChall
 import { sendEmail } from "@/lib/email/send";
 import { commonVars, renderEmail } from "@/lib/email/render";
 import { deviceFromUserAgent, maskIp, NOT_KNOWN, whenET } from "@/lib/email/context";
+import { POL_UPDATED } from "@/lib/policies";
 import { countryOf, humanOk, isThrowaway, logSignup, protectedName, safetyCfg } from "@/lib/safety/server";
 
 /**
@@ -71,7 +72,9 @@ export type SignUpResult = { ok: true } | { ok: false; fields?: Fields; form?: s
 const ordinal = (n: number) => `${n}${n % 100 >= 11 && n % 100 <= 13 ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th")}`;
 const NOT_HUMAN = "The human check didn’t pass. Please try again in a few minutes.";
 
-const NEWSLETTER_WORDING = "Send me the free weekly CanadianSME newsletter with small-business news and events. You can unsubscribe anytime.";
+const NEWSLETTER_WORDING = "Email me the SME Hub newsletter. Optional. Unsubscribe any time.";
+// Update 45: the agreement is kept with its date and the version of the Terms
+const TERMS_WORDING = "I agree to the Terms and Community guidelines, and I’ve reached the age of majority where I live.";
 
 export async function signUp(input: SignUpInput): Promise<SignUpResult> {
   const first = String(input.first ?? "").trim().slice(0, 40);
@@ -90,7 +93,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpResult> {
   if (!password) fields.pw = "Create a password.";
   else if (!passwordOk(password, email) || password.length > MAX_PASSWORD) fields.pw = STRONGER;
   if (!PROVINCES.includes(province)) fields.pr = "Choose your province or territory.";
-  if (!input.terms) fields.tm = "Please agree to the terms to continue.";
+  if (!input.terms) fields.tm = "Please tick the box to agree to the Terms and Community guidelines.";
   if (website && !/^(https?:\/\/)?[^\s/$.?#][^\s]*\.[^\s]{2,}$/i.test(website)) fields.ws = "Check the website address. It should look like yourbusiness.ca.";
   if (Object.keys(fields).length) return { ok: false, fields };
   if (await isBreached(password)) return { ok: false, fields: { pw: BREACHED } };
@@ -131,6 +134,9 @@ export async function signUp(input: SignUpInput): Promise<SignUpResult> {
         business_name: business,
         website,
         province,
+        terms_at: new Date().toISOString(),
+        terms_version: POL_UPDATED,
+        terms_wording: TERMS_WORDING,
         ...(input.newsletter ? { newsletter: "true", newsletter_wording: NEWSLETTER_WORDING } : {}),
       },
       emailRedirectTo: `${site}/auth/callback?next=/feed`,
@@ -462,7 +468,7 @@ export async function finishProfile(input: FinishInput): Promise<{ ok: true } | 
   if (!last) fields.ln = "Enter your last name.";
   if (!business) fields.bn = "Enter your business name.";
   if (!PROVINCES.includes(province)) fields.pr = "Choose your province or territory.";
-  if (!input.terms) fields.tm = "Please agree to the terms to continue.";
+  if (!input.terms) fields.tm = "Please tick the box to agree to the Terms and Community guidelines.";
   if (website && !/^(https?:\/\/)?[^\s/$.?#][^\s]*\.[^\s]{2,}$/i.test(website)) fields.ws = "Check the website address. It should look like yourbusiness.ca.";
   if (Object.keys(fields).length) return { ok: false, fields };
   if (website && !/^https?:\/\//i.test(website)) website = `https://${website}`;
@@ -485,6 +491,8 @@ export async function finishProfile(input: FinishInput): Promise<{ ok: true } | 
       website,
       province,
       terms_at: new Date().toISOString(),
+      terms_version: POL_UPDATED,
+      terms_wording: TERMS_WORDING,
       ...(input.newsletter ? { newsletter: "true", newsletter_wording: NEWSLETTER_WORDING } : {}),
     },
   });
@@ -500,6 +508,8 @@ export async function finishProfile(input: FinishInput): Promise<{ ok: true } | 
       const { data: had } = await admin.from("newsletter_consents").select("user_id").eq("user_id", user.id).maybeSingle();
       if (!had) await admin.from("newsletter_consents").insert({ user_id: user.id, wording: NEWSLETTER_WORDING });
     }
+    // Update 45: the newsletter switch in Settings starts on only for members who ticked the box
+    await supabase.from("member_settings").upsert({ member_id: user.id, alert_news: true }, { onConflict: "member_id" });
   }
   return { ok: true };
 }

@@ -8,12 +8,17 @@ import type { EvItem, EvMine } from "@/components/zip/events-x";
  * plus what the signed-in member saved, registered for and their reminder choices. Null before migration 0073.
  */
 export async function loadEvents(supabase: SupabaseClient, userId: string | null, only?: { slug: string }) {
-  let q = supabase.from("hub_events").select(EV_SELECT).eq("status", "published").is("cancelled_at", null);
-  if (only) q = supabase.from("hub_events").select(EV_SELECT).eq("slug", only.slug).eq("status", "published");
-  else q = q.or(`starts_at.is.null,starts_at.gte.${new Date().toISOString()}`);
-  const { data, error } = await q.order("starts_at", { ascending: true, nullsFirst: false }).limit(300);
+  const run = (sel: string) => {
+    const q = only
+      ? supabase.from("hub_events").select(sel).eq("slug", only.slug).eq("status", "published")
+      : supabase.from("hub_events").select(sel).eq("status", "published").is("cancelled_at", null).or(`starts_at.is.null,starts_at.gte.${new Date().toISOString()}`);
+    return q.order("starts_at", { ascending: true, nullsFirst: false }).limit(300);
+  };
+  // Update 45 adds "recording" (migration 0080); before it runs, load without it
+  let { data, error } = await run(`${EV_SELECT}, recording`);
+  if (error && /recording/.test(error.message)) ({ data, error } = await run(EV_SELECT));
   if (error) return null;
-  const rows = (data ?? []) as Ev[];
+  const rows = (data ?? []) as unknown as Ev[];
   const hostIds = [...new Set(rows.map((r) => r.host_id).filter(Boolean))] as string[];
   const [hosts, going, saves, regs, rems] = await Promise.all([
     hostIds.length ? supabase.from("profiles").select("id, full_name, avatar_url, headline, location, plan, profile_type").in("id", hostIds) : Promise.resolve({ data: [] }),
