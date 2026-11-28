@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChevronUp, SquarePen } from "lucide-react";
 import { AvatarImg } from "@/components/hub-client";
+import { MapleDockRow } from "@/components/maple/dock";
 
 export type DockThread = {
   id: string;
@@ -51,6 +52,7 @@ export function MessagingDock({ me, threads, unread }: { me: { id: string; full_
         {open && (
           <div className="border-t border-[#E5E5E8]">
             <div className="max-h-[21.25rem] overflow-y-auto">
+              <MapleDockRow />
               {threads.length === 0 && <p className="p-4 text-xs text-zinc-500">No conversations yet. Connect with a member and say hello.</p>}
               {threads.map((t) => (
                 <Link key={t.id} href={`/messages?with=${t.id}`} className="flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-[#F5F5F6]">

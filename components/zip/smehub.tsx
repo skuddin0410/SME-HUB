@@ -104,7 +104,7 @@ export function ZipCentrePage({ page }: { page: FullPage }) {
         <div className="row" style={{ flexWrap: "wrap" }}>
           <Link className="btn" href="/groups">Join a group</Link>
           <Link className="btn ghost" href="/smb-advisor">Find an advisor</Link>
-          <Link className="btn ghost" href="/ask" prefetch={false}>Ask the Hub AI about funding</Link>
+          <Link className="btn ghost" href="/ask" prefetch={false}>Ask Maple about funding</Link>
         </div>
         <Orgs page={page} />
       </div>

@@ -30,6 +30,7 @@ const HUB_MENU: NavItem[] = [
   { label: "Businesses for Sale", href: "/for-sale" },
   { label: "Jobs", href: "/jobs" },
   { label: "Events", href: "/events" },
+  { label: "Ask Maple (AI)", href: "/ask" },
   { label: "Member blogs", href: "/member-blogs" },
   { label: "SME Advisors", href: "/smb-advisor" },
   { label: "Member Spotlight", href: "/spotlight" },
@@ -58,6 +59,7 @@ const TEAM_MENU: [string, NavItem[]][] = [
   ["Business Directory", [{ label: "Business Profiles", href: "/bizadmin" }]],
   ["Courses", [{ label: "Manage courses", href: "/courses/manage" }]],
   ["Businesses for sale", [{ label: "For-sale listings", href: "/team/for-sale" }]],
+  ["Maple (AI)", [{ label: "Answer library and tokens", href: "/mapleadmin" }]],
 ];
 
 function Chev() {

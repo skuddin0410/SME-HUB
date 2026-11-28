@@ -18,7 +18,7 @@ const EXTRA_GROUP: Record<string, string> = { location: "Business", helps_with: 
 export async function loadSettingsData(): Promise<SxData> {
   const { supabase, userId } = await requireUser();
   const ps = await getHubSettings("profiles");
-  const [details, sessions, auth, me, sec, ms, card, off, blocked] = await Promise.all([
+  const [details, sessions, auth, me, sec, ms, card, off, blocked, mh] = await Promise.all([
     loadOwnDetails(supabase, userId),
     listSessions(),
     supabase.auth.getUser(),
@@ -28,6 +28,7 @@ export async function loadSettingsData(): Promise<SxData> {
     supabase.from("business_cards").select("style, searchable").eq("member_id", userId).maybeSingle(),
     supabase.from("email_opt_out").select("grp").eq("member_id", userId),
     supabase.from("blocks").select("blocked_id", { count: "exact", head: true }).eq("blocker_id", userId),
+    supabase.from("maple_messages").select("id", { count: "exact", head: true }).eq("user_id", userId),
   ]);
   const handle = ((await supabase.from("profiles").select("handle").eq("id", userId).maybeSingle()).data as { handle?: string } | null)?.handle;
   const plan = (((me.data as { plan?: string } | null)?.plan as PlanKey) ?? "free") as PlanKey;
@@ -65,6 +66,8 @@ export async function loadSettingsData(): Promise<SxData> {
     closeRule: (ps.del as "all" | "free" | "none") ?? "free",
     sections: settingsSections((me.data as { profile_type?: string } | null)?.profile_type === "advisor" || plan === "advisor"),
     profilePath: `/members/${userId}`,
+    // Update 46: messages with Maple (the earlier Ask the Hub history before migration 0081)
+    mapleHistory: mh.error ? ((await supabase.from("ai_asks").select("id", { count: "exact", head: true }).eq("user_id", userId)).count ?? 0) * 2 : mh.count ?? 0,
   };
   return data;
 }

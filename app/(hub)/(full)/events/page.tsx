@@ -7,6 +7,7 @@ import { EventsX } from "@/components/zip/events-x";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 import "@/styles/u31-40.css";
+import { MapleStrip } from "@/components/maple/dock";
 
 export const metadata = pageMeta({ title: "Events", description: "Webinars, workshops and meetups for Canadian small business owners, from CanadianSME and from members.", path: "/events" });
 export const dynamic = "force-dynamic";
@@ -33,6 +34,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
   return (
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
+        <MapleStrip page="events" />
         <div className="pagehead">
           <h1>Events</h1>
           <p className="muted">One live session every week, plus CanadianSME events through the year.</p>

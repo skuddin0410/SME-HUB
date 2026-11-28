@@ -5,6 +5,7 @@ import { Ic } from "@/components/zip/ic";
 import "@/styles/province.css";
 import "@/styles/tools.css";
 import "@/styles/u31-40.css";
+import { MapleStrip } from "@/components/maple/dock";
 
 export const metadata = { title: "My deadlines", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -14,6 +15,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const [{ prov }, D] = await Promise.all([searchParams, getMyDeadlines()]);
   return (
     <div className="zip"><div className="wrap" style={{ paddingTop: 16, paddingBottom: 40 }}>
+      <MapleStrip page="deadlines" />
       {D ? (
         <DeadlinesPage today={D.today} setup={D.setup} done={D.done} rem={D.rem} custom={D.custom} prov={prov && /^[A-Z]{2}$/.test(prov) ? prov : undefined} />
       ) : (

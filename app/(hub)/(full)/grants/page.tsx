@@ -7,6 +7,7 @@ import { PROV_NAMES, matchesFor } from "@/lib/grants";
 import { pageMeta } from "@/lib/seo";
 import "@/styles/tools.css";
 import "@/styles/grants.css";
+import { MapleStrip } from "@/components/maple/dock";
 
 export const dynamic = "force-dynamic";
 export const metadata = pageMeta({ title: "Grant Finder: funding for Canadian small businesses", description: "Grants, loans, tax credits and wage subsidies from federal, provincial and territorial programs, in one search. Free for every SME Hub member.", path: "/grants" });
@@ -18,6 +19,7 @@ export default async function Page() {
   const based = me ? [me.industry, me.team && `${me.team} staff`, me.prov ? PROV_NAMES[me.prov] : "Add your city and province"].filter(Boolean).join(" · ") : "";
   return (
     <GfWrap>
+      <MapleStrip page="grants" />
       <GfProvider signedIn={!!me} saved={(me?.saves ?? []).map((s) => s.program_id)}>
         <div className="tlpage gfpage">
           <GfNav on="grants" />

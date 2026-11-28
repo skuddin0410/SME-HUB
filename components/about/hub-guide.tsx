@@ -21,7 +21,7 @@ const GROUPS: [string, string, string, F[]][] = [
     ["/grants", "Grant Finder", "Grants, loans and tax credits matched to your business, with checked sources.", "coin"],
     ["/tools", "Business tools", "Calculators for GST/HST, cash flow, loans, landed cost and pricing.", "calc"],
     ["/deadlines", "My deadlines", "Your CRA dates and your own deadlines, with reminders.", "clock"],
-    ["/ask", "Ask the Hub AI", "Plain-language answers to small business questions.", "help"],
+    ["/ask", "Ask Maple", "Maple, the AI assistant: answers, people and tools in one place.", "help"],
     ["/smb-advisor", "SME Advisors", "Accountants, lawyers and consultants who work with small businesses.", "brief"]]],
   ["Learn", "book", "#7C3AED", [
     ["/guides", "Province guides", "How to start and run a business in each of the 13 provinces and territories.", "pin"],

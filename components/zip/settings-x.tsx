@@ -10,6 +10,8 @@ import { endOtherSessions, forgotPassword, setEmailCode, type SessionRow } from 
 import { setSaleEmails } from "@/app/(hub)/forsale-actions";
 import { saveCard } from "@/app/(hub)/card-actions";
 import { CARD_STYLES, cardLink, type CardStyle } from "@/lib/business-card";
+import { useMaple } from "@/components/maple/provider";
+import { MapleDeleteDialog } from "@/components/maple/pages";
 import { DEFAULT_SETTINGS, PRESETS, PRESET_LABEL, VIS_LONG, VIS_SHORT, type MemberSettings, type PresetKey } from "@/lib/settings";
 
 /**
@@ -36,9 +38,11 @@ export type SxData = {
   closeRule: "all" | "free" | "none";
   sections: [string, string, string][];
   profilePath: string;
+  /** Update 46: how many messages the member has with Maple */
+  mapleHistory: number;
 };
 
-type SecId = "account" | "privacy" | "contact" | "notif" | "card" | "data" | "close" | "apps" | "consult";
+type SecId = "account" | "privacy" | "contact" | "notif" | "maple" | "card" | "data" | "close" | "apps" | "consult";
 
 function Sw({ on, onClick, title, sub, disabled }: { on: boolean; onClick: () => void; title: string; sub?: string; disabled?: boolean }) {
   return (
@@ -89,7 +93,7 @@ const ago = (d: string) => {
 export function SettingsX({ data, initial, extra }: { data: SxData; initial: string; extra?: { id: "apps" | "consult"; node: React.ReactNode } }) {
   const router = useRouter();
   const ready = data.settings !== null;
-  const [sec, setSec] = useState<SecId>(extra ? extra.id : ((["account", "privacy", "contact", "notif", "card", "data", "close"].includes(initial) ? initial : "account") as SecId));
+  const [sec, setSec] = useState<SecId>(extra ? extra.id : ((["account", "privacy", "contact", "notif", "maple", "card", "data", "close"].includes(initial) ? initial : "account") as SecId));
   const [s, setS] = useState<MemberSettings>(data.settings ?? DEFAULT_SETTINGS);
   const [vis, setVis] = useState<Record<string, string>>(data.vis);
   const [twoStep, setTwoStep] = useState(data.twoStep);
@@ -494,7 +498,7 @@ export function SettingsX({ data, initial, extra }: { data: SxData; initial: str
     </Sec>
   );
 
-  const body: Record<SecId, React.ReactNode> = { account, privacy, contact: contactSec, notif, card: cardSec, data: dataSec, close: closeSec, apps: extra?.node, consult: extra?.node };
+  const body: Record<SecId, React.ReactNode> = { account, privacy, contact: contactSec, notif, maple: <MapleSec history={data.mapleHistory} />, card: cardSec, data: dataSec, close: closeSec, apps: extra?.node, consult: extra?.node };
 
   return (
     <div className="sxpage">
@@ -544,3 +548,25 @@ export function SxNav({ sections, cur, onGo }: { sections: [string, string, stri
 
 /** The settings building blocks, for the sections that live on their own pages (Update 36). */
 export { Sw as SxSw, Seg as SxSeg, Row as SxRow, Sec as SxSec };
+
+/** Update 46: Settings, Maple (AI assistant). */
+function MapleSec({ history }: { history: number }) {
+  const m = useMaple();
+  const [count, setCount] = useState(history);
+  const [del, setDel] = useState(false);
+  useEffect(() => setCount(history), [history]);
+  if (!m) return null;
+  const S = m.settings;
+  return (
+    <Sec id="maple" title="Maple (AI assistant)" intro="How SME Hub’s AI assistant works for you.">
+      <Sw on={S.on} title="Use Maple" sub="Turn off to hide Maple everywhere on SME Hub, including Messaging." onClick={() => void m.setSetting("on", !S.on)} />
+      <Sw on={S.personal} title="Use my profile to tailor answers" sub="Maple uses your city, industry and what you offer. Never your private messages." onClick={() => void m.setSetting("personal", !S.personal)} />
+      <Sw on={S.tips} title="Show “Ask Maple” on tool pages" sub="Short prompts on Grant Finder, My deadlines, Business tools, Jobs and Events." onClick={() => void m.setSetting("tips", !S.tips)} />
+      <Row title="Your Maple history" sub={`${count} message${count === 1 ? "" : "s"}. Only you can see it.`}>
+        <button type="button" className={`btn sm ghost${count ? "" : " off"}`} aria-disabled={!count} onClick={() => count && setDel(true)}><Ic n="trash" s={14} />Delete history</button>
+      </Row>
+      <p className="small muted sxnote">Maple is an AI assistant and can make mistakes. Check important details. <Link href="/maple">About Maple</Link></p>
+      {del && <MapleDeleteDialog count={count} onClose={(done) => { setDel(false); if (done) setCount(0); }} />}
+    </Sec>
+  );
+}

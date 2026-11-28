@@ -21,7 +21,7 @@ export const PLAN_FEATURES: Record<PlanKey, string[]> = {
     "1 job post at a time on SME Hub Jobs",
     "Write blog posts (reviewed before they go live)",
     "3 people to meet every day, and warm introductions",
-    "10 AI questions a month",
+    "10 questions a month to Maple, the AI assistant",
   ],
   plus: [
     "=Everything in Free, and:",
@@ -32,7 +32,7 @@ export const PLAN_FEATURES: Record<PlanKey, string[]> = {
     "Host 1 private group of your own",
     "Publish blog posts straight away",
     "Shown more often in other members\u2019 daily suggestions",
-    "100 AI questions a month, plus grant application help",
+    "100 questions a month to Maple, plus grant application help",
     "Discounts on CanadianSME events",
   ],
   advisor: [

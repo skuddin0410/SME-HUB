@@ -7,6 +7,7 @@ export function settingsSections(advisor: boolean): [string, string, string][] {
     ["privacy", "Profile privacy", "eye"],
     ["contact", "Messages and connections", "msg"],
     ["notif", "Notifications", "bell"],
+    ["maple", "Maple (AI assistant)", "spark"],
     ["card", "Business card", "qr"],
     ["data", "My data", "db"],
     ["close", "Close or pause", "pause"],

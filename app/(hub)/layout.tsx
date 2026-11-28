@@ -29,6 +29,9 @@ import { Presence } from "@/components/presence";
 import { MessagingDock, type DockThread } from "@/components/messaging-dock";
 import { ReadyProvider } from "@/components/ready/provider";
 import { getMyReady } from "@/lib/ready";
+import { MapleProvider } from "@/components/maple/provider";
+import { MapleDockPanel, MapleTab } from "@/components/maple/dock";
+import { mapleSettings } from "@/lib/maple-server";
 
 export const dynamic = "force-dynamic";
 
@@ -68,7 +71,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
   const { supabase, userId, profile, isStaff } = await getViewer();
 
   const none = Promise.resolve({ count: 0 });
-  const [unread, requests, inbox, latest, recentMsgs, ready] = await Promise.all([
+  const [unread, requests, inbox, latest, recentMsgs, ready, maple] = await Promise.all([
     userId
       ? supabase.from("notifications").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null)
       : none,
@@ -100,6 +103,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
           .limit(60)
       : Promise.resolve({ data: [] }),
     getMyReady(),
+    userId ? mapleSettings(supabase, userId) : Promise.resolve(null),
   ]);
 
   // one row per conversation for the messaging pop-up, newest first
@@ -222,7 +226,21 @@ export default async function HubShell({ children }: { children: React.ReactNode
 
       {profile && userId && <div aria-hidden className="hidden h-12 md:block" />}
       {profile && userId && <MessagingDock me={{ id: profile.id, full_name: profile.full_name, avatar_url: profile.avatar_url }} threads={threads} unread={inbox.count ?? 0} />}
+      <MapleDockPanel />
+      <MapleTab />
     </div>
   );
-  return ready ? <ReadyProvider me={ready} website={signupSite} autoOpen={autoOpen}>{shell}</ReadyProvider> : shell;
+  // Updates 46 to 48: Maple, the AI assistant, on every page
+  const withMaple = (
+    <MapleProvider
+      member={!!(userId && profile)}
+      first={(profile?.full_name ?? "").trim().split(/\s+/)[0] ?? ""}
+      isNew={!!profile && Date.now() - new Date(profile.created_at).getTime() < 7 * 86_400_000}
+      plan={(["plus", "advisor"] as const).find((x) => x === (profile as { plan?: string } | null)?.plan) ?? "free"}
+      settings={maple}
+    >
+      {shell}
+    </MapleProvider>
+  );
+  return ready ? <ReadyProvider me={ready} website={signupSite} autoOpen={autoOpen}>{withMaple}</ReadyProvider> : withMaple;
 }

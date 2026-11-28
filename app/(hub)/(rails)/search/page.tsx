@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AUTHOR_FIELDS, cleanTerm, fetchPosts, ftsQuery, getDegrees, getViewer, type Author } from "@/lib/hub";
 import { Empty, GroupLine, PageTitle, PersonLine, PostCard } from "@/components/hub";
 import { SubmitButton } from "@/components/hub-client";
+import { MapleSearchStrip } from "@/components/maple/dock";
 
 export const metadata = { title: "Search", robots: { index: false } };
 
@@ -31,6 +32,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <PageTitle title="Search" />
+      {term && <MapleSearchStrip q={term} />}
       <form className="panel flex gap-2 p-3">
         <input name="q" defaultValue={term} autoFocus placeholder="Search people, businesses, groups and posts" aria-label="Search" className="field flex-1" />
         <SubmitButton tone="dark">Search</SubmitButton>

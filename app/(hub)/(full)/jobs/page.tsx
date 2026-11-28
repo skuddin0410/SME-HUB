@@ -4,6 +4,7 @@ import { openJobs } from "@/lib/jobs";
 import { JobsList } from "@/components/jobs/jobs-list";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
+import { MapleStrip } from "@/components/maple/dock";
 
 export const metadata = pageMeta({ title: "Jobs at Canadian small businesses", description: "Real jobs from Canadian small business owners you can look up. Search full-time, part-time, contract and seasonal work, or post a job.", path: "/jobs" });
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ export default async function JobsPage() {
   return (
     <div className="zip">
       <div className="wrap" style={{ paddingTop: 20, paddingBottom: 40 }}>
+        <MapleStrip page="jobs" />
         <JobsList jobs={jobs ?? []} saved={saved} applied={applied} signedIn={!!userId} mineOpen={mineOpen} />
       </div>
     </div>

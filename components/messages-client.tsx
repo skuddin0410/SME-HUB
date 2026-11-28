@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { markThreadRead, sendMessage } from "@/app/(hub)/actions";
 import type { Author } from "@/lib/hub";
 import { ZipAv } from "@/components/zip/bits";
+import { MapleThreadLink } from "@/components/maple/dock";
 
 export type Msg = { id: string; sender_id: string; recipient_id: string; body: string; created_at: string; read_at: string | null };
 
@@ -160,6 +161,7 @@ export function MessagingApp({
   return (
     <div className="msgs">
       <div ref={threadsRef} className={cx("card threads", active && "hide-sm")} style={{ gap: 4 }}>
+        <MapleThreadLink />
         <label className="sr" htmlFor="msq">Search messages</label>
         <input id="msq" className="field" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search messages" style={{ marginBottom: 6 }} />
         <div className="chips" role="group" aria-label="Show" style={{ marginBottom: 6 }}>

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { WelcomeWeekCard } from "@/components/safety/welcome-card";
+import { MapleBox } from "@/components/maple/dock";
 import { TrendingTags } from "@/components/zip/hashtags";
 import Link from "next/link";
 import { FundingCard } from "@/components/grants/funding-card";
@@ -95,7 +96,7 @@ function ZipArticles() {
   );
 }
 
-/** Right rail: the member's card, Ask the Hub, the pavilion, this week's session and groups to explore. */
+/** Right rail: the member's card, Ask Maple, the pavilion, this week's session and groups to explore. */
 export async function ZipRightRail() {
   const { supabase, userId, profile } = await getViewer();
   if (!userId || !profile) return <ZipJoinCard />;
@@ -148,11 +149,7 @@ export async function ZipRightRail() {
         </div>
       </div>
 
-      <div className="card">
-        <div className="row"><h2 className="grow">Ask the Hub</h2><span className="tag ai">AI</span></div>
-        <p className="muted small">Get an answer from members, advisors and CanadianSME articles.</p>
-        <Link className="btn" href="/ask" prefetch={false} style={{ alignSelf: "flex-start" }}><Ic n="spark" s={14} />Ask a question</Link>
-      </div>
+      <MapleBox />
       <Suspense fallback={null}><GoodMorning /></Suspense>
 
       <div className="card" style={{ borderColor: "#FECACA" }}>

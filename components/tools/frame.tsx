@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Ic } from "@/components/zip/ic";
 import { TOOLS, TLX } from "@/lib/tools/data";
+import { MapleStrip } from "@/components/maple/dock";
 
 const short = (n: string) => n.replace(" Calculator", "").replace(" Estimator", "").replace(" Forecaster", "");
 
@@ -20,7 +21,7 @@ export function TlNav({ cur }: { cur: string }) {
 /** Business tools: the 7 calculators, as on canadiansme.ca/tools/ (Update 13). */
 export function ToolsIndex() {
   return (
-    <div className="zip"><div className="wrap" style={{ paddingTop: 16, paddingBottom: 40 }}><div className="tlpage">
+    <div className="zip"><div className="wrap" style={{ paddingTop: 16, paddingBottom: 40 }}><MapleStrip page="tools" /><div className="tlpage">
       <TlNav cur="all" />
       <section className="tlhero"><p className="pgkick2">Free tools</p><h1>Calculators built for Canadian rules</h1><p>Every calculator uses current federal and provincial rates, not a generic template with a Canadian flag on it. Nothing you type is stored. Results are examples for reference only.</p></section>
       <div className="tlgrid">
