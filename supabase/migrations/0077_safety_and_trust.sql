@@ -242,6 +242,7 @@ begin
       when 'post' then 'Your post has a link in it. Take the link out to post it now, or post it in a few days.'
       when 'comment' then 'Take the link out of your comment to post it now.'
       when 'message' then 'Take the link out of your message to send it now.'
+      when 'reply' then 'Take the link out of your reply to post it now.'
       else 'Take the link out to post it now, or post it in a few days.' end;
   end if;
   -- links to blocked or look-alike sites

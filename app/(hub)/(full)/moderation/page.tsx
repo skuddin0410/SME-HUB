@@ -6,6 +6,7 @@ import { Ic } from "@/components/zip/ic";
 import { ZipAv } from "@/components/zip/bits";
 import { TeamHead, TeamWrap, teamViewer } from "@/components/zip/team";
 import { deleteReportCategory, moderate, saveModerationSettings, saveReportCategory } from "@/app/(hub)/team-actions";
+import { HostRequests } from "@/components/threads/host-requests";
 import { HeldPanel, LinksPanel, RulesPanel, SAFETY_TABS, SafetyKpis, SignupsPanel, safetyOverview } from "@/components/safety/team";
 
 export const metadata = { title: "Moderation", robots: { index: false } };
@@ -52,6 +53,9 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
     postIds.length ? supabase.from("posts").select("id, title, body, hidden_at, author:profiles!posts_author_id_fkey(id, full_name, avatar_url)").in("id", postIds) : Promise.resolve({ data: [] }),
     memIds.length ? supabase.from("profiles").select("id, full_name, headline, avatar_url, status").in("id", memIds) : Promise.resolve({ data: [] }),
   ]);
+  // Update 42: the team sees who really asked an anonymous question
+  const { data: anonRows } = postIds.length ? await supabase.rpc("anon_owners", { p_ids: postIds }) : { data: [] };
+  const anonOwner = new Map(((anonRows ?? []) as { post_id: string; owner_id: string; full_name: string; avatar_url: string | null }[]).map((r) => [r.post_id, r]));
   const crIds = [...crReps.keys()];
   const { data: crRows } = crIds.length ? await supabase.from("course_reviews").select("id, body, hidden_at, course:courses(title), member:profiles!course_reviews_member_id_fkey(id, full_name, avatar_url)").in("id", crIds) : { data: [] };
   type CrRow = { id: string; body: string; hidden_at: string | null; course: { title: string } | null; member: { id: string; full_name: string; avatar_url: string | null } | null };
@@ -69,6 +73,15 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
   mem.sort((a, b) => b.blocks + b.n - (a.blocks + a.n));
 
   const totalContent = postIds.length + crIds.length;
+  // Update 42: offers to host a group
+  const [{ data: hr }, { data: hg }] = tab === "members"
+    ? await Promise.all([
+        supabase.from("host_requests").select("id, created_at, who:profiles!host_requests_user_id_fkey(id, full_name, headline, avatar_url)").eq("status", "pending").order("created_at"),
+        supabase.from("groups").select("id, name").eq("status", "active").eq("is_private", false).order("name"),
+      ])
+    : [{ data: [] }, { data: [] }];
+  const hostReqs = (hr ?? []) as unknown as { id: string; created_at: string; who: { id: string; full_name: string | null; headline: string | null; avatar_url: string | null } | null }[];
+  const hostGroups = (hg ?? []) as { id: string; name: string }[];
   const totalMembers = memIds.length;
   const [pendStories, repStories] = await Promise.all([
     supabase.from("stories").select("id", { count: "exact", head: true }).eq("status", "pending"),
@@ -132,7 +145,13 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
                     <tr key={id}>
                       <td><input type="checkbox" name="sel" value={id} aria-label="Select" /></td>
                       <td><span className="tag">Post</span> {(p!.title || p!.body).slice(0, 90)}</td>
-                      <td><span className="row" style={{ gap: 8 }}><ZipAv name={p!.author?.full_name || "M"} src={p!.author?.avatar_url} size="s" />{p!.author?.full_name}</span></td>
+                      <td>
+                        {anonOwner.get(id) ? (
+                          <span className="row" style={{ gap: 8 }}><ZipAv name={anonOwner.get(id)!.full_name || "M"} src={anonOwner.get(id)!.avatar_url} size="s" /><span className="stack"><span>{anonOwner.get(id)!.full_name}</span><span className="muted small">Asked anonymously</span></span></span>
+                        ) : (
+                          <span className="row" style={{ gap: 8 }}><ZipAv name={p!.author?.full_name || "M"} src={p!.author?.avatar_url} size="s" />{p!.author?.full_name}</span>
+                        )}
+                      </td>
                       <td><span className="cnt"><Ic n="flag" s={14} />{n}</span></td>
                       <td>{p!.hidden_at ? <span className="pill hid">Hidden</span> : <span className="muted small">Visible</span>}</td>
                       <td>
@@ -177,6 +196,7 @@ export default async function ModerationPage({ searchParams }: { searchParams: P
         </form>
       )}
 
+      {tab === "members" && hostReqs.length > 0 && <HostRequests list={hostReqs} groups={hostGroups} />}
       {tab === "members" && (
         <form action={moderate} className="stack" style={{ gap: 16 }}>
           <div className="card">

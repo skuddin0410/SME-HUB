@@ -12,7 +12,7 @@ import { ConnectButton } from "@/components/network-client";
 
 export type Note = {
   id: string;
-  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission" | "sale_enquiry" | "deadline" | "match_booked" | "advisor_booking" | "advisor_cancel" | "lead" | "event" | "consult";
+  type: "like" | "comment" | "connection_request" | "connection_accepted" | "course_feedback" | "course_submission" | "sale_enquiry" | "deadline" | "match_booked" | "advisor_booking" | "advisor_cancel" | "lead" | "event" | "consult" | "group_question";
   note?: string | null;
   href?: string | null;
   post_id: string | null;
@@ -38,6 +38,7 @@ const TEXT: Record<Note["type"], string> = {
   lead: "",
   event: "",
   consult: "",
+  group_question: "",
 };
 const ago = (iso: string) => {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -114,7 +115,7 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
             className="row"
             style={{ alignItems: "flex-start", padding: "14px 16px", borderTop: "1px solid var(--line)", cursor: "pointer", background: n.read_at ? undefined : "var(--surface-2)" }}
           >
-            {n.type === "deadline" ? (
+            {n.type === "deadline" || n.type === "group_question" ? (
               <span className="tlico" aria-hidden="true" style={{ flex: "none", width: 40, height: 40, display: "grid", placeItems: "center" }}><Ic n="cal2" s={18} /></span>
             ) : (
               <Link href={`/members/${n.actor.id}`} onClick={(e) => e.stopPropagation()} style={{ display: "flex", flex: "none" }} aria-label={n.actor.full_name || "Member"}>
@@ -123,7 +124,7 @@ export function NotificationsList({ initial }: { initial: Note[] }) {
             )}
             <div className="grow stack" style={{ gap: 2 }}>
               <p>
-                {n.type === "deadline" ? <><strong>Reminder:</strong> {n.note || "a deadline is coming up"}.</> : n.type === "event" ? <><strong>Event:</strong> {n.note || "an event you saved"}</> : n.type === "lead" ? <><strong>My leads:</strong> {n.note || "a new lead"}</> : n.type === "consult" ? <><strong>{n.actor.full_name || "A member"}</strong>: {n.note || "free consultation"}</> : <><strong>{n.actor.full_name || "A member"}</strong> {TEXT[n.type]}{(n.type === "match_booked" || n.type === "advisor_booking" || n.type === "advisor_cancel") && n.note ? ` for ${n.note}` : ""}.</>}
+                {n.type === "deadline" ? <><strong>Reminder:</strong> {n.note || "a deadline is coming up"}.</> : n.type === "event" ? <><strong>Event:</strong> {n.note || "an event you saved"}</> : n.type === "lead" ? <><strong>My leads:</strong> {n.note || "a new lead"}</> : n.type === "consult" ? <><strong>{n.actor.full_name || "A member"}</strong>: {n.note || "free consultation"}</> : n.type === "group_question" ? <><strong>Your group:</strong> {n.note || "a question is waiting for an answer"}</> : <><strong>{n.actor.full_name || "A member"}</strong> {TEXT[n.type]}{(n.type === "match_booked" || n.type === "advisor_booking" || n.type === "advisor_cancel") && n.note ? ` for ${n.note}` : ""}.</>}
                 {!n.read_at && <span className="sr"> Unread</span>}
               </p>
               {n.excerpt && <p className="muted small" style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{n.excerpt}</p>}

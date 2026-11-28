@@ -8,6 +8,7 @@ import { Scene } from "@/components/zip/scene";
 import { ZipAv } from "@/components/zip/bits";
 import { LiveForm } from "@/components/zip/live-form";
 import { JoinBtn, StartGroup } from "@/components/zip/groups-client";
+import { HostCta } from "@/components/threads/host-cta";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
 
@@ -25,6 +26,7 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
   const sp = await searchParams;
   const viewer = await getViewer();
   const { supabase, userId } = viewer;
+  const hostAsked = userId ? !!(await supabase.from("host_requests").select("id").eq("user_id", userId).eq("status", "pending").maybeSingle()).data : false;
   const s = await getGroupSettings();
   const q = (sp.q ?? "").replace(/[^\p{L}\p{N} '-]/gu, "").slice(0, 60);
   const cat = sp.cat === "__priv" || s.types.includes(sp.cat ?? "") ? sp.cat! : "";
@@ -116,6 +118,9 @@ export default async function GroupsPage({ searchParams }: { searchParams: Promi
             </div>
           </div>
         )}
+
+        {/* Update 42: offer to host a group */}
+        {userId && <HostCta sent={hostAsked} />}
 
         <div className="tools" style={{ marginBottom: 14 }}>
           <div className="chips grow" role="group" aria-label="Type of group">

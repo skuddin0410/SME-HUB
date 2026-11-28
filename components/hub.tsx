@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { Ic } from "@/components/zip/ic";
 import { DEGREE_LABEL, MEMBER_TYPES, timeAgo, type Author, type Degree, type Post, type Profile } from "@/lib/hub";
 import { getTagRules } from "@/lib/zip/hashtags-server";
 import { AvatarImg, GroupLogo, PostActions, PostBody, PostMenu } from "@/components/hub-client";
@@ -53,14 +54,17 @@ const VISIBILITY_LABEL = { public: "", members: "Members only", connections: "Co
 export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer: Viewer; startOpen?: boolean }) {
   const rules = await getPostRules();
   const tr = await getTagRules();
-  const own = post.author.id === viewer.userId;
+  const anon = post.anon ?? null; // Update 42: an anonymous question: no profile link, no Connect
+  const own = anon ? anon.mine : post.author.id === viewer.userId;
   // Update 26: the author may edit while the window lasts (Forever by default)
-  const canEditNow = own && Date.now() - new Date(post.created_at).getTime() <= rules.editMins * 60_000;
+  const canEditNow = !anon && own && Date.now() - new Date(post.created_at).getTime() <= rules.editMins * 60_000;
   return (
     <article id={`post-${post.id}`} className={`card post${post.pinned_at ? " pinnedp" : ""}`}>
       {post.pinned_at && <p className="eyebrow">📌 Pinned by the Hub team</p>}
       <div className="row" style={{ alignItems: "flex-start" }}>
-        {post.business ? (
+        {anon ? (
+          <span className="ccav" style={{ width: 40, height: 40 }} aria-hidden="true"><Ic n="lock" s={20} /></span>
+        ) : post.business ? (
           <Link href={`/businesses/${post.business.slug}`} className="shrink-0">
             {post.business.logo_url ? (
               <img src={post.business.logo_url} alt="" className="av bzav" />
@@ -74,11 +78,15 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
           </Link>
         )}
         <div className="grow stack">
+          {anon ? (
+            <span className="namebtn ccanonname">A business owner</span>
+          ) : (
           <Link className="namebtn" href={post.business ? `/businesses/${post.business.slug}` : `/members/${post.author.id}`}>
             {post.business ? post.business.name : post.author.full_name || "Member"}
           </Link>
+          )}
           <span className="muted small">
-            {post.business ? (
+            {anon ? `Asked anonymously · ${anon.where}` : post.business ? (
               <>
                 Business page · posted by <Link href={`/members/${post.author.id}`}>{post.author.full_name || "a team member"}</Link>
               </>
@@ -88,6 +96,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
           </span>
           {/* badges first, then when it was posted (and where); the post kind is not shown as a chip */}
           <span className="row phmeta" style={{ gap: 6, flexWrap: "wrap", marginTop: 3, alignItems: "center" }}>
+            {anon && <span className="tag ccanontag"><Ic n="lock" s={11} />Anonymous</span>}
             {post.author.member_type === "advisor" && !post.business && <TypeBadge type="advisor" size="sm" />}
             {post.author.member_type !== "advisor" && post.author.member_type !== "owner" && !post.business && <TierBadge type={post.author.member_type} always />}
             <Link href={`/posts/${post.id}`} className="small" style={{ color: "#71717A" }}>
@@ -104,9 +113,9 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
           </span>
         </div>
         <div className="row" style={{ gap: 6, flex: "none" }}>
-          {!own && !post.business && <ConnectButton otherId={post.author.id} initial={post.link} signedIn={!!viewer.userId} variant="text" />}
+          {!own && !post.business && !anon && <ConnectButton otherId={post.author.id} initial={post.link} signedIn={!!viewer.userId} variant="text" />}
           <SaveButton postId={post.id} initial={post.saved} signedIn={!!viewer.userId} />
-          <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} canEdit={canEditNow} />
+          <PostMenu postId={post.id} canDelete={own || viewer.isStaff} canReport={!own && !!viewer.userId} canEdit={canEditNow && !anon} />
         </div>
       </div>
       {/* the cover shows only when the post has no photo or video of its own, so a picture never appears twice */}
@@ -127,6 +136,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
         </div>
       )}
       {post.pdf && <PdfViewer pdf={post.pdf} sharedBy={post.business ? post.business.name : post.author.full_name || "a member"} />}
+      {anon?.mine && <p className="ccyou"><Ic n="lock" s={12} />You asked this anonymously. Only you and the SME Hub team can see it’s you.</p>}
       {post.kind === "question" && post.comments === 0 && (
         <p className="small" style={{ fontWeight: 600, color: "var(--brand-ink)" }}>No answers yet. Can you help?</p>
       )}
@@ -145,7 +155,7 @@ export async function PostCard({ post, viewer, startOpen }: { post: Post; viewer
         canQuote={!!(rules.share && post.id)}
       />
       {rules.share && viewer.userId && post.id && <QuoteButton postId={post.id} signedIn />}
-      {own && <PostManage post={post} />}
+      {own && !anon && <PostManage post={post} />}
       {canEditNow && viewer.profile && (
         <EditPostWindow
           post={{ id: post.id, kind: post.kind, title: post.title, body: post.body, images: post.images, image_url: post.image_url, video_url: post.video_url, pdf: post.pdf }}

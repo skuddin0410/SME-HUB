@@ -24,7 +24,7 @@ function fail(error: { message: string } | null) {
 }
 
 /** held: Update 41's automatic checks stopped it for the Hub team to review (members never see it until approved) */
-export type FormState = { error?: string; ok?: number; held?: boolean };
+export type FormState = { error?: string; ok?: number; held?: boolean; anon?: boolean };
 
 /** No row came back from an insert: the database's safety checks held it for review (Update 41). */
 async function wasHeld(supabase: Awaited<ReturnType<typeof createClient>>, error: { code?: string } | null, data: unknown) {
@@ -101,6 +101,22 @@ export async function createPost(_prev: FormState, form: FormData): Promise<Form
   const groupId = text(form, "group_id") ? uuid(text(form, "group_id")) : null;
   const rawKind = text(form, "kind");
   const kind = ["question", "win", "offer", "hiring", "intro"].includes(rawKind) ? rawKind : "update";
+
+  // Update 42: an anonymous question. Only text (a photo, video or file could say who asked), and the database keeps
+  // the real author where only they and the Hub team can see it.
+  if (text(form, "anonymous") === "1") {
+    if (kind !== "question") return { error: "Only questions can be asked anonymously." };
+    if (hasMedia || text(form, "poll_option") || text(form, "scheduled_local") || text(form, "business_id")) {
+      return { error: "Anonymous questions are text only. Take out the photo, video, file, poll or schedule, or ask under your name." };
+    }
+    if (!body) return { error: "Write your question first." };
+    const anonTitle = String(rules.title) === "off" ? "" : text(form, "title").slice(0, FEED.titleMax);
+    const { data, error } = await supabase.rpc("ask_anonymously", { p_title: anonTitle, p_body: body, p_group: groupId });
+    if (error) return { error: error.message };
+    const r = data as { id?: string; held?: boolean };
+    revalidatePath("/", "layout");
+    return r.held ? { ok: Date.now(), held: true } : { ok: Date.now(), anon: true };
+  }
   // Update 10: up to 10 photos (the first is also image_url, which every older view shows) and 1 video
   const many = form.getAll("images").map(String).filter(Boolean);
   if (many.length > 10) return { error: "A post can have up to 10 photos." };
@@ -289,7 +305,10 @@ export async function votePoll(postId: string, optionId: string) {
 export async function deletePost(postId: string) {
   uuid(postId);
   const { supabase } = await requireUser();
-  fail((await supabase.from("posts").delete().eq("id", postId)).error);
+  // Update 42: the asker of an anonymous question removes it through the database (the post carries no author)
+  const { data: mine } = await supabase.from("post_owners").select("post_id").eq("post_id", postId).maybeSingle();
+  if (mine) fail((await supabase.rpc("delete_anon_post", { p_post: postId })).error);
+  else fail((await supabase.from("posts").delete().eq("id", postId)).error);
   revalidatePath("/", "layout");
 }
 

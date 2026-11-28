@@ -128,7 +128,7 @@ export default async function HubShell({ children }: { children: React.ReactNode
   const notes: NavNote[] = ((latest.data ?? []) as unknown as NoteRow[]).map((n) => ({
     id: n.id,
     actor: n.type === "deadline" ? "Reminder:" : n.actor?.full_name || "A member",
-    text: n.type === "deadline" ? n.note || "a deadline is coming up" : (NOTE_TEXT as Record<string, string>)[n.type] ?? "sent you an update",
+    text: n.type === "deadline" ? n.note || "a deadline is coming up" : (n.type as string) === "group_question" ? n.note || "a question in your group is waiting for an answer" : (NOTE_TEXT as Record<string, string>)[n.type] ?? "sent you an update",
     href: n.href ? n.href : n.post_id ? `/posts/${n.post_id}` : n.type === "connection_request" ? "/network/connections" : `/members/${n.actor?.id}`,
     ago: shortAgo(n.created_at),
     unread: !n.read_at,

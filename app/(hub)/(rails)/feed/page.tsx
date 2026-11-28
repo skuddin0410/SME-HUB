@@ -9,6 +9,7 @@ import { topSignal } from "@/lib/feed";
 import { KINDS, type Kind } from "@/lib/demo";
 import { Empty, PostCard } from "@/components/hub";
 import { PostBox } from "@/components/zip/post-box";
+import { WeeklyStrip } from "@/components/threads/weekly-strip";
 import { FeedTools } from "@/components/zip/feed-tools";
 import { canStartPost, getComposerRules, getHubSettings } from "@/lib/zip/settings-load";
 import { FirstWeek, type WeekStep } from "@/components/first-week";
@@ -174,6 +175,8 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           staff={viewer.isStaff}
         />
       )}
+      {/* Update 42: this week's Monday, Wednesday and Friday threads */}
+      {!saved && !kind && !scope && page === 1 && !before && <Suspense fallback={null}><WeeklyStrip /></Suspense>}
 
       {saved ? (
         <div className="tools"><h2 style={{ font: "700 15px var(--display)" }}>Saved bookmarks</h2></div>

@@ -10,7 +10,7 @@ import { ZipAv } from "@/components/zip/bits";
 import { JoinBtn } from "@/components/zip/groups-client";
 import "@/styles/zip.css";
 import "@/styles/zip-extra.css";
-import { AUTHOR_FIELDS, fetchPosts, getViewer, PAGE_SIZE, type Author } from "@/lib/hub";
+import { AUTHOR_FIELDS, fetchPosts, getViewer, PAGE_SIZE, timeAgo, type Author } from "@/lib/hub";
 import { InvitePanel } from "@/components/business-client";
 import { Empty, Pager, PostCard } from "@/components/hub";
 import { SubmitButton } from "@/components/hub-client";
@@ -103,8 +103,11 @@ export default async function GroupPage({
   const tab = tabs.some((t) => t.key === sp.tab) ? sp.tab! : "posts";
   const count = (group.group_members as unknown as { count: number }[])[0]?.count ?? 0;
 
+  // Update 42: the group host is the member the team appointed, or whoever started the group (host_id from migration 0078)
+  const { data: hostPick } = await supabase.from("groups").select("host_id").eq("id", group.id).maybeSingle();
+  const hostId = ((hostPick as { host_id?: string | null } | null)?.host_id ?? null) || (group.created_by as string);
   const [{ data: hostRow }, { data: preview }, { data: extra }, { data: related }] = await Promise.all([
-    supabase.from("profiles").select("id, full_name, headline, avatar_url").eq("id", group.created_by).maybeSingle(),
+    supabase.from("profiles").select("id, full_name, headline, avatar_url").eq("id", hostId).maybeSingle(),
     canSee ? supabase.from("group_members").select("user_id, profile:profiles!group_members_user_id_fkey(id, full_name, location, avatar_url)").eq("group_id", group.id).order("created_at").limit(5) : Promise.resolve({ data: [] }),
     supabase.rpc("group_card_extras", { p_ids: [group.id] }),
     supabase.from("groups").select("id, slug, name, cover, is_private, join_mode, created_by").eq("status", "active").eq("category", group.category).eq("is_private", false).neq("id", group.id).limit(3),
@@ -115,6 +118,16 @@ export default async function GroupPage({
   const relMine = userId && relList.length ? new Set(((await supabase.from("group_members").select("group_id").eq("user_id", userId).in("group_id", relList.map((r) => r.id))).data ?? []).map((m) => m.group_id as string)) : new Set<string>();
 
   const posts = canSee && tab === "posts" ? await fetchPosts(supabase, userId, { groupId: group.id, page }) : [];
+  // Update 42: this week's check-in (public groups), and for the host, questions nobody has answered yet
+  const checkin = !group.is_private && tab === "posts" && page === 1
+    ? ((await supabase.from("weekly_threads").select("id").eq("kind", "group").eq("group_id", group.id).lte("opens_at", new Date().toISOString()).gt("closes_at", new Date().toISOString()).order("opens_at", { ascending: false }).limit(1).maybeSingle()).data as { id: string } | null)
+    : null;
+  const checkinCount = checkin ? ((await supabase.from("thread_replies").select("id", { count: "exact", head: true }).eq("thread_id", checkin.id)).count ?? 0) : 0;
+  const amHost = !!userId && userId === hostId;
+  const unanswered = amHost && tab === "posts"
+    ? (((await supabase.from("posts").select("id, title, body, created_at, comments(count)").eq("group_id", group.id).eq("kind", "question").eq("status", "published").order("created_at", { ascending: true }).limit(60)).data ?? []) as unknown as { id: string; title: string | null; body: string; created_at: string; comments: { count: number }[] }[])
+        .filter((q) => (q.comments[0]?.count ?? 0) === 0).slice(0, 5)
+    : [];
   const members =
     canSee && (tab === "members" || tab === "manage")
       ? (((await supabase.from("group_members").select(`role, user_id, profile:profiles!group_members_user_id_fkey(${AUTHOR_FIELDS})`).eq("group_id", group.id).order("created_at")).data ?? []) as unknown as { role: string; user_id: string; profile: Author }[])
@@ -127,7 +140,6 @@ export default async function GroupPage({
   const tabLink = (key: string) => (key === "posts" ? `/groups/${slug}` : `/groups/${slug}?tab=${key}`);
   const joinLabel = group.join_mode === "invite" ? "By invitation" : "";
   const H = settings.head;
-  const hostFirst = (hostRow?.full_name ?? "").split(" ")[0];
   const simpleJoin = isMember || group.join_mode === "open";
   const headerClass = settings.header === "top" ? "wide" : "";
 
@@ -197,6 +209,31 @@ export default async function GroupPage({
                   {isMember && !archived && viewer.profile && (
                     <PostBox me={viewer.profile} groupId={group.id} rules={await getComposerRules()} staff={viewer.isStaff} tagRules={await postTagRules()}
                       free={!viewer.isStaff && !["plus", "advisor"].includes(String((viewer.profile as { plan?: string }).plan))} />
+                  )}
+                  {checkin && (
+                    <Link className="cccheck" href={`/thread/g_${slug}`}>
+                      <span className="ccci"><Ic n="cal2" s={18} /></span>
+                      <span className="cccb">
+                        <small>Pinned · this week’s check-in</small>
+                        <b>What’s your biggest question this week?</b>
+                        <span>Hosted by {hostRow?.full_name ?? "the group host"} · {checkinCount} {checkinCount === 1 ? "reply" : "replies"} · every question gets an answer</span>
+                      </span>
+                      <span className="btn sm dark">Answer or ask</span>
+                    </Link>
+                  )}
+                  {amHost && unanswered.length > 0 && (
+                    <div className="card">
+                      <div className="row"><h2 className="grow">Questions waiting for an answer</h2><span className="tag cchost">Host</span></div>
+                      <p className="muted small">Oldest first. You’re told when a question has no reply after 4 hours.</p>
+                      <div className="list">
+                        {unanswered.map((q) => (
+                          <Link key={q.id} href={`/posts/${q.id}`} className="row" style={{ justifyContent: "space-between", gap: 10 }}>
+                            <span className="grow" style={{ minWidth: 0 }}>{(q.title || q.body).slice(0, 110)}</span>
+                            <span className="muted small" style={{ flex: "none" }}>{timeAgo(q.created_at)}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   )}
                   {archived && <Empty title="This group is archived">Posts are kept for reading, but nobody can add new ones.</Empty>}
                   {posts.length === 0 && !archived && (

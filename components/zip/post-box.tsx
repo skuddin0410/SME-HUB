@@ -2,6 +2,7 @@
 
 import { toast } from "@/components/toast";
 import { safetyPlain, showSafety } from "@/lib/safety/client";
+import { provinceOf } from "@/lib/threads-shared";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,7 +32,7 @@ const PROMPT: Record<string, string> = {
 };
 const VIS: [string, string][] = [["public", "Everyone"], ["members", "Members only"], ["connections", "My connections"], ["private", "Only me"]];
 
-type Me = { id: string; full_name: string | null; avatar_url: string | null };
+type Me = { id: string; full_name: string | null; avatar_url: string | null; location?: string | null };
 type Photo = { key: string; preview: string; url: string; busy: boolean };
 type Video = { preview: string; name: string; url: string; poster: string; busy: boolean; pct: number };
 type Pdf = { name: string; size: number; path: string; busy: boolean };
@@ -91,6 +92,8 @@ export function PostBox({
   const [kind, setKind] = useState<Kind>(initialKind ?? "update");
   const [body, setBody] = useState(initialText ?? "");
   const [title, setTitle] = useState("");
+  // Update 42: a question can be asked anonymously
+  const [anon, setAnon] = useState(false);
   const [to, setTo] = useState("public");
   const [poll, setPoll] = useState<string[] | null>(null);
   const [pdays, setPdays] = useState("3");
@@ -152,12 +155,13 @@ export function PostBox({
   // after a successful post: the window closes, the box goes back to "Start a post", the type goes back to Update
   useEffect(() => {
     if (!state.ok) return;
-    setBody(""); setTitle(""); setKind("update"); setPoll(null); setSched(false); setCover(false); setCloseC(false); setNote("");
+    setBody(""); setTitle(""); setKind("update"); setAnon(false); setPoll(null); setSched(false); setCover(false); setCloseC(false); setNote("");
     setPhotos([]); setVideo(null); setPdf(null); setAiTags(null);
     setOpen(false);
     if (state.held) toast("Thanks. Your post is being checked by the Hub team and will appear once it’s approved.");
+    else if (state.anon) toast("Posted anonymously. Only the SME Hub team can see it’s you.");
     router.refresh();
-  }, [state.ok, state.held, router]);
+  }, [state.ok, state.held, state.anon, router]);
   // better hashtag suggestions from AI, when the server has it, after a pause in typing
   useEffect(() => {
     if (!open || !tagRules || body.replace(/#\w+/g, "").trim().length < 40) return;
@@ -368,6 +372,17 @@ export function PostBox({
                   required={rules?.title === "required"} placeholder={rules?.title === "required" ? "Title" : "Title (optional)"} />
               </>
             )}
+            {kind === "question" && (
+              <div className={`ccanon${anon ? " on" : ""}`}>
+                <button type="button" className="ccsw" role="switch" aria-checked={anon} aria-label="Ask anonymously" onClick={() => setAnon((v) => !v)}><i /></button>
+                <span>
+                  <b>Ask anonymously</b>
+                  <small>{anon ? `Shown as “A business owner in ${provinceOf(me.location)}”. Only the SME Hub team can see it’s you.` : "Good for money trouble, legal worries or anything personal."}</small>
+                </span>
+                {anon && <span className="ccav" style={{ width: 28, height: 28 }} aria-hidden="true"><Ic n="lock" s={14} /></span>}
+              </div>
+            )}
+            {kind === "question" && anon && <input type="hidden" name="anonymous" value="1" />}
             <label className="sr" htmlFor="draft">Write a post</label>
             <textarea className="cpta" id="draft" ref={textRef} name="body" maxLength={5000} value={body}
               placeholder={PROMPT[kind] ?? "What do you want to talk about?"}

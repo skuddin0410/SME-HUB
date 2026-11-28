@@ -20,7 +20,12 @@ export type Profile = {
 
 export type Author = Pick<Profile, "id" | "full_name" | "headline" | "avatar_url" | "member_type">;
 
+/** Update 42: how an anonymous question's author shows everywhere (no profile, no id). */
+export const ANON_AUTHOR: Author = { id: "", full_name: "A business owner", headline: "Asked anonymously", avatar_url: null, member_type: "owner" } as Author;
+
 export type Post = {
+  /** Update 42: asked anonymously; mine = the viewer asked it */
+  anon?: { mine: boolean; where: string } | null;
   id: string;
   body: string;
   image_url: string | null;
@@ -127,7 +132,8 @@ export async function requireStaff() {
 
 const POST_BASE = `id, body, image_url, images, video_url, video_poster, visibility, kind, created_at, pinned_at, group_id, title, cover_url, edited_at, comments_closed, profile_pinned, status, scheduled_at, quoted_post_id, author:profiles!posts_author_id_fkey(${AUTHOR_FIELDS}), business:companies!posts_business_id_fkey(id, name, slug, logo_url), group:groups!posts_group_id_fkey(name, slug), reactions(count), comments(count)`;
 // Update 26: the PDF columns come from migration 0066; until it is applied the feed asks without them
-const POST_SELECT = `${POST_BASE}, pdf_path, pdf_name, pdf_size, pdf_pages`;
+// Update 42: anonymous questions (migration 0078); asked for with the PDF columns, so the same fallback covers both
+const POST_SELECT = `${POST_BASE}, pdf_path, pdf_name, pdf_size, pdf_pages, is_anonymous, anon_where`;
 // remembered for five minutes, so the columns are picked up soon after the migration lands
 let pdfMissingAt = 0;
 
@@ -208,13 +214,22 @@ export async function fetchPosts(
 
   const withPdf = Date.now() - pdfMissingAt > 300_000;
   let { data, error } = await build(withPdf ? POST_SELECT : POST_BASE);
-  if (error && withPdf && /pdf_(path|name|size|pages)/.test(error.message)) {
+  if (error && withPdf && /pdf_(path|name|size|pages)|is_anonymous|anon_where/.test(error.message)) {
     pdfMissingAt = Date.now();
     ({ data, error } = await build(POST_BASE));
   }
   if (error) throw new Error(error.message);
-  const rows = (data ?? []) as unknown as Row[];
-  if (rows.length === 0) return [];
+  const raw = (data ?? []) as unknown as (Row & { is_anonymous?: boolean; anon_where?: string | null })[];
+  if (raw.length === 0) return [];
+  // Update 42: an anonymous question has no author in the database; it shows as "A business owner", and only the
+  // asker is told it's theirs
+  const anonIds = raw.filter((r) => r.is_anonymous || !r.author).map((r) => r.id);
+  const myAnon = new Set<string>(userId && anonIds.length ? (((await supabase.rpc("my_anon_posts", { p_ids: anonIds })).data ?? []) as string[]) : []);
+  const rows = raw.map(({ is_anonymous, anon_where, ...r }) =>
+    is_anonymous || !r.author
+      ? { ...r, author: { ...ANON_AUTHOR, headline: `Asked anonymously · ${anon_where || "Canada"}` }, business: null, anon: { mine: myAnon.has(r.id), where: anon_where || "Canada" } }
+      : r,
+  ) as unknown as Row[];
 
   // reaction kinds, the viewer's own reaction and reposts; posts still render if this call fails
   type Extra = { post_id: string; kinds: ReactionKind[]; my_kind: ReactionKind | null; reposts: number; reposted: boolean; counts?: Partial<Record<ReactionKind, number>>; saved?: boolean };
@@ -232,7 +247,7 @@ export async function fetchPosts(
   ]);
   const extras = new Map(((extraRows ?? []) as Extra[]).map((e) => [e.post_id, e]));
   const quotedMap = new Map<string, QuotedPost>();
-  for (const x of (quoted.data ?? []) as unknown as QuotedPost[]) quotedMap.set(x.id, x);
+  for (const x of (quoted.data ?? []) as unknown as QuotedPost[]) quotedMap.set(x.id, x.author ? x : { ...x, author: { id: "", full_name: "A business owner", avatar_url: null } as QuotedPost["author"] });
   const pollMap = new Map<string, PollData>();
   if (pollRows?.length) {
     const myVotes = new Map(((mine.data ?? []) as { post_id: string; option_id: string }[]).map((v) => [v.post_id, v.option_id]));
